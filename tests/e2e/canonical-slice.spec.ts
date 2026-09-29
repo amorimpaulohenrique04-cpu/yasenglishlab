@@ -73,16 +73,33 @@ test.describe("canonical learning vertical slice", () => {
       "100",
     );
 
+    await page.setViewportSize({ width: 834, height: 1112 });
     await page.goto("/home");
-    await page.setViewportSize({ width: 1024, height: 1000 });
+    await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
     await page.screenshot({
       path: `${evidenceDir}/home-tablet.png`,
       fullPage: true,
     });
 
+    await page.goto("/aulas");
+    await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
+    await page.screenshot({
+      path: `${evidenceDir}/aulas-tablet.png`,
+      fullPage: true,
+    });
+
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/home");
+    await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
     await page.screenshot({
       path: `${evidenceDir}/home-mobile.png`,
+      fullPage: true,
+    });
+
+    await page.goto("/aulas");
+    await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
+    await page.screenshot({
+      path: `${evidenceDir}/aulas-mobile.png`,
       fullPage: true,
     });
   });
