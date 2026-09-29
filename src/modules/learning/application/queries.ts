@@ -58,10 +58,10 @@ export async function getModuleView(
 
   const courses = await repository.getActiveCoursesForStudent(userId);
   const course = courses.find((candidate) => candidate.slug === courseSlug);
-  const module = course?.modules.find((candidate) => candidate.id === moduleId);
+  const courseModule = course?.modules.find((candidate) => candidate.id === moduleId);
 
-  if (!course || !module) return { status: "unauthorized" };
-  return { status: "success", data: { course, module } };
+  if (!course || !courseModule) return { status: "unauthorized" };
+  return { status: "success", data: { course, module: courseModule } };
 }
 
 export async function getLessonView(
@@ -76,11 +76,14 @@ export async function getLessonView(
 
   const courses = await repository.getActiveCoursesForStudent(userId);
   const course = courses.find((candidate) => candidate.slug === courseSlug);
-  const module = course?.modules.find((candidate) => candidate.id === moduleId);
-  const lesson = module?.lessons.find((candidate) => candidate.slug === lessonSlug);
+  const courseModule = course?.modules.find((candidate) => candidate.id === moduleId);
+  const lesson = courseModule?.lessons.find((candidate) => candidate.slug === lessonSlug);
 
-  if (!course || !module || !lesson) return { status: "unauthorized" };
+  if (!course || !courseModule || !lesson) return { status: "unauthorized" };
 
   const content = await repository.getLessonContentForStudent(userId, lesson.id);
-  return { status: "success", data: { course, module, lesson, content } };
+  return {
+    status: "success",
+    data: { course, module: courseModule, lesson, content },
+  };
 }
