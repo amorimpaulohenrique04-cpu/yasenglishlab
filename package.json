@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:visual": "playwright test -c playwright.visual.config.ts",
+    "test:visual": "npm run test:visual:storybook",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "format": "prettier --write .",
@@ -25,8 +25,17 @@
     "verify:security": "node scripts/verify-security.mjs",
     "verify:db": "node scripts/verify-db.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
-    "verify:agent": "npm run verify && npm run verify:harness && npm run verify:security && npm run verify:db",
-    "verify:full": "npm run verify:agent && npm run verify:ui"
+    "verify:agent": "npm run verify && npm run verify:harness && npm run verify:security && npm run eval:agent",
+    "verify:full": "node scripts/verify-full.mjs",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:integration:db": "node scripts/run-sql-tests.mjs integration",
+    "test:rls": "node scripts/run-sql-tests.mjs rls",
+    "test:a11y": "playwright test -c playwright.a11y.config.ts",
+    "test:visual:storybook": "playwright test -c playwright.visual.config.ts",
+    "test:visual:golden": "playwright test -c playwright.golden.config.ts",
+    "test:visual:update": "playwright test -c playwright.golden.config.ts --update-snapshots",
+    "eval:agent": "node scripts/eval-agent.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
