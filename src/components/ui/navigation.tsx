@@ -54,6 +54,7 @@ export function Tabs({
 
     event.preventDefault();
     const next = enabled[target];
+    if (!next) return;
     select(next.item.id);
     buttonRefs.current[next.index]?.focus();
   };
@@ -132,7 +133,9 @@ export function Dropdown({ label, items }: DropdownProps) {
       currentPosition < 0
         ? 0
         : (currentPosition + direction + enabledIndexes.length) % enabledIndexes.length;
-    itemRefs.current[enabledIndexes[nextPosition]]?.focus();
+    const nextIndex = enabledIndexes[nextPosition];
+    if (nextIndex === undefined) return;
+    itemRefs.current[nextIndex]?.focus();
   };
 
   return (
