@@ -20,7 +20,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "node scripts/verify.mjs",
-    "verify:full": "npm run verify && npm run storybook:build && npm run test:e2e"
+    "verify:harness": "node scripts/verify-harness.mjs",
+    "verify:security": "node scripts/verify-security.mjs",
+    "verify:db": "node scripts/verify-db.mjs",
+    "verify:ui": "node scripts/verify-ui.mjs",
+    "verify:agent": "npm run verify && npm run verify:harness && npm run verify:security && npm run verify:db",
+    "verify:full": "npm run verify:agent && npm run verify:ui"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",
