@@ -42,7 +42,7 @@ The service role is a bypass credential and is therefore restricted to server-on
 | Malicious upload | storage, downstream parsers, users | authenticated user | upload oversized/polyglot/executable content | malware/storage abuse | protected bucket is private with size/MIME allowlist; no authenticated Storage upload policy exists in this task; any future upload endpoint must validate actual file type server-side before storage | migration bucket config + security verifier; no client upload grant |
 | User enumeration | account existence | anonymous attacker | compare password-reset responses | privacy / targeted attacks | recovery always returns the same visible state regardless of account existence or Auth error | `requestPasswordResetAction` intentionally discards provider result |
 | Secret in client bundle | service-role/provider credentials | site visitor | inspect JS/env/network | total backend bypass | only publishable key is public; service role imported through `server-only` env/admin modules; CI scans public-secret patterns and client→server imports | `scripts/verify-security.mjs` |
-| Sensitive data in logs | passwords, tokens, provider payload, signed URLs | staff/log reader after incident | accidental logging/audit serialization | secondary credential/privacy breach | audit payloads are allowlisted; no password/token/URL stored; billing payload is not selectable through authenticated Data API | audit trigger allowlist + column grants + security review assertions |
+| Sensitive data in logs | passwords, tokens, provider payload, signed URLs | staff/log reader after incident | accidental logging/audit serialization | secondary credential/privacy breach | audit payloads are allowlisted; no password/token/URL stored; billing payload and protected storage paths are not selectable through authenticated Data API | audit trigger allowlist + column grants + security review assertions |
 | Staff account at AAL1 | student/billing/admin data | stolen password/session | login with first factor only | privileged compromise | TEACHER/SUPPORT/ADMIN policies and server guards require AAL2 for privileged access | RLS tests: Teacher/Admin AAL1 deny, AAL2 allow |
 | Browser forges `user_id` | any user-owned record | authenticated client | alter form/JSON identifier | horizontal privilege escalation | server derives actor from `getClaims()`; RLS uses `auth.uid()`; booking/profile services never accept identity as authority | server service code + Student A/B RLS cases |
 
@@ -52,7 +52,7 @@ TEACHER, SUPPORT and ADMIN access to privileged data requires AAL2. A user may a
 
 ## Storage and signed URLs
 
-`yas-protected-assets` is private. There is intentionally no authenticated `storage.objects` upload/download policy in this task. The application first queries the material/lesson asset/recording with the user's JWT so RLS decides access, then a server-only client signs that already-authorized path for at most five minutes.
+`yas-protected-assets` is private. There is intentionally no authenticated `storage.objects` upload/download policy in this task. The application first queries only the asset ID with the user's JWT so RLS decides access. Only after that allow decision does a server-only client resolve the private storage path and sign it for at most five minutes.
 
 A signed URL is still a bearer credential until it expires. The residual risk is reduced by short TTL, TLS, private storage and avoiding URL logging; revocation before expiry requires object rotation/removal.
 
