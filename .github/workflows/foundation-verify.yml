@@ -256,6 +256,7 @@ jobs:
         with:
           name: prompt-08-full-verification
           path: |
+            artifacts/
             test-results/
             playwright-report/
           if-no-files-found: warn
