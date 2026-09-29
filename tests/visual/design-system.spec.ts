@@ -2,10 +2,10 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const stories = [
-  { id: "design-system-foundations--core-states", name: "core-states" },
-  { id: "design-system-foundations--form-controls", name: "form-controls" },
-  { id: "design-system-layout--desktop-shell", name: "desktop-shell" },
-  { id: "design-system-layout--mobile-shell", name: "mobile-shell" },
+  { id: "design-system-foundations--core-states", name: "core-states", viewport: { width: 1440, height: 1000 } },
+  { id: "design-system-foundations--form-controls", name: "form-controls", viewport: { width: 1024, height: 1000 } },
+  { id: "design-system-layout--desktop-shell", name: "desktop-shell", viewport: { width: 1440, height: 900 } },
+  { id: "design-system-layout--mobile-shell", name: "mobile-shell", viewport: { width: 390, height: 844 } },
 ] as const;
 
 async function openStory(page: Page, id: string) {
