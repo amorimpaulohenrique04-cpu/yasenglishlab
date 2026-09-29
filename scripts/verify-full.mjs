@@ -45,7 +45,6 @@ function prepareFixture(env) {
 }
 
 console.log("\n=== Yas full verification ===");
-run(npmCommand, ["run", "verify:agent"]);
 run("supabase", ["--version"]);
 run("psql", ["--version"]);
 
@@ -76,9 +75,10 @@ try {
     CANONICAL_E2E_PASSWORD: randomBytes(30).toString("base64url"),
   };
 
-  prepareFixture(runtimeEnv);
-  run(npmCommand, ["run", "test:integration:db"], runtimeEnv);
-  run(npmCommand, ["run", "test:rls"], runtimeEnv);
+  run(npmCommand, ["run", "verify"], runtimeEnv);
+  run(npmCommand, ["run", "verify:harness"], runtimeEnv);
+  run(npmCommand, ["run", "verify:security"], runtimeEnv);
+  run(npmCommand, ["run", "eval:agent"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
   run(npmCommand, ["run", "test:e2e"], runtimeEnv);
