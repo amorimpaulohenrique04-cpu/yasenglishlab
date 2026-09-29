@@ -1,5 +1,5 @@
 const SENSITIVE_KEY =
-  /(?:pass(?:word)?|token|authorization|cookie|secret|api[_-]?key|credential|card|cvv|payment|private[_-]?audio|assessment[_-]?response|answer[_-]?key)/i;
+  /(?:password|pass|token|authorization|cookie|secret|api[_-]?key|credential|card|cvv|payment|private[_-]?audio|assessment[_-]?response|answer[_-]?key)/i;
 
 const SECRET_VALUE_PATTERNS = [
   /\bBearer\s+[A-Za-z0-9._~+\/-]+=*\b/gi,
