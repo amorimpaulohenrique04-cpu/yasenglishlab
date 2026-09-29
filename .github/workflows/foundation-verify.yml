@@ -149,6 +149,27 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Apply locked Prettier to Prompt 08 files
+        run: |
+          npx prettier --write \
+            package.json \
+            scripts/verify.mjs \
+            scripts/run-sql-tests.mjs \
+            scripts/verify-full.mjs \
+            scripts/eval-agent.mjs \
+            tests/integration/learning-application.test.ts \
+            tests/integration/server-actions.test.ts \
+            playwright.a11y.config.ts \
+            tests/a11y/critical-flows.spec.ts \
+            playwright.golden.config.ts \
+            tests/visual/golden.spec.ts \
+            harness/evals/behavioral.md \
+            harness/evals/AUTOMATION.md \
+            harness/goals/prompt-08-testing-evals.md \
+            harness/agent-state/plan.md \
+            harness/feature_list.json \
+            harness/evidence/prompt-08-testing-evals/README.md
+
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
         with:
@@ -284,13 +305,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add tests/visual/goldens
+          git add \
+            package.json scripts tests playwright.a11y.config.ts playwright.golden.config.ts \
+            harness/evals harness/goals/prompt-08-testing-evals.md \
+            harness/agent-state/plan.md harness/feature_list.json \
+            harness/evidence/prompt-08-testing-evals tests/visual/goldens
           if git diff --cached --quiet; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "test: commit prompt 08 golden visual baselines"
+          git commit -m "test: format prompt 08 and commit golden baselines"
           git push
 
       - name: Stop Supabase
