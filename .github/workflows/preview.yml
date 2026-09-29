@@ -1,0 +1,162 @@
+name: Yas Preview
+
+on:
+  workflow_run:
+    workflows:
+      - Yas CI
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  isolated_preview:
+    name: Isolated Preview
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout verified PR commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.118.0
+
+      - name: Start isolated non-production data plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f supabase/config.toml ]; then
+            supabase init
+          fi
+          supabase start
+          supabase db reset
+          supabase status -o env > /tmp/yas-preview.env
+          set -a
+          source /tmp/yas-preview.env
+          set +a
+          rm /tmp/yas-preview.env
+
+          PUBLIC_KEY="$PUBLISHABLE_KEY"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
+          SERVER_KEY="$SECRET_KEY"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+
+          echo "::add-mask::$SERVER_KEY"
+          {
+            echo "YAS_ENVIRONMENT=preview"
+            echo "APP_URL=http://127.0.0.1:3000"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
+            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+          } >> "$GITHUB_ENV"
+
+      - name: Build verified PR
+        run: npm run build
+
+      - name: Boot isolated preview and smoke /login
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm start > /tmp/yas-preview.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID 2>/dev/null || true' EXIT
+
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent --show-error http://127.0.0.1:3000/login > /dev/null; then
+              echo "Isolated preview is healthy."
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/yas-preview.log
+          exit 1
+
+      - name: Upload preview runtime log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: yas-isolated-preview
+          path: /tmp/yas-preview.log
+          if-no-files-found: warn
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup || true
+
+  external_preview:
+    name: External Preview Adapter
+    needs:
+      - isolated_preview
+    if: >
+      vars.YAS_EXTERNAL_PREVIEW_ENABLED == 'true' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+
+    env:
+      YAS_ENVIRONMENT: preview
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Checkout verified PR commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Validate preview deployment credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$YAS_ENVIRONMENT" = "preview"
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Pull preview-only Vercel settings
+        run: npx --yes vercel@59.20.0 pull --yes --environment=preview --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID"
+
+      - name: Build preview
+        run: npx --yes vercel@59.20.0 build --yes --target=preview --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID"
+
+      - name: Deploy verified preview
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(npx --yes vercel@59.20.0 deploy --prebuilt --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID" | tail -n 1)"
+          test -n "$URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Preview deployed to $URL"
