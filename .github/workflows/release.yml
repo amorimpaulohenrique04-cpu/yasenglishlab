@@ -1,0 +1,131 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Official CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
+jobs:
+  release-gate:
+    name: Release Gate
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exactly the CI-approved commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Reinstall from lockfile
+        run: npm ci
+
+      - name: Recheck release policy
+        run: |
+          node scripts/ci/check-repo-policy.mjs
+          node scripts/ci/secret-scan.mjs
+
+      - name: Rebuild release candidate
+        run: npm run build
+
+      - name: Create immutable release manifest
+        env:
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_CI_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          mkdir -p artifacts/release
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const manifest = {
+            sha: process.env.RELEASE_SHA,
+            sourceCiRunId: process.env.SOURCE_CI_RUN_ID,
+            node: process.version,
+            lockfile: "package-lock.json",
+            createdAt: new Date().toISOString()
+          };
+          fs.writeFileSync("artifacts/release/release.json", JSON.stringify(manifest, null, 2) + "\n");
+          NODE
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ github.event.workflow_run.head_sha }}
+          path: artifacts/release/release.json
+          retention-days: 30
+
+  staging:
+    name: Staging
+    needs: release-gate
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+
+    steps:
+      - name: Download approved release manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-${{ github.event.workflow_run.head_sha }}
+          path: artifacts/release
+
+      - name: Verify staged commit identity
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const manifest = JSON.parse(fs.readFileSync("artifacts/release/release.json", "utf8"));
+          if (manifest.sha !== process.env.EXPECTED_SHA) {
+            throw new Error("Release SHA mismatch");
+          }
+          console.log("✓ staging promotion accepted " + manifest.sha);
+          NODE
+
+  production:
+    name: Production
+    needs: staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+
+    steps:
+      - name: Download staged release manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-${{ github.event.workflow_run.head_sha }}
+          path: artifacts/release
+
+      - name: Verify production release identity
+        env:
+          EXPECTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const manifest = JSON.parse(fs.readFileSync("artifacts/release/release.json", "utf8"));
+          if (manifest.sha !== process.env.EXPECTED_SHA) {
+            throw new Error("Release SHA mismatch");
+          }
+          console.log("✓ production release gate approved " + manifest.sha);
+          NODE
+
+      - name: Publish production release evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-release-${{ github.event.workflow_run.head_sha }}
+          path: artifacts/release/release.json
+          retention-days: 90
