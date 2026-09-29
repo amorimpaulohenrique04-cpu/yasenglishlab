@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
@@ -50,6 +51,9 @@ run("psql", ["--version"]);
 
 let supabaseStarted = false;
 try {
+  if (!existsSync("supabase/config.toml")) {
+    run("supabase", ["init"]);
+  }
   run("supabase", ["start"]);
   supabaseStarted = true;
   run("supabase", ["db", "reset"]);
