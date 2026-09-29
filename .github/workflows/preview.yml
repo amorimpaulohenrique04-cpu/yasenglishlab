@@ -54,10 +54,10 @@ jobs:
           set +a
           rm /tmp/yas-preview.env
 
-          PUBLIC_KEY="$PUBLISHABLE_KEY"
-          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
-          SERVER_KEY="$SECRET_KEY"
-          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-}"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="${ANON_KEY:-}"; fi
+          SERVER_KEY="${SECRET_KEY:-}"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="${SERVICE_ROLE_KEY:-}"; fi
 
           echo "::add-mask::$SERVER_KEY"
           {
