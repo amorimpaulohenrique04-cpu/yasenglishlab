@@ -253,9 +253,15 @@ jobs:
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
             echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
             echo "DATABASE_URL=$DB_URL"
+            echo "APP_ENV=preview"
+            echo "APP_VERSION=${{ github.sha }}"
             echo "CANONICAL_E2E=1"
             echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
           } >> "$GITHUB_ENV"
+      - name: Prove intentional error reaches observability
+        env:
+          OBSERVABILITY_LIVE_TEST: "1"
+        run: npm run test:observability:live
       - name: Prepare canonical preview fixture
         run: node scripts/setup-canonical-e2e.mjs
       - name: Install Playwright Chromium
