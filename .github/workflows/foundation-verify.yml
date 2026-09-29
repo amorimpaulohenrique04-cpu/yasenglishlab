@@ -3,6 +3,7 @@ name: Foundation Verify
 on:
   push:
     branches:
+      - main
       - harness/prompt-03
   pull_request:
     branches:
