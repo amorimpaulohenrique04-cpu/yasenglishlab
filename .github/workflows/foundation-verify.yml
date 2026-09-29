@@ -105,12 +105,8 @@ jobs:
             local database="$1"
             createdb "$database"
 
-            psql -d "$database" -v ON_ERROR_STOP=1 <<'SQL'
-            create schema auth;
-            create table auth.users (
-              id uuid primary key
-            );
-            SQL
+            psql -d "$database" -v ON_ERROR_STOP=1 \
+              -c "create schema auth; create table auth.users (id uuid primary key);"
 
             for migration in supabase/migrations/*.sql; do
               psql -d "$database" -v ON_ERROR_STOP=1 -f "$migration"

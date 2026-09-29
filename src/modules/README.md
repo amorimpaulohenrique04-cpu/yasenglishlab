@@ -3,9 +3,11 @@
 Business rules are organized by domain, not by technical file type.
 
 Current domain contract surface:
+
 - `domain/` — shared entity schemas, types and entitlement primitives introduced by PROMPT 05.
 
 Expected feature modules remain:
+
 - auth
 - dashboard
 - courses
