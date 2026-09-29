@@ -23,7 +23,7 @@ export interface TechnicalContext {
   requestId: string;
   traceId: string;
   spanId: string;
-  userId?: string;
+  userId?: string | undefined;
   environment: string;
   version: string;
 }
