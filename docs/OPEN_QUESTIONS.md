@@ -6,7 +6,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Qual será o provider definitivo de billing recorrente?
 - Vídeo protegido: Mux, Cloudflare Stream ou outra solução?
 - Encontros ao vivo V1: Zoom, Google Meet ou outra solução?
-- Hosting/deploy definitivo: manter direção Vercel ou escolher alternativa?
+- Hosting/deploy definitivo: manter direção Vercel ou escolher alternativa? O PROMPT 09 usa Vercel apenas como adapter reversível de referência; a decisão continua aberta.
 - Analytics de produto: PostHog ou alternativa?
 - Error reporting/tracing: stack exata de observabilidade?
 
