@@ -8,3 +8,4 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Scope limited to harness, verification scripts, package commands and CI wiring.
 - Product features explicitly excluded.
 - Verification pending; feature registry remains `in_progress` until evidence exists.
+- First clean CI run failed only at canonical formatting; remediation delegated to the pinned Prettier before re-running the same checks.
