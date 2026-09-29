@@ -17,6 +17,54 @@ permissions:
   contents: write
 
 jobs:
+  format-prompt08:
+    if: "github.event_name == 'push' && github.ref == 'refs/heads/testing-evals/prompt-08' && contains(github.event.head_commit.message, 'style: apply prompt 08 prettier') == false"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout prompt 08 branch
+        uses: actions/checkout@v7
+        with:
+          ref: testing-evals/prompt-08
+
+      - name: Use Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Format current prompt files
+        run: |
+          npx prettier --write \
+            harness/evals/behavioral.md \
+            harness/feature_list.json \
+            tests/a11y/critical-flows.spec.ts \
+            tests/integration/server-actions.test.ts \
+            docs/TESTING.md \
+            docs/DEFINITION_OF_DONE.md
+
+      - name: Commit formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            harness/evals/behavioral.md \
+            harness/feature_list.json \
+            tests/a11y/critical-flows.spec.ts \
+            tests/integration/server-actions.test.ts \
+            docs/TESTING.md \
+            docs/DEFINITION_OF_DONE.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style: apply prompt 08 prettier"
+          git push
+
   verify:
     runs-on: ubuntu-latest
 
