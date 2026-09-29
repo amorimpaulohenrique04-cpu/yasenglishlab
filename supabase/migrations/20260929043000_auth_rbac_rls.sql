@@ -87,6 +87,44 @@ create trigger auth_user_profile_created
 after insert on auth.users
 for each row execute function private.handle_new_user();
 
+insert into public.profiles (user_id, display_name)
+select
+  u.id,
+  coalesce(
+    nullif(left(trim(u.raw_user_meta_data ->> 'display_name'), 120), ''),
+    nullif(left(split_part(coalesce(u.email, ''), '@', 1), 120), ''),
+    'Yas Student'
+  )
+from auth.users u
+on conflict (user_id) do nothing;
+
+insert into storage.buckets (
+  id,
+  name,
+  public,
+  file_size_limit,
+  allowed_mime_types
+)
+values (
+  'yas-protected-assets',
+  'yas-protected-assets',
+  false,
+  524288000,
+  array[
+    'application/pdf',
+    'audio/mpeg',
+    'audio/mp4',
+    'video/mp4',
+    'image/jpeg',
+    'image/png',
+    'image/webp'
+  ]::text[]
+)
+on conflict (id) do update set
+  public = false,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
 create or replace function private.has_role(
   p_role text,
   p_require_aal2 boolean default true
