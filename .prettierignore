@@ -5,4 +5,4 @@ storybook-static
 playwright-report
 test-results
 package-lock.json
-docs/reference-ui/**/*.webp
+docs
