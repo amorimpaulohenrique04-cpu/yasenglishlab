@@ -93,9 +93,9 @@ if (validBase) {
     }
   }
 } else {
-  console.log("ℹ BASE_SHA is unavailable; immutable-history diff check skipped.");
+  console.log(\n    "ℹ BASE_SHA is unavailable; immutable-history diff check skipped.",\n  );
 }
 
 if (!process.exitCode) {
-  console.log(`✓ migration policy passed for ${currentMigrations.length} migration(s).`);
+  console.log(\n    `✓ migration policy passed for ${currentMigrations.length} migration(s).`,\n  );
 }
