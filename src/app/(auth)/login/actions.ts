@@ -1,0 +1,49 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { z } from "zod";
+
+import { sanitizeNextPath, staffMfaRequired } from "@/modules/auth";
+import { resolveAuthContextFromClient } from "@/server/auth/context";
+import { createSupabaseServerClient } from "@/server/supabase/server";
+
+const loginSchema = z.object({
+  email: z.string().trim().email().max(254),
+  password: z.string().min(1).max(1024),
+  next: z.string().optional(),
+});
+
+export async function loginAction(formData: FormData): Promise<never> {
+  const parsed = loginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+    next: formData.get("next") || undefined,
+  });
+
+  if (!parsed.success) {
+    redirect("/login?error=credentials");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+
+  if (error) {
+    redirect("/login?error=credentials");
+  }
+
+  const context = await resolveAuthContextFromClient(supabase);
+  if (!context) {
+    await supabase.auth.signOut();
+    redirect("/login?error=session");
+  }
+
+  const nextPath = sanitizeNextPath(parsed.data.next);
+  if (staffMfaRequired(context.roles, context.aal)) {
+    redirect(`/mfa?next=${encodeURIComponent(nextPath)}`);
+  }
+
+  redirect(nextPath);
+}
