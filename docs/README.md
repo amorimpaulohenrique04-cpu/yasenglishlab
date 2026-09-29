@@ -28,6 +28,7 @@ A pasta `docs/` é a fonte de verdade modular do produto e da engenharia. Use pr
 - [ANALYTICS.md](./ANALYTICS.md)
 - [OBSERVABILITY.md](./OBSERVABILITY.md)
 - [OPERATIONS.md](./OPERATIONS.md)
+- [CI_CD.md](./CI_CD.md) — environments, CI, deploy, supply chain e rollback.
 - [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md)
 - [ROADMAP.md](./ROADMAP.md)
 
