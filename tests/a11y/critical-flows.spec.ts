@@ -40,13 +40,26 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await login(page);
 
   await expect(page.getByRole("main")).toBeVisible();
-  await expect(page.getByRole("navigation")).toBeVisible();
-  const aulasLink = page.getByRole("link", { name: "Aulas", exact: true }).first();
-  await aulasLink.focus();
-  await expect(aulasLink).toBeFocused();
-  await assertAxe(page);
 
-  await aulasLink.click();
+  if ((page.viewportSize()?.width ?? 1440) < 1024) {
+    const menuButton = page.getByRole("button", { name: "Abrir navegação" });
+    await menuButton.focus();
+    await expect(menuButton).toBeFocused();
+    await menuButton.click();
+    const mobileNav = page.getByRole("navigation", { name: "Navegação mobile" });
+    await expect(mobileNav).toBeVisible();
+    await assertAxe(page);
+    await mobileNav.getByRole("link", { name: "Aulas", exact: true }).click();
+  } else {
+    const navigation = page.getByRole("navigation").first();
+    await expect(navigation).toBeVisible();
+    const aulasLink = navigation.getByRole("link", { name: "Aulas", exact: true });
+    await aulasLink.focus();
+    await expect(aulasLink).toBeFocused();
+    await assertAxe(page);
+    await aulasLink.click();
+  }
+
   await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
   await expect(page.getByRole("main")).toBeVisible();
   await assertAxe(page);
