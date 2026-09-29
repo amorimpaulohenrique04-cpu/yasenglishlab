@@ -10,7 +10,7 @@ const SECRET_VALUE_PATTERNS = [
 ];
 
 const EMAIL_PATTERN = /\b([A-Z0-9._%+-])([A-Z0-9._%+-]*)@([A-Z0-9.-]+\.[A-Z]{2,})\b/gi;
-const PHONE_PATTERN = /(?<!\d)(?:\+?\d[\s().-]?){8,15}(?!\d)/g;
+const PHONE_PATTERN = /(?<![\d-])(?:\+?\d[\s().-]?){10,15}(?![\d-])/g;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function sanitizeString(value: string): string {
@@ -34,7 +34,12 @@ function sanitizeString(value: string): string {
 function sanitizeValue(value: unknown, depth: number): unknown {
   if (depth > 5) return "[TRUNCATED]";
 
-  if (value === null || typeof value === "boolean" || typeof value === "number") {
+  if (
+    value === null ||
+    typeof value === "undefined" ||
+    typeof value === "boolean" ||
+    typeof value === "number"
+  ) {
     return value;
   }
 
