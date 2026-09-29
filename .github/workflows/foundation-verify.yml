@@ -25,13 +25,13 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Install locked dependencies
-        run: npm ci
+      - name: Refresh locked dependencies
+        run: npm install
 
       - name: Apply canonical formatting
         run: npm run format
 
-      - name: Commit formatter output on foundation branch
+      - name: Commit deterministic foundation artifacts
         if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
         shell: bash
         run: |
@@ -39,7 +39,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "style: apply canonical formatting [skip ci]"
+            git commit -m "chore: refresh foundation artifacts [skip ci]"
             git push
           fi
 
