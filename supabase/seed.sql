@@ -48,7 +48,7 @@ on conflict (id) do update set
 
 insert into public.courses (id, slug, title, description, active)
 values (
-  '40000000-0000-0000-0000-000000000001',
+  '40000000-0000-4000-8000-000000000001',
   'yas-foundations',
   'Yas Foundations',
   'Curso mínimo de desenvolvimento para validar contratos de trilha sem inventar conteúdo de produção.',
@@ -62,8 +62,8 @@ on conflict (id) do update set
 
 insert into public.modules (id, course_id, position, title, description)
 values (
-  '41000000-0000-0000-0000-000000000001',
-  '40000000-0000-0000-0000-000000000001',
+  '41000000-0000-4000-8000-000000000001',
+  '40000000-0000-4000-8000-000000000001',
   1,
   'Getting Started',
   'Módulo mínimo para desenvolvimento.'
@@ -77,24 +77,24 @@ on conflict (id) do update set
 insert into public.lessons (id, module_id, position, slug, title, estimated_minutes)
 values
   (
-    '42000000-0000-0000-0000-000000000001',
-    '41000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
+    '41000000-0000-4000-8000-000000000001',
     1,
     'welcome-to-yas',
     'Welcome to Yas',
     10
   ),
   (
-    '42000000-0000-0000-0000-000000000002',
-    '41000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    '41000000-0000-4000-8000-000000000001',
     2,
     'introductions-that-sound-natural',
     'Introductions that sound natural',
     14
   ),
   (
-    '42000000-0000-0000-0000-000000000003',
-    '41000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000003',
+    '41000000-0000-4000-8000-000000000001',
     3,
     'build-your-first-conversation',
     'Build your first conversation',
@@ -117,24 +117,24 @@ insert into public.lesson_assets (
 )
 values
   (
-    '43000000-0000-0000-0000-000000000001',
-    '42000000-0000-0000-0000-000000000001',
+    '43000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     'TEXT',
     1,
     '{"eyebrow":"Getting Started","title":"Start with what you already know","body":"Your first lesson is about using simple English with confidence. Focus on meaning before perfection.","steps":["Notice familiar words and expressions.","Say one short sentence out loud.","Return later and continue from your saved point."]}'::jsonb,
     '{"canonical_slice":true}'::jsonb
   ),
   (
-    '43000000-0000-0000-0000-000000000002',
-    '42000000-0000-0000-0000-000000000002',
+    '43000000-0000-4000-8000-000000000002',
+    '42000000-0000-4000-8000-000000000002',
     'TEXT',
     1,
     '{"eyebrow":"Getting Started","title":"Make introductions feel natural","body":"Build a short introduction around your name, where you are from and one thing you enjoy.","steps":["Keep sentences short.","Connect ideas with and or but.","Say it again with a calmer pace."]}'::jsonb,
     '{"canonical_slice":true}'::jsonb
   ),
   (
-    '43000000-0000-0000-0000-000000000003',
-    '42000000-0000-0000-0000-000000000003',
+    '43000000-0000-4000-8000-000000000003',
+    '42000000-0000-4000-8000-000000000003',
     'TEXT',
     1,
     '{"eyebrow":"Getting Started","title":"Turn sentences into a conversation","body":"Use a simple question and follow-up to keep a conversation moving without memorizing a script.","steps":["Ask one open question.","Listen for one detail.","Use that detail in your next question."]}'::jsonb,
