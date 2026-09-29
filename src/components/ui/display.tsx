@@ -72,7 +72,12 @@ export function Avatar({ image, label, fallback, size = "md" }: AvatarProps) {
   const pixels = avatarSizes[size];
 
   return (
-    <span className="yas-avatar" style={{ width: pixels, height: pixels }} aria-label={label}>
+    <span
+      className="yas-avatar"
+      style={{ width: pixels, height: pixels }}
+      role="img"
+      aria-label={label}
+    >
       {image ?? <span aria-hidden="true">{fallback}</span>}
     </span>
   );
