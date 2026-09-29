@@ -29,6 +29,7 @@
     "verify:full": "npm run verify:agent && npm run verify:ui"
   },
   "dependencies": {
+    "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",
     "next": "16.3.6",
     "react": "19.3.0",

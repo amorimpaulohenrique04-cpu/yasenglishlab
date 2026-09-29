@@ -7,6 +7,7 @@ const jsonObjectSchema = z.record(z.string(), z.unknown());
 
 export const USER_ROLES = ["STUDENT", "TEACHER", "SUPPORT", "ADMIN"] as const;
 export const userRoleSchema = z.enum(USER_ROLES);
+export type UserRole = z.infer<typeof userRoleSchema>;
 
 export const CEFR_LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"] as const;
 export const cefrLevelSchema = z.enum(CEFR_LEVELS);
