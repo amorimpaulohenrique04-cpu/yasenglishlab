@@ -1,60 +1,86 @@
-name: Foundation Verify
+name: Official CI
 
 on:
-  push:
-    branches:
-      - main
-      - design-system/prompt-04
-      - domain-contracts/prompt-05
-      - auth-rbac-rls/prompt-06
-      - canonical-slice/prompt-07
-      - testing-evals/prompt-08
   pull_request:
-    branches:
-      - main
+    branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  verify:
+  supply-chain:
+    name: Supply Chain
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-
+          persist-credentials: false
       - name: Use Node 24
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - name: Repository and lockfile policy
+        run: node scripts/ci/check-repo-policy.mjs
+      - name: Secret scan
+        run: node scripts/ci/secret-scan.mjs
+      - name: Audit locked dependency graph
+        run: npm audit --audit-level=high
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+
+  quality:
+    name: Quality
+    needs: supply-chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
-
       - name: Install locked dependencies
         run: npm ci
+      - name: Format
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Integration tests
+        run: npm run test:integration
+      - name: Harness invariants
+        run: npm run verify:harness
+      - name: Security invariants
+        run: npm run verify:security
+      - name: Production build
+        run: npm run build
 
-      - name: Verify foundation and harness
-        run: npm run verify:agent
-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Verify UI harness
-        run: npm run verify:ui
-
-      - name: Upload design-system visual evidence
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: design-system-visual-evidence
-          path: test-results/
-          if-no-files-found: warn
-
-  database-contracts:
+  database:
+    name: Database
+    needs: supply-chain
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:17
@@ -67,94 +93,143 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-
     env:
       PGHOST: 127.0.0.1
       PGPORT: 54329
       PGUSER: postgres
       PGPASSWORD: postgres
-
+      BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+      HEAD_SHA: ${{ github.sha }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
+      - name: Enforce migration policy
+        run: node scripts/ci/check-migrations.mjs
+      - name: Validate migrations from a clean database
+        run: bash scripts/ci/validate-migrations.sh yas_clean_first
+      - name: Replay migrations from a second clean database
+        run: bash scripts/ci/validate-migrations.sh yas_clean_replay
 
-      - name: Replay migrations, seed and invariants twice
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          psql -d postgres -v ON_ERROR_STOP=1 <<'SQL'
-          do $$
-          begin
-            create role anon nologin;
-          exception when duplicate_object then
-            null;
-          end
-          $$;
-
-          do $$
-          begin
-            create role authenticated nologin;
-          exception when duplicate_object then
-            null;
-          end
-          $$;
-          SQL
-
-          apply_database() {
-            local database="$1"
-            createdb "$database"
-
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create schema auth;"
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create schema storage;"
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb not null default '{}'::jsonb);"
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create table storage.buckets (id text primary key, name text not null, public boolean not null default false, file_size_limit bigint, allowed_mime_types text[]);"
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create function auth.uid() returns uuid language sql stable as 'select nullif(current_setting(''request.jwt.claim.sub'', true), '''')::uuid;';"
-            psql -d "$database" -v ON_ERROR_STOP=1 -c "create function auth.jwt() returns jsonb language sql stable as 'select coalesce(nullif(current_setting(''request.jwt.claims'', true), '''')::jsonb, ''{}''::jsonb);';"
-
-            for migration in supabase/migrations/*.sql; do
-              psql -d "$database" -v ON_ERROR_STOP=1 -f "$migration"
-            done
-
-            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
-            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
-
-            for db_test in supabase/tests/*.sql; do
-              psql -d "$database" -v ON_ERROR_STOP=1 -f "$db_test"
-            done
-          }
-
-          apply_database yas_prompt07_first
-          apply_database yas_prompt07_replay
-
-  canonical-slice-e2e:
+  guardrail-simulations:
+    name: Guardrail Simulations
+    needs: supply-chain
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 54329
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+      HEAD_SHA: ${{ github.sha }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
-
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - name: Use Node 24
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
-
       - name: Install locked dependencies
         run: npm ci
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - name: Simulate valid PR
+        run: |
+          node scripts/ci/check-repo-policy.mjs
+          node scripts/ci/check-migrations.mjs
+          node scripts/ci/secret-scan.mjs
+      - name: Simulate failing test and prove it is rejected
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > tests/unit/__ci_expected_failure.test.ts <<'EOF'
+          import { expect, test } from "vitest";
+          test("CI must reject a failing test", () => {
+            expect(1).toBe(2);
+          });
+          EOF
+          if npx vitest run tests/unit/__ci_expected_failure.test.ts; then
+            echo "ERROR: an intentionally failing test passed."
+            exit 1
+          fi
+          rm tests/unit/__ci_expected_failure.test.ts
+          echo "✓ failing test was blocked"
+      - name: Simulate invalid migration and prove it is rejected
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' 'this is intentionally invalid sql;' > supabase/migrations/99991231235959_ci_invalid.sql
+          if bash scripts/ci/validate-migrations.sh yas_invalid_migration; then
+            echo "ERROR: an invalid migration was accepted."
+            exit 1
+          fi
+          rm supabase/migrations/99991231235959_ci_invalid.sql
+          echo "✓ invalid migration was blocked"
+      - name: Simulate detectable secret and prove it is rejected
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'ghp_%s\n' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdef' > ci-secret-fixture.txt
+          if node scripts/ci/secret-scan.mjs; then
+            echo "ERROR: a detectable secret was accepted."
+            exit 1
+          fi
+          rm ci-secret-fixture.txt
+          echo "✓ detectable secret was blocked"
 
+  preview:
+    name: Preview
+    needs: [quality, database]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: preview
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
       - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.118.0
-
-      - name: Start isolated Supabase
+      - name: Start isolated preview database
         shell: bash
         run: |
           set -euo pipefail
@@ -163,101 +238,80 @@ jobs:
           fi
           supabase start
           supabase db reset
-
           supabase status -o env > /tmp/yas-supabase.env
           set -a
           source /tmp/yas-supabase.env
           set +a
           rm /tmp/yas-supabase.env
-
           PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
           SERVER_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
-
           test -n "${API_URL:-}"
           test -n "$PUBLIC_KEY"
           test -n "$SERVER_KEY"
-
           E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
           echo "::add-mask::$E2E_PASSWORD"
           echo "::add-mask::$SERVER_KEY"
-
           {
             echo "APP_URL=http://127.0.0.1:3000"
             echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
             echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
             echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+            echo "DATABASE_URL=$DB_URL"
             echo "CANONICAL_E2E=1"
             echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
           } >> "$GITHUB_ENV"
-
-      - name: Prepare canonical student
+      - name: Prepare canonical preview fixture
         run: node scripts/setup-canonical-e2e.mjs
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
-      - name: Run canonical browser flow
-        run: npx playwright test tests/e2e/canonical-slice.spec.ts --project=chromium
-
+      - name: Critical E2E
+        run: npm run test:e2e
       - name: Assert persistence and analytics
         run: node scripts/assert-canonical-e2e.mjs
-
-      - name: Upload canonical visual evidence
+      - name: Reset fixture for accessibility
+        run: node scripts/setup-canonical-e2e.mjs
+      - name: Accessibility checks
+        run: npm run test:a11y
+      - name: Build Storybook
+        run: npm run storybook:build
+      - name: Design-system visual checks
+        run: npm run test:visual:storybook
+      - name: Reset fixture for golden visual checks
+        run: node scripts/setup-canonical-e2e.mjs
+      - name: Product golden visual checks
+        run: npm run test:visual:golden
+      - name: Upload preview evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: canonical-slice-visual-evidence
-          path: test-results/canonical-slice/
-          if-no-files-found: warn
-
-      - name: Stop Supabase
-        if: always()
-        run: supabase stop --no-backup || true
-
-  full-verification:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Use Node 24
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Install locked dependencies
-        run: npm ci
-
-      - name: Install PostgreSQL client
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: 2.118.0
-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Run full verification
-        run: npm run verify:full
-
-      - name: Upload full verification evidence
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: prompt-08-full-verification
+          name: preview-evidence-${{ github.sha }}
           path: |
             artifacts/
-            tests/visual/goldens/
             test-results/
             playwright-report/
           if-no-files-found: warn
+          retention-days: 14
+      - name: Stop isolated preview database
+        if: always()
+        run: supabase stop --no-backup || true
+
+  ci-gate:
+    name: CI Gate
+    if: always()
+    needs: [supply-chain, quality, database, guardrail-simulations, preview]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every mandatory gate
+        env:
+          SUPPLY_CHAIN: ${{ needs.supply-chain.result }}
+          QUALITY: ${{ needs.quality.result }}
+          DATABASE: ${{ needs.database.result }}
+          SIMULATIONS: ${{ needs.guardrail-simulations.result }}
+          PREVIEW: ${{ needs.preview.result }}
+        run: |
+          test "$SUPPLY_CHAIN" = "success"
+          test "$QUALITY" = "success"
+          test "$DATABASE" = "success"
+          test "$SIMULATIONS" = "success"
+          test "$PREVIEW" = "success"
