@@ -1,10 +1,6 @@
 import type { ProductAnalyticsEvent } from "@/modules/domain";
 
-import type {
-  LearningCourse,
-  LessonProgressSnapshot,
-  LessonTextContent,
-} from "../domain/models";
+import type { LearningCourse, LessonProgressSnapshot, LessonTextContent } from "../domain/models";
 import type { LessonProgressInput } from "../domain/progress";
 
 export interface LearningRepository {

@@ -81,13 +81,13 @@ export class SupabaseLearningRepository implements LearningRepository {
     const lessonRows =
       moduleIds.length === 0
         ? []
-        : (
+        : ((
             await this.client
               .from("lessons")
               .select("id, module_id, position, slug, title, estimated_minutes")
               .in("module_id", moduleIds)
               .order("position")
-          ).data ?? [];
+          ).data ?? []);
 
     const { data: progressRows, error: progressError } = await this.client
       .from("lesson_progress")
@@ -145,9 +145,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       slug: String(row.slug),
       title: String(row.title),
       description: row.description ? String(row.description) : null,
-      modules: (modulesByCourse.get(String(row.id)) ?? []).sort(
-        (a, b) => a.position - b.position,
-      ),
+      modules: (modulesByCourse.get(String(row.id)) ?? []).sort((a, b) => a.position - b.position),
     }));
   }
 

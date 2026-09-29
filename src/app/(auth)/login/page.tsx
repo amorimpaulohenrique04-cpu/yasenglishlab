@@ -13,10 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : null;
   const reset = params.reset === "1";
-  const next = sanitizeNextPath(
-    typeof params.next === "string" ? params.next : null,
-    "/home",
-  );
+  const next = sanitizeNextPath(typeof params.next === "string" ? params.next : null, "/home");
 
   return (
     <main className="yas-auth-shell">

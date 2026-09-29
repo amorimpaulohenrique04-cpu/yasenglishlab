@@ -1,5 +1,8 @@
 import { Badge, Card, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
-import { LessonProgressControls, LessonStartAnalytics } from "@/modules/learning/ui/lesson-progress-controls";
+import {
+  LessonProgressControls,
+  LessonStartAnalytics,
+} from "@/modules/learning/ui/lesson-progress-controls";
 import { loadLearningLesson } from "@/server/learning/canonical-slice";
 
 interface LessonPageProps {
@@ -30,7 +33,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
         title={lesson.title}
         description={`${module.title} • ${lesson.estimatedMinutes ?? 10} min`}
         actions={
-          <Badge tone={currentPercent === 100 ? "success" : currentPercent > 0 ? "info" : "neutral"}>
+          <Badge
+            tone={currentPercent === 100 ? "success" : currentPercent > 0 ? "info" : "neutral"}
+          >
             {currentPercent === 100 ? "Concluída" : currentPercent > 0 ? "Em andamento" : "Nova"}
           </Badge>
         }

@@ -1,10 +1,5 @@
 import type { LearningRepository } from "./ports";
-import type {
-  LearningCourse,
-  LearningModule,
-  LearningState,
-  LessonDetail,
-} from "../domain/models";
+import type { LearningCourse, LearningModule, LearningState, LessonDetail } from "../domain/models";
 import { courseCompletion, nextLesson } from "../domain/progress";
 
 export interface LearningHomeView {
@@ -27,8 +22,9 @@ export async function getLearningHome(
 
   const lesson = nextLesson(course);
   const nextModule =
-    course.modules.find((module) => module.lessons.some((candidate) => candidate.id === lesson?.id)) ??
-    null;
+    course.modules.find((module) =>
+      module.lessons.some((candidate) => candidate.id === lesson?.id),
+    ) ?? null;
 
   return {
     status: "success",

@@ -47,10 +47,12 @@ const operations = [
   admin
     .from("user_roles")
     .upsert({ user_id: userId, role: "STUDENT" }, { onConflict: "user_id,role" }),
-  admin.from("enrollments").upsert(
-    { user_id: userId, course_id: courseId, status: "ACTIVE" },
-    { onConflict: "user_id,course_id" },
-  ),
+  admin
+    .from("enrollments")
+    .upsert(
+      { user_id: userId, course_id: courseId, status: "ACTIVE" },
+      { onConflict: "user_id,course_id" },
+    ),
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
 ];

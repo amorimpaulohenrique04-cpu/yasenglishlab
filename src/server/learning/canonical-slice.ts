@@ -46,11 +46,7 @@ export async function loadLearningModule(courseSlug: string, moduleId: string) {
   );
 }
 
-export async function loadLearningLesson(
-  courseSlug: string,
-  moduleId: string,
-  lessonSlug: string,
-) {
+export async function loadLearningLesson(courseSlug: string, moduleId: string, lessonSlug: string) {
   const { auth, repository } = await context();
   return getLessonView(
     repository,

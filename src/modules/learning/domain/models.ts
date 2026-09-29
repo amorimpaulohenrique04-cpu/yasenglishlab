@@ -54,6 +54,4 @@ export interface LessonDetail {
 }
 
 export type LearningState<T> =
-  | { status: "success"; data: T }
-  | { status: "empty" }
-  | { status: "unauthorized" };
+  { status: "success"; data: T } | { status: "empty" } | { status: "unauthorized" };

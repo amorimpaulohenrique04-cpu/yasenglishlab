@@ -4,7 +4,10 @@ import { useEffect } from "react";
 
 import { Button } from "@/components/ui";
 
-import { trackLessonStartedAction, updateLessonProgressAction } from "@/app/(protected)/(student)/aulas/actions";
+import {
+  trackLessonStartedAction,
+  updateLessonProgressAction,
+} from "@/app/(protected)/(student)/aulas/actions";
 
 export function LessonStartAnalytics({ lessonId }: { lessonId: string }) {
   useEffect(() => {
