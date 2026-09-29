@@ -1,6 +1,6 @@
 # GOAL — prompt-10-observability: Observability, analytics and auditability
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-09-29  
 Updated: 2026-09-29
@@ -29,14 +29,14 @@ A developer can trigger an intentional technical error in Preview, locate the pe
 
 ## Acceptance criteria
 
-- [ ] Official product-event taxonomy is executable and documented.
-- [ ] Structured logs include request/trace/span/environment/version context.
-- [ ] Critical error codes are typed and persisted separately from analytics/audit.
-- [ ] Privileged audit actions are typed, append-only and request-correlated.
-- [ ] Passwords, tokens, payment credentials, private audio, assessment responses and secrets are redacted.
-- [ ] Preview CI proves an intentional error reaches the real isolated observability sink.
-- [ ] SQL/RLS/security/unit/integration/build gates remain green.
-- [ ] No external analytics/observability provider is invented while OPEN_QUESTIONS remains unresolved.
+- [x] Official product-event taxonomy is executable and documented.
+- [x] Structured logs include request/trace/span/environment/version context.
+- [x] Critical error codes are typed and persisted separately from analytics/audit.
+- [x] Privileged audit actions are typed, append-only and request-correlated.
+- [x] Passwords, tokens, payment credentials, private audio, assessment responses and secrets are redacted.
+- [x] Preview CI proves an intentional error reaches the real isolated observability sink.
+- [x] SQL/RLS/security/unit/integration/build gates remain green.
+- [x] No external analytics/observability provider is invented while OPEN_QUESTIONS remains unresolved.
 
 ## Allowed files / domains
 
