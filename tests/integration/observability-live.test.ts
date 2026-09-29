@@ -2,7 +2,9 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 
 import { createClient } from "@supabase/supabase-js";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("server-only", () => ({}));
 
 import { createTechnicalContext } from "@/server/observability/context";
 import { reportTechnicalError } from "@/server/observability/report";
