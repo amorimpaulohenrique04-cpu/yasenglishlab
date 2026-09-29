@@ -288,7 +288,7 @@ begin
     raise exception 'Authenticated Data API must not expose protected storage paths';
   end if;
 end;
-$;
+$$;
 
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000002', false);
 select set_config(
@@ -432,7 +432,7 @@ begin
     raise exception 'Support must not access student learning progress by default';
   end if;
 end;
-$;
+$$;
 
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000006', false);
 select set_config(
