@@ -45,6 +45,10 @@ const requiredInvariants = [
   "for update",
   "unique (provider, event_id)",
   "enable row level security",
+  "rename column progress_percent to completion_percent",
+  "create table public.product_analytics_events",
+  "create or replace function public.record_lesson_progress",
+  "auth.uid()",
 ];
 
 for (const invariant of requiredInvariants) {
@@ -62,9 +66,17 @@ for (const token of [
   "'weekly_core_classes'",
   "'weekly_conversation_labs'",
   "'monthly_private_sessions'",
+  "'welcome-to-yas'",
+  "'introductions-that-sound-natural'",
+  "'build-your-first-conversation'",
 ]) {
   assert(seedSql.includes(token), `Seed is missing required product data: ${token}`);
 }
+
+assert(
+  exists("supabase/tests/vertical_slice_persistence.sql"),
+  "Canonical vertical slice needs real persistence integration evidence.",
+);
 
 success(
   `DB contracts valid: ${migrationFiles.length} migration(s), canonical seed, ${dbTestFiles.length} SQL invariant test(s).`,
