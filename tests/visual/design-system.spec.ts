@@ -41,6 +41,7 @@ for (const story of stories) {
   test(`${story.name} has no automated WCAG A/AA violations and produces evidence`, async ({
     page,
   }, testInfo: TestInfo) => {
+    await page.setViewportSize(story.viewport);
     await openStory(page, story.id);
     await assertA11y(page);
     await page.screenshot({ path: testInfo.outputPath(`${story.name}.png`), fullPage: true });
