@@ -1,24 +1,23 @@
 import { spawnSync } from "node:child_process";
 
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-const checks = [
-  "format:check",
-  "lint",
-  "typecheck",
-  "test:unit",
-  "test:integration",
-  "verify:db",
-  "build",
-];
 
-for (const check of checks) {
-  console.log(`\n▶ npm run ${check}`);
-  const result = spawnSync(npmCommand, ["run", check], { stdio: "inherit" });
-
-  if (result.status !== 0) {
-    console.error(`\nVerification failed at: ${check}`);
-    process.exit(result.status ?? 1);
-  }
+function run(script) {
+  console.log(`\n▶ npm run ${script}`);
+  const result = spawnSync(npmCommand, ["run", script], { stdio: "inherit" });
+  if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-console.log("\n✓ Core verification passed.");
+if (!process.env.DATABASE_URL) {
+  console.error(
+    "npm run verify requires DATABASE_URL for executable integration/RLS tests. " +
+      "Use a migrated local Supabase database, or run npm run verify:full to provision one automatically.",
+  );
+  process.exit(2);
+}
+
+run("verify:core");
+run("test:integration:db");
+run("test:rls");
+
+console.log("\n✓ Non-UI verification passed, including real database integration and RLS.");
