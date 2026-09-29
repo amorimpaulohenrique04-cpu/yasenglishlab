@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = "canonical.student@example.test";
-const lessonId = "42000000-0000-0000-0000-000000000001";
+const lessonId = "42000000-0000-4000-8000-000000000001";
 
 if (!url || !serviceRoleKey) {
   throw new Error("Canonical E2E assertion requires local Supabase credentials.");
