@@ -68,6 +68,18 @@ describe("observability contracts", () => {
     });
   });
 
+  it("does not mistake ISO timestamps for phone PII or stringify missing context", () => {
+    const timestamp = "2026-09-29T22:07:12.327Z";
+    const sanitized = sanitizeMetadata({
+      occurred_at: timestamp,
+      user_id: undefined,
+    });
+
+    expect(sanitized.occurred_at).toBe(timestamp);
+    expect(sanitized.user_id).toBeUndefined();
+    expect(JSON.stringify(sanitized)).not.toContain('"user_id"');
+  });
+
   it("builds a correlatable technical error without leaking PII", () => {
     const event = buildTechnicalErrorEvent(
       new Error("Failed for student@example.com with Bearer abcdefghijklmnopqrstuvwxyz"),
