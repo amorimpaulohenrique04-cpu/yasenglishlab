@@ -133,7 +133,7 @@ check(
 );
 
 const productUiChanged = changed.some(
-  (path) => /^src\/(app|components|modules)\/.test(path) && /\.(tsx|css)$/.test(path),
+  (path) => /^src\/(app|components|modules)\//.test(path) && /\.(tsx|css)$/.test(path),
 );
 const visualEvidenceChanged = changed.some(
   (path) => path.startsWith("tests/visual/") || path.startsWith(`harness/evidence/${taskId}/`),
