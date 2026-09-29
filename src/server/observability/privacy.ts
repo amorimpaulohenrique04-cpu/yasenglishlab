@@ -11,8 +11,7 @@ const SECRET_VALUE_PATTERNS = [
 
 const EMAIL_PATTERN = /\b([A-Z0-9._%+-])([A-Z0-9._%+-]*)@([A-Z0-9.-]+\.[A-Z]{2,})\b/gi;
 const PHONE_PATTERN = /(?<!\d)(?:\+?\d[\s().-]?){8,15}(?!\d)/g;
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function sanitizeString(value: string): string {
   if (UUID_PATTERN.test(value)) return value;
@@ -51,9 +50,7 @@ function sanitizeValue(value: unknown, depth: number): unknown {
     const sanitized: Record<string, unknown> = {};
 
     for (const [key, nested] of Object.entries(value as Record<string, unknown>).slice(0, 50)) {
-      sanitized[key] = SENSITIVE_KEY.test(key)
-        ? "[REDACTED]"
-        : sanitizeValue(nested, depth + 1);
+      sanitized[key] = SENSITIVE_KEY.test(key) ? "[REDACTED]" : sanitizeValue(nested, depth + 1);
     }
 
     return sanitized;
