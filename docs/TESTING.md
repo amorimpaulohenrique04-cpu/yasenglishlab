@@ -66,6 +66,22 @@ npm run eval:agent
 
 `test:integration:db` e `test:rls` usam `DATABASE_URL` quando fornecida; sem ela, usam as variáveis padrão do `psql`.
 
+
+## Official CI mapping
+
+O pipeline autoritativo está em `.github/workflows/ci.yml` e [CI_CD.md](./CI_CD.md).
+
+| CI job | Responsabilidade |
+| --- | --- |
+| Supply Chain | lockfile, versions, lifecycle scripts, Actions pins, secret scan, environment isolation, dependency audit |
+| Quality | format, lint, typecheck, unit, integration, security, build, harness/evals |
+| Database & RLS | migration discipline, dois clean replays, seed, integration SQL e RLS |
+| Critical E2E | vertical slice em Supabase local real |
+| Accessibility & Visual | axe + Storybook visual + golden product UI |
+| PR Gate | bloqueia merge se qualquer gate anterior não concluir `success` |
+
+As simulações de PROMPT 09 vivem em `.github/workflows/ci-simulations.yml` e comprovam que teste falhando, migration inválida e secret detectável retornam erro em seus detectores.
+
 ## Unit
 
 Use para funções determinísticas: progresso, seleção do próximo item, validações e regras que não precisam de I/O.
@@ -187,7 +203,7 @@ A infraestrutura deve manter evidência de ao menos uma regressão deliberada de
 
 ## Interfaces
 
-[SECURITY.md](./SECURITY.md) · [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [UI_CONTRACT.md](./UI_CONTRACT.md) · [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md)
+[SECURITY.md](./SECURITY.md) · [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [UI_CONTRACT.md](./UI_CONTRACT.md) · [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) · [CI_CD.md](./CI_CD.md)
 
 ## Critérios de aceitação
 
