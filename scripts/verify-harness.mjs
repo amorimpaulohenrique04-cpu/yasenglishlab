@@ -63,15 +63,24 @@ assert(Array.isArray(registry.features), "feature_list.features must be an array
 
 const ids = new Set();
 for (const feature of registry.features) {
-  assert(typeof feature.id === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(feature.id), "Feature id must be kebab-case.");
+  assert(
+    typeof feature.id === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(feature.id),
+    "Feature id must be kebab-case.",
+  );
   assert(!ids.has(feature.id), `Duplicate feature id: ${feature.id}`);
   ids.add(feature.id);
-  assert(typeof feature.title === "string" && feature.title.length > 0, `Missing title: ${feature.id}`);
+  assert(
+    typeof feature.title === "string" && feature.title.length > 0,
+    `Missing title: ${feature.id}`,
+  );
   assert(expectedStatuses.includes(feature.status), `Invalid status: ${feature.id}`);
   assert(typeof feature.verified === "boolean", `verified must be boolean: ${feature.id}`);
   assert(Array.isArray(feature.dependencies), `dependencies must be array: ${feature.id}`);
   assert(Array.isArray(feature.evidence), `evidence must be array: ${feature.id}`);
-  assert(typeof feature.updated_at === "string" && !Number.isNaN(Date.parse(feature.updated_at)), `updated_at must be ISO date: ${feature.id}`);
+  assert(
+    typeof feature.updated_at === "string" && !Number.isNaN(Date.parse(feature.updated_at)),
+    `updated_at must be ISO date: ${feature.id}`,
+  );
 
   if (feature.status === "done") {
     assert(feature.verified === true, `Done feature must be verified: ${feature.id}`);
@@ -97,4 +106,6 @@ for (const phrase of [
   assert(evals.includes(phrase), `Behavioral eval missing: ${phrase}`);
 }
 
-success(`Harness contract valid: ${requiredPaths.length} required paths, ${registry.features.length} registry entries.`);
+success(
+  `Harness contract valid: ${requiredPaths.length} required paths, ${registry.features.length} registry entries.`,
+);

@@ -10,7 +10,10 @@ const seedFiles = walk("supabase/seed", (path) => path.endsWith(".sql"));
 
 for (const path of migrationFiles) {
   const name = basename(path);
-  assert(/^\d{14}_[a-z0-9_]+\.sql$/.test(name), `Migration must use YYYYMMDDHHMMSS_slug.sql: ${path}`);
+  assert(
+    /^\d{14}_[a-z0-9_]+\.sql$/.test(name),
+    `Migration must use YYYYMMDDHHMMSS_slug.sql: ${path}`,
+  );
   assert(read(path).trim().length > 0, `Migration is empty: ${path}`);
 }
 
@@ -22,7 +25,10 @@ const misplacedSql = [
   ...walk("src", (path) => path.endsWith(".sql")),
   ...walk("tests", (path) => path.endsWith(".sql")),
 ];
-assert(misplacedSql.length === 0, `SQL files must live under supabase/migrations or supabase/seed: ${misplacedSql.join(", ")}`);
+assert(
+  misplacedSql.length === 0,
+  `SQL files must live under supabase/migrations or supabase/seed: ${misplacedSql.join(", ")}`,
+);
 
 success(
   migrationFiles.length === 0

@@ -9,6 +9,7 @@ Goal: install the official minimal, explicit and verifiable Harness Engineering 
 ### Scope
 
 Allowed:
+
 - `AGENTS.md`
 - `harness/**`
 - `scripts/**`
@@ -16,6 +17,7 @@ Allowed:
 - `.github/workflows/foundation-verify.yml`
 
 Forbidden:
+
 - Product screens/components beyond existing foundation placeholders.
 - Product domain implementation.
 - Database schema/business tables.

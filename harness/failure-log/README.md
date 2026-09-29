@@ -9,6 +9,7 @@ YYYY-MM-DD-<task-id>-<short-name>.md
 ```
 
 Include:
+
 - observed failure;
 - reproduction command;
 - impact;

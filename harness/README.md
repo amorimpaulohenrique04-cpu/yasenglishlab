@@ -34,6 +34,7 @@ A coding agent should never begin by asking “what files should I create?” if
 ## Finishing a task
 
 A task may become `done` only when:
+
 - acceptance criteria pass;
 - mandatory checks pass;
 - required evidence was inspected;
@@ -68,39 +69,48 @@ A maintenance task could start as:
 # GOAL — update-storybook: Update Storybook patch version
 
 ## Objective
+
 Upgrade Storybook within the current major without changing product behavior.
 
 ## Visible result
+
 The repository uses the selected patch version and Storybook builds cleanly.
 
 ## Relevant context
+
 - docs/adr/0001-foundation-stack.md
 - package.json
 - .storybook/
 
 ## Acceptance criteria
+
 - Lockfile is deterministic.
 - Storybook production build passes.
 - Existing E2E remains green.
 
 ## Allowed files / domains
+
 - package.json
 - package-lock.json
 - .storybook/**
 - harness state/evidence
 
 ## Forbidden areas
+
 - src/modules/**
 - product UI behavior
 
 ## Mandatory tests
+
 - npm run verify:agent
 - npm run verify:ui
 
 ## Required evidence
+
 - CI URL and version diff.
 
 ## Definition of done
+
 Checks are green, evidence inspected, registry/progress updated.
 ```
 
