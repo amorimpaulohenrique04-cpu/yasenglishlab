@@ -60,21 +60,20 @@ export function SelectableTag({
 }
 
 export interface AvatarProps {
-  src?: string;
-  alt?: string;
+  image?: ReactNode;
+  label: string;
   fallback: string;
   size?: "sm" | "md" | "lg";
 }
 
 const avatarSizes = { sm: 32, md: 40, lg: 56 } as const;
 
-export function Avatar({ src, alt = "", fallback, size = "md" }: AvatarProps) {
+export function Avatar({ image, label, fallback, size = "md" }: AvatarProps) {
   const pixels = avatarSizes[size];
 
   return (
-    <span className="yas-avatar" style={{ width: pixels, height: pixels }}>
-      {src ? <img src={src} alt={alt} /> : <span aria-hidden="true">{fallback}</span>}
-      {!src && <span className="sr-only">{alt || fallback}</span>}
+    <span className="yas-avatar" style={{ width: pixels, height: pixels }} aria-label={label}>
+      {image ?? <span aria-hidden="true">{fallback}</span>}
     </span>
   );
 }
