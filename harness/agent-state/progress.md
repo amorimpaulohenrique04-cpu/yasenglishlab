@@ -47,3 +47,11 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Added append-only `observability_events` bootstrap sink and request/environment/version fields to audit logs.
 - Instrumented authorization denials, booking, protected asset access, role change, analytics persistence and audit persistence.
 - Added the intentional-error live test to Preview CI; verification is still pending, so registry remains `in_progress`.
+
+- Official CI run 36640424406 passed Supply Chain, Database, Guardrail Simulations, Quality, Preview and CI Gate on branch head `fcbfddc1864fa328b48334f0ba960d6a58934c32`.
+- Preview intentionally emitted and persisted `database_error` at `ci.intentional_error`; the result was queried by the same `request_id` and written to artifact 11066198006.
+- Artifact `artifacts/observability/intentional-error.json` was downloaded and inspected directly; correlation IDs, stage, impact, environment and exact preview version were present.
+- Evidence inspection caught and fixed two privacy-sanitizer false positives before completion: ISO timestamps and numeric runs inside alphanumeric release SHAs.
+- Final structured log uses snake_case correlation fields, omits absent user identity, preserves ISO timestamp/version, and retains redaction for actual sensitive values.
+- Durable evidence recorded under `harness/evidence/prompt-10-observability/`.
+- Registry moved to `done` + `verified: true` only after the green run and evidence inspection.
