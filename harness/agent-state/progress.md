@@ -31,3 +31,8 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Read-only CI run 36515649247 passed foundation, harness, security, DB, Storybook, app E2E and all 6 design-system visual/a11y/keyboard tests.
 - Inspected the four generated screenshots: core states, form validation, desktop shell and 390×844 mobile shell. They preserve the approved purple/light-lilac/white/yellow hierarchy without implementing a product page.
 - Feature registry remains `in_progress` until the final current-action CI gate is green.
+
+- Final current-action read-only run 36517734330 passed after upgrading visual evidence upload to `actions/upload-artifact@v7`.
+- Final screenshot artifact 11012210130 uploaded successfully; digest `sha256:f3b9b3383a4503dd5007863d5d0620d66b17a6ab5c752cdb86c8ecc4babb35a1`.
+- Registry changed to `done` + `verified: true` only after the green run and visual inspection.
+- Active plan closed; no product page or product-domain implementation was introduced.
