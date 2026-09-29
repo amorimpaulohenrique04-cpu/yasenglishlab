@@ -32,6 +32,48 @@ function allowed(path, patterns) {
   return patterns.some((pattern) => {
     if (pattern.endsWith("/**")) return path.startsWith(pattern.slice(0, -3));
     if (pattern.endsWith("/")) return path.startsWith(pattern);
+    if (pattern.includes("*")) {
+      const escaped = pattern
+        .replace(/[.+?^$(){}|[\]\\]/g, "\\function allowed(path, patterns) {
+  return patterns.some((pattern) => {
+    if (pattern.endsWith("/**")) return path.startsWith(pattern.slice(0, -3));
+    if (pattern.endsWith("/")) return path.startsWith(pattern);
+    return path === pattern;
+  });
+}")
+        .replaceAll("*", ".*");
+      return new RegExp(`^${escaped}import { dirname } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+
+function argument(name) {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
+function git(args, allowFailure = false) {
+  const result = spawnSync("git", args, { encoding: "utf8" });
+  if (!allowFailure && result.status !== 0) {
+    throw new Error(result.stderr || `git ${args.join(" ")} failed`);
+  }
+  return (result.stdout ?? "").trim();
+}
+
+function section(markdown, heading) {
+  const marker = `## ${heading}`;
+  const start = markdown.indexOf(marker);
+  if (start < 0) return "";
+  const tail = markdown.slice(start + marker.length);
+  const next = tail.search(/\n## /);
+  return next < 0 ? tail : tail.slice(0, next);
+}
+
+function backtickPaths(text) {
+  return [...text.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
+}
+
+).test(path);
+    }
     return path === pattern;
   });
 }
