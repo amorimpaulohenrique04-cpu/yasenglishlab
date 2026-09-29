@@ -8,11 +8,13 @@ Eventos iniciais planejados:
 - `signup_completed`
 - `login_completed`
 - `subscription_started`, `subscription_upgraded`, `subscription_downgraded`, `subscription_cancelled`
-- `lesson_started`, `lesson_completed`, `module_completed`
+- `lesson_started`, `lesson_progressed`, `lesson_completed`, `module_completed`
 - `practice_started`, `practice_completed`
 - `material_opened`, `material_favorited`
 - `assessment_started`, `assessment_completed`
 - `live_session_booked`, `live_session_cancelled`, `live_session_attended`
+
+PROMPT 07 implementa `login_completed`, `lesson_started`, `lesson_progressed` e `lesson_completed` em `product_analytics_events` via `ProductAnalyticsPort`. Analytics não substitui `lesson_progress`; `lesson_progressed` carrega apenas percentual/posição de retomada necessários para análise de produto.
 
 Métricas de produto relevantes:
 - activation;
