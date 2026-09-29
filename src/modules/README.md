@@ -1,8 +1,12 @@
 # Domain modules
 
-Business rules will be organized by domain, not by technical file type.
+Business rules are organized by domain, not by technical file type.
 
-Expected domains:
+Current domain contract surface:
+
+- `domain/` — shared entity schemas, types and entitlement primitives introduced by PROMPT 05.
+
+Expected feature modules remain:
 
 - auth
 - dashboard
@@ -20,6 +24,6 @@ Expected domains:
 
 ## Convention
 
-A domain may later contain its own application services, schemas, queries, actions, types and tests. Do not create every directory in advance. Add a domain when real behavior exists, and keep UI/infrastructure dependencies pointing inward through explicit interfaces.
+A feature domain may contain application services, queries, actions and adapters only when real behavior exists. Do not create every directory in advance. Presentation and infrastructure dependencies point inward through explicit contracts.
 
-PROMPT 02 intentionally implements none of these product domains.
+PROMPT 05 adds contracts and persistence invariants only; it does not implement product UI or full authorization.

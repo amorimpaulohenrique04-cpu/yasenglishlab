@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - design-system/prompt-04
+      - domain-contracts/prompt-05
   pull_request:
     branches:
       - main
@@ -45,3 +46,76 @@ jobs:
           name: design-system-visual-evidence
           path: test-results/
           if-no-files-found: warn
+
+  database-contracts:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 54329
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Replay migrations, seed and invariants twice
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          psql -d postgres -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            create role anon nologin;
+          exception when duplicate_object then
+            null;
+          end
+          $$;
+
+          do $$
+          begin
+            create role authenticated nologin;
+          exception when duplicate_object then
+            null;
+          end
+          $$;
+          SQL
+
+          apply_database() {
+            local database="$1"
+            createdb "$database"
+
+            psql -d "$database" -v ON_ERROR_STOP=1 \
+              -c "create schema auth; create table auth.users (id uuid primary key);"
+
+            for migration in supabase/migrations/*.sql; do
+              psql -d "$database" -v ON_ERROR_STOP=1 -f "$migration"
+            done
+
+            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
+            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
+            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/tests/domain_invariants.sql
+          }
+
+          apply_database yas_prompt05_first
+          apply_database yas_prompt05_replay

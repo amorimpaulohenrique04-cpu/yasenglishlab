@@ -1,5 +1,11 @@
 # Supabase seed
 
-Deterministic development/test seed data will live here once the data model is implemented.
+The canonical executable development seed is `../seed.sql`, following Supabase's reset workflow.
 
-Do not store production exports, credentials or personal data in this directory.
+PROMPT 05 seeds only deterministic, non-personal development data:
+
+- START / TALK / BOOST products;
+- configurable entitlement definitions and plan values;
+- one minimal course/module/lesson fixture.
+
+Never store production exports, credentials or personal data here.
