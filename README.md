@@ -32,10 +32,12 @@ The placeholder app runs at `http://localhost:3000`.
 `.env.example` documents every foundation variable.
 
 Browser-safe:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 
 Server-only:
+
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 **Never** expose the service-role key through a `NEXT_PUBLIC_` variable. Client-safe Supabase helpers live in `src/lib/supabase/`; privileged helpers live in `src/server/` and use the `server-only` boundary.
@@ -110,6 +112,7 @@ import { APP_NAME } from "@/lib/constants";
 - No dashboard, plan logic, Stripe integration or product database schema exists yet.
 
 Read:
+
 - `docs/ARCHITECTURE.md`
 - `docs/SECURITY.md`
 - `docs/UI_CONTRACT.md`
