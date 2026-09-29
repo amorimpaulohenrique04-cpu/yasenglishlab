@@ -6,6 +6,7 @@ on:
       - main
       - design-system/prompt-04
       - domain-contracts/prompt-05
+      - auth-rbac-rls/prompt-06
   pull_request:
     branches:
       - main
@@ -105,8 +106,34 @@ jobs:
             local database="$1"
             createdb "$database"
 
-            psql -d "$database" -v ON_ERROR_STOP=1 \
-              -c "create schema auth; create table auth.users (id uuid primary key);"
+            psql -d "$database" -v ON_ERROR_STOP=1 <<'SQL'
+            create schema auth;
+
+            create table auth.users (
+              id uuid primary key,
+              email text,
+              raw_user_meta_data jsonb not null default '{}'::jsonb
+            );
+
+            create or replace function auth.uid()
+            returns uuid
+            language sql
+            stable
+            as $function$
+              select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
+            $function$;
+
+            create or replace function auth.jwt()
+            returns jsonb
+            language sql
+            stable
+            as $function$
+              select coalesce(
+                nullif(current_setting('request.jwt.claims', true), '')::jsonb,
+                '{}'::jsonb
+              );
+            $function$;
+            SQL
 
             for migration in supabase/migrations/*.sql; do
               psql -d "$database" -v ON_ERROR_STOP=1 -f "$migration"
@@ -114,7 +141,10 @@ jobs:
 
             psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
             psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/seed.sql
-            psql -d "$database" -v ON_ERROR_STOP=1 -f supabase/tests/domain_invariants.sql
+
+            for db_test in supabase/tests/*.sql; do
+              psql -d "$database" -v ON_ERROR_STOP=1 -f "$db_test"
+            done
           }
 
           apply_database yas_prompt05_first
