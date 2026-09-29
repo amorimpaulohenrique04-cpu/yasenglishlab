@@ -14,11 +14,14 @@
     {
       "id": "prompt-03-harness-engineering",
       "title": "Official Harness Engineering foundation",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["prompt-02-engineering-foundation"],
-      "evidence": [],
-      "updated_at": "2026-09-28T22:56:00-03:00"
+      "evidence": [
+        "harness/evidence/prompt-03-harness-engineering/README.md",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36510847571"
+      ],
+      "updated_at": "2026-09-28T23:05:00-03:00"
     }
   ]
 }
