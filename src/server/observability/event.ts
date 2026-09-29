@@ -13,9 +13,9 @@ export function buildTechnicalErrorEvent(
     code: TechnicalErrorCode;
     stage: string;
     impact: TechnicalImpact;
-    severity?: TechnicalSeverity;
+    severity?: TechnicalSeverity | undefined;
     context: TechnicalContext;
-    metadata?: Record<string, unknown>;
+    metadata?: Record<string, unknown> | undefined;
   },
 ): TechnicalErrorEvent {
   return {
