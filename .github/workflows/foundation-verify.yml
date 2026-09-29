@@ -14,7 +14,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -215,16 +215,14 @@ jobs:
         if: always()
         run: supabase stop --no-backup || true
 
-  golden-bootstrap-prompt08:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/testing-evals/prompt-08'
+  full-verification:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
 
     steps:
-      - name: Checkout prompt 08 branch
+      - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: testing-evals/prompt-08
           fetch-depth: 0
 
       - name: Use Node 24
@@ -236,88 +234,28 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Apply locked Prettier to Prompt 08 files
+      - name: Install PostgreSQL client
         run: |
-          npx prettier --write \
-            package.json \
-            scripts/verify.mjs \
-            scripts/run-sql-tests.mjs \
-            scripts/verify-full.mjs \
-            scripts/eval-agent.mjs \
-            tests/integration/learning-application.test.ts \
-            tests/integration/server-actions.test.ts \
-            playwright.a11y.config.ts \
-            tests/a11y/critical-flows.spec.ts \
-            playwright.golden.config.ts \
-            tests/visual/golden.spec.ts \
-            harness/evals/behavioral.md \
-            harness/evals/AUTOMATION.md \
-            harness/goals/prompt-08-testing-evals.md \
-            harness/agent-state/plan.md \
-            harness/feature_list.json \
-            harness/evidence/prompt-08-testing-evals/README.md
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
 
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: 2.118.0
 
-      - name: Start isolated Supabase
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -f supabase/config.toml ]; then
-            supabase init
-          fi
-          supabase start
-          supabase db reset
-          supabase status -o env > /tmp/yas-supabase.env
-          set -a
-          source /tmp/yas-supabase.env
-          set +a
-          rm /tmp/yas-supabase.env
-
-          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
-          SERVER_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
-          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
-          echo "::add-mask::$E2E_PASSWORD"
-          echo "::add-mask::$SERVER_KEY"
-          {
-            echo "APP_URL=http://127.0.0.1:3000"
-            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
-            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
-            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
-            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
-            echo "CANONICAL_E2E=1"
-            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
-          } >> "$GITHUB_ENV"
-
-      - name: Prepare canonical student
-        run: node scripts/setup-canonical-e2e.mjs
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Generate golden baselines
-        run: npm run test:visual:update
+      - name: Run full verification
+        run: npm run verify:full
 
-      - name: Commit golden baselines
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add \
-            package.json scripts tests playwright.a11y.config.ts playwright.golden.config.ts \
-            harness/evals harness/goals/prompt-08-testing-evals.md \
-            harness/agent-state/plan.md harness/feature_list.json \
-            harness/evidence/prompt-08-testing-evals tests/visual/goldens
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "test: format prompt 08 and commit golden baselines"
-          git push
-
-      - name: Stop Supabase
+      - name: Upload full verification evidence
         if: always()
-        run: supabase stop --no-backup || true
+        uses: actions/upload-artifact@v7
+        with:
+          name: prompt-08-full-verification
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
