@@ -13,8 +13,24 @@ const ignoredDirectories = new Set([
   "artifacts",
 ]);
 const textExtensions = new Set([
-  ".cjs", ".css", ".env", ".example", ".js", ".json", ".jsx", ".md", ".mjs",
-  ".ps1", ".sh", ".sql", ".toml", ".ts", ".tsx", ".txt", ".yaml", ".yml",
+  ".cjs",
+  ".css",
+  ".env",
+  ".example",
+  ".js",
+  ".json",
+  ".jsx",
+  ".md",
+  ".mjs",
+  ".ps1",
+  ".sh",
+  ".sql",
+  ".toml",
+  ".ts",
+  ".tsx",
+  ".txt",
+  ".yaml",
+  ".yml",
 ]);
 const allowedEnvFiles = new Set([".env.example"]);
 

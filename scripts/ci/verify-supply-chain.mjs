@@ -19,7 +19,10 @@ for (const group of ["dependencies", "devDependencies"]) {
       /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version),
       `Direct dependency must use an exact version: ${name}@${version}`,
     );
-    assert(locked[name] === version, `Lockfile root spec differs for ${name}: ${locked[name]} != ${version}`);
+    assert(
+      locked[name] === version,
+      `Lockfile root spec differs for ${name}: ${locked[name]} != ${version}`,
+    );
   }
 }
 

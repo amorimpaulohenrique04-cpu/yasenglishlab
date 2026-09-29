@@ -29,8 +29,8 @@ const entries = diff
     })
   : [];
 
-const changedMigrations = entries.filter((entry) =>
-  entry.path?.startsWith("supabase/migrations/") && entry.path.endsWith(".sql"),
+const changedMigrations = entries.filter(
+  (entry) => entry.path?.startsWith("supabase/migrations/") && entry.path.endsWith(".sql"),
 );
 
 const historyMutations = changedMigrations.filter((entry) => !entry.status.startsWith("A"));
@@ -82,7 +82,9 @@ for (const entry of entries) {
   ) {
     continue;
   }
-  throw new Error(`SQL schema/history file is outside the approved migration/test locations: ${path}`);
+  throw new Error(
+    `SQL schema/history file is outside the approved migration/test locations: ${path}`,
+  );
 }
 
 console.log(

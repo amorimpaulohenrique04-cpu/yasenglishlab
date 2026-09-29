@@ -15,7 +15,8 @@ const gate = argument("--gate") ?? process.env.RELEASE_GATE;
 const repository = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
 
-if (!sha || !/^[0-9a-f]{40}$/i.test(sha)) fail("RELEASE_SHA must be a full 40-character commit SHA.");
+if (!sha || !/^[0-9a-f]{40}$/i.test(sha))
+  fail("RELEASE_SHA must be a full 40-character commit SHA.");
 if (gate !== "APPROVE") fail('Release gate input must be exactly "APPROVE".');
 if (!repository || !token) fail("GITHUB_REPOSITORY and GITHUB_TOKEN are required.");
 
