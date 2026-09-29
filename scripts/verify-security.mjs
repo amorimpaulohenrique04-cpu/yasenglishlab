@@ -1,8 +1,16 @@
 import { assert, read, success, walk } from "./_verify-utils.mjs";
 
 const browserClient = read("src/lib/supabase/browser.ts");
+const serverClient = read("src/server/supabase/server.ts");
+const proxy = read("src/lib/supabase/proxy.ts");
 const serverEnv = read("src/server/env.ts");
 const adminClient = read("src/server/supabase/admin.ts");
+const authContext = read("src/server/auth/context.ts");
+const signedUrlService = read("src/server/assets/signed-url.ts");
+const bookingService = read("src/server/live/book-session.ts");
+const authMigration = read("supabase/migrations/20260929043000_auth_rbac_rls.sql");
+const rlsEvidence = read("supabase/tests/rls_permissions.sql");
+const threatModel = read("docs/THREAT_MODEL.md");
 const envExample = read(".env.example");
 
 assert(
@@ -27,6 +35,74 @@ assert(
   ".env.example must keep a non-secret service-role placeholder.",
 );
 
+assert(
+  browserClient.includes("createBrowserClient") && serverClient.includes("createServerClient"),
+  "Supabase SSR browser/server clients must use @supabase/ssr.",
+);
+assert(proxy.includes("auth.getClaims()"), "Route protection must verify claims.");
+assert(
+  authContext.includes('.from("user_roles")') && !authContext.includes("user_metadata"),
+  "Roles must resolve server-side from durable user_roles.",
+);
+assert(
+  bookingService.includes("student.userId") && !bookingService.includes("userId: string"),
+  "Booking identity must come from verified server auth context.",
+);
+assert(
+  signedUrlService.includes("createSignedUrl") &&
+    signedUrlService.includes("normalizeSignedUrlTtl") &&
+    !signedUrlService.includes("storagePath,"),
+  "Protected signed URLs must be short-lived and must not be written to audit metadata.",
+);
+
+for (const token of [
+  "teacher_student_assignments",
+  "live_session_recordings",
+  "private.has_role",
+  "'aal2'",
+  "profiles_own_select",
+  "lesson_progress_authorized_select",
+  "materials_authorized_select",
+  "billing_events_admin_select",
+  "yas-protected-assets",
+]) {
+  assert(authMigration.includes(token), `Security migration is missing: ${token}`);
+}
+
+for (const token of [
+  "Student A must read own progress",
+  "Student A must not read Student B progress",
+  "Teacher X at aal2 must access assigned Student A",
+  "Teacher X must not access unrelated Student B",
+  "Support must not access privileged billing events",
+  "Admin at aal1 must not access privileged billing records",
+  "Anonymous role must not have protected profile SELECT privilege",
+  "Authenticated users must not mutate roles directly",
+  "Authenticated users must not manipulate progress directly",
+]) {
+  assert(rlsEvidence.includes(token), `RLS evidence is missing: ${token}`);
+}
+
+for (const threat of [
+  "Student reads another student",
+  "Teacher reads unrelated student",
+  "Escalation to ADMIN",
+  "Entitlement manipulation",
+  "Paid material access",
+  "Recording access",
+  "Signed URL leakage",
+  "Booking above capacity",
+  "Progress manipulation",
+  "Checkout fraud",
+  "Webhook replay / duplicate",
+  "Malicious upload",
+  "User enumeration",
+  "Secret in client bundle",
+  "Sensitive data in logs",
+]) {
+  assert(threatModel.includes(threat), `Threat model is missing: ${threat}`);
+}
+
 const sourceFiles = walk("src", (path) => /\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(path));
 for (const path of sourceFiles) {
   const content = read(path);
@@ -35,6 +111,12 @@ for (const path of sourceFiles) {
   }
   if (content.includes("SUPABASE_SERVICE_ROLE_KEY") && path !== "src/server/env.ts") {
     throw new Error(`Direct service-role env access outside src/server/env.ts: ${path}`);
+  }
+  if (
+    content.includes('"use client"') &&
+    (content.includes('from "@/server/') || content.includes('import "server-only"'))
+  ) {
+    throw new Error(`Client module crosses the server-only boundary: ${path}`);
   }
 }
 
@@ -60,5 +142,5 @@ for (const path of scanFiles) {
 }
 
 success(
-  `Security boundary valid across ${sourceFiles.length} source files; no high-confidence committed secret pattern found.`,
+  `Security boundary valid across ${sourceFiles.length} source files; RLS evidence and Yas threat model are present.`,
 );
