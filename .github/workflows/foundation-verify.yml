@@ -55,7 +55,13 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Format
-        run: npm run format:check
+        run: |
+          npx prettier --write .
+          git diff -- .
+          if ! git diff --quiet; then
+            echo "::error::Formatter diff above must be committed."
+            exit 1
+          fi
       - name: Lint
         run: npm run lint
       - name: Typecheck
