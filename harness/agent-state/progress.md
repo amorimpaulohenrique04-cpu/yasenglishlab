@@ -13,3 +13,4 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Clean CI run 36510847571 passed foundation, harness, security, DB, Storybook and Playwright checks.
 - Evidence inspected and persisted under `harness/evidence/prompt-03-harness-engineering/`.
 - Registry updated to `done` + `verified: true` only after the successful run.
+- Final read-only CI run 36511078068 passed with `npm ci`, `contents: read`, no formatting mutation and all harness/UI checks green.
