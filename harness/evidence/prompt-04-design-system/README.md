@@ -10,9 +10,10 @@
 
 ## Automated evidence
 
-Read-only green run:
+Read-only green runs:
 
-- https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36515649247
+- Baseline visual/a11y run: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36515649247
+- Final current-action run: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36517734330
 - Foundation format/lint/typecheck/Vitest/Next build: passed.
 - Harness contract: passed.
 - Security boundary: passed.
@@ -26,9 +27,9 @@ Read-only green run:
 
 Visual artifact:
 
-- Artifact ID: `11010707354`
+- Final artifact ID: `11012210130`
 - Artifact name: `design-system-visual-evidence`
-- Digest: `sha256:246e9b1e15362a9b0f070d2711c88a6fdc05900b07fed3a3a86091223405c6c9`
+- Digest: `sha256:f3b9b3383a4503dd5007863d5d0620d66b17a6ab5c752cdb86c8ecc4babb35a1`
 
 ## Visual inspection
 
@@ -48,3 +49,7 @@ The generated screenshots were opened and inspected, not accepted only by exit c
 ## Product-scope confirmation
 
 No Home, Aulas, Prática, Materiais, Progresso, Agenda or Perfil page was implemented. No auth, billing, database product schema or business-domain behavior was added.
+
+## Completion state
+
+The final current-action CI used locked dependencies with `npm ci`, read-only repository permissions and `actions/upload-artifact@v7`. The feature registry was moved to `done` + `verified: true` only after that run passed and the screenshots were inspected.
