@@ -106,7 +106,7 @@ export const CoreStates: Story = {
           <ProgressBar value={42} label="Ação prioritária" tone="priority" />
           <div className="yas-cluster">
             <ProgressRing value={68}>A2</ProgressRing>
-            <Avatar fallback="YA" alt="Yasmin" size="lg" />
+            <Avatar fallback="YA" label="Yasmin" size="lg" />
           </div>
         </div>
       </Card>
