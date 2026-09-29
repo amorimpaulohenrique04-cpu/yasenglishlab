@@ -33,46 +33,9 @@ function allowed(path, patterns) {
     if (pattern.endsWith("/**")) return path.startsWith(pattern.slice(0, -3));
     if (pattern.endsWith("/")) return path.startsWith(pattern);
     if (pattern.includes("*")) {
-      const escaped = pattern
-        .replace(/[.+?^$(){}|[\]\\]/g, "\\function allowed(path, patterns) {
-  return patterns.some((pattern) => {
-    if (pattern.endsWith("/**")) return path.startsWith(pattern.slice(0, -3));
-    if (pattern.endsWith("/")) return path.startsWith(pattern);
-    return path === pattern;
-  });
-}")
-        .replaceAll("*", ".*");
-      return new RegExp(`^${escaped}import { dirname } from "node:path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
-
-function argument(name) {
-  const index = process.argv.indexOf(name);
-  return index >= 0 ? process.argv[index + 1] : undefined;
-}
-
-function git(args, allowFailure = false) {
-  const result = spawnSync("git", args, { encoding: "utf8" });
-  if (!allowFailure && result.status !== 0) {
-    throw new Error(result.stderr || `git ${args.join(" ")} failed`);
-  }
-  return (result.stdout ?? "").trim();
-}
-
-function section(markdown, heading) {
-  const marker = `## ${heading}`;
-  const start = markdown.indexOf(marker);
-  if (start < 0) return "";
-  const tail = markdown.slice(start + marker.length);
-  const next = tail.search(/\n## /);
-  return next < 0 ? tail : tail.slice(0, next);
-}
-
-function backtickPaths(text) {
-  return [...text.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
-}
-
-).test(path);
+      const parts = pattern.split("*");
+      if (parts.length !== 2) return false;
+      return path.startsWith(parts[0]) && path.endsWith(parts[1]);
     }
     return path === pattern;
   });
@@ -80,7 +43,9 @@ function backtickPaths(text) {
 
 const plan = readFileSync("harness/agent-state/plan.md", "utf8");
 const activeTask = plan.match(/## Active task\s+\*\*([^*]+)\*\*/)?.[1]?.trim();
-const goalPath = argument("--goal") ?? process.env.AGENT_GOAL_PATH ??
+const goalPath =
+  argument("--goal") ??
+  process.env.AGENT_GOAL_PATH ??
   (activeTask ? `harness/goals/${activeTask}.md` : undefined);
 
 if (!goalPath) {
@@ -144,7 +109,8 @@ check(
 );
 
 const addedPrimitives = changes.filter(
-  (entry) => entry.status?.startsWith("A") && /^src\/components\/(ui|layout)\//.test(entry.path ?? ""),
+  (entry) =>
+    entry.status?.startsWith("A") && /^src\/components\/(ui|layout)\//.test(entry.path ?? ""),
 );
 check(
   "no unreviewed duplicate UI primitive",
@@ -176,7 +142,9 @@ check(
   "UI changes carry screenshot evidence",
   !productUiChanged || visualEvidenceChanged,
   productUiChanged
-    ? visualEvidenceChanged ? "visual test/evidence changed" : "UI changed without visual evidence"
+    ? visualEvidenceChanged
+      ? "visual test/evidence changed"
+      : "UI changed without visual evidence"
     : "no product UI change",
 );
 
@@ -195,7 +163,9 @@ check(
   "database schema changes include migration",
   !schemaSideFileChanged || migrationChanged,
   schemaSideFileChanged
-    ? migrationChanged ? "migration present" : "database schema change without migration"
+    ? migrationChanged
+      ? "migration present"
+      : "database schema change without migration"
     : "no schema-side change detected",
 );
 
@@ -205,7 +175,11 @@ const rlsTestChanged = changed.includes("supabase/tests/rls_permissions.sql");
 check(
   "RLS changes include executable authorization test",
   !rlsChanged || rlsTestChanged,
-  rlsChanged ? (rlsTestChanged ? "RLS test changed" : "RLS changed without permission test") : "no RLS change",
+  rlsChanged
+    ? rlsTestChanged
+      ? "RLS test changed"
+      : "RLS changed without permission test"
+    : "no RLS change",
 );
 
 const secretPatterns = [
