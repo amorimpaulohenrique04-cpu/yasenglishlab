@@ -41,7 +41,22 @@ export async function reportTechnicalError(
     metadata: input.metadata,
   });
 
-  writeStructuredLog("error", event as unknown as Record<string, unknown>);
+  writeStructuredLog("error", {
+    event_name: event.eventName,
+    severity: event.severity,
+    error_code: event.errorCode,
+    request_id: event.requestId,
+    trace_id: event.traceId,
+    span_id: event.spanId,
+    user_id: event.userId,
+    environment: event.environment,
+    version: event.version,
+    stage: event.stage,
+    impact: event.impact,
+    message: event.message,
+    metadata: event.metadata,
+    occurred_at: event.occurredAt,
+  });
 
   try {
     await (input.sink ?? createDefaultObservabilitySink()).record(event);
