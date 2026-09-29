@@ -31,20 +31,17 @@ describe.runIf(liveEnabled)("live observability sink", () => {
       version: process.env.APP_VERSION ?? "test",
     });
 
-    const emitted = await reportTechnicalError(
-      new Error("Intentional observability probe"),
-      {
-        code: "database_error",
-        stage: "ci.intentional_error",
-        impact: "request_failed",
-        metadata: {
-          intentional: true,
-          probe: "prompt_10",
-        },
-        context,
-        sink: new SupabaseObservabilitySink(admin),
+    const emitted = await reportTechnicalError(new Error("Intentional observability probe"), {
+      code: "database_error",
+      stage: "ci.intentional_error",
+      impact: "request_failed",
+      metadata: {
+        intentional: true,
+        probe: "prompt_10",
       },
-    );
+      context,
+      sink: new SupabaseObservabilitySink(admin),
+    });
 
     const { data, error } = await admin
       .from("observability_events")
