@@ -1,13 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const revalidatePath = vi.fn();
-const recordCurrentStudentLessonProgress = vi.fn().mockResolvedValue(undefined);
-const trackCurrentStudentLessonStarted = vi.fn().mockResolvedValue(undefined);
+const mocks = vi.hoisted(() => ({
+  revalidatePath: vi.fn(),
+  mocks.recordCurrentStudentLessonProgress: vi.fn().mockResolvedValue(undefined),
+  mocks.trackCurrentStudentLessonStarted: vi.fn().mockResolvedValue(undefined),
+}));
 
-vi.mock("next/cache", () => ({ revalidatePath }));
+vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock("@/server/learning/canonical-slice", () => ({
-  recordCurrentStudentLessonProgress,
-  trackCurrentStudentLessonStarted,
+  mocks.recordCurrentStudentLessonProgress: mocks.recordCurrentStudentLessonProgress,
+  mocks.trackCurrentStudentLessonStarted: mocks.trackCurrentStudentLessonStarted,
 }));
 
 import {
@@ -29,13 +31,13 @@ describe("lesson server actions", () => {
 
     await updateLessonProgressAction(form);
 
-    expect(recordCurrentStudentLessonProgress).toHaveBeenCalledWith({
+    expect(mocks.recordCurrentStudentLessonProgress).toHaveBeenCalledWith({
       lessonId,
       completionPercent: 50,
       lastPositionSeconds: 90,
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/home");
-    expect(revalidatePath).toHaveBeenCalledWith("/aulas", "layout");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/home");
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/aulas", "layout");
   });
 
   it("rejects malformed lesson ids before crossing the application boundary", async () => {
@@ -44,12 +46,12 @@ describe("lesson server actions", () => {
     form.set("completionPercent", "50");
 
     await expect(updateLessonProgressAction(form)).rejects.toThrow();
-    expect(recordCurrentStudentLessonProgress).not.toHaveBeenCalled();
+    expect(mocks.recordCurrentStudentLessonProgress).not.toHaveBeenCalled();
   });
 
   it("validates lesson_started ids before analytics", async () => {
     await trackLessonStartedAction(lessonId);
-    expect(trackCurrentStudentLessonStarted).toHaveBeenCalledWith(lessonId);
+    expect(mocks.trackCurrentStudentLessonStarted).toHaveBeenCalledWith(lessonId);
 
     await expect(trackLessonStartedAction("invalid")).rejects.toThrow();
   });
