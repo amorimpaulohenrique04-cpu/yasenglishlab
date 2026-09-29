@@ -10,6 +10,8 @@ export const PRIVILEGED_AUDIT_ACTIONS = {
 export const SECURITY_AUDIT_ACTIONS = {
   LIVE_SESSION_BOOKED: "live_session_booked",
   PROTECTED_ASSET_ACCESS_GRANTED: "protected_asset_access_granted",
+  PASSWORD_UPDATED: "PASSWORD_UPDATED",
+  PROFILE_UPDATED: "PROFILE_UPDATED",
 } as const;
 
 export type AuditAction =
