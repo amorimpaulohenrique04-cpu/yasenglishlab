@@ -22,3 +22,12 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Inspected login, home, materiais and progresso approved screenshots directly from `docs/reference-ui/`.
 - Existing component audit found only foundation placeholders; no real primitive exists to reuse yet.
 - Scope excludes complete product pages and product-domain behavior.
+
+- Implemented required token categories: colors, typography, spacing, radius, shadow, border, breakpoints, z-index and motion.
+- Implemented the approved recurring UI/layout primitive inventory without product pages.
+- Initial strict TypeScript verification caught optional-property/index-access errors; fixed without weakening compiler settings.
+- Initial Axe run caught invalid Avatar ARIA semantics; fixed by giving the labelled Avatar valid image semantics instead of suppressing the rule.
+- Visual test viewport handling was tightened so evidence is captured at explicit desktop/form/mobile dimensions.
+- Read-only CI run 36515649247 passed foundation, harness, security, DB, Storybook, app E2E and all 6 design-system visual/a11y/keyboard tests.
+- Inspected the four generated screenshots: core states, form validation, desktop shell and 390×844 mobile shell. They preserve the approved purple/light-lilac/white/yellow hierarchy without implementing a product page.
+- Feature registry remains `in_progress` until the final current-action CI gate is green.
