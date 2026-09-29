@@ -259,7 +259,7 @@ jobs:
       - name: Prepare canonical preview fixture
         run: node scripts/setup-canonical-e2e.mjs
       - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
       - name: Critical E2E
         run: npm run test:e2e
       - name: Assert persistence and analytics
