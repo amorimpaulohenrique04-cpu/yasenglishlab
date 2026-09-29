@@ -25,6 +25,26 @@ O threat model executável desta fase está em [THREAT_MODEL.md](./THREAT_MODEL.
 - audit log append-only para operações críticas;
 - secret scanning estrutural no CI.
 
+
+## CI/CD & supply-chain security
+
+O contrato operacional completo está em [CI_CD.md](./CI_CD.md).
+
+Controles obrigatórios:
+
+- GitHub Actions externas pinadas por commit SHA completo;
+- `npm ci` + lockfile versionado;
+- dependências diretas com versões exatas;
+- `npm audit` bloqueando runtime high/critical e qualquer critical no conjunto completo;
+- lifecycle scripts de dependências presos a allowlist revisada;
+- scanner de secrets em todo o repositório;
+- workflows normais com `contents: read`;
+- preview, staging e production com GitHub Environments separados;
+- production secrets nunca disponíveis a preview;
+- production release exige CI verde, review e release gate.
+
+O scanner local/CI é defense-in-depth e não substitui secret scanning/revogação oferecidos pelo provider Git quando disponíveis.
+
 ## Protected assets
 
 O bucket `yas-protected-assets` é privado e possui limites de tamanho/MIME no schema. Esta fase não concede policy de upload/download direta a `authenticated`.
@@ -70,4 +90,4 @@ Audit payloads de triggers são allowlisted. O Data API não concede a usuários
 
 ## Interfaces
 
-[AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [THREAT_MODEL.md](./THREAT_MODEL.md) · [BILLING.md](./BILLING.md) · [OPERATIONS.md](./OPERATIONS.md) · [TESTING.md](./TESTING.md)
+[AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [THREAT_MODEL.md](./THREAT_MODEL.md) · [BILLING.md](./BILLING.md) · [OPERATIONS.md](./OPERATIONS.md) · [CI_CD.md](./CI_CD.md) · [TESTING.md](./TESTING.md)
