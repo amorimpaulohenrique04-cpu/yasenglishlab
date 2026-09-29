@@ -39,7 +39,7 @@
   --yas-font-size-lg: 1.125rem;
   --yas-font-size-xl: 1.25rem;
   --yas-font-size-2xl: 1.5rem;
-  --yas-font-size-3xl: clamp(2rem, 4vw, 3.25rem);
+  --yas-font-size-3xl: clamp(2rem, 3vw, 3rem);
   --yas-line-tight: 1.08;
   --yas-line-body: 1.5;
   --yas-weight-regular: 400;
