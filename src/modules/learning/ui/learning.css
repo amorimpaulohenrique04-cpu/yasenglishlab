@@ -1,0 +1,242 @@
+.yas-student-brand {
+  display: grid;
+  color: var(--yas-color-white);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.yas-student-brand span {
+  font-size: var(--yas-font-size-2xl);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: -0.04em;
+}
+
+.yas-student-brand small {
+  margin-top: var(--yas-space-1);
+  color: rgb(255 255 255 / 70%);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yas-student-mobile-menu {
+  display: none;
+}
+
+.yas-student-topbar-label {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-student-profile-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--yas-space-2);
+  color: var(--yas-color-ink);
+  text-decoration: none;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-student-drawer-nav {
+  display: grid;
+  gap: var(--yas-space-2);
+}
+
+.yas-student-drawer-nav a {
+  border-radius: var(--yas-radius-md);
+  color: var(--yas-color-ink);
+  padding: var(--yas-space-3) var(--yas-space-4);
+  text-decoration: none;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-student-drawer-nav a:hover {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-learning-page {
+  display: grid;
+  gap: var(--yas-space-6);
+}
+
+.yas-learning-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.75fr);
+  gap: var(--yas-space-5);
+}
+
+.yas-learning-card-stack {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.yas-learning-kicker {
+  margin: 0 0 var(--yas-space-2);
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yas-learning-card-title {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-xl);
+  line-height: var(--yas-line-tight);
+}
+
+.yas-learning-card-copy {
+  margin: var(--yas-space-2) 0 0;
+  color: var(--yas-color-muted);
+}
+
+.yas-learning-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--yas-space-4);
+  margin-top: var(--yas-space-5);
+}
+
+.yas-learning-link,
+.yas-learning-cta {
+  color: var(--yas-color-purple-700);
+  text-decoration: none;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-learning-link:hover,
+.yas-learning-cta:hover {
+  text-decoration: underline;
+}
+
+.yas-learning-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--yas-control-height-md);
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-yellow-500);
+  color: var(--yas-color-ink);
+  padding-inline: var(--yas-space-5);
+  text-decoration: none;
+}
+
+.yas-learning-cta:hover {
+  background: var(--yas-color-yellow-400);
+  text-decoration: none;
+}
+
+.yas-learning-course-list,
+.yas-learning-module-list,
+.yas-learning-lesson-list {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.yas-learning-module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--yas-space-4);
+}
+
+.yas-learning-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--yas-space-2) var(--yas-space-4);
+  margin-top: var(--yas-space-3);
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-learning-lesson-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-4);
+}
+
+.yas-learning-lesson-content {
+  display: grid;
+  gap: var(--yas-space-5);
+}
+
+.yas-learning-lesson-copy {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-lg);
+  line-height: 1.65;
+}
+
+.yas-learning-steps {
+  display: grid;
+  gap: var(--yas-space-3);
+  margin: 0;
+  padding-inline-start: var(--yas-space-6);
+}
+
+.yas-learning-checkpoints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--yas-space-3);
+}
+
+.yas-learning-checkpoints form {
+  margin: 0;
+}
+
+.yas-learning-progress-panel {
+  display: grid;
+  gap: var(--yas-space-5);
+}
+
+@media (max-width: 63.99rem) {
+  .yas-student-mobile-menu {
+    display: inline-flex;
+  }
+
+  .yas-learning-home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .yas-student-profile-link > span:last-child,
+  .yas-student-topbar-label {
+    display: none;
+  }
+
+  .yas-learning-module-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .yas-learning-card-footer,
+  .yas-learning-lesson-row {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .yas-learning-card-footer {
+    display: flex;
+  }
+
+  .yas-learning-cta {
+    width: 100%;
+  }
+
+  .yas-learning-checkpoints {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .yas-learning-checkpoints form,
+  .yas-learning-checkpoints .yas-button {
+    width: 100%;
+  }
+}

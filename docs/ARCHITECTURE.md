@@ -25,12 +25,90 @@ repositories / integrations
 Postgres · Auth · Storage · providers externos
 ```
 
+
+## Canonical Vertical Slice
+
+PROMPT 07 define a implementação de referência que features futuras devem copiar **na estrutura**, não no conteúdo. O fluxo executável é:
+
+```text
+Login
+  → /home
+  → /aulas
+  → módulo
+  → aula
+  → checkpoint de progresso
+  → logout
+  → novo login
+  → retomada do checkpoint persistido
+```
+
+### Camadas oficiais
+
+```text
+UI
+src/app/(protected)/(student)/*
+src/modules/learning/ui/*
+        ↓
+application
+src/modules/learning/application/queries.ts
+src/modules/learning/application/commands.ts
+        ↓
+domain
+src/modules/learning/domain/*
+        ↓
+ports
+LearningRepository · ProductAnalyticsPort
+        ↓
+adapters server-only
+src/server/learning/supabase-learning-repository.ts
+src/server/analytics/supabase-product-analytics.ts
+        ↓
+authorization + persistence
+Supabase Auth · RLS · record_lesson_progress()
+        ↓
+PostgreSQL
+lesson_progress · product_analytics_events
+```
+
+Pages não constroem dados duráveis e não conhecem SQL/RPC. Elas chamam casos de uso da camada application. Application depende de ports; Supabase é adapter.
+
+### Progress contract
+
+`lesson_progress` persiste `lesson_id`, `user_id`, `completion_percent`, `last_position_seconds` quando aplicável, `last_accessed_at`, `completed_at` e os demais timestamps/status necessários.
+
+O client nunca envia `user_id`. O RPC autenticado `record_lesson_progress()` deriva `auth.uid()`, valida matrícula ativa para a aula e impede reassignment dos campos de identidade. `UPDATE lesson_progress` direto continua negado para `authenticated`. O percentual é monotônico: checkpoint antigo não reduz progresso já salvo.
+
+### Analytics
+
+A slice implementa `login_completed`, `lesson_started`, `lesson_progressed` e `lesson_completed`. Analytics fica atrás de `ProductAnalyticsPort` e nunca é fonte de verdade do progresso.
+
+### UI e estados
+
+A slice compõe somente primitives existentes: `AppShell`, `Sidebar`, `Topbar`, `ContentContainer`, `PageHeader`, `Button`, `Card`, `ProgressBar`, `Skeleton`, `EmptyState` e `ErrorState`.
+
+Estados explícitos: loading pelo route-group `loading.tsx`; empty sem matrícula ativa; success com dados do seed; error por `error.tsx`; unauthorized para conta não-Student ou recurso fora da matrícula ativa.
+
+A direção visual segue as referências aprovadas de Home/Aulas: navegação roxa profunda, canvas lilás, superfícies brancas arredondadas, baixa densidade e amarelo reservado para ação prioritária. O CI captura desktop, tablet e mobile em `canonical-slice-visual-evidence` para comparação visual.
+
+### Evidência
+
+- Unit: cálculo de progresso e transição de conclusão.
+- Integration: `supabase/tests/vertical_slice_persistence.sql` chama o RPC real e prova retomada persistida.
+- RLS: Student A/B não leem progresso um do outro e mutação direta da tabela continua negada.
+- E2E: Supabase local real executa login → aula → 50% → logout → login → 50% restaurado → conclusão.
+- Visual: screenshots Home/Aulas desktop e Home tablet/mobile são publicados pelo CI.
+
+### Regra para domínios futuros
+
+Uma nova vertical slice deve criar o menor domínio/port necessário, implementar adapter server-only, aplicar autorização no boundary de persistência, instrumentar analytics atrás de port e provar comportamento com unit/integration/RLS/E2E conforme o risco. Não consultar persistência privilegiada em Client Components nem copiar primitives do design system dentro da feature.
+
 ## Invariantes
 - Credenciais privilegiadas nunca chegam ao browser.
 - Regras de negócio não ficam espalhadas em componentes React.
 - Billing, vídeo e meeting ficam atrás de adapters/serviços.
 - Dados duráveis possuem sistema de registro autoritativo.
 - Decisão estrutural relevante exige ADR em `docs/adr/`.
+- `user_id` fornecido pelo browser nunca é autoridade para write autenticado.
 
 ## O que não fazer
 - Componente React chamando provider privilegiado diretamente.

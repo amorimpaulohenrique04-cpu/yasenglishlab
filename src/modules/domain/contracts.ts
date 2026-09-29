@@ -170,14 +170,26 @@ export const lessonProgressSchema = z
     id: idSchema,
     enrollmentId: idSchema,
     lessonId: idSchema,
+    userId: idSchema,
     status: z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"]),
-    progressPercent: z.number().min(0).max(100),
+    completionPercent: z.number().min(0).max(100),
+    lastPositionSeconds: z.number().int().nonnegative().nullable(),
     startedAt: nullableDateTimeSchema,
+    lastAccessedAt: dateTimeSchema,
     completedAt: nullableDateTimeSchema,
     updatedAt: dateTimeSchema,
   })
   .strict();
 export type LessonProgress = z.infer<typeof lessonProgressSchema>;
+
+export const PRODUCT_ANALYTICS_EVENTS = [
+  "login_completed",
+  "lesson_started",
+  "lesson_progressed",
+  "lesson_completed",
+] as const;
+export const productAnalyticsEventSchema = z.enum(PRODUCT_ANALYTICS_EVENTS);
+export type ProductAnalyticsEvent = z.infer<typeof productAnalyticsEventSchema>;
 
 const practiceSkillSchema = z.enum([
   "SPEAKING",

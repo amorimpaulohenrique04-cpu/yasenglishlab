@@ -2,6 +2,7 @@
 @import "../styles/tokens.css";
 @import "../styles/design-system.css";
 @import "../components/layout/layout.css";
+@import "../modules/learning/ui/learning.css";
 
 html {
   min-width: 320px;

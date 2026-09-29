@@ -7,6 +7,7 @@ on:
       - design-system/prompt-04
       - domain-contracts/prompt-05
       - auth-rbac-rls/prompt-06
+      - canonical-slice/prompt-07
   pull_request:
     branches:
       - main
@@ -125,5 +126,88 @@ jobs:
             done
           }
 
-          apply_database yas_prompt05_first
-          apply_database yas_prompt05_replay
+          apply_database yas_prompt07_first
+          apply_database yas_prompt07_replay
+
+  canonical-slice-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Use Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: Start isolated Supabase
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f supabase/config.toml ]; then
+            supabase init
+          fi
+          supabase start
+          supabase db reset
+
+          supabase status -o env > /tmp/yas-supabase.env
+          set -a
+          source /tmp/yas-supabase.env
+          set +a
+          rm /tmp/yas-supabase.env
+
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
+          SERVER_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
+
+          test -n "${API_URL:-}"
+          test -n "$PUBLIC_KEY"
+          test -n "$SERVER_KEY"
+
+          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
+          echo "::add-mask::$E2E_PASSWORD"
+          echo "::add-mask::$SERVER_KEY"
+
+          {
+            echo "APP_URL=http://127.0.0.1:3000"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
+            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+            echo "CANONICAL_E2E=1"
+            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Prepare canonical student
+        run: node scripts/setup-canonical-e2e.mjs
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run canonical browser flow
+        run: npx playwright test tests/e2e/canonical-slice.spec.ts --project=chromium
+
+      - name: Assert persistence and analytics
+        run: node scripts/assert-canonical-e2e.mjs
+
+      - name: Upload canonical visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: canonical-slice-visual-evidence
+          path: test-results/canonical-slice/
+          if-no-files-found: warn
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup || true

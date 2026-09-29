@@ -27,7 +27,7 @@ Implementação inicial:
 ### Learning
 - **Course → Module → Lesson → LessonAsset**.
 - **Enrollment** liga User a Course.
-- **LessonProgress** liga Enrollment a Lesson e mede somente avanço curricular.
+- **LessonProgress** liga User/Enrollment a Lesson e mede somente avanço curricular. Na canonical slice persiste `completion_percent`, `last_position_seconds`, `last_accessed_at` e `completed_at` para retomada.
 
 ### Practice
 - **PracticeActivity → PracticeAttempt → PracticeResult**.
@@ -76,7 +76,7 @@ auth.users
 ## Invariantes
 
 1. **Progresso curricular não é proficiência.**
-   - `lesson_progress.progress_percent` mede curso/aula.
+   - `lesson_progress.completion_percent` mede curso/aula; posição/retomada continuam sendo estado curricular, não proficiência.
    - CEFR de resultado existe no domínio de assessment, nunca em `lesson_progress`.
 
 2. **CEFR é resultado de avaliação.**
@@ -134,7 +134,7 @@ PROMPT 06 implementa as policies RLS e contratos server-side descritos em [AUTH_
 
 `live_session_recordings`, materiais e lesson assets protegidos guardam somente paths privados; a aplicação emite signed URLs curtas após autorização.
 
-Roles, entitlements, subscriptions, progress e bookings não aceitam mutação direta pelo papel `authenticated`; comandos legítimos passam pela camada server-side e pelas invariantes de banco.
+Roles, entitlements, subscriptions e bookings não aceitam mutação direta pelo papel `authenticated`. Lesson progress mantém `UPDATE` direto negado; a canonical slice expõe somente `record_lesson_progress`, que deriva `auth.uid()` e valida matrícula antes do upsert.
 
 ## Verificação
 
