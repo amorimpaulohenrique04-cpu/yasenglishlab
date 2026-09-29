@@ -15,6 +15,19 @@ assert(
   "Missing canonical learning vertical-slice E2E.",
 );
 assert(exists("tests/visual/design-system.spec.ts"), "Missing design-system visual/a11y suite.");
+assert(exists("tests/a11y/critical-flows.spec.ts"), "Missing critical-flow accessibility suite.");
+assert(exists("playwright.a11y.config.ts"), "Missing accessibility Playwright config.");
+assert(exists("tests/visual/golden.spec.ts"), "Missing product golden visual suite.");
+assert(exists("playwright.golden.config.ts"), "Missing golden Playwright config.");
+
+for (const viewport of ["desktop", "tablet", "mobile"]) {
+  for (const screen of ["login", "home", "aulas"]) {
+    assert(
+      exists(`tests/visual/goldens/${viewport}/${screen}.png`),
+      `Missing golden baseline: ${viewport}/${screen}.png`,
+    );
+  }
+}
 
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 run(npm, ["run", "storybook:build"]);
@@ -22,5 +35,5 @@ run(npm, ["run", "test:e2e"]);
 run(npm, ["run", "test:visual"]);
 
 success(
-  `UI verification passed with ${screens.length} approved references, Storybook, app E2E contracts and design-system axe/visual checks.`,
+  `UI verification passed with ${screens.length} approved references, 9 product goldens, accessibility contracts, Storybook and design-system visual checks.`,
 );

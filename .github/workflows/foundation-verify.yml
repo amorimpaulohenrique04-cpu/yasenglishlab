@@ -8,6 +8,7 @@ on:
       - domain-contracts/prompt-05
       - auth-rbac-rls/prompt-06
       - canonical-slice/prompt-07
+      - testing-evals/prompt-08
   pull_request:
     branches:
       - main
@@ -22,6 +23,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Use Node 24
         uses: actions/setup-node@v7
@@ -211,3 +214,50 @@ jobs:
       - name: Stop Supabase
         if: always()
         run: supabase stop --no-backup || true
+
+  full-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run full verification
+        run: npm run verify:full
+
+      - name: Upload full verification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: prompt-08-full-verification
+          path: |
+            artifacts/
+            tests/visual/goldens/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn

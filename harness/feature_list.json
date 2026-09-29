@@ -34,6 +34,21 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36517734330"
       ],
       "updated_at": "2026-09-29T00:35:00-03:00"
+    },
+    {
+      "id": "prompt-08-testing-evals",
+      "title": "Complete testing and coding-agent eval system",
+      "status": "done",
+      "verified": true,
+      "dependencies": ["prompt-04-design-system"],
+      "evidence": [
+        "harness/evidence/prompt-08-testing-evals/README.md",
+        "harness/evidence/prompt-08-testing-evals/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36600933280",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36599772400",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36599878827"
+      ],
+      "updated_at": "2026-09-29T14:00:00-03:00"
     }
   ]
 }
