@@ -30,3 +30,5 @@ Links para benchmark, spike, issue, PR ou teste quando existir.
 - Não reescrever ADR aceito para esconder mudança de decisão; crie outro e marque o anterior como superseded.
 - OPEN_QUESTIONS registra o que ainda não foi decidido.
 - Documentos de domínio registram o estado atual da arquitetura.
+
+- [0002 — GitHub Actions as CI/CD control plane](./0002-cicd-control-plane.md)
