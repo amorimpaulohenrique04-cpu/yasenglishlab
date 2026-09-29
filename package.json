@@ -36,7 +36,10 @@
     "test:visual:golden": "playwright test -c playwright.golden.config.ts",
     "test:visual:update": "playwright test -c playwright.golden.config.ts --update-snapshots",
     "eval:agent": "node scripts/eval-agent.mjs",
-    "verify:core": "node scripts/verify-core.mjs"
+    "verify:core": "node scripts/verify-core.mjs",
+    "ci:policy": "node scripts/ci/check-repo-policy.mjs",
+    "ci:secrets": "node scripts/ci/secret-scan.mjs",
+    "ci:migrations": "node scripts/ci/check-migrations.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
