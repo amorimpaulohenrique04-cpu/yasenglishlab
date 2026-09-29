@@ -18,10 +18,10 @@ export async function withObservedSpan<T>(
     stage: string;
     impact: TechnicalImpact;
     errorCode: TechnicalErrorCode | ((error: unknown) => TechnicalErrorCode);
-    severity?: TechnicalSeverity;
-    userId?: string;
-    metadata?: Record<string, unknown>;
-    context?: TechnicalContext;
+    severity?: TechnicalSeverity | undefined;
+    userId?: string | undefined;
+    metadata?: Record<string, unknown> | undefined;
+    context?: TechnicalContext | undefined;
   },
   operation: (context: TechnicalContext) => Promise<T>,
 ): Promise<T> {
