@@ -76,11 +76,11 @@ export function IconButton({
 type FieldTone = "default" | "error" | "success";
 
 interface FieldFrameProps {
-  id?: string;
+  id?: string | undefined;
   label: string;
-  required?: boolean;
-  tone?: FieldTone;
-  message?: string;
+  required?: boolean | undefined;
+  tone?: FieldTone | undefined;
+  message?: string | undefined;
   children: (id: string, describedBy?: string) => ReactNode;
 }
 
