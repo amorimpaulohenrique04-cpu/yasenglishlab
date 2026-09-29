@@ -8,6 +8,10 @@ const adminClient = read("src/server/supabase/admin.ts");
 const authContext = read("src/server/auth/context.ts");
 const signedUrlService = read("src/server/assets/signed-url.ts");
 const bookingService = read("src/server/live/book-session.ts");
+const observabilityPrivacy = read("src/server/observability/privacy.ts");
+const observabilityMigration = read(
+  "supabase/migrations/20260929233000_observability_analytics_audit.sql",
+);
 const authMigration = read("supabase/migrations/20260929043000_auth_rbac_rls.sql");
 const rlsEvidence = read("supabase/tests/rls_permissions.sql");
 const threatModel = read("docs/THREAT_MODEL.md");
@@ -88,6 +92,35 @@ for (const token of [
   "Support must not access student learning progress by default",
 ]) {
   assert(rlsEvidence.includes(token), `RLS evidence is missing: ${token}`);
+}
+
+for (const token of [
+  "password",
+  "token",
+  "authorization",
+  "cookie",
+  "secret",
+  "payment",
+  "private[_-]?audio",
+  "assessment[_-]?response",
+]) {
+  assert(
+    observabilityPrivacy.toLowerCase().includes(token.toLowerCase()),
+    `Observability privacy sanitizer is missing sensitive category: ${token}`,
+  );
+}
+
+for (const token of [
+  "revoke all on public.observability_events from public, anon, authenticated",
+  "observability_events_no_update",
+  "request_id uuid not null",
+  "trace_id uuid not null",
+  "span_id uuid not null",
+]) {
+  assert(
+    observabilityMigration.toLowerCase().includes(token.toLowerCase()),
+    `Observability migration is missing security invariant: ${token}`,
+  );
 }
 
 for (const threat of [
