@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { ProductAnalyticsPort } from "@/modules/learning";
+import { reportTechnicalError } from "@/server/observability/report";
 
 export class SupabaseProductAnalytics implements ProductAnalyticsPort {
   constructor(private readonly client: SupabaseClient) {}
@@ -15,6 +16,17 @@ export class SupabaseProductAnalytics implements ProductAnalyticsPort {
     });
 
     // Analytics must never become the system of record or break a learning transaction.
-    if (error) return;
+    if (error) {
+      await reportTechnicalError(error, {
+        code: "database_error",
+        stage: "product_analytics.persist",
+        impact: "degraded",
+        severity: "warning",
+        metadata: {
+          product_event: input.event,
+          lesson_id: input.lessonId,
+        },
+      });
+    }
   }
 }
