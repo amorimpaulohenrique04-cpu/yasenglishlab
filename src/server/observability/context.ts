@@ -6,20 +6,17 @@ import { headers } from "next/headers";
 
 import type { TechnicalContext } from "./types";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function safeUuid(value: string | null | undefined): string | undefined {
   return value && UUID_PATTERN.test(value) ? value : undefined;
 }
 
 function runtimeEnvironment(): string {
-  return (
-    process.env.APP_ENV ??
-    process.env.VERCEL_ENV ??
-    process.env.NODE_ENV ??
-    "unknown"
-  ).slice(0, 40);
+  return (process.env.APP_ENV ?? process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "unknown").slice(
+    0,
+    40,
+  );
 }
 
 function runtimeVersion(): string {
@@ -32,14 +29,16 @@ function runtimeVersion(): string {
   ).slice(0, 120);
 }
 
-export function createTechnicalContext(input: {
-  requestId?: string;
-  traceId?: string;
-  spanId?: string;
-  userId?: string;
-  environment?: string;
-  version?: string;
-} = {}): TechnicalContext {
+export function createTechnicalContext(
+  input: {
+    requestId?: string;
+    traceId?: string;
+    spanId?: string;
+    userId?: string;
+    environment?: string;
+    version?: string;
+  } = {},
+): TechnicalContext {
   const requestId = safeUuid(input.requestId) ?? randomUUID();
 
   return {
@@ -52,10 +51,12 @@ export function createTechnicalContext(input: {
   };
 }
 
-export async function getRequestTechnicalContext(input: {
-  userId?: string;
-  spanId?: string;
-} = {}): Promise<TechnicalContext> {
+export async function getRequestTechnicalContext(
+  input: {
+    userId?: string;
+    spanId?: string;
+  } = {},
+): Promise<TechnicalContext> {
   try {
     const requestHeaders = await headers();
 
