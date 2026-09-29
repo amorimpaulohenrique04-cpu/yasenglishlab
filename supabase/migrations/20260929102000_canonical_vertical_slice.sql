@@ -1,6 +1,10 @@
 -- PROMPT 07 — Canonical vertical slice: lesson progress + analytics.
 -- The browser never supplies user_id as authority. Progress writes derive auth.uid().
 
+-- Remove the PROMPT 06 audit trigger before renaming progress_percent so historical
+-- rows can be backfilled without invoking a trigger compiled against the old column.
+drop trigger if exists lesson_progress_audit on public.lesson_progress;
+
 alter table public.lesson_progress
   rename column progress_percent to completion_percent;
 
@@ -75,8 +79,6 @@ $$;
 create trigger lesson_progress_identity_guard
 before insert or update on public.lesson_progress
 for each row execute function private.validate_lesson_progress_identity();
-
-drop trigger if exists lesson_progress_audit on public.lesson_progress;
 
 create or replace function private.audit_lesson_progress_change()
 returns trigger
