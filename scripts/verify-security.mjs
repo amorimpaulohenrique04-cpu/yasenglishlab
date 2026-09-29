@@ -49,10 +49,12 @@ assert(
   "Booking identity must come from verified server auth context.",
 );
 assert(
-  signedUrlService.includes("createSignedUrl") &&
+  signedUrlService.includes("createSignedUrl(storagePath, ttlSeconds)") &&
     signedUrlService.includes("normalizeSignedUrlTtl") &&
-    !signedUrlService.includes("storagePath,"),
-  "Protected signed URLs must be short-lived and must not be written to audit metadata.",
+    signedUrlService.includes("data: { ttl_seconds: ttlSeconds }") &&
+    !signedUrlService.includes("signed_url:") &&
+    !signedUrlService.includes("storage_path:"),
+  "Protected signed URLs must be short-lived and audit metadata must exclude URL/path secrets.",
 );
 
 for (const token of [
