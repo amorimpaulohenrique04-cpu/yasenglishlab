@@ -4,20 +4,21 @@
 
 **prompt-10-observability**
 
-State: implementation complete on branch; verification pending.
+State: completed and verified on the feature branch; ready to merge.
 
 Goal: make critical technical failures reconstructable without mixing product analytics, observability and privileged audit history.
 
-### Execution plan
+### Completed execution
 
-1. Expand the existing product analytics contract without replacing its port.
-2. Add provider-neutral structured logging, request/trace/span correlation, privacy redaction and a durable error sink.
-3. Add request/environment/version correlation to append-only audit logs and type privileged audit actions.
-4. Instrument existing high-value server boundaries: authorization, booking, protected assets, role changes, analytics persistence and audit persistence.
-5. Add migration + SQL/RLS/unit/integration evidence.
-6. Run an intentional error against isolated Preview Supabase and query it back by request_id.
-7. Keep the definitive analytics/error-reporting provider decisions open.
-8. Only mark done after final green CI and inspected evidence.
+1. Expanded the existing product analytics contract without replacing its application port.
+2. Added provider-neutral structured logging, request/trace/span correlation, privacy redaction and a durable technical-error sink.
+3. Added request/environment/version correlation to append-only audit logs and typed privileged audit actions.
+4. Instrumented existing high-value server boundaries: authorization, booking, protected assets, role changes, analytics persistence and audit persistence.
+5. Added migration + SQL/RLS/unit/integration/security evidence.
+6. Proved an intentional error against isolated Preview Supabase and queried it back by the same request_id.
+7. Inspected structured-log output and artifact evidence; corrected false PII-redaction positives for ISO timestamps and release SHAs.
+8. Preserved the unresolved provider choices in OPEN_QUESTIONS.
+9. Final Official CI #158 passed all mandatory gates.
 
 ### Scope boundary
 
