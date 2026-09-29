@@ -29,7 +29,7 @@ test("login, home and aulas match golden baselines", async ({ page }) => {
   await stabilize(page);
   await expect(page).toHaveScreenshot("home.png", { fullPage: true });
 
-  await page.getByRole("link", { name: "Aulas", exact: true }).first().click();
+  await page.goto("/aulas");
   await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
   await stabilize(page);
   await expect(page).toHaveScreenshot("aulas.png", { fullPage: true });
