@@ -1,11 +1,19 @@
 import { mkdirSync } from "node:fs";
 
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const evidenceDir = "test-results/canonical-slice";
+
+async function captureEvidence(page: Page, filename: string): Promise<void> {
+  await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
+  await page.screenshot({
+    path: `${evidenceDir}/${filename}`,
+    fullPage: true,
+  });
+}
 
 test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
@@ -23,17 +31,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/home-desktop.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "home-desktop.png");
 
     await page.getByRole("link", { name: "Aulas", exact: true }).first().click();
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/aulas-desktop.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "aulas-desktop.png");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
     await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
@@ -76,31 +78,19 @@ test.describe("canonical learning vertical slice", () => {
     await page.setViewportSize({ width: 834, height: 1112 });
     await page.goto("/home");
     await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/home-tablet.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "home-tablet.png");
 
     await page.goto("/aulas");
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/aulas-tablet.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "aulas-tablet.png");
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/home");
     await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/home-mobile.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "home-mobile.png");
 
     await page.goto("/aulas");
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-    await page.screenshot({
-      path: `${evidenceDir}/aulas-mobile.png`,
-      fullPage: true,
-    });
+    await captureEvidence(page, "aulas-mobile.png");
   });
 });
