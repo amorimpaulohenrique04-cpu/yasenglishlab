@@ -125,7 +125,7 @@ export class SupabaseLearningRepository implements LearningRepository {
     const modulesByCourse = new Map<string, LearningModule[]>();
     for (const row of moduleRows ?? []) {
       const courseId = String(row.course_id);
-      const module: LearningModule = {
+      const courseModule: LearningModule = {
         id: String(row.id),
         courseId,
         position: Number(row.position),
@@ -136,7 +136,7 @@ export class SupabaseLearningRepository implements LearningRepository {
         ),
       };
       const current = modulesByCourse.get(courseId) ?? [];
-      current.push(module);
+      current.push(courseModule);
       modulesByCourse.set(courseId, current);
     }
 
