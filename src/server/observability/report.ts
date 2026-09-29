@@ -19,11 +19,11 @@ export async function reportTechnicalError(
     code: TechnicalErrorCode;
     stage: string;
     impact: TechnicalImpact;
-    severity?: TechnicalSeverity;
-    userId?: string;
-    metadata?: Record<string, unknown>;
-    context?: TechnicalContext;
-    sink?: ObservabilitySink;
+    severity?: TechnicalSeverity | undefined;
+    userId?: string | undefined;
+    metadata?: Record<string, unknown> | undefined;
+    context?: TechnicalContext | undefined;
+    sink?: ObservabilitySink | undefined;
   },
 ): Promise<TechnicalErrorEvent> {
   const context =
