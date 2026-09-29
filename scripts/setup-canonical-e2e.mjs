@@ -4,7 +4,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const email = "canonical.student@example.test";
-const courseId = "40000000-0000-0000-0000-000000000001";
+const courseId = "40000000-0000-4000-8000-000000000001";
 
 if (!url || !serviceRoleKey || !password) {
   throw new Error("Canonical E2E requires local Supabase credentials and generated password.");
