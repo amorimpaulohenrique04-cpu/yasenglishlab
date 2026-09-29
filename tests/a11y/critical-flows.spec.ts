@@ -23,7 +23,9 @@ async function login(page: Page) {
   await expect(page).toHaveURL(/\/home$/);
 }
 
-test("login exposes landmarks, labels, keyboard focus and WCAG A/AA compliance", async ({ page }) => {
+test("login exposes landmarks, labels, keyboard focus and WCAG A/AA compliance", async ({
+  page,
+}) => {
   await page.goto("/login");
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
@@ -36,7 +38,9 @@ test("login exposes landmarks, labels, keyboard focus and WCAG A/AA compliance",
   await assertAxe(page);
 });
 
-test("Home and Aulas preserve landmarks, focusable navigation and axe compliance", async ({ page }) => {
+test("Home and Aulas preserve landmarks, focusable navigation and axe compliance", async ({
+  page,
+}) => {
   await login(page);
 
   await expect(page.getByRole("main")).toBeVisible();

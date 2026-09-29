@@ -1,11 +1,6 @@
 {
   "schema_version": 1,
-  "allowed_statuses": [
-    "planned",
-    "in_progress",
-    "blocked",
-    "done"
-  ],
+  "allowed_statuses": ["planned", "in_progress", "blocked", "done"],
   "field_contract": {
     "id": "unique kebab-case identifier",
     "title": "human-readable task or engineering capability",
@@ -21,9 +16,7 @@
       "title": "Official Harness Engineering foundation",
       "status": "done",
       "verified": true,
-      "dependencies": [
-        "prompt-02-engineering-foundation"
-      ],
+      "dependencies": ["prompt-02-engineering-foundation"],
       "evidence": [
         "harness/evidence/prompt-03-harness-engineering/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36510847571"
@@ -35,9 +28,7 @@
       "title": "Executable Yas design system",
       "status": "done",
       "verified": true,
-      "dependencies": [
-        "prompt-03-harness-engineering"
-      ],
+      "dependencies": ["prompt-03-harness-engineering"],
       "evidence": [
         "harness/evidence/prompt-04-design-system/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36517734330"
@@ -49,12 +40,8 @@
       "title": "Complete testing and coding-agent eval system",
       "status": "in_progress",
       "verified": false,
-      "dependencies": [
-        "prompt-04-design-system"
-      ],
-      "evidence": [
-        "harness/evidence/prompt-08-testing-evals/README.md"
-      ],
+      "dependencies": ["prompt-04-design-system"],
+      "evidence": ["harness/evidence/prompt-08-testing-evals/README.md"],
       "updated_at": "2026-09-29T12:59:00-03:00"
     }
   ]
