@@ -75,17 +75,74 @@ on conflict (id) do update set
   description = excluded.description;
 
 insert into public.lessons (id, module_id, position, slug, title, estimated_minutes)
-values (
-  '42000000-0000-0000-0000-000000000001',
-  '41000000-0000-0000-0000-000000000001',
-  1,
-  'welcome-to-yas',
-  'Welcome to Yas',
-  10
-)
+values
+  (
+    '42000000-0000-0000-0000-000000000001',
+    '41000000-0000-0000-0000-000000000001',
+    1,
+    'welcome-to-yas',
+    'Welcome to Yas',
+    10
+  ),
+  (
+    '42000000-0000-0000-0000-000000000002',
+    '41000000-0000-0000-0000-000000000001',
+    2,
+    'introductions-that-sound-natural',
+    'Introductions that sound natural',
+    14
+  ),
+  (
+    '42000000-0000-0000-0000-000000000003',
+    '41000000-0000-0000-0000-000000000001',
+    3,
+    'build-your-first-conversation',
+    'Build your first conversation',
+    18
+  )
 on conflict (id) do update set
   module_id = excluded.module_id,
   position = excluded.position,
   slug = excluded.slug,
   title = excluded.title,
   estimated_minutes = excluded.estimated_minutes;
+
+insert into public.lesson_assets (
+  id,
+  lesson_id,
+  asset_type,
+  position,
+  content,
+  metadata
+)
+values
+  (
+    '43000000-0000-0000-0000-000000000001',
+    '42000000-0000-0000-0000-000000000001',
+    'TEXT',
+    1,
+    '{"eyebrow":"Getting Started","title":"Start with what you already know","body":"Your first lesson is about using simple English with confidence. Focus on meaning before perfection.","steps":["Notice familiar words and expressions.","Say one short sentence out loud.","Return later and continue from your saved point."]}'::jsonb,
+    '{"canonical_slice":true}'::jsonb
+  ),
+  (
+    '43000000-0000-0000-0000-000000000002',
+    '42000000-0000-0000-0000-000000000002',
+    'TEXT',
+    1,
+    '{"eyebrow":"Getting Started","title":"Make introductions feel natural","body":"Build a short introduction around your name, where you are from and one thing you enjoy.","steps":["Keep sentences short.","Connect ideas with and or but.","Say it again with a calmer pace."]}'::jsonb,
+    '{"canonical_slice":true}'::jsonb
+  ),
+  (
+    '43000000-0000-0000-0000-000000000003',
+    '42000000-0000-0000-0000-000000000003',
+    'TEXT',
+    1,
+    '{"eyebrow":"Getting Started","title":"Turn sentences into a conversation","body":"Use a simple question and follow-up to keep a conversation moving without memorizing a script.","steps":["Ask one open question.","Listen for one detail.","Use that detail in your next question."]}'::jsonb,
+    '{"canonical_slice":true}'::jsonb
+  )
+on conflict (id) do update set
+  lesson_id = excluded.lesson_id,
+  asset_type = excluded.asset_type,
+  position = excluded.position,
+  content = excluded.content,
+  metadata = excluded.metadata;
