@@ -281,8 +281,14 @@ begin
   if has_table_privilege(current_user, 'public.session_bookings', 'INSERT') then
     raise exception 'Authenticated users must not bypass booking service';
   end if;
+
+  if has_column_privilege(current_user, 'public.materials', 'storage_path', 'SELECT')
+    or has_column_privilege(current_user, 'public.lesson_assets', 'storage_path', 'SELECT')
+    or has_column_privilege(current_user, 'public.live_session_recordings', 'storage_path', 'SELECT') then
+    raise exception 'Authenticated Data API must not expose protected storage paths';
+  end if;
 end;
-$$;
+$;
 
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000002', false);
 select set_config(
@@ -417,8 +423,16 @@ begin
   if visible_count <> 0 then
     raise exception 'Support must not access privileged billing events';
   end if;
+
+  select count(*) into visible_count
+  from public.lesson_progress
+  where id = '81500000-0000-0000-0000-000000000001';
+
+  if visible_count <> 0 then
+    raise exception 'Support must not access student learning progress by default';
+  end if;
 end;
-$$;
+$;
 
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000006', false);
 select set_config(
