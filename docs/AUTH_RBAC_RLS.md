@@ -23,7 +23,7 @@ O root `proxy.ts` renova a sessão e usa `auth.getClaims()` para verificar ident
 
 - **STUDENT:** próprios dados, matrícula/progresso visível, materiais permitidos, bookings e resultados.
 - **TEACHER:** sessões próprias e somente alunos com uma `teacher_student_assignment` ativa.
-- **SUPPORT:** contexto mínimo de atendimento; não recebe payload privilegiado de billing.
+- **SUPPORT:** contexto mínimo de atendimento e assinatura; não recebe histórico pedagógico por padrão nem payload privilegiado de billing.
 - **ADMIN:** operações administrativas explícitas e auditáveis.
 
 Roles são lidas de `public.user_roles` no servidor. `user_metadata`, query string, formulário e JavaScript do browser nunca são autoridade para role.
@@ -45,6 +45,7 @@ Regras principais:
 - Profile: usuário lê/edita somente o próprio perfil; teacher só lê aluno atribuído; support/admin exigem AAL2.
 - Progress/attempts/scores: próprio aluno, teacher atribuído ou staff permitido.
 - Material/lesson asset pago: enrollment + entitlement; staff pedagógico autorizado.
+- Paths internos de Storage não são expostos pelo Data API; o servidor primeiro prova acesso por RLS e só então resolve o path com credencial server-only.
 - Recording: booking válido + entitlement; ou professor da sessão/admin.
 - BillingEvent: apenas ADMIN AAL2 e sem exposição da coluna `payload` pelo Data API.
 - AuditLog: apenas ADMIN AAL2 para leitura.
