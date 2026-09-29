@@ -2,33 +2,20 @@
 
 ## Active task
 
-None.
+**prompt-08-testing-evals**
 
-## Last completed task
+Goal: build the regression-prevention infrastructure around the canonical vertical slice.
 
-**prompt-04-design-system**
+### Execution
 
-Goal: turn the approved Yas visual language into reusable, accessible code without implementing complete product pages.
+1. Normalize commands for unit, integration, executable SQL/RLS, E2E, a11y and visual suites.
+2. Add application/server-action integration coverage without mocking real authorization policies.
+3. Add Login/Home/Aulas axe + semantic/keyboard/focus tests.
+4. Add Playwright golden tests for desktop/tablet/mobile and generate baselines through CI.
+5. Add executable coding-agent diff evals plus documented manual limits.
+6. Prove fail-closed behavior with one deliberate failing test, then remove it.
+7. Run full verification, inspect artifacts, persist evidence, then mark the feature done.
 
-### Completed scope
+### Scope boundary
 
-- Executable visual tokens.
-- Required reusable UI primitives.
-- AppShell, Sidebar, Topbar and ContentContainer layout primitives.
-- Storybook state catalog.
-- Playwright keyboard/visual checks.
-- Axe WCAG A/AA checks.
-- Desktop/form/mobile screenshot evidence.
-- Design-system verification integrated into the existing UI harness.
-
-### Verification result
-
-- Foundation verification: passed.
-- Harness/security/DB checks: passed.
-- Storybook production build: passed.
-- App E2E: passed.
-- Design-system Playwright suite: 6/6 passed.
-- Axe representative stories: no automated WCAG A/AA violations.
-- Evidence: `harness/evidence/prompt-04-design-system/README.md`.
-
-No complete product page or product-domain feature was implemented.
+Testing/eval/docs/harness/CI only. No product behavior or UI changes.
