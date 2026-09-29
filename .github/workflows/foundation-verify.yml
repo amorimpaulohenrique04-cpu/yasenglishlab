@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   format-prompt-06:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/auth-rbac-rls/prompt-06' && !contains(github.event.head_commit.message, 'style: apply prettier')
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/auth-rbac-rls/prompt-06' && !contains(github.event.head_commit.message, 'style: apply prettier') }}
     runs-on: ubuntu-latest
 
     steps:
