@@ -14,3 +14,25 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Evidence inspected and persisted under `harness/evidence/prompt-03-harness-engineering/`.
 - Registry updated to `done` + `verified: true` only after the successful run.
 - Final read-only CI run 36511078068 passed with `npm ci`, `contents: read`, no formatting mutation and all harness/UI checks green.
+
+## 2026-09-28 — prompt-04-design-system
+
+- Started from main commit `f85c54a7decd2a929e3238c675e5269558b15683`.
+- Read UI_CONTRACT, DESIGN_SYSTEM, ACCESSIBILITY and approved reference manifest.
+- Inspected login, home, materiais and progresso approved screenshots directly from `docs/reference-ui/`.
+- Existing component audit found only foundation placeholders; no real primitive exists to reuse yet.
+- Scope excludes complete product pages and product-domain behavior.
+
+- Implemented required token categories: colors, typography, spacing, radius, shadow, border, breakpoints, z-index and motion.
+- Implemented the approved recurring UI/layout primitive inventory without product pages.
+- Initial strict TypeScript verification caught optional-property/index-access errors; fixed without weakening compiler settings.
+- Initial Axe run caught invalid Avatar ARIA semantics; fixed by giving the labelled Avatar valid image semantics instead of suppressing the rule.
+- Visual test viewport handling was tightened so evidence is captured at explicit desktop/form/mobile dimensions.
+- Read-only CI run 36515649247 passed foundation, harness, security, DB, Storybook, app E2E and all 6 design-system visual/a11y/keyboard tests.
+- Inspected the four generated screenshots: core states, form validation, desktop shell and 390×844 mobile shell. They preserve the approved purple/light-lilac/white/yellow hierarchy without implementing a product page.
+- Feature registry remains `in_progress` until the final current-action CI gate is green.
+
+- Final current-action read-only run 36517734330 passed after upgrading visual evidence upload to `actions/upload-artifact@v7`.
+- Final screenshot artifact 11012210130 uploaded successfully; digest `sha256:f3b9b3383a4503dd5007863d5d0620d66b17a6ab5c752cdb86c8ecc4babb35a1`.
+- Registry changed to `done` + `verified: true` only after the green run and visual inspection.
+- Active plan closed; no product page or product-domain implementation was introduced.

@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - harness/prompt-03
+      - design-system/prompt-04
   pull_request:
     branches:
       - main
@@ -37,3 +37,11 @@ jobs:
 
       - name: Verify UI harness
         run: npm run verify:ui
+
+      - name: Upload design-system visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: design-system-visual-evidence
+          path: test-results/
+          if-no-files-found: warn

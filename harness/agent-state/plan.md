@@ -6,26 +6,29 @@ None.
 
 ## Last completed task
 
-**prompt-03-harness-engineering**
+**prompt-04-design-system**
 
-Goal: install the official minimal, explicit and verifiable Harness Engineering layer without implementing product features.
+Goal: turn the approved Yas visual language into reusable, accessible code without implementing complete product pages.
 
 ### Completed scope
 
-- `AGENTS.md`
-- `harness/**`
-- `scripts/**`
-- `package.json`
-- `.github/workflows/foundation-verify.yml`
+- Executable visual tokens.
+- Required reusable UI primitives.
+- AppShell, Sidebar, Topbar and ContentContainer layout primitives.
+- Storybook state catalog.
+- Playwright keyboard/visual checks.
+- Axe WCAG A/AA checks.
+- Desktop/form/mobile screenshot evidence.
+- Design-system verification integrated into the existing UI harness.
 
 ### Verification result
 
 - Foundation verification: passed.
-- Harness contract: passed.
-- Security boundary: passed.
-- DB structure: passed.
-- Storybook build: passed.
-- Playwright E2E: passed.
-- Evidence: `harness/evidence/prompt-03-harness-engineering/README.md`.
+- Harness/security/DB checks: passed.
+- Storybook production build: passed.
+- App E2E: passed.
+- Design-system Playwright suite: 6/6 passed.
+- Axe representative stories: no automated WCAG A/AA violations.
+- Evidence: `harness/evidence/prompt-04-design-system/README.md`.
 
-No product feature, product schema or business-domain implementation was added.
+No complete product page or product-domain feature was implemented.

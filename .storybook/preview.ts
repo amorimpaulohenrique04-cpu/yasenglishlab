@@ -8,7 +8,15 @@ const preview: Preview = {
       appDirectory: true,
     },
     a11y: {
-      test: "todo",
+      test: "error",
+    },
+    backgrounds: {
+      default: "yas-canvas",
+      values: [
+        { name: "yas-canvas", value: "#f6f3fc" },
+        { name: "white", value: "#ffffff" },
+        { name: "purple", value: "#32125f" },
+      ],
     },
   },
 };
