@@ -44,10 +44,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
 
   if (isProtectedPath(request.nextUrl.pathname) && !hasVerifiedIdentity) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set(
-      "next",
-      `${request.nextUrl.pathname}${request.nextUrl.search}`,
-    );
+    loginUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(loginUrl);
   }
 

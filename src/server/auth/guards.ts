@@ -19,19 +19,14 @@ interface AuthRequirement {
   enforceStaffMfa?: boolean;
 }
 
-export async function assertAuthenticated(
-  requirement: AuthRequirement = {},
-): Promise<AuthContext> {
+export async function assertAuthenticated(requirement: AuthRequirement = {}): Promise<AuthContext> {
   const context = await resolveAuthContext();
 
   if (!context) {
     throw new AuthorizationError("UNAUTHENTICATED");
   }
 
-  if (
-    requirement.enforceStaffMfa !== false &&
-    staffMfaRequired(context.roles, context.aal)
-  ) {
+  if (requirement.enforceStaffMfa !== false && staffMfaRequired(context.roles, context.aal)) {
     throw new AuthorizationError("MFA_REQUIRED");
   }
 
@@ -51,19 +46,14 @@ export async function assertRole(
   return context;
 }
 
-export async function requirePageAuth(
-  requirement: AuthRequirement = {},
-): Promise<AuthContext> {
+export async function requirePageAuth(requirement: AuthRequirement = {}): Promise<AuthContext> {
   const context = await resolveAuthContext();
 
   if (!context) {
     redirect("/login");
   }
 
-  if (
-    requirement.enforceStaffMfa !== false &&
-    staffMfaRequired(context.roles, context.aal)
-  ) {
+  if (requirement.enforceStaffMfa !== false && staffMfaRequired(context.roles, context.aal)) {
     redirect("/mfa");
   }
 

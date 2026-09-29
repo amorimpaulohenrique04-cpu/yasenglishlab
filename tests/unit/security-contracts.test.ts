@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  normalizeSignedUrlTtl,
-  sanitizeNextPath,
-  staffMfaRequired,
-} from "@/modules/auth";
+import { normalizeSignedUrlTtl, sanitizeNextPath, staffMfaRequired } from "@/modules/auth";
 
 describe("security contracts", () => {
   it("requires aal2 for every staff role", () => {

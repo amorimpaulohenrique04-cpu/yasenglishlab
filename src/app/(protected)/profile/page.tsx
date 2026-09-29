@@ -32,9 +32,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
           <p className="yas-profile-meta">{auth.email ?? "Conta autenticada"}</p>
         </div>
 
-        {params.profile === "updated" && (
-          <Alert tone="success" title="Perfil atualizado" />
-        )}
+        {params.profile === "updated" && <Alert tone="success" title="Perfil atualizado" />}
         {(params.profile === "invalid" || params.profile === "error") && (
           <Alert
             tone="error"
@@ -73,12 +71,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 defaultValue={String(profile.display_name)}
                 required
               />
-              <Input
-                label="Idioma"
-                name="locale"
-                defaultValue={String(profile.locale)}
-                required
-              />
+              <Input label="Idioma" name="locale" defaultValue={String(profile.locale)} required />
               <Input
                 label="Fuso horário"
                 name="timezone"

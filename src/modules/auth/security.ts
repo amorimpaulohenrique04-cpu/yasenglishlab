@@ -15,10 +15,7 @@ export function staffMfaRequired(
   return roles.some(isStaffRole) && assuranceLevel !== "aal2";
 }
 
-export function sanitizeNextPath(
-  value: string | null | undefined,
-  fallback = "/profile",
-): string {
+export function sanitizeNextPath(value: string | null | undefined, fallback = "/profile"): string {
   if (!value) return fallback;
 
   const normalized = value.trim();

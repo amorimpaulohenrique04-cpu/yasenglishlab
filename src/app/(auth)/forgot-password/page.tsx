@@ -8,9 +8,7 @@ interface ForgotPasswordPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function ForgotPasswordPage({
-  searchParams,
-}: ForgotPasswordPageProps) {
+export default async function ForgotPasswordPage({ searchParams }: ForgotPasswordPageProps) {
   const params = await searchParams;
   const sent = params.sent === "1";
 
@@ -22,8 +20,8 @@ export default async function ForgotPasswordPage({
             <p className="yas-auth-eyebrow">Yas English Lab</p>
             <h1 className="yas-auth-title">Recuperar senha</h1>
             <p className="yas-auth-copy">
-              Informe seu e-mail. Se houver uma conta correspondente, enviaremos as
-              instruções de recuperação.
+              Informe seu e-mail. Se houver uma conta correspondente, enviaremos as instruções de
+              recuperação.
             </p>
           </div>
 
@@ -36,13 +34,7 @@ export default async function ForgotPasswordPage({
           )}
 
           <form action={requestPasswordResetAction} className="yas-stack">
-            <Input
-              label="E-mail"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-            />
+            <Input label="E-mail" name="email" type="email" autoComplete="email" required />
             <Button type="submit" variant="secondary">
               Enviar instruções
             </Button>

@@ -7,9 +7,7 @@ interface ResetPasswordPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function ResetPasswordPage({
-  searchParams,
-}: ResetPasswordPageProps) {
+export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   await requirePageAuth({ enforceStaffMfa: false });
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : null;

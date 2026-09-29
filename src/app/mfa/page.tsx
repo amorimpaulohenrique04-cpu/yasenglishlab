@@ -13,9 +13,7 @@ interface MfaPageProps {
 export default async function MfaPage({ searchParams }: MfaPageProps) {
   const auth = await requirePageAuth({ enforceStaffMfa: false });
   const params = await searchParams;
-  const nextPath = sanitizeNextPath(
-    typeof params.next === "string" ? params.next : null,
-  );
+  const nextPath = sanitizeNextPath(typeof params.next === "string" ? params.next : null);
   const required = staffMfaRequired(auth.roles, auth.aal);
 
   if (auth.aal === "aal2") {
@@ -29,7 +27,9 @@ export default async function MfaPage({ searchParams }: MfaPageProps) {
           <div>
             <p className="yas-auth-eyebrow">Segurança da conta</p>
             <h1 className="yas-auth-title">
-              {required ? "Verificação em duas etapas obrigatória" : "Ativar verificação em duas etapas"}
+              {required
+                ? "Verificação em duas etapas obrigatória"
+                : "Ativar verificação em duas etapas"}
             </h1>
             <p className="yas-auth-copy">
               {required

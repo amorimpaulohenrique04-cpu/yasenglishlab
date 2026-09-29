@@ -42,13 +42,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
           <form action={loginAction} className="yas-stack">
             <input type="hidden" name="next" value={next} />
-            <Input
-              label="E-mail"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-            />
+            <Input label="E-mail" name="email" type="email" autoComplete="email" required />
             <Input
               label="Senha"
               name="password"

@@ -12,10 +12,7 @@ const roleMutationSchema = z.object({
   role: userRoleSchema,
 });
 
-export async function grantUserRole(
-  targetUserId: string,
-  role: UserRole,
-): Promise<void> {
+export async function grantUserRole(targetUserId: string, role: UserRole): Promise<void> {
   const input = roleMutationSchema.parse({ targetUserId, role });
   const actor = await assertRole("ADMIN");
   const admin = createSupabaseAdminClient();
@@ -43,10 +40,7 @@ export async function grantUserRole(
   });
 }
 
-export async function revokeUserRole(
-  targetUserId: string,
-  role: UserRole,
-): Promise<void> {
+export async function revokeUserRole(targetUserId: string, role: UserRole): Promise<void> {
   const input = roleMutationSchema.parse({ targetUserId, role });
   const actor = await assertRole("ADMIN");
   const admin = createSupabaseAdminClient();
