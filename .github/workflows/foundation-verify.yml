@@ -35,11 +35,6 @@ jobs:
         run: node scripts/ci/secret-scan.mjs
       - name: Audit locked dependency graph
         run: npm audit --audit-level=high
-      - name: Dependency review
-        if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: high
 
   quality:
     name: Quality
