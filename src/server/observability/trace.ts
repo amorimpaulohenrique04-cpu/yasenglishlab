@@ -17,9 +17,7 @@ export async function withObservedSpan<T>(
     name: string;
     stage: string;
     impact: TechnicalImpact;
-    errorCode:
-      | TechnicalErrorCode
-      | ((error: unknown) => TechnicalErrorCode);
+    errorCode: TechnicalErrorCode | ((error: unknown) => TechnicalErrorCode);
     severity?: TechnicalSeverity;
     userId?: string;
     metadata?: Record<string, unknown>;
@@ -72,10 +70,7 @@ export async function withObservedSpan<T>(
     return result;
   } catch (error) {
     await reportTechnicalError(error, {
-      code:
-        typeof input.errorCode === "function"
-          ? input.errorCode(error)
-          : input.errorCode,
+      code: typeof input.errorCode === "function" ? input.errorCode(error) : input.errorCode,
       stage: input.stage,
       impact: input.impact,
       severity: input.severity,
