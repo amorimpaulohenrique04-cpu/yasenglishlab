@@ -38,9 +38,10 @@
     "eval:agent": "node scripts/eval-agent.mjs",
     "verify:core": "node scripts/verify-core.mjs",
     "ci:secrets": "node scripts/ci/scan-secrets.mjs",
-    "ci:supply-chain": "node scripts/ci/verify-supply-chain.mjs && npm run ci:secrets",
+    "ci:supply-chain": "node scripts/ci/verify-supply-chain.mjs && npm run ci:secrets && npm run ci:environments",
     "ci:migrations": "node scripts/ci/verify-migration-discipline.mjs",
-    "ci:release-gate": "node scripts/ci/verify-release-gate.mjs"
+    "ci:release-gate": "node scripts/ci/verify-release-gate.mjs",
+    "ci:environments": "node scripts/ci/verify-environment-contract.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
