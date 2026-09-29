@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { normalizeSignedUrlTtl } from "@/modules/auth";
@@ -16,53 +17,88 @@ export type ProtectedAssetReference =
   | { kind: "lesson_asset"; id: string }
   | { kind: "recording"; id: string };
 
-async function resolveAuthorizedStoragePath(
+async function canReadProtectedAsset(
+  client: SupabaseClient,
   reference: ProtectedAssetReference,
-): Promise<string | null> {
-  const id = assetIdSchema.parse(reference.id);
-  const supabase = await createSupabaseServerClient();
-
+): Promise<boolean> {
   if (reference.kind === "material") {
-    const { data } = await supabase
+    const { data, error } = await client
       .from("materials")
-      .select("storage_path")
-      .eq("id", id)
+      .select("id")
+      .eq("id", reference.id)
       .maybeSingle();
-    return typeof data?.storage_path === "string" ? data.storage_path : null;
+
+    return !error && data?.id === reference.id;
   }
 
   if (reference.kind === "lesson_asset") {
-    const { data } = await supabase
+    const { data, error } = await client
       .from("lesson_assets")
-      .select("storage_path")
-      .eq("id", id)
+      .select("id")
+      .eq("id", reference.id)
       .maybeSingle();
-    return typeof data?.storage_path === "string" ? data.storage_path : null;
+
+    return !error && data?.id === reference.id;
   }
 
-  const { data } = await supabase
+  const { data, error } = await client
     .from("live_session_recordings")
-    .select("storage_path")
-    .eq("id", id)
+    .select("id")
+    .eq("id", reference.id)
     .maybeSingle();
 
-  return typeof data?.storage_path === "string" ? data.storage_path : null;
+  return !error && data?.id === reference.id;
+}
+
+async function resolveStoragePath(
+  admin: SupabaseClient,
+  reference: ProtectedAssetReference,
+): Promise<string | null> {
+  const table =
+    reference.kind === "material"
+      ? "materials"
+      : reference.kind === "lesson_asset"
+        ? "lesson_assets"
+        : "live_session_recordings";
+
+  const { data, error } = await admin
+    .from(table)
+    .select("storage_path")
+    .eq("id", reference.id)
+    .maybeSingle();
+
+  if (error || typeof data?.storage_path !== "string") {
+    return null;
+  }
+
+  return data.storage_path;
 }
 
 export async function createProtectedAssetSignedUrl(
   reference: ProtectedAssetReference,
   requestedTtlSeconds?: number,
 ): Promise<string> {
-  const actor = await assertAuthenticated();
-  const storagePath = await resolveAuthorizedStoragePath(reference);
+  const validatedReference = {
+    ...reference,
+    id: assetIdSchema.parse(reference.id),
+  } as ProtectedAssetReference;
 
-  if (!storagePath) {
+  const actor = await assertAuthenticated();
+  const authorizedClient = await createSupabaseServerClient();
+  const authorized = await canReadProtectedAsset(authorizedClient, validatedReference);
+
+  if (!authorized) {
     throw new Error("Protected asset not found.");
   }
 
   const ttlSeconds = normalizeSignedUrlTtl(requestedTtlSeconds);
   const environment = getServerSupabaseEnvironment();
   const admin = createSupabaseAdminClient();
+  const storagePath = await resolveStoragePath(admin, validatedReference);
+
+  if (!storagePath) {
+    throw new Error("Protected asset not found.");
+  }
 
   const { data, error } = await admin.storage
     .from(environment.protectedAssetsBucket)
@@ -75,8 +111,8 @@ export async function createProtectedAssetSignedUrl(
   await writeAuditLog(admin, {
     actorUserId: actor.userId,
     action: "PROTECTED_ASSET_SIGNED_URL_ISSUED",
-    entityType: reference.kind,
-    entityId: reference.id,
+    entityType: validatedReference.kind,
+    entityId: validatedReference.id,
     data: { ttl_seconds: ttlSeconds },
   });
 
