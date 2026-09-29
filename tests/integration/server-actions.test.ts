@@ -2,14 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
-  mocks.recordCurrentStudentLessonProgress: vi.fn().mockResolvedValue(undefined),
-  mocks.trackCurrentStudentLessonStarted: vi.fn().mockResolvedValue(undefined),
+  recordCurrentStudentLessonProgress: vi.fn().mockResolvedValue(undefined),
+  trackCurrentStudentLessonStarted: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock("@/server/learning/canonical-slice", () => ({
-  mocks.recordCurrentStudentLessonProgress: mocks.recordCurrentStudentLessonProgress,
-  mocks.trackCurrentStudentLessonStarted: mocks.trackCurrentStudentLessonStarted,
+  recordCurrentStudentLessonProgress: mocks.recordCurrentStudentLessonProgress,
+  trackCurrentStudentLessonStarted: mocks.trackCurrentStudentLessonStarted,
 }));
 
 import {
