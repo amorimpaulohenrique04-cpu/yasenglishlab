@@ -64,14 +64,7 @@ if (validBase) {
     }
   }
 
-  const baseMigrations = runGit([
-    "ls-tree",
-    "-r",
-    "--name-only",
-    base,
-    "--",
-    migrationDir,
-  ])
+  const baseMigrations = runGit(["ls-tree", "-r", "--name-only", base, "--", migrationDir])
     .trim()
     .split(/\r?\n/)
     .filter((path) => path.endsWith(".sql"));
@@ -93,13 +86,9 @@ if (validBase) {
     }
   }
 } else {
-  console.log(
-    "ℹ BASE_SHA is unavailable; immutable-history diff check skipped.",
-  );
+  console.log("ℹ BASE_SHA is unavailable; immutable-history diff check skipped.");
 }
 
 if (!process.exitCode) {
-  console.log(
-    `✓ migration policy passed for ${currentMigrations.length} migration(s).`,
-  );
+  console.log(`✓ migration policy passed for ${currentMigrations.length} migration(s).`);
 }
