@@ -64,7 +64,7 @@ insert into public.lesson_progress (
   enrollment_id,
   lesson_id,
   status,
-  progress_percent,
+  completion_percent,
   started_at
 )
 values
