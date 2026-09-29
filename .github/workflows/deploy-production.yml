@@ -45,7 +45,6 @@ jobs:
     name: Release Production
     needs:
       - release_gate
-    if: vars.YAS_PRODUCTION_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -54,6 +53,7 @@ jobs:
 
     env:
       YAS_ENVIRONMENT: production
+      DEPLOY_ENABLED: ${{ vars.YAS_PRODUCTION_DEPLOY_ENABLED }}
       RELEASE_SHA: ${{ inputs.release_sha }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
@@ -91,6 +91,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$YAS_ENVIRONMENT" = "production"
+          test "$DEPLOY_ENABLED" = "true"
           test -n "$SUPABASE_ACCESS_TOKEN"
           test -n "$SUPABASE_DB_PASSWORD"
           test -n "$SUPABASE_PROJECT_ID"
