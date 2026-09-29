@@ -49,7 +49,9 @@ assert(
   "Booking identity must come from verified server auth context.",
 );
 assert(
-  signedUrlService.includes("createSignedUrl(storagePath, ttlSeconds)") &&
+  signedUrlService.includes('.select("id")') &&
+    signedUrlService.includes('.select("storage_path")') &&
+    signedUrlService.includes("createSignedUrl(storagePath, ttlSeconds)") &&
     signedUrlService.includes("normalizeSignedUrlTtl") &&
     signedUrlService.includes("data: { ttl_seconds: ttlSeconds }") &&
     !signedUrlService.includes("signed_url:") &&
@@ -67,6 +69,7 @@ for (const token of [
   "materials_authorized_select",
   "billing_events_admin_select",
   "yas-protected-assets",
+  "grant select (",
 ]) {
   assert(authMigration.includes(token), `Security migration is missing: ${token}`);
 }
@@ -81,6 +84,8 @@ for (const token of [
   "Anonymous role must not have protected profile SELECT privilege",
   "Authenticated users must not mutate roles directly",
   "Authenticated users must not manipulate progress directly",
+  "Authenticated Data API must not expose protected storage paths",
+  "Support must not access student learning progress by default",
 ]) {
   assert(rlsEvidence.includes(token), `RLS evidence is missing: ${token}`);
 }
