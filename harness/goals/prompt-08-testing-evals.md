@@ -1,6 +1,6 @@
 # GOAL — prompt-08-testing-evals: Complete test and eval system
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-09-29  
 Updated: 2026-09-29
@@ -29,13 +29,13 @@ One documented test matrix and command surface can block regressions from determ
 
 ## Acceptance criteria
 
-- [ ] Five executable layers exist: unit, integration, RLS/authorization, E2E and visual regression.
-- [ ] Critical Login/Home/Aulas flows run axe plus landmark/label/keyboard/focus assertions.
-- [ ] Golden baselines cover Login/Home/Aulas on desktop, tablet and mobile.
-- [ ] `npm run verify` blocks core regressions; `npm run verify:full` adds real DB/RLS, E2E, a11y and visual suites.
-- [ ] Coding-agent behavioral evals automate safe diff-based rules and document irreducibly manual checks.
-- [ ] A deliberate red test is observed in CI, then removed, with both failure and recovery recorded.
-- [ ] No product feature beyond testing/eval infrastructure is introduced.
+- [x] Five executable layers exist: unit, integration, RLS/authorization, E2E and visual regression.
+- [x] Critical Login/Home/Aulas flows run axe plus landmark/label/keyboard/focus assertions.
+- [x] Golden baselines cover Login/Home/Aulas on desktop, tablet and mobile.
+- [x] `npm run verify` blocks core regressions; `npm run verify:full` adds real DB/RLS, E2E, a11y and visual suites.
+- [x] Coding-agent behavioral evals automate safe diff-based rules and document irreducibly manual checks.
+- [x] A deliberate red test is observed in CI, then removed, with both failure and recovery recorded.
+- [x] No product feature beyond testing/eval infrastructure is introduced.
 
 ## Allowed files / domains
 

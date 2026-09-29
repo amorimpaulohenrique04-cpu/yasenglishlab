@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task": "prompt-08-testing-evals",
+  "status": "passed",
+  "verified_at": "2026-09-29T14:00:00-03:00",
+  "branch": "testing-evals/prompt-08",
+  "verified_head_sha": "14c1cb2d54f5dafeef61f663fe923af6a33f5853",
+  "green_ci": {
+    "run_id": 36600933280,
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36600933280",
+    "conclusion": "success"
+  },
+  "deliberate_failure": {
+    "run_id": 36599772400,
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36599772400",
+    "head_sha": "f4d459e4ecdcff13d8ce7fabbf6c9523068cd85a",
+    "conclusion": "failure"
+  },
+  "recovery_ci": {
+    "run_id": 36599878827,
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36599878827",
+    "head_sha": "80b624b72c820c125a9cddd4b6fdb024a7da662a",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 11049114031,
+    "name": "prompt-08-full-verification"
+  },
+  "results": {
+    "unit": {
+      "passed": 16
+    },
+    "integration": {
+      "passed": 6
+    },
+    "integration_sql": {
+      "files_passed": 2
+    },
+    "rls": {
+      "files_passed": 1
+    },
+    "e2e": {
+      "passed": 2
+    },
+    "a11y": {
+      "expected": 4,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0
+    },
+    "storybook_visual": {
+      "passed": 6
+    },
+    "golden": {
+      "expected": 3,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "baselines_inspected": 9
+    }
+  },
+  "scope": {
+    "product_src_changed": false
+  },
+  "manual_review": {
+    "golden_baselines_inspected": true,
+    "obvious_clipping_or_overlap_observed": false,
+    "semantic_duplicate_primitive_review": "not_applicable_no_product_primitive_added",
+    "final_report_git_state_match": true
+  }
+}
