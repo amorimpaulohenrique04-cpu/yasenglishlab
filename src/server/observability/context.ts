@@ -31,12 +31,12 @@ function runtimeVersion(): string {
 
 export function createTechnicalContext(
   input: {
-    requestId?: string;
-    traceId?: string;
-    spanId?: string;
-    userId?: string;
-    environment?: string;
-    version?: string;
+    requestId?: string | undefined;
+    traceId?: string | undefined;
+    spanId?: string | undefined;
+    userId?: string | undefined;
+    environment?: string | undefined;
+    version?: string | undefined;
   } = {},
 ): TechnicalContext {
   const requestId = safeUuid(input.requestId) ?? randomUUID();
@@ -53,8 +53,8 @@ export function createTechnicalContext(
 
 export async function getRequestTechnicalContext(
   input: {
-    userId?: string;
-    spanId?: string;
+    userId?: string | undefined;
+    spanId?: string | undefined;
   } = {},
 ): Promise<TechnicalContext> {
   try {
