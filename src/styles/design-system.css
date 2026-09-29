@@ -700,11 +700,15 @@ textarea.yas-field-control {
 
 .yas-section-header h2 {
   font-size: var(--yas-font-size-xl);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: -0.015em;
 }
 
 .yas-page-header h1 {
   font-size: var(--yas-font-size-3xl);
+  font-weight: var(--yas-weight-bold);
   line-height: var(--yas-line-tight);
+  letter-spacing: -0.035em;
 }
 
 .yas-header-description {
