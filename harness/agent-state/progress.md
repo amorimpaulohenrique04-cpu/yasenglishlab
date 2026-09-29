@@ -1,0 +1,10 @@
+# Progress Log
+
+Append-only task milestones. Do not rewrite history to hide failed attempts.
+
+## 2026-09-28 — prompt-03-harness-engineering
+
+- Started from main commit `4911b389a48219a5e4d00bdac969fff5fc9de462`.
+- Scope limited to harness, verification scripts, package commands and CI wiring.
+- Product features explicitly excluded.
+- Verification pending; feature registry remains `in_progress` until evidence exists.

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "allowed_statuses": ["planned", "in_progress", "blocked", "done"],
+  "field_contract": {
+    "id": "unique kebab-case identifier",
+    "title": "human-readable task or engineering capability",
+    "status": "planned | in_progress | blocked | done",
+    "verified": "boolean; true only after required evidence is inspected",
+    "dependencies": "array of task/decision identifiers",
+    "evidence": "array of durable paths or URLs",
+    "updated_at": "ISO-8601 timestamp"
+  },
+  "features": [
+    {
+      "id": "prompt-03-harness-engineering",
+      "title": "Official Harness Engineering foundation",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["prompt-02-engineering-foundation"],
+      "evidence": [],
+      "updated_at": "2026-09-28T22:56:00-03:00"
+    }
+  ]
+}

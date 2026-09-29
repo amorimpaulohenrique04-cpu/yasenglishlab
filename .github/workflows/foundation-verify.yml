@@ -3,7 +3,7 @@ name: Foundation Verify
 on:
   push:
     branches:
-      - foundation/prompt-02
+      - harness/prompt-03
   pull_request:
     branches:
       - main
@@ -28,14 +28,11 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Verify foundation
-        run: npm run verify
-
-      - name: Build Storybook
-        run: npm run storybook:build
+      - name: Verify foundation and harness
+        run: npm run verify:agent
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run E2E
-        run: npm run test:e2e
+      - name: Verify UI harness
+        run: npm run verify:ui
