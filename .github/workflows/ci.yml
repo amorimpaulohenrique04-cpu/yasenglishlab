@@ -1,0 +1,376 @@
+name: Yas CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - cicd/prompt-09
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yas-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  supply_chain:
+    name: Supply Chain
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Verify lockfile, versions, lifecycle allowlist, Actions pins and secrets
+        run: npm run ci:supply-chain
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit critical vulnerabilities across full tree
+        run: npm audit --audit-level=critical
+
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Lint, typecheck, unit, integration, security, build and agent eval
+        run: npm run verify:agent
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify UI test harness and golden inventory
+        run: npm run verify:ui
+
+  database_rls:
+    name: Database & RLS
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: 54329
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+
+      - name: Validate migration history discipline
+        run: npm run ci:migrations
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Replay migrations, seed, integration and RLS on empty database
+        run: bash scripts/ci/replay-database.sh yas_ci_first
+
+      - name: Prove replayability on a second empty database
+        run: bash scripts/ci/replay-database.sh yas_ci_replay
+
+  critical_e2e:
+    name: Critical E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.118.0
+
+      - name: Start isolated Supabase
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f supabase/config.toml ]; then
+            supabase init
+          fi
+          supabase start
+          supabase db reset
+
+          supabase status -o env > /tmp/yas-supabase.env
+          set -a
+          source /tmp/yas-supabase.env
+          set +a
+          rm /tmp/yas-supabase.env
+
+          PUBLIC_KEY="$PUBLISHABLE_KEY"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
+          SERVER_KEY="$SECRET_KEY"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+
+          test -n "$API_URL"
+          test -n "$PUBLIC_KEY"
+          test -n "$SERVER_KEY"
+
+          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
+          echo "::add-mask::$E2E_PASSWORD"
+          echo "::add-mask::$SERVER_KEY"
+
+          {
+            echo "APP_URL=http://127.0.0.1:3000"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
+            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+            echo "CANONICAL_E2E=1"
+            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Prepare canonical student
+        run: node scripts/setup-canonical-e2e.mjs
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run canonical browser flow
+        run: npx playwright test tests/e2e/canonical-slice.spec.ts --project=chromium
+
+      - name: Assert persistence and analytics
+        run: node scripts/assert-canonical-e2e.mjs
+
+      - name: Upload E2E evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: yas-critical-e2e
+          path: test-results/canonical-slice/
+          if-no-files-found: warn
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup || true
+
+  experience:
+    name: Accessibility & Visual
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.118.0
+
+      - name: Start isolated Supabase
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f supabase/config.toml ]; then
+            supabase init
+          fi
+          supabase start
+          supabase db reset
+
+          supabase status -o env > /tmp/yas-supabase.env
+          set -a
+          source /tmp/yas-supabase.env
+          set +a
+          rm /tmp/yas-supabase.env
+
+          PUBLIC_KEY="$PUBLISHABLE_KEY"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
+          SERVER_KEY="$SECRET_KEY"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+
+          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
+          echo "::add-mask::$E2E_PASSWORD"
+          echo "::add-mask::$SERVER_KEY"
+
+          {
+            echo "APP_URL=http://127.0.0.1:3000"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
+            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+            echo "CANONICAL_E2E=1"
+            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare a11y fixture
+        run: node scripts/setup-canonical-e2e.mjs
+
+      - name: Run accessibility checks
+        run: npm run test:a11y
+
+      - name: Build Storybook
+        run: npm run storybook:build
+
+      - name: Run design-system visual checks
+        run: npm run test:visual:storybook
+
+      - name: Reset fixture for golden screenshots
+        run: node scripts/setup-canonical-e2e.mjs
+
+      - name: Run Login/Home/Aulas golden regression
+        run: npm run test:visual:golden
+
+      - name: Upload accessibility and visual evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: yas-accessibility-visual
+          path: |
+            artifacts/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup || true
+
+  pr_gate:
+    name: PR Gate
+    if: always()
+    needs:
+      - supply_chain
+      - quality
+      - database_rls
+      - critical_e2e
+      - experience
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require every PR gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ needs.supply_chain.result }}" = "success"
+          test "${{ needs.quality.result }}" = "success"
+          test "${{ needs.database_rls.result }}" = "success"
+          test "${{ needs.critical_e2e.result }}" = "success"
+          test "${{ needs.experience.result }}" = "success"
+          echo "All Yas PR gates passed."
+
+  full_verification:
+    name: Full Verification
+    if: github.event_name == 'push'
+    needs:
+      - pr_gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Deterministic install
+        run: npm ci
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.118.0
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run complete integrated verification
+        run: npm run verify:full
+
+      - name: Upload integrated evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: yas-full-verification
+          path: |
+            artifacts/
+            tests/visual/goldens/
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
