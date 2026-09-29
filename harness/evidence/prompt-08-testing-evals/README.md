@@ -10,6 +10,7 @@ Status: verified.
 - Full verification result: core + DB integration + RLS + E2E + a11y + visual all passed.
 
 Observed full-gate counts:
+
 - unit: 16 passed;
 - application/server-action integration: 6 passed;
 - integration SQL: 2 files passed;
@@ -30,16 +31,19 @@ Observed full-gate counts:
 ## A11y and visual evidence
 
 Full-verification artifact:
+
 - name: `prompt-08-full-verification`
 - artifact id: `11049114031`
 - source run: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36600933280
 - persisted reports: `artifacts/a11y/results.json` and `artifacts/golden/results.json`.
 
 Report stats inspected:
+
 - a11y: expected 4, unexpected 0, skipped 0, flaky 0;
 - golden: expected 3, unexpected 0, skipped 0, flaky 0.
 
 All nine committed golden PNGs were downloaded from the CI artifact and visually inspected:
+
 - desktop: Login, Home, Aulas;
 - tablet: Login, Home, Aulas;
 - mobile: Login, Home, Aulas.
