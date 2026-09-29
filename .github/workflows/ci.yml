@@ -160,10 +160,10 @@ jobs:
           set +a
           rm /tmp/yas-supabase.env
 
-          PUBLIC_KEY="$PUBLISHABLE_KEY"
-          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
-          SERVER_KEY="$SECRET_KEY"
-          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-}"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="${ANON_KEY:-}"; fi
+          SERVER_KEY="${SECRET_KEY:-}"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="${SERVICE_ROLE_KEY:-}"; fi
 
           test -n "$API_URL"
           test -n "$PUBLIC_KEY"
@@ -246,10 +246,10 @@ jobs:
           set +a
           rm /tmp/yas-supabase.env
 
-          PUBLIC_KEY="$PUBLISHABLE_KEY"
-          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="$ANON_KEY"; fi
-          SERVER_KEY="$SECRET_KEY"
-          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="$SERVICE_ROLE_KEY"; fi
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-}"
+          if [ -z "$PUBLIC_KEY" ]; then PUBLIC_KEY="${ANON_KEY:-}"; fi
+          SERVER_KEY="${SECRET_KEY:-}"
+          if [ -z "$SERVER_KEY" ]; then SERVER_KEY="${SERVICE_ROLE_KEY:-}"; fi
 
           E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
           echo "::add-mask::$E2E_PASSWORD"
