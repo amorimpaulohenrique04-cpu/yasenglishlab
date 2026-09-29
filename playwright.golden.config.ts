@@ -7,7 +7,9 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
   workers: 1,
-  reporter: process.env.CI ? "github" : "list",
+  reporter: process.env.CI
+    ? [["github"], ["json", { outputFile: "artifacts/golden/results.json" }]]
+    : "list",
   snapshotPathTemplate: "{testDir}/goldens/{projectName}/{arg}{ext}",
   expect: {
     toHaveScreenshot: {
