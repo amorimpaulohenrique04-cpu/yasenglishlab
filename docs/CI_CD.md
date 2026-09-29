@@ -80,14 +80,14 @@ O CI aplica:
 - consistência `package.json ↔ package-lock.json`;
 - Node 24 fixado por `.nvmrc` e `engines`;
 - `npm audit --audit-level=high`;
-- Dependency Review em PR;
+- `npm audit --audit-level=high` como gate de vulnerabilidades;
 - secret scanner de alta confiança;
 - bloqueio de lifecycle scripts raiz sem revisão;
 - heurística para scripts raiz suspeitos;
 - GitHub Actions obrigatoriamente fixadas por SHA completo;
 - Dependabot semanal para npm e GitHub Actions.
 
-Tokens do workflow ficam em `contents: read`/`pull-requests: read` no CI. Adicione permissões somente no job que realmente precisar delas.
+Tokens do workflow ficam em `contents: read`/`pull-requests: read` no CI. Adicione permissões somente no job que realmente precisar delas. O GitHub Dependency Review pode ser adicionado como segundo gate quando o Dependency Graph do repositório estiver habilitado; ele não é tratado como warning enquanto indisponível.
 
 ## Simulações executáveis
 
