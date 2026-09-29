@@ -17,8 +17,18 @@ function isProtectedPath(pathname: string): boolean {
   );
 }
 
-export async function updateSession(request: NextRequest): Promise<NextResponse> {
-  let response = NextResponse.next({ request });
+export async function updateSession(
+  request: NextRequest,
+  requestHeaders: Headers = request.headers,
+): Promise<NextResponse> {
+  const nextResponse = () =>
+    NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+
+  let response = nextResponse();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,7 +43,7 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
             request.cookies.set(name, value);
           }
 
-          response = NextResponse.next({ request });
+          response = nextResponse();
 
           for (const { name, value, options } of cookiesToSet) {
             response.cookies.set(name, value, options);

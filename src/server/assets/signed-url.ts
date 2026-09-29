@@ -4,9 +4,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { normalizeSignedUrlTtl } from "@/modules/auth";
+import { SECURITY_AUDIT_ACTIONS } from "@/server/audit/actions";
 import { writeAuditLog } from "@/server/audit/write";
 import { assertAuthenticated } from "@/server/auth/guards";
 import { getServerSupabaseEnvironment } from "@/server/env";
+import { withObservedSpan } from "@/server/observability/trace";
+import type { TechnicalErrorCode } from "@/server/observability/types";
 import { createSupabaseAdminClient } from "@/server/supabase/admin";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 
@@ -84,37 +87,56 @@ export async function createProtectedAssetSignedUrl(
   } as ProtectedAssetReference;
 
   const actor = await assertAuthenticated();
-  const authorizedClient = await createSupabaseServerClient();
-  const authorized = await canReadProtectedAsset(authorizedClient, validatedReference);
+  let failureCode: TechnicalErrorCode =
+    validatedReference.kind === "material" ? "database_error" : "video_access_failed";
 
-  if (!authorized) {
-    throw new Error("Protected asset not found.");
-  }
+  return withObservedSpan(
+    {
+      name: "protected_asset.sign",
+      stage: "protected_asset.access",
+      errorCode: () => failureCode,
+      impact: "user_blocked",
+      userId: actor.userId,
+      metadata: {
+        asset_kind: validatedReference.kind,
+        asset_id: validatedReference.id,
+      },
+    },
+    async () => {
+      const authorizedClient = await createSupabaseServerClient();
+      const authorized = await canReadProtectedAsset(authorizedClient, validatedReference);
 
-  const ttlSeconds = normalizeSignedUrlTtl(requestedTtlSeconds);
-  const environment = getServerSupabaseEnvironment();
-  const admin = createSupabaseAdminClient();
-  const storagePath = await resolveStoragePath(admin, validatedReference);
+      if (!authorized) {
+        failureCode = "permission_denied";
+        throw new Error("Protected asset not found.");
+      }
 
-  if (!storagePath) {
-    throw new Error("Protected asset not found.");
-  }
+      const ttlSeconds = normalizeSignedUrlTtl(requestedTtlSeconds);
+      const environment = getServerSupabaseEnvironment();
+      const admin = createSupabaseAdminClient();
+      const storagePath = await resolveStoragePath(admin, validatedReference);
 
-  const { data, error } = await admin.storage
-    .from(environment.protectedAssetsBucket)
-    .createSignedUrl(storagePath, ttlSeconds);
+      if (!storagePath) {
+        throw new Error("Protected asset not found.");
+      }
 
-  if (error || !data?.signedUrl) {
-    throw new Error("Unable to create protected asset URL.");
-  }
+      const { data, error } = await admin.storage
+        .from(environment.protectedAssetsBucket)
+        .createSignedUrl(storagePath, ttlSeconds);
 
-  await writeAuditLog(admin, {
-    actorUserId: actor.userId,
-    action: "PROTECTED_ASSET_SIGNED_URL_ISSUED",
-    entityType: validatedReference.kind,
-    entityId: validatedReference.id,
-    data: { ttl_seconds: ttlSeconds },
-  });
+      if (error || !data?.signedUrl) {
+        throw new Error("Unable to create protected asset URL.");
+      }
 
-  return data.signedUrl;
+      await writeAuditLog(admin, {
+        actorUserId: actor.userId,
+        action: SECURITY_AUDIT_ACTIONS.PROTECTED_ASSET_ACCESS_GRANTED,
+        entityType: validatedReference.kind,
+        entityId: validatedReference.id,
+        data: { ttl_seconds: ttlSeconds },
+      });
+
+      return data.signedUrl;
+    },
+  );
 }

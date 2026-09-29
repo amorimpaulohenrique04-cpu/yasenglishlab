@@ -1,0 +1,85 @@
+# Audit Log
+
+## Propósito
+
+Registrar fatos duráveis sobre ações privilegiadas/relevantes. Audit log responde **quem alterou o quê e quando**, com correlação suficiente para reconstruir a operação.
+
+Ele não é product analytics e não é error reporting.
+
+## Ações privilegiadas oficiais
+
+A taxonomia server-side vive em `src/server/audit/actions.ts`.
+
+| Action | Quando registrar |
+| --- | --- |
+| `role_change` | grant/revoke de role |
+| `entitlement_change` | alteração manual/configurada de entitlement de usuário |
+| `manual_subscription_change` | intervenção administrativa em assinatura |
+| `teacher_assignment` | professor atribuído/removido de aluno |
+| `assessment_publication` | versão publicada/retirada por staff |
+| `admin_data_export` | export administrativo de dados |
+
+Hoje `role_change` já está conectado ao serviço de administração. Os demais nomes são contrato para as features futuras e não significam que essas telas/fluxos já existam.
+
+Eventos de segurança/recurso já auditados também incluem `live_session_booked` e `protected_asset_access_granted`.
+
+## Contexto persistido
+
+`writeAuditLog()` grava:
+
+- `actor_user_id`;
+- `action`;
+- `entity_type`;
+- `entity_id` quando aplicável;
+- `data` allowlisted/sanitizado;
+- `request_id`;
+- `environment`;
+- `version`;
+- `occurred_at`.
+
+`audit_logs` permanece append-only: update/delete são bloqueados.
+
+## Privacidade
+
+Audit payload deve conter somente dados necessários para explicar a ação. Nunca incluir:
+
+- password;
+- token/JWT/cookie;
+- payment credentials;
+- signed URL/storage path privado;
+- private audio;
+- resposta sensível de assessment;
+- secret;
+- payload bruto de billing.
+
+O writer aplica o mesmo sanitizer da observability antes de persistir `data`.
+
+## Exemplo
+
+```json
+{
+  "action": "role_change",
+  "actor_user_id": "<uuid>",
+  "entity_type": "user_roles",
+  "data": {
+    "operation": "grant",
+    "target_user_id": "<uuid>",
+    "role": "TEACHER"
+  },
+  "request_id": "<uuid>",
+  "environment": "production",
+  "version": "<release-sha>"
+}
+```
+
+## Invariantes
+
+- Operação privilegiada relevante gera audit fact durável.
+- Histórico não é reescrito.
+- Audit log não é usado como analytics.
+- Erro técnico ao gravar audit produz observability `database_error` com impacto `data_integrity_risk`.
+- O client nunca decide `actor_user_id`.
+
+## Interfaces
+
+[OBSERVABILITY.md](./OBSERVABILITY.md) · [SECURITY.md](./SECURITY.md) · [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [OPERATIONS.md](./OPERATIONS.md)

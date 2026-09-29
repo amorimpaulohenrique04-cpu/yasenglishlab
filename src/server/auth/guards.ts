@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { staffMfaRequired } from "@/modules/auth";
 import type { UserRole } from "@/modules/domain";
 import { resolveAuthContext, type AuthContext } from "@/server/auth/context";
+import { reportTechnicalError } from "@/server/observability/report";
 
 export type AuthorizationErrorCode = "UNAUTHENTICATED" | "MFA_REQUIRED" | "FORBIDDEN";
 
@@ -27,7 +28,16 @@ export async function assertAuthenticated(requirement: AuthRequirement = {}): Pr
   }
 
   if (requirement.enforceStaffMfa !== false && staffMfaRequired(context.roles, context.aal)) {
-    throw new AuthorizationError("MFA_REQUIRED");
+    const error = new AuthorizationError("MFA_REQUIRED");
+    await reportTechnicalError(error, {
+      code: "permission_denied",
+      stage: "authorization.mfa",
+      impact: "user_blocked",
+      severity: "warning",
+      userId: context.userId,
+      metadata: { reason: "mfa_required" },
+    });
+    throw error;
   }
 
   return context;
@@ -40,7 +50,19 @@ export async function assertRole(
   const allowed = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
   if (!allowed.some((role) => context.roles.includes(role))) {
-    throw new AuthorizationError("FORBIDDEN");
+    const error = new AuthorizationError("FORBIDDEN");
+    await reportTechnicalError(error, {
+      code: "permission_denied",
+      stage: "authorization.role_check",
+      impact: "user_blocked",
+      severity: "warning",
+      userId: context.userId,
+      metadata: {
+        required_roles: allowed,
+        actual_roles: context.roles,
+      },
+    });
+    throw error;
   }
 
   return context;

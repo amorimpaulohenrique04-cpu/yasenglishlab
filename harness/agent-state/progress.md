@@ -36,3 +36,22 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final screenshot artifact 11012210130 uploaded successfully; digest `sha256:f3b9b3383a4503dd5007863d5d0620d66b17a6ab5c752cdb86c8ecc4babb35a1`.
 - Registry changed to `done` + `verified: true` only after the green run and visual inspection.
 - Active plan closed; no product page or product-domain implementation was introduced.
+
+## 2026-09-29 — prompt-10-observability
+
+- Started from main commit `a3fb43eb606779f8ba6c5f29ef5564a72c41c082`.
+- Read ANALYTICS, OBSERVABILITY, SECURITY, ARCHITECTURE and OPEN_QUESTIONS before implementation.
+- Preserved the open provider decisions for product analytics and error reporting/tracing.
+- Expanded product analytics taxonomy while keeping `ProductAnalyticsPort` as the application boundary.
+- Added request/trace/span correlation, structured logs, privacy sanitizer, typed error codes and provider-neutral `ObservabilitySink`.
+- Added append-only `observability_events` bootstrap sink and request/environment/version fields to audit logs.
+- Instrumented authorization denials, booking, protected asset access, role change, analytics persistence and audit persistence.
+- Added the intentional-error live test to Preview CI; verification is still pending, so registry remains `in_progress`.
+
+- Official CI run 36640424406 passed Supply Chain, Database, Guardrail Simulations, Quality, Preview and CI Gate on branch head `fcbfddc1864fa328b48334f0ba960d6a58934c32`.
+- Preview intentionally emitted and persisted `database_error` at `ci.intentional_error`; the result was queried by the same `request_id` and written to artifact 11066198006.
+- Artifact `artifacts/observability/intentional-error.json` was downloaded and inspected directly; correlation IDs, stage, impact, environment and exact preview version were present.
+- Evidence inspection caught and fixed two privacy-sanitizer false positives before completion: ISO timestamps and numeric runs inside alphanumeric release SHAs.
+- Final structured log uses snake_case correlation fields, omits absent user identity, preserves ISO timestamp/version, and retains redaction for actual sensitive values.
+- Durable evidence recorded under `harness/evidence/prompt-10-observability/`.
+- Registry moved to `done` + `verified: true` only after the green run and evidence inspection.

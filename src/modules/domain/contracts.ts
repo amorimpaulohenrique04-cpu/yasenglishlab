@@ -183,10 +183,25 @@ export const lessonProgressSchema = z
 export type LessonProgress = z.infer<typeof lessonProgressSchema>;
 
 export const PRODUCT_ANALYTICS_EVENTS = [
+  "signup_completed",
   "login_completed",
+  "subscription_started",
+  "subscription_upgraded",
+  "subscription_downgraded",
+  "subscription_cancelled",
   "lesson_started",
   "lesson_progressed",
   "lesson_completed",
+  "module_completed",
+  "practice_started",
+  "practice_completed",
+  "material_opened",
+  "material_favorited",
+  "assessment_started",
+  "assessment_completed",
+  "live_session_booked",
+  "live_session_cancelled",
+  "live_session_attended",
 ] as const;
 export const productAnalyticsEventSchema = z.enum(PRODUCT_ANALYTICS_EVENTS);
 export type ProductAnalyticsEvent = z.infer<typeof productAnalyticsEventSchema>;
@@ -450,6 +465,9 @@ export const auditLogSchema = z
     entityType: z.string().min(1),
     entityId: idSchema.nullable(),
     data: jsonObjectSchema,
+    requestId: idSchema.nullable(),
+    environment: z.string().min(1).max(40),
+    version: z.string().min(1).max(120),
     occurredAt: dateTimeSchema,
   })
   .strict();

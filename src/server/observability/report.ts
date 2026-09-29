@@ -1,0 +1,78 @@
+import "server-only";
+
+import { getRequestTechnicalContext } from "./context";
+import { buildTechnicalErrorEvent } from "./event";
+import { writeStructuredLog } from "./logger";
+import { createDefaultObservabilitySink } from "./supabase-sink";
+import type {
+  ObservabilitySink,
+  TechnicalContext,
+  TechnicalErrorCode,
+  TechnicalErrorEvent,
+  TechnicalImpact,
+  TechnicalSeverity,
+} from "./types";
+
+export async function reportTechnicalError(
+  error: unknown,
+  input: {
+    code: TechnicalErrorCode;
+    stage: string;
+    impact: TechnicalImpact;
+    severity?: TechnicalSeverity | undefined;
+    userId?: string | undefined;
+    metadata?: Record<string, unknown> | undefined;
+    context?: TechnicalContext | undefined;
+    sink?: ObservabilitySink | undefined;
+  },
+): Promise<TechnicalErrorEvent> {
+  const context =
+    input.context ??
+    (await getRequestTechnicalContext({
+      userId: input.userId,
+    }));
+
+  const event = buildTechnicalErrorEvent(error, {
+    code: input.code,
+    stage: input.stage,
+    impact: input.impact,
+    severity: input.severity,
+    context,
+    metadata: input.metadata,
+  });
+
+  writeStructuredLog("error", {
+    event_name: event.eventName,
+    severity: event.severity,
+    error_code: event.errorCode,
+    request_id: event.requestId,
+    trace_id: event.traceId,
+    span_id: event.spanId,
+    user_id: event.userId,
+    environment: event.environment,
+    version: event.version,
+    stage: event.stage,
+    impact: event.impact,
+    message: event.message,
+    metadata: event.metadata,
+    occurred_at: event.occurredAt,
+  });
+
+  try {
+    await (input.sink ?? createDefaultObservabilitySink()).record(event);
+  } catch {
+    writeStructuredLog("error", {
+      event_name: "observability_sink_failed",
+      request_id: event.requestId,
+      trace_id: event.traceId,
+      span_id: event.spanId,
+      environment: event.environment,
+      version: event.version,
+      stage: "observability.persist",
+      original_error_code: event.errorCode,
+      impact: "degraded",
+    });
+  }
+
+  return event;
+}

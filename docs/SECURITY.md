@@ -39,11 +39,15 @@ Para download:
 
 Para upload futuro, o endpoint deverá validar tamanho, MIME declarado **e conteúdo real/magic bytes** antes de persistir. Até esse serviço existir, upload autenticado direto permanece negado.
 
-## Logging
+## Logging, observability e audit
 
-Senhas, JWTs, refresh tokens, secrets, payload bruto de billing e signed URLs nunca entram em logs de aplicação/audit.
+Senhas, JWTs, refresh tokens, cookies de autenticação, secrets, credenciais de pagamento, áudio privado, respostas sensíveis de assessment, payload bruto de billing e signed URLs nunca entram em logs de aplicação/audit.
 
-Audit payloads de triggers são allowlisted. O Data API não concede a usuários autenticados acesso à coluna `billing_events.payload`.
+O PROMPT 10 adiciona sanitizer compartilhado para structured logs, error reporting e writes de audit. Emails/telefones em strings livres são mascarados. `observability_events` não concede acesso direto a `anon`/`authenticated` e é append-only.
+
+Audit payloads de triggers/writers são allowlisted ou sanitizados. O Data API não concede a usuários autenticados acesso à coluna `billing_events.payload`.
+
+Detalhes: [OBSERVABILITY.md](./OBSERVABILITY.md) e [AUDIT_LOG.md](./AUDIT_LOG.md).
 
 ## Invariantes
 

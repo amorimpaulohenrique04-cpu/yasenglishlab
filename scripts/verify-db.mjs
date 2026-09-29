@@ -47,6 +47,7 @@ const requiredInvariants = [
   "enable row level security",
   "rename column progress_percent to completion_percent",
   "create table public.product_analytics_events",
+  "create table public.observability_events",
   "create or replace function public.record_lesson_progress",
   "auth.uid()",
 ];

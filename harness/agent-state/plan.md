@@ -2,22 +2,24 @@
 
 ## Active task
 
-**prompt-08-testing-evals**
+**prompt-10-observability**
 
 State: completed and verified on the feature branch; ready to merge.
 
-Goal: build the regression-prevention infrastructure around the canonical vertical slice.
+Goal: make critical technical failures reconstructable without mixing product analytics, observability and privileged audit history.
 
 ### Completed execution
 
-1. Normalized commands for unit, integration, executable SQL/RLS, E2E, a11y and visual suites.
-2. Added application/server-action integration coverage without substituting mocks for real DB/RLS authorization tests.
-3. Added Login/Home/Aulas axe + semantic/keyboard/focus tests.
-4. Added Playwright golden tests for desktop/tablet/mobile and committed nine reviewed baselines.
-5. Added executable coding-agent diff evals plus documented manual limits.
-6. Proved fail-closed behavior with one deliberate failing test, then removed it and recovered to green.
-7. Ran full verification, inspected artifacts, persisted evidence and marked the feature verified.
+1. Expanded the existing product analytics contract without replacing its application port.
+2. Added provider-neutral structured logging, request/trace/span correlation, privacy redaction and a durable technical-error sink.
+3. Added request/environment/version correlation to append-only audit logs and typed privileged audit actions.
+4. Instrumented existing high-value server boundaries: authorization, booking, protected assets, role changes, analytics persistence and audit persistence.
+5. Added migration + SQL/RLS/unit/integration/security evidence.
+6. Proved an intentional error against isolated Preview Supabase and queried it back by the same request_id.
+7. Inspected structured-log output and artifact evidence; corrected false PII-redaction positives for ISO timestamps and release SHAs.
+8. Preserved the unresolved provider choices in OPEN_QUESTIONS.
+9. Final Official CI #158 passed all mandatory gates.
 
 ### Scope boundary
 
-Testing/eval/docs/harness/CI only. No product behavior or UI changes.
+Telemetry/server boundaries, migrations, tests, CI, docs and harness state only. No new product screen or domain feature.

@@ -39,7 +39,8 @@
     "verify:core": "node scripts/verify-core.mjs",
     "ci:policy": "node scripts/ci/check-repo-policy.mjs",
     "ci:secrets": "node scripts/ci/secret-scan.mjs",
-    "ci:migrations": "node scripts/ci/check-migrations.mjs"
+    "ci:migrations": "node scripts/ci/check-migrations.mjs",
+    "test:observability:live": "vitest run tests/integration/observability-live.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
