@@ -18,13 +18,13 @@ values
   (
     '83200000-0000-0000-0000-000000000001',
     '83000000-0000-0000-0000-000000000001',
-    '40000000-0000-0000-0000-000000000001',
+    '40000000-0000-4000-8000-000000000001',
     'ACTIVE'
   ),
   (
     '83200000-0000-0000-0000-000000000002',
     '83000000-0000-0000-0000-000000000002',
-    '40000000-0000-0000-0000-000000000001',
+    '40000000-0000-4000-8000-000000000001',
     'ACTIVE'
   )
 on conflict (id) do nothing;
@@ -43,7 +43,7 @@ declare
   saved public.lesson_progress;
 begin
   saved := public.record_lesson_progress(
-    '42000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     25,
     150
   );
@@ -57,7 +57,7 @@ begin
   end if;
 
   saved := public.record_lesson_progress(
-    '42000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     50,
     300
   );
@@ -68,12 +68,12 @@ begin
 
   perform public.track_product_event(
     'lesson_started',
-    '42000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     '{}'::jsonb
   );
   perform public.track_product_event(
     'lesson_progressed',
-    '42000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     '{"completion_percent":50}'::jsonb
   );
 end;
@@ -106,7 +106,7 @@ declare
   visible_count integer;
 begin
   saved := public.record_lesson_progress(
-    '42000000-0000-0000-0000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
     20,
     120
   );
@@ -137,7 +137,7 @@ begin
   into persisted_percent, persisted_position
   from public.lesson_progress
   where user_id = '83000000-0000-0000-0000-000000000001'
-    and lesson_id = '42000000-0000-0000-0000-000000000001';
+    and lesson_id = '42000000-0000-4000-8000-000000000001';
 
   if persisted_percent <> 50 or persisted_position <> 300 then
     raise exception 'Canonical persisted checkpoint must survive session changes';
