@@ -56,7 +56,7 @@ export const DesktopShell: Story = {
           end={
             <div className="yas-cluster">
               <IconButton label="Notificações">○</IconButton>
-              <Avatar fallback="YO" alt="Yasmin Oliveira" />
+              <Avatar fallback="YO" label="Yasmin Oliveira" />
             </div>
           }
         />
@@ -105,7 +105,7 @@ export const MobileShell: Story = {
         end={
           <div className="yas-cluster">
             <IconButton label="Notificações">○</IconButton>
-            <Avatar fallback="YO" alt="Yasmin Oliveira" />
+            <Avatar fallback="YO" label="Yasmin Oliveira" />
           </div>
         }
       />
