@@ -34,8 +34,9 @@ Implementação inicial:
 - Practice pode carregar `cefr_target` como contexto pedagógico, mas seu resultado não define proficiência CEFR.
 
 ### Materials
-- **Material** pode apontar para Module/Lesson.
+- **Material** pode apontar para Module/Lesson e declarar `required_entitlement_key`.
 - **MaterialFavorite** pertence ao usuário e ao material.
+- Material protegido deve usar storage privado; URL externa permanente não é aceita para esse caso.
 
 ### Assessment
 - **Assessment → AssessmentVersion → AssessmentItem**.
@@ -45,7 +46,9 @@ Implementação inicial:
 
 ### Live
 - **Teacher → TeacherAvailability**.
+- **TeacherStudentAssignment** limita explicitamente quais alunos um professor pode consultar.
 - **LiveSession → SessionBooking → Attendance**.
+- **LiveSessionRecording** pertence a uma LiveSession e pode exigir entitlement.
 - LiveSession possui capacidade no banco e pode declarar `required_entitlement_key`.
 
 ### Platform
@@ -123,9 +126,15 @@ Esses códigos identificam produtos; não são uma enumeração de autorização
 
 O banco evita PostgreSQL ENUM nesta etapa. Estados estáveis usam `CHECK` constraints, que preservam validação sem tornar evolução de domínio desnecessariamente rígida. TypeScript usa literais/Zod para validar DTOs.
 
-## Segurança nesta etapa
+## Segurança e autorização
 
-Todas as tabelas públicas nascem com RLS habilitado. Policies de produto não são criadas ainda: autorização detalhada pertence à etapa específica de Auth/RBAC/RLS. Até lá, o acesso privilegiado deve permanecer no servidor.
+PROMPT 06 implementa as policies RLS e contratos server-side descritos em [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md).
+
+`teacher_student_assignments` é o sistema de registro da relação que permite ao professor consultar contexto de um aluno. Conhecer um UUID não é suficiente.
+
+`live_session_recordings`, materiais e lesson assets protegidos guardam somente paths privados; a aplicação emite signed URLs curtas após autorização.
+
+Roles, entitlements, subscriptions, progress e bookings não aceitam mutação direta pelo papel `authenticated`; comandos legítimos passam pela camada server-side e pelas invariantes de banco.
 
 ## Verificação
 
