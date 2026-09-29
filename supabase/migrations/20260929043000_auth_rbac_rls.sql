@@ -195,7 +195,6 @@ as $$
   select
     p_student_user_id = (select auth.uid())
     or private.is_teacher_assigned(p_student_user_id)
-    or private.has_role('SUPPORT', true)
     or private.has_role('ADMIN', true);
 $$;
 
@@ -431,13 +430,35 @@ grant select on public.plan_entitlements to authenticated;
 grant select on public.courses to authenticated;
 grant select on public.modules to authenticated;
 grant select on public.lessons to authenticated;
-grant select on public.lesson_assets to authenticated;
+grant select (
+  id,
+  lesson_id,
+  asset_type,
+  position,
+  source_url,
+  content,
+  metadata,
+  required_entitlement_key,
+  created_at
+) on public.lesson_assets to authenticated;
 grant select on public.enrollments to authenticated;
 grant select on public.lesson_progress to authenticated;
 grant select on public.practice_activities to authenticated;
 grant select on public.practice_attempts to authenticated;
 grant select on public.practice_results to authenticated;
-grant select on public.materials to authenticated;
+grant select (
+  id,
+  title,
+  material_type,
+  module_id,
+  lesson_id,
+  external_url,
+  metadata,
+  active,
+  required_entitlement_key,
+  created_at,
+  updated_at
+) on public.materials to authenticated;
 grant select, insert, delete on public.material_favorites to authenticated;
 grant select on public.assessments to authenticated;
 grant select on public.assessment_versions to authenticated;
@@ -448,7 +469,13 @@ grant select on public.skill_scores to authenticated;
 grant select on public.teachers to authenticated;
 grant select on public.teacher_availability to authenticated;
 grant select on public.teacher_student_assignments to authenticated;
-grant select on public.live_session_recordings to authenticated;
+grant select (
+  id,
+  live_session_id,
+  required_entitlement_key,
+  available_at,
+  created_at
+) on public.live_session_recordings to authenticated;
 grant select on public.session_bookings to authenticated;
 grant select on public.attendance to authenticated;
 grant select on public.notifications to authenticated;
