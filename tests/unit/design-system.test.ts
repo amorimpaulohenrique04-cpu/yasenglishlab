@@ -17,7 +17,17 @@ describe("design-system utilities", () => {
 
   it("exposes every required token category", () => {
     expect(Object.keys(yasTokens)).toEqual(
-      expect.arrayContaining(["colors", "typography", "spacing", "radius", "shadow", "border", "breakpoints", "zIndex", "motion"]),
+      expect.arrayContaining([
+        "colors",
+        "typography",
+        "spacing",
+        "radius",
+        "shadow",
+        "border",
+        "breakpoints",
+        "zIndex",
+        "motion",
+      ]),
     );
   });
 });

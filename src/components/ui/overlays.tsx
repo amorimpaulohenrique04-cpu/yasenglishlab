@@ -1,6 +1,14 @@
 "use client";
 
-import { cloneElement, isValidElement, useEffect, useId, useRef, type ReactElement, type ReactNode } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 import { cx } from "./utils";
 
@@ -36,7 +44,16 @@ interface ModalProps {
   closeLabel?: string;
 }
 
-function Modal({ open, onOpenChange, title, description, children, actions, className, closeLabel = "Fechar" }: ModalProps) {
+function Modal({
+  open,
+  onOpenChange,
+  title,
+  description,
+  children,
+  actions,
+  className,
+  closeLabel = "Fechar",
+}: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -75,7 +92,12 @@ function Modal({ open, onOpenChange, title, description, children, actions, clas
               </p>
             )}
           </div>
-          <button type="button" className="yas-dialog-close" aria-label={closeLabel} onClick={() => onOpenChange(false)}>
+          <button
+            type="button"
+            className="yas-dialog-close"
+            aria-label={closeLabel}
+            onClick={() => onOpenChange(false)}
+          >
             ×
           </button>
         </div>

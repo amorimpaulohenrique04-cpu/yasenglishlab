@@ -42,7 +42,15 @@ type Story = StoryObj<typeof meta>;
 
 function ArrowIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   );
@@ -58,9 +66,14 @@ export const CoreStates: Story = {
       />
 
       <Card>
-        <SectionHeader title="Buttons" description="Amarelo é reservado para ação prioritária; roxo sustenta identidade e navegação." />
+        <SectionHeader
+          title="Buttons"
+          description="Amarelo é reservado para ação prioritária; roxo sustenta identidade e navegação."
+        />
         <div className="yas-cluster" style={{ marginTop: 20 }}>
-          <Button variant="primary" trailingIcon={<ArrowIcon />}>Continuar</Button>
+          <Button variant="primary" trailingIcon={<ArrowIcon />}>
+            Continuar
+          </Button>
           <Button variant="secondary">Salvar</Button>
           <Button variant="outline">Ver detalhes</Button>
           <Button variant="ghost">Cancelar</Button>
@@ -98,8 +111,16 @@ export const CoreStates: Story = {
         </div>
       </Card>
 
-      <Alert tone="success" title="Alterações salvas" description="Suas preferências foram atualizadas com sucesso." />
-      <Toast tone="info" title="Novo material disponível" description="O resumo da aula já pode ser revisado." />
+      <Alert
+        tone="success"
+        title="Alterações salvas"
+        description="Suas preferências foram atualizadas com sucesso."
+      />
+      <Toast
+        tone="info"
+        title="Novo material disponível"
+        description="O resumo da aula já pode ser revisado."
+      />
     </div>
   ),
 };
@@ -107,9 +128,17 @@ export const CoreStates: Story = {
 export const FormControls: Story = {
   render: () => (
     <div className="yas-stack" style={{ maxWidth: 720 }}>
-      <PageHeader title="Campos e validação" description="Labels reais, mensagens sem depender apenas de cor e controles com foco visível." />
+      <PageHeader
+        title="Campos e validação"
+        description="Labels reais, mensagens sem depender apenas de cor e controles com foco visível."
+      />
       <Input label="Nome completo" placeholder="Seu nome" />
-      <Input label="E-mail" defaultValue="email-invalido" tone="error" message="Informe um e-mail válido." />
+      <Input
+        label="E-mail"
+        defaultValue="email-invalido"
+        tone="error"
+        message="Informe um e-mail válido."
+      />
       <Input label="Código" defaultValue="YAS-2026" tone="success" message="Código verificado ✓" />
       <Input label="Campo desabilitado" defaultValue="Não editável" disabled />
       <Select
@@ -145,9 +174,21 @@ export const NavigationAndOverlays: Story = {
           ariaLabel="Área de progresso"
           defaultValue="overview"
           items={[
-            { id: "overview", label: "Visão geral", content: <Card variant="soft">Conteúdo da visão geral.</Card> },
-            { id: "skills", label: "Habilidades", content: <Card variant="soft">Conteúdo das habilidades.</Card> },
-            { id: "history", label: "Histórico", content: <Card variant="soft">Conteúdo do histórico.</Card> },
+            {
+              id: "overview",
+              label: "Visão geral",
+              content: <Card variant="soft">Conteúdo da visão geral.</Card>,
+            },
+            {
+              id: "skills",
+              label: "Habilidades",
+              content: <Card variant="soft">Conteúdo das habilidades.</Card>,
+            },
+            {
+              id: "history",
+              label: "Histórico",
+              content: <Card variant="soft">Conteúdo do histórico.</Card>,
+            },
             { id: "locked", label: "Bloqueado", content: null, disabled: true },
           ]}
         />
@@ -160,15 +201,23 @@ export const NavigationAndOverlays: Story = {
               { id: "delete", label: "Excluir", destructive: true },
             ]}
           />
-          <Button variant="secondary" onClick={() => setDialogOpen(true)}>Abrir diálogo</Button>
-          <Button variant="outline" onClick={() => setDrawerOpen(true)}>Abrir drawer</Button>
+          <Button variant="secondary" onClick={() => setDialogOpen(true)}>
+            Abrir diálogo
+          </Button>
+          <Button variant="outline" onClick={() => setDrawerOpen(true)}>
+            Abrir drawer
+          </Button>
         </div>
         <Dialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
           title="Confirmar ação"
           description="Este exemplo usa o elemento dialog nativo e preserva Escape/foco modal do navegador."
-          actions={<Button variant="primary" onClick={() => setDialogOpen(false)}>Confirmar</Button>}
+          actions={
+            <Button variant="primary" onClick={() => setDialogOpen(false)}>
+              Confirmar
+            </Button>
+          }
         >
           <p>Conteúdo modal curto e objetivo.</p>
         </Dialog>
@@ -225,7 +274,10 @@ export const LongTextAndFocus: Story = {
 export const MobileWidth: Story = {
   render: () => (
     <div style={{ width: 360, maxWidth: "100%" }} className="yas-stack">
-      <PageHeader title="Materiais" description="Hierarquia preservada em uma largura de celular." />
+      <PageHeader
+        title="Materiais"
+        description="Hierarquia preservada em uma largura de celular."
+      />
       <Button variant="primary">Começar prática</Button>
       <Card>
         <SectionHeader title="Continue revisando" />

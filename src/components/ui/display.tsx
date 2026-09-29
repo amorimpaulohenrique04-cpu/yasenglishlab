@@ -8,7 +8,10 @@ export interface CardProps extends HTMLAttributes<HTMLElement> {
 
 export function Card({ variant = "default", className, children, ...props }: CardProps) {
   return (
-    <section {...props} className={cx("yas-card", variant !== "default" && `yas-card--${variant}`, className)}>
+    <section
+      {...props}
+      className={cx("yas-card", variant !== "default" && `yas-card--${variant}`, className)}
+    >
       {children}
     </section>
   );
@@ -37,7 +40,12 @@ export interface SelectableTagProps {
   onClick?: () => void;
 }
 
-export function SelectableTag({ selected = false, disabled, children, onClick }: SelectableTagProps) {
+export function SelectableTag({
+  selected = false,
+  disabled,
+  children,
+  onClick,
+}: SelectableTagProps) {
   return (
     <button
       type="button"
@@ -78,7 +86,12 @@ export interface ProgressBarProps {
   tone?: "default" | "priority";
 }
 
-export function ProgressBar({ value, label, showValue = true, tone = "default" }: ProgressBarProps) {
+export function ProgressBar({
+  value,
+  label,
+  showValue = true,
+  tone = "default",
+}: ProgressBarProps) {
   const safe = clampProgress(value);
 
   return (
@@ -111,13 +124,21 @@ export interface ProgressRingProps {
   children?: ReactNode;
 }
 
-export function ProgressRing({ value, size = 88, label = "Progresso", children }: ProgressRingProps) {
+export function ProgressRing({
+  value,
+  size = 88,
+  label = "Progresso",
+  children,
+}: ProgressRingProps) {
   const safe = clampProgress(value);
   const stroke = 8;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (safe / 100) * circumference;
-  const style = { strokeDasharray: circumference, strokeDashoffset: offset } satisfies CSSProperties;
+  const style = {
+    strokeDasharray: circumference,
+    strokeDashoffset: offset,
+  } satisfies CSSProperties;
 
   return (
     <div
@@ -129,7 +150,14 @@ export function ProgressRing({ value, size = 88, label = "Progresso", children }
       aria-valuenow={safe}
     >
       <svg width={size} height={size} aria-hidden="true">
-        <circle className="yas-progress-ring-track" cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={stroke} />
+        <circle
+          className="yas-progress-ring-track"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={stroke}
+        />
         <circle
           className="yas-progress-ring-value"
           cx={size / 2}
@@ -152,5 +180,12 @@ export interface SkeletonProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Skeleton({ width = "100%", height = "1rem", style, ...props }: SkeletonProps) {
-  return <span {...props} className={cx("yas-skeleton", props.className)} aria-hidden="true" style={{ width, height, ...style }} />;
+  return (
+    <span
+      {...props}
+      className={cx("yas-skeleton", props.className)}
+      aria-hidden="true"
+      style={{ width, height, ...style }}
+    />
+  );
 }

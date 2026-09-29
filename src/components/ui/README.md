@@ -5,6 +5,7 @@ Reusable primitives derived from the approved visual contract.
 ## Inventory
 
 Controls:
+
 - Button
 - IconButton
 - Input
@@ -14,6 +15,7 @@ Controls:
 - Textarea
 
 Display:
+
 - Card
 - Badge
 - Tag / SelectableTag
@@ -23,21 +25,25 @@ Display:
 - Skeleton
 
 Navigation:
+
 - Tabs
 - Dropdown
 
 Overlays:
+
 - Tooltip
 - Dialog
 - Drawer
 
 Feedback:
+
 - Toast
 - Alert
 - EmptyState
 - ErrorState
 
 Headers:
+
 - SectionHeader
 - PageHeader
 

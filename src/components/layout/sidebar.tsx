@@ -23,7 +23,11 @@ export function Sidebar({ brand, items, footer, ariaLabel = "Navegação princip
         <ul className="yas-sidebar-list">
           {items.map((item) => (
             <li key={item.id}>
-              <a className="yas-sidebar-link" href={item.href} aria-current={item.active ? "page" : undefined}>
+              <a
+                className="yas-sidebar-link"
+                href={item.href}
+                aria-current={item.active ? "page" : undefined}
+              >
                 {item.icon && <span aria-hidden="true">{item.icon}</span>}
                 <span>{item.label}</span>
               </a>

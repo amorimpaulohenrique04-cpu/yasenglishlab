@@ -1,4 +1,11 @@
-import { useId, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import {
+  useId,
+  type ButtonHTMLAttributes,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
 
 import { cx } from "./utils";
 
@@ -29,7 +36,12 @@ export function Button({
     <button
       {...props}
       type={type}
-      className={cx("yas-button", `yas-button--${variant}`, size !== "md" && `yas-button--${size}`, className)}
+      className={cx(
+        "yas-button",
+        `yas-button--${variant}`,
+        size !== "md" && `yas-button--${size}`,
+        className,
+      )}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
     >
@@ -40,11 +52,20 @@ export function Button({
   );
 }
 
-export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "aria-label"> {
+export interface IconButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "aria-label"
+> {
   label: string;
 }
 
-export function IconButton({ label, className, type = "button", children, ...props }: IconButtonProps) {
+export function IconButton({
+  label,
+  className,
+  type = "button",
+  children,
+  ...props
+}: IconButtonProps) {
   return (
     <button {...props} type={type} aria-label={label} className={cx("yas-icon-button", className)}>
       {children}
@@ -75,7 +96,11 @@ function FieldFrame({ id, label, required, tone = "default", message, children }
         {required ? " *" : ""}
       </label>
       {children(controlId, messageId)}
-      <span className="yas-field-message" id={messageId} aria-live={tone === "error" ? "polite" : undefined}>
+      <span
+        className="yas-field-message"
+        id={messageId}
+        aria-live={tone === "error" ? "polite" : undefined}
+      >
         {message ?? ""}
       </span>
     </div>
@@ -88,7 +113,15 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   message?: string;
 }
 
-export function Input({ id, label, tone = "default", message, required, className, ...props }: InputProps) {
+export function Input({
+  id,
+  label,
+  tone = "default",
+  message,
+  required,
+  className,
+  ...props
+}: InputProps) {
   return (
     <FieldFrame id={id} label={label} tone={tone} message={message} required={required}>
       {(controlId, describedBy) => (
@@ -118,7 +151,16 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   message?: string;
 }
 
-export function Select({ id, label, options, tone = "default", message, required, className, ...props }: SelectProps) {
+export function Select({
+  id,
+  label,
+  options,
+  tone = "default",
+  message,
+  required,
+  className,
+  ...props
+}: SelectProps) {
   return (
     <FieldFrame id={id} label={label} tone={tone} message={message} required={required}>
       {(controlId, describedBy) => (
@@ -147,7 +189,15 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   message?: string;
 }
 
-export function Textarea({ id, label, tone = "default", message, required, className, ...props }: TextareaProps) {
+export function Textarea({
+  id,
+  label,
+  tone = "default",
+  message,
+  required,
+  className,
+  ...props
+}: TextareaProps) {
   return (
     <FieldFrame id={id} label={label} tone={tone} message={message} required={required}>
       {(controlId, describedBy) => (

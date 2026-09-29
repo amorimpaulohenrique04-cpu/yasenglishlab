@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-import { Avatar, Button, Card, IconButton, Input, PageHeader, SectionHeader } from "@/components/ui";
+import {
+  Avatar,
+  Button,
+  Card,
+  IconButton,
+  Input,
+  PageHeader,
+  SectionHeader,
+} from "@/components/ui";
 
 import { AppShell, ContentContainer, Sidebar, Topbar } from ".";
 
@@ -31,17 +39,41 @@ const items = [
 export const DesktopShell: Story = {
   render: () => (
     <AppShell
-      sidebar={<Sidebar brand={<span>Yas English Lab</span>} items={items} footer="Ajuda e suporte" />}
+      sidebar={
+        <Sidebar brand={<span>Yas English Lab</span>} items={items} footer="Ajuda e suporte" />
+      }
       topbar={
         <Topbar
-          start={<div style={{ width: 360, maxWidth: "48vw" }}><Input label="Busca" aria-label="Busca" placeholder="Buscar aulas, materiais, temas…" /></div>}
-          end={<div className="yas-cluster"><IconButton label="Notificações">○</IconButton><Avatar fallback="YO" alt="Yasmin Oliveira" /></div>}
+          start={
+            <div style={{ width: 360, maxWidth: "48vw" }}>
+              <Input
+                label="Busca"
+                aria-label="Busca"
+                placeholder="Buscar aulas, materiais, temas…"
+              />
+            </div>
+          }
+          end={
+            <div className="yas-cluster">
+              <IconButton label="Notificações">○</IconButton>
+              <Avatar fallback="YO" alt="Yasmin Oliveira" />
+            </div>
+          }
         />
       }
     >
       <ContentContainer className="yas-stack">
-        <PageHeader title="Olá, Yasmin" description="Shell e ritmo visual — não é a implementação da Home." />
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.5fr) minmax(16rem, 1fr)", gap: 16 }}>
+        <PageHeader
+          title="Olá, Yasmin"
+          description="Shell e ritmo visual — não é a implementação da Home."
+        />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 1.5fr) minmax(16rem, 1fr)",
+            gap: 16,
+          }}
+        >
           <Card variant="accent">
             <SectionHeader title="Próxima ação" />
             <p>Um conteúdo de exemplo demonstra apenas superfície, espaçamento e hierarquia.</p>
@@ -59,13 +91,29 @@ export const DesktopShell: Story = {
 
 export const MobileShell: Story = {
   render: () => (
-    <div style={{ width: 390, maxWidth: "100%", margin: "0 auto", minHeight: 760, background: "var(--yas-color-canvas)" }}>
+    <div
+      style={{
+        width: 390,
+        maxWidth: "100%",
+        margin: "0 auto",
+        minHeight: 760,
+        background: "var(--yas-color-canvas)",
+      }}
+    >
       <Topbar
         start={<IconButton label="Abrir menu">☰</IconButton>}
-        end={<div className="yas-cluster"><IconButton label="Notificações">○</IconButton><Avatar fallback="YO" alt="Yasmin Oliveira" /></div>}
+        end={
+          <div className="yas-cluster">
+            <IconButton label="Notificações">○</IconButton>
+            <Avatar fallback="YO" alt="Yasmin Oliveira" />
+          </div>
+        }
       />
       <ContentContainer className="yas-stack">
-        <PageHeader title="Olá, Yasmin" description="No mobile, a Sidebar desaparece e a navegação deve ser recomposta via Drawer." />
+        <PageHeader
+          title="Olá, Yasmin"
+          description="No mobile, a Sidebar desaparece e a navegação deve ser recomposta via Drawer."
+        />
         <Card variant="accent">
           <SectionHeader title="Próxima ação" />
           <p>Conteúdo empilhado preserva prioridade e leitura.</p>

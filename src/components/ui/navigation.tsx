@@ -20,7 +20,14 @@ export interface TabsProps {
   className?: string;
 }
 
-export function Tabs({ items, ariaLabel, defaultValue, value, onValueChange, className }: TabsProps) {
+export function Tabs({
+  items,
+  ariaLabel,
+  defaultValue,
+  value,
+  onValueChange,
+  className,
+}: TabsProps) {
   const firstEnabled = items.find((item) => !item.disabled)?.id ?? "";
   const [internalValue, setInternalValue] = useState(defaultValue ?? firstEnabled);
   const activeValue = value ?? internalValue;
@@ -77,7 +84,12 @@ export function Tabs({ items, ariaLabel, defaultValue, value, onValueChange, cla
         ))}
       </div>
       {active && (
-        <div id={`${active.id}-panel`} role="tabpanel" aria-labelledby={`${active.id}-tab`} tabIndex={0}>
+        <div
+          id={`${active.id}-panel`}
+          role="tabpanel"
+          aria-labelledby={`${active.id}-tab`}
+          tabIndex={0}
+        >
           {active.content}
         </div>
       )}
@@ -116,7 +128,10 @@ export function Dropdown({ label, items }: DropdownProps) {
     const enabledIndexes = items.map((item, i) => (!item.disabled ? i : -1)).filter((i) => i >= 0);
     if (enabledIndexes.length === 0) return;
     const currentPosition = enabledIndexes.indexOf(index);
-    const nextPosition = currentPosition < 0 ? 0 : (currentPosition + direction + enabledIndexes.length) % enabledIndexes.length;
+    const nextPosition =
+      currentPosition < 0
+        ? 0
+        : (currentPosition + direction + enabledIndexes.length) % enabledIndexes.length;
     itemRefs.current[enabledIndexes[nextPosition]]?.focus();
   };
 
