@@ -25,7 +25,7 @@
     "verify:security": "node scripts/verify-security.mjs",
     "verify:db": "node scripts/verify-db.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",
-    "verify:agent": "npm run verify && npm run verify:harness && npm run verify:security && npm run eval:agent",
+    "verify:agent": "npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent",
     "verify:full": "node scripts/verify-full.mjs",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
@@ -35,7 +35,8 @@
     "test:visual:storybook": "playwright test -c playwright.visual.config.ts",
     "test:visual:golden": "playwright test -c playwright.golden.config.ts",
     "test:visual:update": "playwright test -c playwright.golden.config.ts --update-snapshots",
-    "eval:agent": "node scripts/eval-agent.mjs"
+    "eval:agent": "node scripts/eval-agent.mjs",
+    "verify:core": "node scripts/verify-core.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
