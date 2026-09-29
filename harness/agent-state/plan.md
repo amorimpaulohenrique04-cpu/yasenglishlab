@@ -2,13 +2,15 @@
 
 ## Active task
 
+None.
+
+## Last completed task
+
 **prompt-03-harness-engineering**
 
 Goal: install the official minimal, explicit and verifiable Harness Engineering layer without implementing product features.
 
-### Scope
-
-Allowed:
+### Completed scope
 
 - `AGENTS.md`
 - `harness/**`
@@ -16,19 +18,14 @@ Allowed:
 - `package.json`
 - `.github/workflows/foundation-verify.yml`
 
-Forbidden:
+### Verification result
 
-- Product screens/components beyond existing foundation placeholders.
-- Product domain implementation.
-- Database schema/business tables.
-- Billing/auth feature implementation.
+- Foundation verification: passed.
+- Harness contract: passed.
+- Security boundary: passed.
+- DB structure: passed.
+- Storybook build: passed.
+- Playwright E2E: passed.
+- Evidence: `harness/evidence/prompt-03-harness-engineering/README.md`.
 
-### Plan
-
-1. Add short agent map.
-2. Add goal/state/registry/evals/evidence/failure-log contracts.
-3. Add cross-platform verification commands.
-4. Integrate deterministic harness checks into CI.
-5. Run clean verification.
-6. Inspect evidence and record outcome.
-7. Mark registry done only after verification.
+No product feature, product schema or business-domain implementation was added.
