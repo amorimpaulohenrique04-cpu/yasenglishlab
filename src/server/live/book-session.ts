@@ -13,9 +13,7 @@ const sessionIdSchema = z.string().uuid();
 
 function bookingErrorCode(error: unknown): TechnicalErrorCode {
   const message = error instanceof Error ? error.message.toLowerCase() : "";
-  return message.includes("capacity") || message.includes("duplicate") || message.includes("booking")
-    ? "booking_conflict"
-    : "database_error";
+  return message.includes("booking conflict") ? "booking_conflict" : "database_error";
 }
 
 export async function bookLiveSession(liveSessionId: string): Promise<string> {
