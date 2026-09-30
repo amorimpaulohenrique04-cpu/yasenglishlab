@@ -2,24 +2,22 @@
 
 ## Active task
 
-**prompt-10-observability**
+**prompt-11-ratchet-adrs**
 
-State: completed and verified on the feature branch; ready to merge.
+State: implementation prepared on the feature branch; Official CI verification pending.
 
-Goal: make critical technical failures reconstructable without mixing product analytics, observability and privileged audit history.
+Goal: make every relevant repeatable failure produce a durable guard and evidence without turning the harness into bureaucracy.
 
-### Completed execution
+### Execution
 
-1. Expanded the existing product analytics contract without replacing its application port.
-2. Added provider-neutral structured logging, request/trace/span correlation, privacy redaction and a durable technical-error sink.
-3. Added request/environment/version correlation to append-only audit logs and typed privileged audit actions.
-4. Instrumented existing high-value server boundaries: authorization, booking, protected assets, role changes, analytics persistence and audit persistence.
-5. Added migration + SQL/RLS/unit/integration/security evidence.
-6. Proved an intentional error against isolated Preview Supabase and queried it back by the same request_id.
-7. Inspected structured-log output and artifact evidence; corrected false PII-redaction positives for ISO timestamps and release SHAs.
-8. Preserved the unresolved provider choices in OPEN_QUESTIONS.
-9. Final Official CI #158 passed all mandatory gates.
+1. Reuse the existing docs/adr/ and harness/failure-log/ structures instead of creating parallel systems.
+2. Add explicit ADR and failure-record templates.
+3. Add harness/ratchet.md with the reproduce → evidence → root cause → structural fix → test/eval → red/green → record loop.
+4. Add verify:ratchet with a controlled bad/good fixture and durable-record validation.
+5. Wire the ratchet into the existing Harness invariants check so Official CI blocks on it.
+6. Record the pre-existing harness gap as the controlled failure transformed into permanent protection.
+7. Run Official CI and only then move the feature registry to done + verified.
 
 ### Scope boundary
 
-Telemetry/server boundaries, migrations, tests, CI, docs and harness state only. No new product screen or domain feature.
+Harness, ADR/process documentation and verification scripts only. No product UI, domain behavior, database or runtime application changes.
