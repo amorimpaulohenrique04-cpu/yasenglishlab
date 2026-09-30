@@ -173,7 +173,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - The Official CI distributes the same underlying checks orchestrated by local aggregate aliases such as `verify:agent`, `verify:ui` and `verify:full`; these aggregate wrapper names are not invoked literally by Actions. Exact `verify:security` runs in Quality, while Database/Preview execute the DB/RLS/UI/full-stack constituents.
 - Durable closure evidence was persisted under `harness/evidence/prompt-14-materials-v1/`; registry is now `done` and `verified: true`.
 
-
 ## 2026-09-30 — pre-p15-architecture-governance-gate
 
 - Started from `main` at baseline SHA `d57bf780f1b5d5eafd55700c58f4462c29277020`.
