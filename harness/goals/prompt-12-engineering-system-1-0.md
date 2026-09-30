@@ -1,6 +1,6 @@
 # GOAL — prompt-12-engineering-system-1-0: Final engineering-system audit remediation
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-09-29  
 Updated: 2026-09-29
@@ -29,15 +29,15 @@ A fresh agent can enter through `AGENTS.md`, trust the current documentation/sta
 
 ## Acceptance criteria
 
-- [ ] Stale foundation-only documentation is removed from current entry-point maps.
-- [ ] Feature registry contains every implemented engineering milestone and all dependencies resolve.
-- [ ] Persistent plan state no longer claims an already-merged task is pending.
-- [ ] `npm run verify:ui` runs E2E, a11y, Storybook visual and product golden regression checks.
-- [ ] `npm run verify:system` rejects controlled stale-state/incomplete-UI fixtures and validates the real repository.
-- [ ] Harness CI executes the Engineering System verifier.
-- [ ] Repeatable audit findings have durable failure records with permanent protections.
-- [ ] Official CI passes on the final branch state.
-- [ ] No product feature, database schema, RLS policy or visual design behavior changes.
+- [x] Stale foundation-only documentation is removed from current entry-point maps.
+- [x] Feature registry contains every implemented engineering milestone and all dependencies resolve.
+- [x] Persistent plan state no longer claims an already-merged task is pending.
+- [x] `npm run verify:ui` runs E2E, a11y, Storybook visual and product golden regression checks.
+- [x] `npm run verify:system` rejects controlled stale-state/incomplete-UI fixtures and validates the real repository.
+- [x] Harness CI executes the Engineering System verifier.
+- [x] Repeatable audit findings have durable failure records with permanent protections.
+- [x] Official CI passes on the implementation branch state.
+- [x] No product feature, database schema, RLS policy or visual design behavior changes.
 
 ## Allowed files / domains
 
@@ -70,11 +70,13 @@ A fresh agent can enter through `AGENTS.md`, trust the current documentation/sta
 
 ## Required evidence
 
-- Final PR URL and exact head SHA.
-- Successful Official CI URL.
-- Harness/System verifier log proving controlled bad fixtures are rejected.
+- PR #16.
+- Implementation head `a49327f03b3d9726b5da02a2775734af181cb874`.
+- Official CI run 36657346038.
+- Preview artifact 11073276378.
+- Harness/System log proving controlled bad fixtures are rejected.
 - Preview evidence proving E2E, accessibility, visual/golden and observability remain green.
 
 ## Definition of done
 
-All acceptance criteria pass, Official CI is green on the final head, evidence is persisted, the registry is `done` + `verified: true`, persistent plan state is closed, and no forbidden product/runtime scope changed.
+All acceptance criteria pass, Official CI is green on the implementation head, evidence is persisted, the registry is `done` + `verified: true`, persistent plan state is closed, and no forbidden product/runtime scope changed.

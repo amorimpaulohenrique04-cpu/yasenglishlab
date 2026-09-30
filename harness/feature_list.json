@@ -150,11 +150,16 @@
     {
       "id": "prompt-12-engineering-system-1-0",
       "title": "Yas Engineering System 1.0 final audit and remediation",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["prompt-11-ratchet-adrs"],
-      "evidence": [],
-      "updated_at": "2026-09-29T22:30:00-03:00"
+      "evidence": [
+        "harness/evidence/prompt-12-engineering-system-1-0/README.md",
+        "harness/evidence/prompt-12-engineering-system-1-0/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36657346038",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/16"
+      ],
+      "updated_at": "2026-09-29T22:59:52-03:00"
     }
   ]
 }
