@@ -1,6 +1,6 @@
 # GOAL — windows-local-tooling: Cross-platform local verification
 
-Status: in_progress
+Status: done
 Owner: agent/human  
 Created: 2026-09-30  
 Updated: 2026-09-30
@@ -74,3 +74,9 @@ A fresh checkout preserves LF, npm-based Node runners execute without indiscrimi
 ## Definition of done
 
 Done means every acceptance criterion passes, mandatory checks pass, evidence was inspected, decisions/progress were recorded, blockers/TODOs were registered, and `harness/feature_list.json` reflects the real state. A written claim without matching system state is not done.
+
+## Closure proof
+
+The original verification record is preserved as historical evidence: at that moment `verify:full` could not run because the local Supabase CLI, `psql` and Playwright Chromium prerequisites were unavailable.
+
+The subsequent `pre-p13-environment-gate` installed and functionally validated those exact prerequisites, rebuilt Supabase from zero, ran migrations + seed, DB integration, RLS, E2E, accessibility, Storybook visual, golden visual and completed a clean-room `npm run verify:full` with exit code 0. That later evidence closes the only remaining completion prerequisite for this task without rewriting the original failure history.
