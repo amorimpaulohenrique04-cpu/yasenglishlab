@@ -19,7 +19,7 @@
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "format": "prettier --write .",
-    "format:check": "prettier --write scripts/verify-ratchet.mjs && cat scripts/verify-ratchet.mjs && false",
+    "format:check": "prettier --check .",
     "verify": "node scripts/verify.mjs",
     "verify:harness": "node scripts/verify-harness.mjs",
     "verify:ratchet": "node scripts/verify-ratchet.mjs",
