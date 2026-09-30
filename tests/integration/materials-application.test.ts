@@ -67,18 +67,31 @@ describe("materials application", () => {
     expect(state.data.groups[0]?.items[0]?.title).toBe("Welcome Summary");
   });
 
-  it("favorites idempotently and emits analytics only for a real favorite transition", async () => {
+  it("favorites and unfavorites idempotently while emitting only real favorite transitions", async () => {
     const repository = makeRepository();
     const analytics = makeAnalytics();
 
-    await setMaterialFavorite(repository, analytics, "user-1", {
+    const firstFavorite = await setMaterialFavorite(repository, analytics, "user-1", {
       materialId: material.id,
       favorited: true,
     });
-    await setMaterialFavorite(repository, analytics, "user-1", {
+    const duplicateFavorite = await setMaterialFavorite(repository, analytics, "user-1", {
       materialId: material.id,
       favorited: true,
     });
+    const firstUnfavorite = await setMaterialFavorite(repository, analytics, "user-1", {
+      materialId: material.id,
+      favorited: false,
+    });
+    const duplicateUnfavorite = await setMaterialFavorite(repository, analytics, "user-1", {
+      materialId: material.id,
+      favorited: false,
+    });
+
+    expect(firstFavorite).toEqual({ favorited: true, changed: true });
+    expect(duplicateFavorite).toEqual({ favorited: true, changed: false });
+    expect(firstUnfavorite).toEqual({ favorited: false, changed: true });
+    expect(duplicateUnfavorite).toEqual({ favorited: false, changed: false });
 
     expect(analytics.track).toHaveBeenCalledTimes(1);
     expect(analytics.track).toHaveBeenCalledWith({

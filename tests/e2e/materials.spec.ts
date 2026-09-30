@@ -98,8 +98,18 @@ test("authorized materials can be searched, favorited and opened while unauthori
   await expect(
     courseMaterials.getByRole("button", { name: "Desfavoritar Welcome Summary" }),
   ).toBeVisible();
+  const favorites = page.getByRole("complementary", { name: "Favoritos" });
+  await expect(favorites.getByText("Welcome Summary", { exact: true })).toBeVisible();
+
+  await courseMaterials.getByRole("button", { name: "Desfavoritar Welcome Summary" }).click();
   await expect(
-    page.getByRole("complementary", { name: "Favoritos" }).getByText("Welcome Summary"),
+    courseMaterials.getByRole("button", { name: "Favoritar Welcome Summary" }),
+  ).toBeVisible();
+  await expect(favorites.getByText("Welcome Summary", { exact: true })).toHaveCount(0);
+
+  await courseMaterials.getByRole("button", { name: "Favoritar Welcome Summary" }).click();
+  await expect(
+    courseMaterials.getByRole("button", { name: "Desfavoritar Welcome Summary" }),
   ).toBeVisible();
 
   await page.getByLabel("Buscar materiais").fill("vocabulario");
