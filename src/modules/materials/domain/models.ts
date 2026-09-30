@@ -97,7 +97,8 @@ export function normalizeMaterialsFilters(raw: {
   const result = filtersSchema.safeParse({
     query: typeof raw.query === "string" ? raw.query : "",
     type:
-      typeof raw.type === "string" && MATERIAL_FILTER_TYPES.includes(raw.type as MaterialFilterType)
+      typeof raw.type === "string" &&
+      MATERIAL_FILTER_TYPES.includes(raw.type as MaterialFilterType)
         ? raw.type
         : "ALL",
   });

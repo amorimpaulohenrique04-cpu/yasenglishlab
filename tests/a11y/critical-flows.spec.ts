@@ -100,4 +100,3 @@ test("Materiais preserves search labels, keyboard focus and WCAG A/AA compliance
   await expect(favorite).toBeFocused();
   await assertAxe(page);
 });
-

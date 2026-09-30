@@ -120,7 +120,10 @@ export default async function MaterialsPage({ searchParams }: MaterialsPageProps
   if (state.status === "unauthorized") {
     return (
       <div className="yas-materials-page">
-        <PageHeader title="Materiais" description="Encontre, revise e abra os recursos do seu curso." />
+        <PageHeader
+          title="Materiais"
+          description="Encontre, revise e abra os recursos do seu curso."
+        />
         <ErrorState
           title="Acesso não autorizado"
           description="Sua conta não possui acesso à biblioteca de materiais."

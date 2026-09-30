@@ -158,4 +158,3 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Added deterministic material metadata to the development seed. No public material URL was introduced.
 - No migration or RLS change was required; existing negative SQL evidence for entitlement denial and protected `storage_path` remains the security source of truth.
 - Verification is pending; registry remains `in_progress` / unverified.
-

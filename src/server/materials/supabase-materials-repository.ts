@@ -142,7 +142,10 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
     });
   }
 
-  async getAuthorizedMaterial(userId: string, materialId: string): Promise<MaterialListItem | null> {
+  async getAuthorizedMaterial(
+    userId: string,
+    materialId: string,
+  ): Promise<MaterialListItem | null> {
     const materials = await this.listAuthorizedMaterials(userId);
     return materials.find((material) => material.id === materialId) ?? null;
   }
