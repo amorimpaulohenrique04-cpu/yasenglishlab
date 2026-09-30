@@ -13,6 +13,7 @@ Run this rubric before an agent concludes a task. Each applicable row is pass/fa
 | Changed RLS without test?           | Policy/RLS migration change updates executable permission evidence.                            | Automated migration-diff rule + real SQL RLS suite.                             |
 | Left secret?                        | No high-confidence credential appears in changed files/client boundary.                        | `eval:agent` + `verify:security`.                                               |
 | Declared success without verify?    | A `done` feature has `verified: true` and passing `verification.json`.                         | Automated registry/evidence check.                                              |
+| Repeated failure without ratchet?   | Every resolved repeatable failure has permanent protection, a test/eval and before/after proof.            | `verify:ratchet` + durable failure record.                                        |
 | Git state matches report?           | Completion state/evidence resolves to real paths/URLs and CI state supports the claim.         | Automated repository-state proxy + final manual report review.                  |
 
 ## Evaluation rule
