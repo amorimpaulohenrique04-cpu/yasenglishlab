@@ -22,3 +22,11 @@ The installed Next source at `node_modules/next/dist/lib/typescript/writeConfigu
 ## Verification
 
 Final command results are recorded in `verification.json`. All mandatory non-full gates passed without DEP0190. `verify:full` was not run because Supabase CLI, `psql` and Playwright Chromium are absent; the Docker CLI is installed, but this environment also denied access to the user Docker configuration file.
+
+## Closure by subsequent clean-room evidence
+
+This README preserves the original environment limitation exactly as observed. It was not retrospectively rewritten as a successful full run.
+
+Later evidence in `harness/evidence/pre-p13-environment-gate/` validates the missing prerequisites and executes the full chain successfully on Windows: Docker daemon, Supabase CLI, PostgreSQL/`psql`, migrations + seed, DB integration, RLS, E2E, accessibility, Storybook visual, golden visual and clean-room `npm run verify:full` with exit code 0.
+
+Because the later gate directly exercises the missing completion criterion of `windows-local-tooling`, the registry can be normalized to `done` / `verified: true` while the original `verification.json` and failure logs remain unchanged as historical evidence.
