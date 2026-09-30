@@ -1,6 +1,11 @@
 {
   "schema_version": 1,
-  "allowed_statuses": ["planned", "in_progress", "blocked", "done"],
+  "allowed_statuses": [
+    "planned",
+    "in_progress",
+    "blocked",
+    "done"
+  ],
   "field_contract": {
     "id": "unique kebab-case identifier",
     "title": "human-readable task or engineering capability",
@@ -29,7 +34,9 @@
       "title": "Official Harness Engineering foundation",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-02-engineering-foundation"],
+      "dependencies": [
+        "prompt-02-engineering-foundation"
+      ],
       "evidence": [
         "harness/evidence/prompt-03-harness-engineering/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36510847571"
@@ -41,7 +48,9 @@
       "title": "Executable Yas design system",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-03-harness-engineering"],
+      "dependencies": [
+        "prompt-03-harness-engineering"
+      ],
       "evidence": [
         "harness/evidence/prompt-04-design-system/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36517734330"
@@ -53,7 +62,9 @@
       "title": "Durable domain model and database contracts",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-04-design-system"],
+      "dependencies": [
+        "prompt-04-design-system"
+      ],
       "evidence": [
         "docs/DATA_MODEL.md",
         "supabase/migrations/20260929035100_create_domain_contracts.sql",
@@ -67,7 +78,9 @@
       "title": "Authentication, RBAC, RLS and security boundaries",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-05-domain-model"],
+      "dependencies": [
+        "prompt-05-domain-model"
+      ],
       "evidence": [
         "docs/AUTH_RBAC_RLS.md",
         "docs/THREAT_MODEL.md",
@@ -81,7 +94,9 @@
       "title": "Canonical learning vertical slice",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-06-auth-rbac-rls"],
+      "dependencies": [
+        "prompt-06-auth-rbac-rls"
+      ],
       "evidence": [
         "docs/ARCHITECTURE.md",
         "tests/e2e/canonical-slice.spec.ts",
@@ -95,7 +110,9 @@
       "title": "Complete testing and coding-agent eval system",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-07-canonical-vertical-slice"],
+      "dependencies": [
+        "prompt-07-canonical-vertical-slice"
+      ],
       "evidence": [
         "harness/evidence/prompt-08-testing-evals/README.md",
         "harness/evidence/prompt-08-testing-evals/verification.json",
@@ -110,7 +127,9 @@
       "title": "Fail-closed CI/CD and isolated environments",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-08-testing-evals"],
+      "dependencies": [
+        "prompt-08-testing-evals"
+      ],
       "evidence": [
         "docs/CI_CD.md",
         ".github/workflows/foundation-verify.yml",
@@ -125,7 +144,9 @@
       "title": "Observability, product analytics and auditability",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-09-ci-cd"],
+      "dependencies": [
+        "prompt-09-ci-cd"
+      ],
       "evidence": [
         "harness/evidence/prompt-10-observability/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36640424406",
@@ -138,7 +159,9 @@
       "title": "Engineering ratchet, ADRs and permanent failure learning",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-10-observability"],
+      "dependencies": [
+        "prompt-10-observability"
+      ],
       "evidence": [
         "harness/evidence/prompt-11-ratchet-adrs/README.md",
         "harness/evidence/prompt-11-ratchet-adrs/verification.json",
@@ -152,7 +175,9 @@
       "title": "Yas Engineering System 1.0 final audit and remediation",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-11-ratchet-adrs"],
+      "dependencies": [
+        "prompt-11-ratchet-adrs"
+      ],
       "evidence": [
         "harness/evidence/prompt-12-engineering-system-1-0/README.md",
         "harness/evidence/prompt-12-engineering-system-1-0/verification.json",
@@ -166,7 +191,9 @@
       "title": "Cross-platform Windows local verification support",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-12-engineering-system-1-0"],
+      "dependencies": [
+        "prompt-12-engineering-system-1-0"
+      ],
       "evidence": [
         "harness/evidence/windows-local-tooling/README.md",
         "harness/evidence/windows-local-tooling/verification.json",
@@ -182,7 +209,9 @@
       "title": "Reproducible local full verification before Prompt 13",
       "status": "done",
       "verified": true,
-      "dependencies": ["windows-local-tooling"],
+      "dependencies": [
+        "windows-local-tooling"
+      ],
       "evidence": [
         "harness/goals/pre-p13-environment-gate.md",
         "harness/evidence/pre-p13-environment-gate/README.md",
@@ -195,7 +224,9 @@
       "title": "Release-grade Aulas learning core",
       "status": "done",
       "verified": true,
-      "dependencies": ["pre-p13-environment-gate"],
+      "dependencies": [
+        "pre-p13-environment-gate"
+      ],
       "evidence": [
         "harness/goals/prompt-13-learning-core.md",
         "harness/evidence/prompt-13-learning-core/README.md",
@@ -214,7 +245,9 @@
       "title": "Release-grade Materiais V1",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-13-learning-core"],
+      "dependencies": [
+        "prompt-13-learning-core"
+      ],
       "evidence": [
         "harness/goals/prompt-14-materials-v1.md",
         "harness/evidence/prompt-14-materials-v1/README.md",
@@ -228,15 +261,19 @@
     {
       "id": "pre-p15-architecture-governance-gate",
       "title": "Pre-P15 architecture and governance gate",
-      "status": "blocked",
-      "verified": false,
-      "dependencies": ["prompt-14-materials-v1"],
+      "status": "done",
+      "verified": true,
+      "dependencies": [
+        "prompt-14-materials-v1"
+      ],
       "evidence": [
         "harness/goals/pre-p15-architecture-governance-gate.md",
         "harness/evidence/pre-p15-architecture-governance-gate/README.md",
-        "harness/evidence/pre-p15-architecture-governance-gate/verification.json"
+        "harness/evidence/pre-p15-architecture-governance-gate/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/18",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/rules/24223415"
       ],
-      "updated_at": "2026-09-30T18:38:00-03:00"
+      "updated_at": "2026-09-30T19:11:30-03:00"
     }
   ]
 }
