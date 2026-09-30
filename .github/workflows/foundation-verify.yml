@@ -54,6 +54,10 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Show ratchet Prettier diff
+        run: |
+          npx prettier scripts/verify-ratchet.mjs > /tmp/verify-ratchet.formatted.mjs
+          diff -u scripts/verify-ratchet.mjs /tmp/verify-ratchet.formatted.mjs || true
       - name: Format
         run: npm run format:check
       - name: Lint
