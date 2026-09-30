@@ -2,14 +2,23 @@
 
 ## Active task
 
-**prompt-13-learning-core**
+**prompt-14-materials-v1**
 
-State: complete.
+State: in_progress.
+
+### Immediate plan
+
+1. Reuse existing Material/Favorite/RLS/signed-URL/analytics contracts without schema or policy changes unless a proven blocker appears.
+2. Build a small Materials application/repository boundary for authorized deterministic listing, contextual search/filter and idempotent favorite state.
+3. Add `/materiais` UI and shared navigation using existing primitives/tokens; intentionally omit Recents because no durable non-analytics access-history model exists.
+4. Open protected assets through a server route that re-authorizes, creates the short signed URL and emits minimized analytics only after successful access.
+5. Add deterministic seed/test storage fixtures and unit/integration/E2E/a11y/visual coverage.
+6. Run official gates, inspect evidence, then close Harness state only if the complete system is green.
 
 ### Result
 
-Prompt 13 Learning Core is closed after verification of implementation commit `1adb44e5ca75860d261da1afd6de1d50d1e68f15`. Official CI run `36756026206` and Release run `36756622829` both completed successfully on that SHA. Migration/RLS, canonical E2E, persisted resume, retry-safe analytics, accessibility and golden evidence were inspected and persisted under `harness/evidence/prompt-13-learning-core/`.
+Implementation and verification pending.
 
 ### Scope boundary
 
-No Materiais, Prática, Agenda, Assessment, Billing, definitive Home redesign, provider selection, service-role student flow, RLS weakening, arbitrary snapshot update or unrelated refactor was introduced by the closure task. P14 planning is intentionally not started here.
+No admin/CMS, provider selection, public-storage bypass, analytics-as-state, RLS weakening or unrelated product work is permitted.

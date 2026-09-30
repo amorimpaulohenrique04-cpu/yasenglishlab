@@ -138,3 +138,13 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Preview artifact `11117713607` was uploaded with digest `sha256:86c9145c48f69eb8eeac41d7901f4ebbef6a05c7db75034c84d74a0e6dab9380`.
 - Behavioral-eval contract inspection requires durable verification to declare `status: "passed"`; the P13 verification record was normalized accordingly.
 - P13 remains `done` + `verified: true`; no P14 planning or functional change was introduced.
+
+## 2026-09-30 — prompt-14-materials-v1
+
+- Started from `main` at `849c23b519ccca59b18a08dec676a3cf02726f21` after Prompt 13 closure.
+- Read Product, Materials, data, architecture, security/RLS, UI, accessibility, analytics, testing, open-question and approved Materiais visual contracts before product changes.
+- Audit confirmed existing `materials` + `material_favorites`, RLS authorization by active material/enrollment/entitlement, private `yas-protected-assets`, server-only signed URL service and analytics taxonomy already cover the core V1 boundaries.
+- Existing Data API grants intentionally omit `materials.storage_path`; current RLS tests already assert protected storage paths are not selectable by authenticated users.
+- No DB/RLS change is currently required. Favorite idempotency can be implemented through existing unique ownership plus insert-conflict handling/delete semantics under RLS.
+- Recents is intentionally excluded from V1 because there is no durable material-access history model and product analytics is explicitly not a system of record.
+- Implementation and verification remain pending; no success claim has been made.
