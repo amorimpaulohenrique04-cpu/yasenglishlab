@@ -88,7 +88,7 @@ An authenticated student can browse a deterministically ordered published course
 - Preview evidence: canonical E2E 2/2 passed; persistence/analytics assertion passed; accessibility 4/4 passed; desktop/tablet/mobile golden checks 3/3 passed.
 - Preview artifact: `11116523588`, digest `sha256:37471c9b9ced00dc1dff8128ae6dafcb7aff76e782eebbdefa3ead18071d1663`.
 - Durable evidence: `harness/evidence/prompt-13-learning-core/README.md` and `harness/evidence/prompt-13-learning-core/verification.json`.
-- Closed at: `2026-09-30T15:13:00-03:00`.
+- Closed at: `2026-09-30T15:32:39-03:00`.
 
 ## Definition of done
 

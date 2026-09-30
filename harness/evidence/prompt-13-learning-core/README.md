@@ -4,7 +4,7 @@ Task: `prompt-13-learning-core`
 Implementation commit: `1adb44e5ca75860d261da1afd6de1d50d1e68f15`
 Official CI: `36756026206`
 Release: `36756622829`
-Closed at: `2026-09-30T15:13:00-03:00`
+Closed at: `2026-09-30T15:32:39-03:00`
 
 ## Conclusion
 
@@ -56,6 +56,19 @@ The inspected Preview artifact contains reports bound to the implementation SHA 
 - the Official CI Preview job also completed the design-system visual check step successfully.
 
 No snapshot/golden update was made by the P13.1 closure task.
+
+## P13.1 closure verification
+
+The state-only closure was verified again after persistence of this evidence:
+
+- Official CI: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36758655475
+- Result: `completed / success`
+- Verified closure SHA: `5386a477591bedb78642048747e9ea93ceb45ce0`
+- Preview artifact: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36758655475/artifacts/11117713607
+- Artifact digest: `sha256:86c9145c48f69eb8eeac41d7901f4ebbef6a05c7db75034c84d74a0e6dab9380`
+- Quality passed format, lint, typecheck, unit, integration, Harness invariants, security invariants and production build.
+- Preview passed Critical E2E, persistence/analytics assertion, accessibility, Storybook/design-system visual checks and product golden checks.
+- CI Gate passed after every mandatory job was green.
 
 ## Scope conclusion
 

@@ -128,3 +128,13 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Accessibility passed 4/4; product golden visual checks passed 3/3 across desktop, tablet and mobile; the uploaded Preview evidence artifact was inspected.
 - Durable evidence was added under `harness/evidence/prompt-13-learning-core/`.
 - `harness/feature_list.json` moved `prompt-13-learning-core` to `done` with `verified: true`; the active plan was closed without starting P14.
+
+## 2026-09-30 — prompt-13-learning-core closure verification
+
+- The first P13.1 state-only closure commit was corrected only for canonical Prettier formatting; no product file was touched.
+- Finalized closure state at `5386a477591bedb78642048747e9ea93ceb45ce0` passed Official CI run `36758655475`: Supply Chain, Quality, Guardrail Simulations, Database, Preview and CI Gate all completed with conclusion `success`.
+- Quality passed `npm run format:check`, lint, typecheck, unit, integration, Harness invariants, security invariants and production build.
+- Preview re-proved the canonical E2E, persistence/analytics assertion, accessibility, Storybook/design-system visual checks and product golden visual checks on the closure state.
+- Preview artifact `11117713607` was uploaded with digest `sha256:86c9145c48f69eb8eeac41d7901f4ebbef6a05c7db75034c84d74a0e6dab9380`.
+- Behavioral-eval contract inspection requires durable verification to declare `status: "passed"`; the P13 verification record was normalized accordingly.
+- P13 remains `done` + `verified: true`; no P14 planning or functional change was introduced.
