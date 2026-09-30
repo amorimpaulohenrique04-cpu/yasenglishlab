@@ -104,9 +104,7 @@ function MaterialRow({
             type="submit"
             className="yas-materials-favorite"
             label={
-              material.favorite
-                ? `Desfavoritar ${material.title}`
-                : `Favoritar ${material.title}`
+              material.favorite ? `Desfavoritar ${material.title}` : `Favoritar ${material.title}`
             }
             aria-pressed={material.favorite}
           >

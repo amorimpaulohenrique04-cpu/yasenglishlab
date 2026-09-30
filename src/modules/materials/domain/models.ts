@@ -52,9 +52,7 @@ export interface MaterialGroup {
 }
 
 export type MaterialsState<T> =
-  | { status: "success"; data: T }
-  | { status: "empty" }
-  | { status: "unauthorized" };
+  { status: "success"; data: T } | { status: "empty" } | { status: "unauthorized" };
 
 const filtersSchema = z
   .object({
@@ -76,7 +74,10 @@ const typeLabels: Record<MaterialType, string> = {
 const typeOrder = new Map(MATERIAL_TYPES.map((type, index) => [type, index]));
 
 function normalized(value: string): string {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 function compareText(a: string, b: string): number {
