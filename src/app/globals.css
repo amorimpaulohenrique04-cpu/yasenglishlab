@@ -3,6 +3,7 @@
 @import "../styles/design-system.css";
 @import "../components/layout/layout.css";
 @import "../modules/learning/ui/learning.css";
+@import "../modules/materials/ui/materials.css";
 
 html {
   min-width: 320px;

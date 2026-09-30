@@ -10,6 +10,7 @@ import { Avatar, Drawer, IconButton } from "@/components/ui";
 const navigation = [
   { id: "home", label: "Início", href: "/home" },
   { id: "lessons", label: "Aulas", href: "/aulas" },
+  { id: "materials", label: "Materiais", href: "/materiais" },
 ] as const;
 
 function HomeIcon() {
@@ -44,6 +45,28 @@ function LessonsIcon() {
   );
 }
 
+function MaterialsIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M6 3h9l4 4v14H6z" />
+      <path d="M15 3v5h5M9 12h7M9 16h7" />
+    </svg>
+  );
+}
+
+function navigationIcon(id: (typeof navigation)[number]["id"]) {
+  if (id === "home") return <HomeIcon />;
+  if (id === "materials") return <MaterialsIcon />;
+  return <LessonsIcon />;
+}
+
 export function StudentShell({
   displayName,
   children,
@@ -62,7 +85,7 @@ export function StudentShell({
 
   const sidebarItems = navigation.map((item) => ({
     ...item,
-    icon: item.id === "home" ? <HomeIcon /> : <LessonsIcon />,
+    icon: navigationIcon(item.id),
     active:
       item.href === "/home"
         ? pathname === "/home"
