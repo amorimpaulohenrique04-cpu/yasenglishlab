@@ -86,18 +86,29 @@ test("authorized materials can be searched, favorited and opened while unauthori
   await page.goto("/materiais");
 
   await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
-  await expect(page.getByText("Welcome Summary", { exact: true })).toBeVisible();
-  await expect(page.getByText("Conversation Lab Bonus Pack", { exact: true })).toHaveCount(0);
 
-  const favorite = page.getByRole("button", { name: "Favoritar Welcome Summary" });
+  const courseMaterials = page.getByRole("region", { name: "Materiais do curso" });
+  await expect(courseMaterials.getByText("Welcome Summary", { exact: true })).toBeVisible();
+  await expect(courseMaterials.getByText("Conversation Lab Bonus Pack", { exact: true })).toHaveCount(
+    0,
+  );
+
+  const favorite = courseMaterials.getByRole("button", { name: "Favoritar Welcome Summary" });
   await favorite.click();
-  await expect(page.getByRole("button", { name: "Desfavoritar Welcome Summary" })).toBeVisible();
+  await expect(
+    courseMaterials.getByRole("button", { name: "Desfavoritar Welcome Summary" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("complementary", { name: "Favoritos" }).getByText("Welcome Summary"),
+  ).toBeVisible();
 
   await page.getByLabel("Buscar materiais").fill("vocabulario");
   await page.getByRole("button", { name: "Buscar" }).click();
   await expect(page).toHaveURL(/q=vocabulario/);
-  await expect(page.getByText("Natural Introductions Vocabulary", { exact: true })).toBeVisible();
-  await expect(page.getByText("Welcome Summary", { exact: true })).toHaveCount(0);
+  await expect(
+    courseMaterials.getByText("Natural Introductions Vocabulary", { exact: true }),
+  ).toBeVisible();
+  await expect(courseMaterials.getByText("Welcome Summary", { exact: true })).toHaveCount(0);
 
   const authorized = await page.request.get(`/materiais/${authorizedMaterialId}/abrir`, {
     maxRedirects: 0,
