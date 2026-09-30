@@ -172,3 +172,16 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - No migration/RLS change, admin/CMS, provider, public-material bypass, service-role browser exposure or unrelated future feature was introduced.
 - The Official CI distributes the same underlying checks orchestrated by local aggregate aliases such as `verify:agent`, `verify:ui` and `verify:full`; these aggregate wrapper names are not invoked literally by Actions. Exact `verify:security` runs in Quality, while Database/Preview execute the DB/RLS/UI/full-stack constituents.
 - Durable closure evidence was persisted under `harness/evidence/prompt-14-materials-v1/`; registry is now `done` and `verified: true`.
+
+
+## 2026-09-30 — pre-p15-architecture-governance-gate
+
+- Started from `main` at baseline SHA `d57bf780f1b5d5eafd55700c58f4462c29277020`.
+- Audited the operational roadmap, Harness registry/plan/progress, Windows tooling evidence, PRE-P13 clean-room evidence, GitHub branch state, repository rulesets, existing CI check name and release environment targets before editing.
+- Found exactly one completed-feature dependency contradiction: `pre-p13-environment-gate` was done while `windows-local-tooling` remained `in_progress` in the registry, even though later PRE-P13 evidence had already exercised every missing full-verification prerequisite.
+- Normalized `windows-local-tooling` to done/verified and cross-referenced the later clean-room evidence without deleting or rewriting its original failed/prerequisite-missing history.
+- Replaced the active roadmap with the requested P00–P26 sequence and moved the old P0–P19 sequence into an explicit superseded legacy section.
+- Confirmed P02–P14 remain done/verified; no P15 registry entry or GOAL exists and no P15 product implementation was started.
+- GitHub `main` is not effectively protected: branch endpoint reports `protected: false`; ruleset `Yas` id `24223415` is disabled and only contains deletion/non-fast-forward rules. `CI Gate` exists as a successful check but is not required by active protection.
+- Classic branch-protection read returns 403 to this integration and no administrative write action exists for branch protection/rulesets/environments. Staging/production workflow targets are observable, but required-reviewer/deployment-branch settings are not administratively readable through the connector.
+- Gate is therefore `blocked` pending manual GitHub administration. Green repository/CI checks cannot convert this gate to done until effective `main` protection is independently proven.
