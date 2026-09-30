@@ -2,31 +2,26 @@
 
 ## Active task
 
-**prompt-14-materials-v1**
+**pre-p15-architecture-governance-gate**
 
-State: complete.
+State: blocked — manual GitHub administration required.
 
-### Result
+### Objective
 
-Materiais V1 is implemented and verified on `main`.
+Close the pre-P15 documentation/Harness inconsistencies and prove the real repository-governance state without changing product behavior or starting P15.
 
-The delivered slice lists only RLS-authorized active materials, preserves module/lesson/type context, provides deterministic search/category filters, supports idempotent favorite/unfavorite, opens private assets only through server-side authorization plus a 120-second signed URL, emits minimized material analytics, and provides loading/empty/error/unauthorized states with responsive approved-reference composition.
+### Completed audit/remediation
 
-Recent materials remain intentionally omitted because the current durable model has no material-access history and product analytics is not a system of record.
+- Operational roadmap normalized to P00–P26 with the previous P0–P19 sequence explicitly superseded.
+- `windows-local-tooling` reconciled to `done` / `verified: true` using the later PRE-P13 clean-room `verify:full` evidence while preserving original failure history.
+- Registry dependency audit reduced from one contradiction to none.
+- P02–P14 remain closed and no P15 feature/GOAL was created.
+- GitHub audit proves `main` is currently unprotected and ruleset `Yas` (24223415) is disabled/incomplete.
 
-### Verification
+### Blocker
 
-- Official CI run `36770674489`: completed / success.
-- Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate: success.
-- Preview Critical E2E: 3 passed.
-- Post-E2E persistence/analytics/privacy assertion: passed.
-- Accessibility: 6 passed across desktop/mobile.
-- Product golden regression: 3 passed.
-- Materials screenshots for desktop/tablet/mobile were preserved in artifact `11124245839` and inspected directly.
-- Existing RLS SQL proves entitlement denial and protected `storage_path` non-exposure; no DB/RLS change was required.
+The connected GitHub integration does not expose administrative writes for branch protection, repository rulesets or environment protection. Manual configuration is required before this gate can become `done` and before P15 may start.
 
-### Scope boundary
+### Verification requirement
 
-No admin/CMS, provider selection, public-storage bypass, analytics-as-state, RLS weakening or unrelated product work was introduced.
-
-P14 is closed. Do not start P15 unless explicitly requested.
+Run the mandatory repository gates plus Official CI on the PR head. Green CI does not override the governance blocker.
