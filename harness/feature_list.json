@@ -164,8 +164,8 @@
     {
       "id": "windows-local-tooling",
       "title": "Cross-platform Windows local verification support",
-      "status": "done",
-      "verified": true,
+      "status": "in_progress",
+      "verified": false,
       "dependencies": ["prompt-12-engineering-system-1-0"],
       "evidence": [
         "harness/evidence/windows-local-tooling/README.md",

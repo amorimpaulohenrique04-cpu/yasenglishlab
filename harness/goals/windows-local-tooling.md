@@ -1,6 +1,6 @@
 # GOAL — windows-local-tooling: Cross-platform local verification
 
-Status: complete  
+Status: in_progress
 Owner: agent/human  
 Created: 2026-09-30  
 Updated: 2026-09-30
@@ -36,6 +36,7 @@ A fresh checkout preserves LF, npm-based Node runners execute without indiscrimi
 
 - `.gitattributes`
 - `.gitignore`
+- `package.json`
 - `scripts/**`
 - `tests/unit/**`
 - `tsconfig.json`
