@@ -86,4 +86,3 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Preview artifact 11073276378 was uploaded with digest `sha256:70e3640fbd4765300238556bc7327a03cc18d5fff0b173255407ed365778526d`.
 - Durable evidence stored under `harness/evidence/prompt-12-engineering-system-1-0/`.
 - Registry moved to `done` + `verified: true` only after the green implementation run.
-
