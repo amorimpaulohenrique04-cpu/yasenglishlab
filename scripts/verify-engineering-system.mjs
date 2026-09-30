@@ -103,7 +103,7 @@ const controlledRegistry = {
   features: [{ id: "done-task", status: "done" }],
 };
 const controlledBadPlan =
-  "# Agent Plan\\n\\n## Active task\\n\\n**done-task**\\n\\nState: merge pending.";
+  "# Agent Plan\n\n## Active task\n\n**done-task**\n\nState: merge pending.";
 const controlledGoodPlan = "# Agent Plan\n\n## Active task\n\n**done-task**\n\nState: complete.";
 assert(
   staleStateErrors(controlledBadPlan, controlledRegistry).length > 0,
