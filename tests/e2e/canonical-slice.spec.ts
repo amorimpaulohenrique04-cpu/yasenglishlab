@@ -38,6 +38,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
     await captureEvidence(page, "aulas-desktop.png");
 
+    await page.goto("/materiais");
+    await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
+    await captureEvidence(page, "materiais-desktop.png");
+    await page.goto("/aulas");
+
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
     await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
     await captureEvidence(page, "module-desktop.png");
@@ -108,6 +113,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
     await captureEvidence(page, "aulas-tablet.png");
 
+    await page.goto("/materiais");
+    await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
+    await captureEvidence(page, "materiais-tablet.png");
+    await page.goto("/aulas");
+
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
     await captureEvidence(page, "module-tablet.png");
     await page.getByRole("link", { name: "Rever aula →" }).first().click();
@@ -121,6 +131,11 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/aulas");
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
     await captureEvidence(page, "aulas-mobile.png");
+
+    await page.goto("/materiais");
+    await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
+    await captureEvidence(page, "materiais-mobile.png");
+    await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
     await captureEvidence(page, "module-mobile.png");

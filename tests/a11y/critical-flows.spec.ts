@@ -83,3 +83,21 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await expect(page.getByRole("navigation", { name: "Navegação entre aulas" })).toBeVisible();
   await assertAxe(page);
 });
+
+test("Materiais preserves search labels, keyboard focus and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/materiais");
+
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Buscar materiais")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Categorias de materiais" })).toBeVisible();
+
+  const favorite = page.getByRole("button", { name: "Favoritar Welcome Summary" });
+  await favorite.focus();
+  await expect(favorite).toBeFocused();
+  await assertAxe(page);
+});
+
