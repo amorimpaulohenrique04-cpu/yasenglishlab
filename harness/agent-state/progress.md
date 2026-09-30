@@ -172,3 +172,32 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - No migration/RLS change, admin/CMS, provider, public-material bypass, service-role browser exposure or unrelated future feature was introduced.
 - The Official CI distributes the same underlying checks orchestrated by local aggregate aliases such as `verify:agent`, `verify:ui` and `verify:full`; these aggregate wrapper names are not invoked literally by Actions. Exact `verify:security` runs in Quality, while Database/Preview execute the DB/RLS/UI/full-stack constituents.
 - Durable closure evidence was persisted under `harness/evidence/prompt-14-materials-v1/`; registry is now `done` and `verified: true`.
+
+## 2026-09-30 — pre-p15-architecture-governance-gate
+
+- Started from `main` at baseline SHA `d57bf780f1b5d5eafd55700c58f4462c29277020`.
+- Audited the operational roadmap, Harness registry/plan/progress, Windows tooling evidence, PRE-P13 clean-room evidence, GitHub branch state, repository rulesets, existing CI check name and release environment targets before editing.
+- Found exactly one completed-feature dependency contradiction: `pre-p13-environment-gate` was done while `windows-local-tooling` remained `in_progress` in the registry, even though later PRE-P13 evidence had already exercised every missing full-verification prerequisite.
+- Normalized `windows-local-tooling` to done/verified and cross-referenced the later clean-room evidence without deleting or rewriting its original failed/prerequisite-missing history.
+- Replaced the active roadmap with the requested P00–P26 sequence and moved the old P0–P19 sequence into an explicit superseded legacy section.
+- Confirmed P02–P14 remain done/verified; no P15 registry entry or GOAL exists and no P15 product implementation was started.
+- GitHub `main` is not effectively protected: branch endpoint reports `protected: false`; ruleset `Yas` id `24223415` is disabled and only contains deletion/non-fast-forward rules. `CI Gate` exists as a successful check but is not required by active protection.
+- Classic branch-protection read returns 403 to this integration and no administrative write action exists for branch protection/rulesets/environments. Staging/production workflow targets are observable, but required-reviewer/deployment-branch settings are not administratively readable through the connector.
+- Gate is therefore `blocked` pending manual GitHub administration. Green repository/CI checks cannot convert this gate to done until effective `main` protection is independently proven.
+
+## 2026-09-30 — pre-p15 governance CI verification
+
+- First PR CI attempt `36781405404` failed only canonical Prettier formatting in three governance files; those files were formatted without changing semantics.
+- Official CI run `36781582010` then passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate on head `9de5071fbe06bcfa03a17da7b4339d8771eaa3df`.
+- Quality explicitly passed `npm run format:check` and `npm run verify:harness`; the Harness verifier in turn passed Ratchet and Engineering System contracts. Security, build, DB/RLS/full-stack Preview coverage also passed.
+- The connected execution runtime could not clone GitHub for separate local aggregate-alias execution; this limitation is recorded in the PRE-P15 evidence rather than treated as a pass.
+- CI success does not resolve the governance blocker: `main` protection still requires manual GitHub administration and the PRE-P15 registry entry remains `blocked` / unverified.
+
+## 2026-09-30 — pre-p15 governance protection closure
+
+- Repository operator completed the required GitHub ruleset configuration.
+- Re-audit confirmed that main is protected by the active Yas ruleset.
+- Pull requests, resolved conversations and the up-to-date CI Gate are required.
+- Deletion and force-push style updates are blocked, with no bypass configured.
+- PRE-P15 is done and verified. P15 has not started.
+- The closure head must pass Official CI before merge.

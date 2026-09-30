@@ -1,47 +1,74 @@
 # Roadmap
 
 ## Propósito
-Ordenar implementação por dependências para reduzir retrabalho. Infraestrutura e sistemas de registro vêm antes das telas agregadoras.
 
-## Decisões
-Ordem planejada:
-- **P0:** requisitos + design system + arquitetura.
-- **P1:** repository foundation + CI + ambientes.
-- **P2:** Auth + Profile + Roles + RLS.
-- **P3:** AppShell responsivo.
-- **P4:** Courses + Modules + Lessons.
-- **P5:** Aulas.
-- **P6:** Home.
-- **P7:** Materiais.
-- **P8:** Prática.
-- **P9:** Agenda + encontros ao vivo.
-- **P10:** Progresso.
-- **P11:** Teste de Proficiência.
-- **P12:** Billing + planos.
-- **P13:** Teacher portal.
-- **P14:** Admin.
-- **P15:** Analytics + observability.
-- **P16:** security hardening.
-- **P17:** accessibility + performance.
-- **P18:** beta fechado.
-- **P19:** produção.
+Este arquivo é a fonte operacional da sequência de implementação do Yas English Lab. A ordem existe para reduzir retrabalho, fechar dependências antes das projeções e impedir que fases futuras antecipem decisões ainda abertas.
 
-## Invariantes
-- Home vem depois dos domínios que ela agrega.
-- Cada fase fecha implementação, teste, evidência e checkpoint antes da próxima.
+## Roadmap operacional oficial
+
+- **P00 — visão, requisitos e direção arquitetural**
+- **P01 — documentação/fontes de verdade**
+- **P02 — Engineering Foundation**
+- **P03 — Harness Engineering**
+- **P04 — Design System**
+- **P05 — Domain Model**
+- **P06 — Auth / RBAC / RLS**
+- **P07 — Canonical Vertical Slice**
+- **P08 — Testing & Evals**
+- **P09 — CI/CD**
+- **P10 — Observability / Analytics / Audit**
+- **P11 — Ratchet / ADRs**
+- **P12 — Engineering System 1.0**
+- **P12.5 — Windows/local environment hardening**
+- **P13 — Learning Core / Aulas V1**
+- **P14 — Materiais V1**
+- **P15 — Practice Engine V1**
+- **P16 — Agenda / Live Booking**
+- **P17 — Teacher Operations**
+- **P18 — Admin Content**
+- **P19 — Assessment Engine**
+- **P20 — Progresso**
+- **P21 — Home definitiva**
+- **Gate — Billing provider**
+- **P22 — Billing produção**
+- **Gate — direção visual/site público**
+- **P23 — Site público**
+- **P24 — Notificações**
+- **P25 — Closed Beta**
+- **Gates — hosting + políticas operacionais**
+- **P26 — Production Readiness**
+
+O início de P15 depende do gate de governança `pre-p15-architecture-governance-gate` estar concluído e verificado. Registrar esse gate não inicia a implementação de Practice.
+
+## Princípios e invariantes
+
+- Source of truth vem antes de projection/read model.
+- Home definitiva vem depois dos domínios que agrega.
+- Segurança, autorização, acessibilidade e observabilidade são preocupações contínuas; não ficam adiadas para uma fase final.
+- Cada fase fecha implementação, testes, evidência e checkpoint antes da próxima.
 - Fase posterior não reabre decisão estrutural silenciosamente.
-- Segurança e acessibilidade são contínuas, mesmo que existam fases de hardening.
+- Blocker estrutural deve ser registrado antes de avançar.
+- Questões ainda presentes em `OPEN_QUESTIONS.md` não recebem respostas inventadas por agentes.
 
 ## O que não fazer
+
 - Pedir a um coding agent “faça o portal inteiro”.
-- Construir Home com mocks permanentes antes do domínio.
-- Adiar toda autorização para P16.
-- Avançar com blocker estrutural não registrado.
+- Construir projeções como fonte autoritativa antes do domínio correspondente.
+- Adiar autorização/RLS para uma fase posterior.
+- Avançar para a próxima fase com gate obrigatório vermelho ou blocker estrutural não registrado.
+- Transformar uma decisão ainda aberta em contrato por inferência.
+
+## Legacy roadmap — superseded
+
+A sequência histórica `P0 requisitos → P1 foundation → ... → P19 produção` foi substituída pelo roadmap operacional acima. Ela é preservada apenas como referência histórica e não deve ser usada para planejar, iniciar, nomear ou concluir novas fases.
 
 ## Interfaces
-[ARCHITECTURE.md](./ARCHITECTURE.md) · [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) · [TESTING.md](./TESTING.md) · [OPERATIONS.md](./OPERATIONS.md)
+
+[ARCHITECTURE.md](./ARCHITECTURE.md) · [DEFINITION_OF_DONE.md](./DEFINITION_OF_DONE.md) · [TESTING.md](./TESTING.md) · [OPERATIONS.md](./OPERATIONS.md) · [OPEN_QUESTIONS.md](./OPEN_QUESTIONS.md)
 
 ## Critérios de aceitação
+
 - Toda fase possui dependências conhecidas.
-- Estado/decisões são persistidos entre fases.
+- Estado e decisões são persistidos entre fases.
 - Uma fase pode ser verificada de forma independente.
+- A sequência ativa deste arquivo não contradiz o Harness.

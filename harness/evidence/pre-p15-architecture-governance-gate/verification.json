@@ -1,0 +1,119 @@
+{
+  "task": "pre-p15-architecture-governance-gate",
+  "status": "passed",
+  "verified_at": "2026-09-30T19:11:30-03:00",
+  "baseline_sha": "d57bf780f1b5d5eafd55700c58f4462c29277020",
+  "branch": "chore/pre-p15-architecture-governance-gate",
+  "final_sha_resolution": "PR head after evidence commit; recorded in PR/final operator report because a commit cannot self-embed its own SHA",
+  "roadmap": {
+    "before": "legacy P0-P19 sequence presented as active",
+    "after": "official P00-P26 operational sequence with legacy section explicitly superseded"
+  },
+  "windows_local_tooling": {
+    "before": {
+      "status": "in_progress",
+      "verified": false
+    },
+    "later_closure_evidence": "harness/evidence/pre-p13-environment-gate/verification.json",
+    "clean_room_verify_full": "passed_exit_0",
+    "after": {
+      "status": "done",
+      "verified": true
+    }
+  },
+  "harness_registry": {
+    "baseline_dependency_issues": [
+      "pre-p13-environment-gate: done depends on windows-local-tooling=in_progress"
+    ],
+    "missing_local_evidence": [],
+    "p02_through_p14": "done_and_verified",
+    "prompt_15_entry_exists": false,
+    "prompt_15_goal_exists": false,
+    "after_dependency_issues": []
+  },
+  "main_protection": {
+    "before": {
+      "branch_endpoint_protected": false,
+      "classic_protection_endpoint": "403 Resource not accessible by integration",
+      "ruleset": {
+        "id": 24223415,
+        "name": "Yas",
+        "enforcement": "disabled",
+        "rules": ["deletion", "non_fast_forward"],
+        "bypass_actors": []
+      },
+      "ci_gate_required": false
+    },
+    "after_manual_configuration": {
+      "branch_endpoint_protected": true,
+      "classic_protection_enabled_field": false,
+      "classic_field_note": "The branch endpoint classic-protection subobject remains disabled because protection is supplied by an active repository ruleset.",
+      "ruleset": {
+        "id": 24223415,
+        "name": "Yas",
+        "enforcement": "active",
+        "target": "branch",
+        "include": ["~DEFAULT_BRANCH"],
+        "bypass_actors": [],
+        "current_user_can_bypass": "never",
+        "deletion_blocked": true,
+        "non_fast_forward_blocked": true,
+        "pull_request_required": true,
+        "required_approving_review_count": 0,
+        "required_review_thread_resolution": true,
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          {
+            "context": "CI Gate",
+            "integration_id": 15368
+          }
+        ]
+      }
+    },
+    "conclusion": "compliant_for_pre_p15_gate"
+  },
+  "environments": {
+    "staging_workflow_target_exists": true,
+    "production_workflow_target_exists": true,
+    "baseline_release_jobs_success": true,
+    "admin_protection_settings": "not_readable_or_writable_by_connected_integration; limitation documented and not used as a positive protection claim"
+  },
+  "required_gates": {
+    "npm run format:check": "passed exactly in Official CI run 36782456240 on pre-closure head a0a9c46282fef3f7c84e60e71f16fdba6438db68",
+    "npm run verify:harness": "passed exactly in Official CI run 36782456240",
+    "npm run verify:ratchet": "underlying scripts/verify-ratchet.mjs passed through verify:harness in Official CI run 36782456240",
+    "npm run verify:system": "underlying scripts/verify-engineering-system.mjs passed through verify:harness in Official CI run 36782456240",
+    "npm run verify:agent": "literal aggregate alias not invoked by Official CI; its core/harness/security constituents passed, but the local execution runtime could not clone github.com to run the alias separately",
+    "git diff --check": "literal local command unavailable because the execution runtime could not clone github.com; canonical formatting passed and the remote diff is limited to documentation/Harness files",
+    "Official CI": "run 36782456240 passed on the pre-closure head; the immutable closure head created by this evidence update must also pass before merge"
+  },
+  "product_runtime_changed": false,
+  "p15_product_implementation_started": false,
+  "official_ci_validation": {
+    "pre_closure_head": "a0a9c46282fef3f7c84e60e71f16fdba6438db68",
+    "run_id": 36782456240,
+    "run_url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36782456240",
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    },
+    "final_closure_policy": "final PR head after this evidence update must pass Official CI before merge; immutable final run/head are recorded in the PR/final operator report"
+  },
+  "changed_files": [
+    "docs/ROADMAP.md",
+    "harness/agent-state/plan.md",
+    "harness/agent-state/progress.md",
+    "harness/evidence/pre-p15-architecture-governance-gate/README.md",
+    "harness/evidence/pre-p15-architecture-governance-gate/verification.json",
+    "harness/evidence/windows-local-tooling/README.md",
+    "harness/feature_list.json",
+    "harness/goals/pre-p15-architecture-governance-gate.md",
+    "harness/goals/windows-local-tooling.md"
+  ]
+}
