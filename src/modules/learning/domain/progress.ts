@@ -25,6 +25,14 @@ export function moduleCompletion(module: LearningModule): number {
   return Math.round(total / module.lessons.length);
 }
 
+export function isLessonComplete(lesson: LearningLesson): boolean {
+  return lessonCompletion(lesson) === 100;
+}
+
+export function isModuleComplete(module: LearningModule): boolean {
+  return module.lessons.length > 0 && module.lessons.every(isLessonComplete);
+}
+
 export function courseCompletion(course: LearningCourse): number {
   const lessons = course.modules.flatMap((module) => module.lessons);
   if (lessons.length === 0) return 0;
@@ -34,12 +42,30 @@ export function courseCompletion(course: LearningCourse): number {
 }
 
 export function nextLesson(course: LearningCourse): LearningLesson | null {
-  return (
-    [...course.modules]
-      .sort((a, b) => a.position - b.position)
-      .flatMap((module) => [...module.lessons].sort((a, b) => a.position - b.position))
-      .find((lesson) => lessonCompletion(lesson) < 100) ?? null
-  );
+  return orderedCourseLessons(course).find((lesson) => !isLessonComplete(lesson)) ?? null;
+}
+
+export function orderedCourseLessons(course: LearningCourse): LearningLesson[] {
+  return [...course.modules]
+    .sort((a, b) => a.position - b.position || a.id.localeCompare(b.id))
+    .flatMap((module) =>
+      [...module.lessons].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id)),
+    );
+}
+
+export function adjacentLessons(
+  course: LearningCourse,
+  lessonId: string,
+): { previousLesson: LearningLesson | null; nextLesson: LearningLesson | null } {
+  const lessons = orderedCourseLessons(course);
+  const index = lessons.findIndex((lesson) => lesson.id === lessonId);
+
+  if (index < 0) return { previousLesson: null, nextLesson: null };
+
+  return {
+    previousLesson: lessons[index - 1] ?? null,
+    nextLesson: lessons[index + 1] ?? null,
+  };
 }
 
 export function didCompleteLesson(

@@ -2,22 +2,22 @@
 
 ## Active task
 
-**pre-p13-environment-gate**
+**prompt-13-learning-core**
 
-State: complete.
+State: in_progress.
 
 ### Immediate plan
 
-1. Audit repository state, full-verification scripts, Supabase configuration and actual machine prerequisites.
-2. Repair only the concrete Windows/local-tooling and isolated Supabase integration failures found by execution.
-3. Prove database reset, integration and RLS suites independently before running the complete gate.
-4. Iterate `verify:full` to green without weakening any gate, then repeat from a stopped clean local stack.
-5. Inspect the final diff for secrets/artifacts, persist sanitized evidence and update the registry only from verified results.
+1. Extend the existing learning domain/application contracts for deterministic navigation and completion, reusing current ports and models.
+2. Harden the Supabase adapters/RPC for deterministic publication-scoped reads, monotonic idempotent resume and deduplicated learning analytics.
+3. Compose the approved Aulas UI from existing shell, tokens and primitives, including ordered module/lesson states and previous/next navigation.
+4. Add unit, application/adapter, SQL/RLS, E2E, accessibility and golden coverage for course → module → lesson → completion → logout/login → resume.
+5. Run every applicable official gate, inspect visual/security evidence, then update progress, decisions, registry and durable evidence without overclaiming.
 
 ### Result
 
-The isolated Windows clean-room sequence and the official `npm run verify:full` completed with exit code 0. Durable evidence is stored under `harness/evidence/pre-p13-environment-gate/`; no Prompt 13 feature or production resource was touched.
+Pending implementation and verification.
 
 ### Scope boundary
 
-No Prompt 13 feature, product behavior, production environment, RLS/security weakening, arbitrary snapshot update or unrelated refactor is permitted.
+No Materiais, Prática, Agenda, Assessment, Billing, definitive Home redesign, provider selection, service-role student flow, RLS weakening, arbitrary snapshot update or unrelated refactor is permitted.

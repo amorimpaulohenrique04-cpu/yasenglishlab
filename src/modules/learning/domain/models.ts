@@ -51,6 +51,8 @@ export interface LessonDetail {
   module: LearningModule;
   lesson: LearningLesson;
   content: LessonTextContent | null;
+  previousLesson: LearningLesson | null;
+  nextLesson: LearningLesson | null;
 }
 
 export type LearningState<T> =

@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  adjacentLessons,
   courseCompletion,
   didCompleteLesson,
+  isModuleComplete,
   moduleCompletion,
   nextLesson,
+  orderedCourseLessons,
   type LearningCourse,
   type LessonProgressSnapshot,
 } from "@/modules/learning";
@@ -72,5 +75,56 @@ describe("canonical learning progress", () => {
   it("emits completion only on the transition to 100%", () => {
     expect(didCompleteLesson(progress(50), progress(100))).toBe(true);
     expect(didCompleteLesson(progress(100), progress(100))).toBe(false);
+  });
+
+  it("orders modules and lessons deterministically before resolving navigation", () => {
+    const unordered: LearningCourse = {
+      ...course,
+      modules: [
+        {
+          id: "00000000-0000-4000-8000-000000000020",
+          courseId: course.id,
+          position: 2,
+          title: "Second module",
+          description: null,
+          lessons: [
+            {
+              id: "00000000-0000-4000-8000-000000000021",
+              moduleId: "00000000-0000-4000-8000-000000000020",
+              position: 1,
+              slug: "three",
+              title: "Three",
+              estimatedMinutes: 10,
+              progress: null,
+            },
+          ],
+        },
+        course.modules[0]!,
+      ],
+    };
+
+    expect(orderedCourseLessons(unordered).map((lesson) => lesson.slug)).toEqual([
+      "one",
+      "two",
+      "three",
+    ]);
+    expect(adjacentLessons(unordered, course.modules[0]!.lessons[1]!.id)).toMatchObject({
+      previousLesson: { slug: "one" },
+      nextLesson: { slug: "three" },
+    });
+  });
+
+  it("completes a non-empty module only when every lesson is complete", () => {
+    expect(isModuleComplete(course.modules[0]!)).toBe(false);
+    expect(
+      isModuleComplete({
+        ...course.modules[0]!,
+        lessons: course.modules[0]!.lessons.map((lesson) => ({
+          ...lesson,
+          progress: progress(100),
+        })),
+      }),
+    ).toBe(true);
+    expect(isModuleComplete({ ...course.modules[0]!, lessons: [] })).toBe(false);
   });
 });

@@ -54,7 +54,7 @@ export function StudentShell({
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const initials = displayName
-    .split(/s+/)
+    .split(/\s+/)
     .slice(0, 2)
     .map((part) => part[0])
     .join("")

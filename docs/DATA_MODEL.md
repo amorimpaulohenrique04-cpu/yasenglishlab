@@ -28,6 +28,8 @@ Implementação inicial:
 - **Course → Module → Lesson → LessonAsset**.
 - **Enrollment** liga User a Course.
 - **LessonProgress** liga User/Enrollment a Lesson e mede somente avanço curricular. Na canonical slice persiste `completion_percent`, `last_position_seconds`, `last_accessed_at` e `completed_at` para retomada.
+  - `completion_percent` e `last_position_seconds` são monotônicos: retry ou checkpoint atrasado não pode reduzir conclusão nem mover a retomada para trás.
+  - a unicidade por `user_id + lesson_id` mantém uma única linha idempotente por aluno/aula.
 
 ### Practice
 - **PracticeActivity → PracticeAttempt → PracticeResult**.

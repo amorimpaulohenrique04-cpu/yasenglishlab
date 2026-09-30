@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getLessonView,
   getLearningHome,
+  markLessonStarted,
   recordLessonProgress,
   type LearningCourse,
   type LearningRepository,
@@ -56,9 +57,9 @@ const course: LearningCourse = {
   ],
 };
 
-function makeRepository(): LearningRepository {
+function makeRepository(activeCourses: LearningCourse[] = [course]): LearningRepository {
   return {
-    getActiveCoursesForStudent: vi.fn().mockResolvedValue([course]),
+    getActiveCoursesForStudent: vi.fn().mockResolvedValue(activeCourses),
     getLessonContentForStudent: vi.fn().mockResolvedValue({
       eyebrow: "Lesson 1",
       title: "Welcome to Yas",
@@ -78,7 +79,14 @@ describe("learning application integration", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("coordinates repository and analytics ports when progress completes", async () => {
-    const repository = makeRepository();
+    const completedCourse: LearningCourse = {
+      ...course,
+      modules: course.modules.map((courseModule) => ({
+        ...courseModule,
+        lessons: courseModule.lessons.map((lesson) => ({ ...lesson, progress: progress(100) })),
+      })),
+    };
+    const repository = makeRepository([completedCourse]);
     const analytics = makeAnalytics();
 
     const result = await recordLessonProgress(repository, analytics, userId, {
@@ -87,7 +95,6 @@ describe("learning application integration", () => {
       lastPositionSeconds: 200,
     });
 
-    expect(repository.getProgressForStudent).toHaveBeenCalledWith(userId, lessonId);
     expect(repository.recordLessonProgress).toHaveBeenCalledWith({
       lessonId,
       completionPercent: 100,
@@ -102,6 +109,12 @@ describe("learning application integration", () => {
       event: "lesson_completed",
       lessonId,
       properties: { completion_percent: 100 },
+      idempotencyKey: `lesson_completed:${lessonId}`,
+    });
+    expect(analytics.track).toHaveBeenNthCalledWith(3, {
+      event: "module_completed",
+      properties: { module_id: course.modules[0]!.id },
+      idempotencyKey: `module_completed:${course.modules[0]!.id}`,
     });
     expect(result.completionPercent).toBe(100);
   });
@@ -127,5 +140,22 @@ describe("learning application integration", () => {
 
     expect(state.status).toBe("success");
     expect(repository.getLessonContentForStudent).toHaveBeenCalledWith(userId, lessonId);
+  });
+
+  it("tracks lesson start with a stable retry key only for an enrolled lesson", async () => {
+    const repository = makeRepository();
+    const analytics = makeAnalytics();
+
+    await markLessonStarted(repository, analytics, userId, lessonId);
+
+    expect(analytics.track).toHaveBeenCalledWith({
+      event: "lesson_started",
+      lessonId,
+      idempotencyKey: `lesson_started:${lessonId}`,
+    });
+
+    await expect(
+      markLessonStarted(repository, analytics, userId, "42000000-0000-4000-8000-000000000099"),
+    ).rejects.toThrow("Lesson is not available");
   });
 });

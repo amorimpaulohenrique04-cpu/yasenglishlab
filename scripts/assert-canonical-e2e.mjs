@@ -43,7 +43,7 @@ if (!progress.completed_at) {
 
 const { data: events, error: eventError } = await admin
   .from("product_analytics_events")
-  .select("event_name")
+  .select("event_name, idempotency_key")
   .eq("user_id", user.id);
 
 if (eventError) throw eventError;
@@ -63,6 +63,26 @@ for (const [event, minimum] of [
   if ((counts.get(event) ?? 0) < minimum) {
     throw new Error(`Expected at least ${minimum} ${event} event(s).`);
   }
+}
+
+for (const [event, exact] of [
+  ["lesson_started", 3],
+  ["lesson_completed", 3],
+  ["module_completed", 1],
+]) {
+  if ((counts.get(event) ?? 0) !== exact) {
+    throw new Error(`Expected exactly ${exact} retry-safe ${event} event(s).`);
+  }
+}
+
+const criticalKeys = (events ?? [])
+  .filter((row) =>
+    ["lesson_started", "lesson_completed", "module_completed"].includes(String(row.event_name)),
+  )
+  .map((row) => row.idempotency_key);
+
+if (criticalKeys.some((key) => typeof key !== "string") || new Set(criticalKeys).size !== 7) {
+  throw new Error("Critical learning analytics must persist one unique idempotency key each.");
 }
 
 console.log("Canonical E2E persistence and analytics evidence passed.");

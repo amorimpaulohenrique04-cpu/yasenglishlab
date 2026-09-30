@@ -66,15 +66,73 @@ begin
     raise exception 'Progress did not resume from persisted state';
   end if;
 
+  saved := public.record_lesson_progress(
+    '42000000-0000-4000-8000-000000000001',
+    25,
+    100
+  );
+
+  if saved.completion_percent <> 50 or saved.last_position_seconds <> 300 then
+    raise exception 'A stale retry must not reduce completion or resume position';
+  end if;
+
   perform public.track_product_event(
     'lesson_started',
     '42000000-0000-4000-8000-000000000001',
-    '{}'::jsonb
+    '{}'::jsonb,
+    'lesson_started:42000000-0000-4000-8000-000000000001'
+  );
+  perform public.track_product_event(
+    'lesson_started',
+    '42000000-0000-4000-8000-000000000001',
+    '{}'::jsonb,
+    'lesson_started:42000000-0000-4000-8000-000000000001'
   );
   perform public.track_product_event(
     'lesson_progressed',
     '42000000-0000-4000-8000-000000000001',
     '{"completion_percent":50}'::jsonb
+  );
+
+  saved := public.record_lesson_progress(
+    '42000000-0000-4000-8000-000000000001',
+    100,
+    600
+  );
+  perform public.record_lesson_progress(
+    '42000000-0000-4000-8000-000000000002',
+    100,
+    840
+  );
+  perform public.record_lesson_progress(
+    '42000000-0000-4000-8000-000000000003',
+    100,
+    1080
+  );
+
+  perform public.track_product_event(
+    'lesson_completed',
+    '42000000-0000-4000-8000-000000000001',
+    '{"completion_percent":100}'::jsonb,
+    'lesson_completed:42000000-0000-4000-8000-000000000001'
+  );
+  perform public.track_product_event(
+    'lesson_completed',
+    '42000000-0000-4000-8000-000000000001',
+    '{"completion_percent":100}'::jsonb,
+    'lesson_completed:42000000-0000-4000-8000-000000000001'
+  );
+  perform public.track_product_event(
+    'module_completed',
+    null,
+    '{"module_id":"41000000-0000-4000-8000-000000000001"}'::jsonb,
+    'module_completed:41000000-0000-4000-8000-000000000001'
+  );
+  perform public.track_product_event(
+    'module_completed',
+    null,
+    '{"module_id":"41000000-0000-4000-8000-000000000001"}'::jsonb,
+    'module_completed:41000000-0000-4000-8000-000000000001'
   );
 end;
 $$;
@@ -139,17 +197,22 @@ begin
   where user_id = '83000000-0000-0000-0000-000000000001'
     and lesson_id = '42000000-0000-4000-8000-000000000001';
 
-  if persisted_percent <> 50 or persisted_position <> 300 then
+  if persisted_percent <> 100 or persisted_position <> 600 then
     raise exception 'Canonical persisted checkpoint must survive session changes';
   end if;
 
   select count(*) into analytics_count
   from public.product_analytics_events
   where user_id = '83000000-0000-0000-0000-000000000001'
-    and event_name in ('lesson_started', 'lesson_progressed');
+    and event_name in (
+      'lesson_started',
+      'lesson_progressed',
+      'lesson_completed',
+      'module_completed'
+    );
 
-  if analytics_count <> 2 then
-    raise exception 'Canonical analytics events were not persisted';
+  if analytics_count <> 4 then
+    raise exception 'Canonical analytics events must persist once across retries';
   end if;
 
   if has_function_privilege(
@@ -158,6 +221,14 @@ begin
     'EXECUTE'
   ) is not true then
     raise exception 'Authenticated student must be able to call progress RPC';
+  end if;
+
+  if has_function_privilege(
+    'authenticated',
+    'public.track_product_event(text,uuid,jsonb,text)',
+    'EXECUTE'
+  ) is not true then
+    raise exception 'Authenticated student must be able to call analytics RPC';
   end if;
 
   if has_table_privilege('authenticated', 'public.lesson_progress', 'UPDATE') then

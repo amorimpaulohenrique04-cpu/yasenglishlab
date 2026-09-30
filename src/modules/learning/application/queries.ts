@@ -1,6 +1,6 @@
 import type { LearningRepository } from "./ports";
 import type { LearningCourse, LearningModule, LearningState, LessonDetail } from "../domain/models";
-import { courseCompletion, nextLesson } from "../domain/progress";
+import { adjacentLessons, courseCompletion, nextLesson } from "../domain/progress";
 
 export interface LearningHomeView {
   course: LearningCourse;
@@ -82,8 +82,9 @@ export async function getLessonView(
   if (!course || !courseModule || !lesson) return { status: "unauthorized" };
 
   const content = await repository.getLessonContentForStudent(userId, lesson.id);
+  const navigation = adjacentLessons(course, lesson.id);
   return {
     status: "success",
-    data: { course, module: courseModule, lesson, content },
+    data: { course, module: courseModule, lesson, content, ...navigation },
   };
 }

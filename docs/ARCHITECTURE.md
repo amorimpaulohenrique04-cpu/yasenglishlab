@@ -78,9 +78,13 @@ Pages não constroem dados duráveis e não conhecem SQL/RPC. Elas chamam casos 
 
 O client nunca envia `user_id`. O RPC autenticado `record_lesson_progress()` deriva `auth.uid()`, valida matrícula ativa para a aula e impede reassignment dos campos de identidade. `UPDATE lesson_progress` direto continua negado para `authenticated`. O percentual é monotônico: checkpoint antigo não reduz progresso já salvo.
 
+A posição de retomada também é monotônica. A conclusão de aula deriva de `completion_percent = 100`; a conclusão de módulo exige um módulo não vazio com todas as aulas em 100%. Esses estados persistidos, e não a Home ou analytics, são a fonte de verdade.
+
 ### Analytics
 
 A slice implementa `login_completed`, `lesson_started`, `lesson_progressed` e `lesson_completed`. Analytics fica atrás de `ProductAnalyticsPort` e nunca é fonte de verdade do progresso.
+
+O learning core inclui também `module_completed`. Os eventos críticos de início/conclusão usam idempotency keys estáveis e são validados contra identidade, matrícula, publicação e progresso persistido no boundary do banco.
 
 ### UI e estados
 

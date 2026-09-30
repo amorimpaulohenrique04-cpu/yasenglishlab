@@ -15,5 +15,6 @@ export interface ProductAnalyticsPort {
     event: ProductAnalyticsEvent;
     lessonId?: string;
     properties?: Record<string, unknown>;
+    idempotencyKey?: string;
   }): Promise<void>;
 }

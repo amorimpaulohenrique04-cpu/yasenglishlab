@@ -67,27 +67,32 @@ export class SupabaseLearningRepository implements LearningRepository {
           .from("courses")
           .select("id, slug, title, description")
           .in("id", courseIds)
-          .eq("active", true),
+          .eq("active", true)
+          .order("slug")
+          .order("id"),
         this.client
           .from("modules")
           .select("id, course_id, position, title, description")
           .in("course_id", courseIds)
-          .order("position"),
+          .order("position")
+          .order("id"),
       ]);
 
     if (courseError || moduleError) throw new Error("Unable to load course structure.");
 
     const moduleIds = (moduleRows ?? []).map((row) => String(row.id));
-    const lessonRows =
+    const lessonResult =
       moduleIds.length === 0
-        ? []
-        : ((
-            await this.client
-              .from("lessons")
-              .select("id, module_id, position, slug, title, estimated_minutes")
-              .in("module_id", moduleIds)
-              .order("position")
-          ).data ?? []);
+        ? { data: [], error: null }
+        : await this.client
+            .from("lessons")
+            .select("id, module_id, position, slug, title, estimated_minutes")
+            .in("module_id", moduleIds)
+            .order("position")
+            .order("id");
+
+    if (lessonResult.error) throw new Error("Unable to load lessons.");
+    const lessonRows = lessonResult.data ?? [];
 
     const { data: progressRows, error: progressError } = await this.client
       .from("lesson_progress")

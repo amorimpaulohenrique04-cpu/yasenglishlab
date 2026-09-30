@@ -1,4 +1,6 @@
-import { Badge, Card, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
+import Link from "next/link";
+
+import { Badge, Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
 import {
   LessonProgressControls,
   LessonStartAnalytics,
@@ -22,8 +24,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
     );
   }
 
-  const { module, lesson, content } = state.data;
+  const { course, module, lesson, content, previousLesson, nextLesson } = state.data;
   const currentPercent = lesson.progress?.completionPercent ?? 0;
+  const lessonHref = (candidate: typeof lesson) =>
+    `/aulas/${course.slug}/modulos/${candidate.moduleId}/aulas/${candidate.slug}`;
 
   return (
     <div className="yas-learning-page">
@@ -41,24 +45,41 @@ export default async function LessonPage({ params }: LessonPageProps) {
         }
       />
 
-      <Card>
-        <article className="yas-learning-lesson-content">
-          <div>
-            <p className="yas-learning-kicker">{content?.eyebrow ?? module.title}</p>
-            <h2 className="yas-learning-card-title">{content?.title ?? lesson.title}</h2>
-          </div>
-          <p className="yas-learning-lesson-copy">
-            {content?.body ?? "O conteúdo desta aula está sendo preparado."}
-          </p>
-          {content && content.steps.length > 0 && (
-            <ol className="yas-learning-steps">
-              {content.steps.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
-          )}
-        </article>
-      </Card>
+      <nav className="yas-learning-breadcrumb" aria-label="Contexto da aula">
+        <Link className="yas-focusable" href="/aulas">
+          Aulas
+        </Link>
+        <span aria-hidden="true">/</span>
+        <Link className="yas-focusable" href={`/aulas/${course.slug}/modulos/${module.id}`}>
+          {module.title}
+        </Link>
+      </nav>
+
+      {content ? (
+        <Card>
+          <article className="yas-learning-lesson-content">
+            <div>
+              <p className="yas-learning-kicker">{content.eyebrow ?? module.title}</p>
+              <h2 className="yas-learning-card-title">{content.title}</h2>
+            </div>
+            <p className="yas-learning-lesson-copy">{content.body}</p>
+            {content.steps.length > 0 && (
+              <ol className="yas-learning-steps">
+                {content.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+            )}
+          </article>
+        </Card>
+      ) : (
+        <Card>
+          <EmptyState
+            title="Conteúdo em preparação"
+            description="Esta aula está na trilha, mas ainda não possui conteúdo publicado."
+          />
+        </Card>
+      )}
 
       <Card>
         <div className="yas-learning-progress-panel">
@@ -80,6 +101,38 @@ export default async function LessonPage({ params }: LessonPageProps) {
           )}
         </div>
       </Card>
+
+      <nav className="yas-learning-lesson-navigation" aria-label="Navegação entre aulas">
+        <div>
+          {previousLesson && (
+            <Link
+              className="yas-learning-link yas-focusable"
+              href={lessonHref(previousLesson)}
+              rel="prev"
+            >
+              ← Aula anterior: {previousLesson.title}
+            </Link>
+          )}
+        </div>
+        <div>
+          {nextLesson ? (
+            <Link
+              className="yas-learning-link yas-focusable"
+              href={lessonHref(nextLesson)}
+              rel="next"
+            >
+              Próxima aula: {nextLesson.title} →
+            </Link>
+          ) : (
+            <Link
+              className="yas-learning-link yas-focusable"
+              href={`/aulas/${course.slug}/modulos/${module.id}`}
+            >
+              Voltar ao módulo →
+            </Link>
+          )}
+        </div>
+      </nav>
     </div>
   );
 }

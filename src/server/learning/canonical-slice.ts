@@ -68,8 +68,9 @@ export async function recordCurrentStudentLessonProgress(input: LessonProgressIn
 }
 
 export async function trackCurrentStudentLessonStarted(lessonId: string): Promise<void> {
-  await assertRole("STUDENT");
+  const auth = await assertRole("STUDENT");
   const client = await createSupabaseServerClient();
+  const repository = new SupabaseLearningRepository(client);
   const analytics = new SupabaseProductAnalytics(client);
-  await markLessonStarted(analytics, lessonId);
+  await markLessonStarted(repository, analytics, auth.userId, lessonId);
 }

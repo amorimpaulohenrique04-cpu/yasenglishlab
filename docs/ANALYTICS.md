@@ -41,6 +41,8 @@ A canonical slice mantém também `lesson_progressed` como evento interno já ex
 
 Falha de analytics não interrompe uma transação de aprendizagem. A partir do PROMPT 10, a falha deixa de ser silenciosa: ela gera `database_error` na camada de observability com stage `product_analytics.persist`.
 
+`lesson_started`, `lesson_completed` e `module_completed` exigem uma chave idempotente estável derivada do evento e da entidade. O sink aplica unicidade por usuário + chave, portanto refresh, retry concorrente ou repetição após falha não cria uma segunda ocorrência. Eventos curriculares também validam matrícula ativa/conteúdo publicado; conclusão exige progresso persistido antes do evento.
+
 ## Privacidade
 
 Não registrar em product analytics:

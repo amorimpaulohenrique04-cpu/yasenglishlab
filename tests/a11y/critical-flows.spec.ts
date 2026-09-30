@@ -67,4 +67,19 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
   await expect(page.getByRole("main")).toBeVisible();
   await assertAxe(page);
+
+  const moduleLink = page.getByRole("link", { name: "Abrir módulo →" });
+  await moduleLink.focus();
+  await expect(moduleLink).toBeFocused();
+  await moduleLink.click();
+  await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
+  await assertAxe(page);
+
+  const lessonLink = page.getByRole("link", { name: /aula →$/ }).first();
+  await lessonLink.focus();
+  await expect(lessonLink).toBeFocused();
+  await lessonLink.click();
+  await expect(page.getByRole("heading", { name: "Welcome to Yas" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Navegação entre aulas" })).toBeVisible();
+  await assertAxe(page);
 });

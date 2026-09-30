@@ -187,6 +187,15 @@
         "harness/evidence/pre-p13-environment-gate/verification.json"
       ],
       "updated_at": "2026-09-30T13:15:24-03:00"
+    },
+    {
+      "id": "prompt-13-learning-core",
+      "title": "Release-grade Aulas learning core",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["pre-p13-environment-gate"],
+      "evidence": ["harness/goals/prompt-13-learning-core.md"],
+      "updated_at": "2026-09-30T14:00:00-03:00"
     }
   ]
 }

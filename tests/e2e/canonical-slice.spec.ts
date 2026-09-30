@@ -40,9 +40,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
     await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
+    await captureEvidence(page, "module-desktop.png");
 
     await page.getByRole("link", { name: "Abrir aula →" }).first().click();
     await expect(page.getByRole("heading", { name: "Welcome to Yas" })).toBeVisible();
+    await captureEvidence(page, "lesson-desktop.png");
 
     const progress = page.getByRole("progressbar", { name: "Conclusão da aula" });
     await expect(progress).toHaveAttribute("aria-valuenow", "0");
@@ -76,6 +78,27 @@ test.describe("canonical learning vertical slice", () => {
       "100",
     );
 
+    await page
+      .getByRole("link", { name: /Próxima aula: Introductions that sound natural/ })
+      .click();
+    await page.getByRole("button", { name: "Concluir aula" }).click();
+    await expect(page.getByRole("progressbar", { name: "Conclusão da aula" })).toHaveAttribute(
+      "aria-valuenow",
+      "100",
+    );
+
+    await page.getByRole("link", { name: /Próxima aula: Build your first conversation/ }).click();
+    await page.getByRole("button", { name: "Concluir aula" }).click();
+    await expect(page.getByRole("progressbar", { name: "Conclusão da aula" })).toHaveAttribute(
+      "aria-valuenow",
+      "100",
+    );
+    await page.getByRole("link", { name: "Voltar ao módulo →" }).click();
+    await expect(page.getByRole("progressbar", { name: "Progresso do módulo" })).toHaveAttribute(
+      "aria-valuenow",
+      "100",
+    );
+
     await page.setViewportSize({ width: 834, height: 1112 });
     await page.goto("/home");
     await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
@@ -85,6 +108,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
     await captureEvidence(page, "aulas-tablet.png");
 
+    await page.getByRole("link", { name: "Abrir módulo →" }).click();
+    await captureEvidence(page, "module-tablet.png");
+    await page.getByRole("link", { name: "Rever aula →" }).first().click();
+    await captureEvidence(page, "lesson-tablet.png");
+
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/home");
     await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
@@ -93,5 +121,10 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/aulas");
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
     await captureEvidence(page, "aulas-mobile.png");
+
+    await page.getByRole("link", { name: "Abrir módulo →" }).click();
+    await captureEvidence(page, "module-mobile.png");
+    await page.getByRole("link", { name: "Rever aula →" }).first().click();
+    await captureEvidence(page, "lesson-mobile.png");
   });
 });

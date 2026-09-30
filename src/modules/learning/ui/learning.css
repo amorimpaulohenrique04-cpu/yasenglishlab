@@ -138,6 +138,12 @@
   gap: var(--yas-space-4);
 }
 
+.yas-learning-lesson-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .yas-learning-module-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -195,6 +201,28 @@
   gap: var(--yas-space-5);
 }
 
+.yas-learning-breadcrumb,
+.yas-learning-lesson-navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--yas-space-2);
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-learning-breadcrumb a {
+  color: var(--yas-color-purple-700);
+}
+
+.yas-learning-lesson-navigation {
+  justify-content: space-between;
+  gap: var(--yas-space-5);
+}
+
+.yas-learning-lesson-navigation > div:last-child {
+  text-align: right;
+}
+
 @media (max-width: 63.99rem) {
   .yas-student-mobile-menu {
     display: inline-flex;
@@ -238,5 +266,14 @@
   .yas-learning-checkpoints form,
   .yas-learning-checkpoints .yas-button {
     width: 100%;
+  }
+
+  .yas-learning-lesson-navigation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .yas-learning-lesson-navigation > div:last-child {
+    text-align: left;
   }
 }

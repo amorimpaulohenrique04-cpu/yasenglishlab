@@ -2,6 +2,14 @@
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-09-30 — prompt-13-learning-core
+
+- Started from clean `main` tracking `origin/main`; created `harness/goals/prompt-13-learning-core.md` and marked the registry entry `in_progress` / unverified before runtime changes.
+- Read the required data, UI, design, accessibility, testing, analytics and open-question contracts; inspected the approved 1400×788 Aulas reference and the current learning routes, domain, ports, adapters, migrations and tests.
+- Audit confirmed that `courses.active` is the existing publication boundary inherited by modules/lessons, progress ownership already derives from auth context through `record_lesson_progress`, and no video provider or `VideoPlaybackPort` is needed.
+- Gaps found: courses lack an explicit query order; stale checkpoints can reduce `last_position_seconds`; lesson UI lacks previous/next and a dedicated content-empty state; refresh/retry can duplicate learning analytics; `module_completed` is not emitted.
+- Minimum plan recorded in `harness/agent-state/plan.md`; implementation remains pending and no verification claim has been made.
+
 ## 2026-09-30 — pre-p13-environment-gate
 
 - Started on branch `fix/windows-development-environment` at `a936fb0` with pre-existing untracked `supabase/config.toml` and `supabase/.gitignore`; both are preserved pending review.

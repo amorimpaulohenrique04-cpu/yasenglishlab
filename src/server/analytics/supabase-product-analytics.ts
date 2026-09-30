@@ -13,6 +13,7 @@ export class SupabaseProductAnalytics implements ProductAnalyticsPort {
       p_event_name: input.event,
       p_lesson_id: input.lessonId ?? null,
       p_properties: input.properties ?? {},
+      p_idempotency_key: input.idempotencyKey ?? null,
     });
 
     // Analytics must never become the system of record or break a learning transaction.
@@ -25,6 +26,7 @@ export class SupabaseProductAnalytics implements ProductAnalyticsPort {
         metadata: {
           product_event: input.event,
           lesson_id: input.lessonId,
+          idempotency_key: input.idempotencyKey,
         },
       });
     }

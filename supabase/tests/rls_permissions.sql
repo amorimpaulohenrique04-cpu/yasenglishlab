@@ -43,6 +43,37 @@ values (
 )
 on conflict (id) do nothing;
 
+insert into public.courses (id, slug, title, description, active)
+values (
+  '40000000-0000-4000-8000-000000000099',
+  'draft-learning-course',
+  'Draft learning course',
+  'Must remain invisible to students.',
+  false
+)
+on conflict (id) do nothing;
+
+insert into public.modules (id, course_id, position, title, description)
+values (
+  '41000000-0000-4000-8000-000000000099',
+  '40000000-0000-4000-8000-000000000099',
+  1,
+  'Draft module',
+  null
+)
+on conflict (id) do nothing;
+
+insert into public.lessons (id, module_id, position, slug, title, estimated_minutes)
+values (
+  '42000000-0000-4000-8000-000000000099',
+  '41000000-0000-4000-8000-000000000099',
+  1,
+  'draft-lesson',
+  'Draft lesson',
+  10
+)
+on conflict (id) do nothing;
+
 insert into public.enrollments (id, user_id, course_id, status)
 values
   (
@@ -55,6 +86,12 @@ values
     '81400000-0000-0000-0000-000000000002',
     '81000000-0000-0000-0000-000000000002',
     '40000000-0000-4000-8000-000000000001',
+    'ACTIVE'
+  ),
+  (
+    '81400000-0000-0000-0000-000000000099',
+    '81000000-0000-0000-0000-000000000001',
+    '40000000-0000-4000-8000-000000000099',
     'ACTIVE'
   )
 on conflict (id) do nothing;
@@ -241,6 +278,55 @@ begin
   if visible_count <> 0 then
     raise exception 'Student A must not read Student B progress';
   end if;
+
+  select count(*) into visible_count
+  from public.courses
+  where id = '40000000-0000-4000-8000-000000000099';
+
+  if visible_count <> 0 then
+    raise exception 'Student A must not read an inactive draft course';
+  end if;
+
+  select count(*) into visible_count
+  from public.modules
+  where id = '41000000-0000-4000-8000-000000000099';
+
+  if visible_count <> 0 then
+    raise exception 'Student A must not read modules inherited from a draft course';
+  end if;
+
+  select count(*) into visible_count
+  from public.lessons
+  where id = '42000000-0000-4000-8000-000000000099';
+
+  if visible_count <> 0 then
+    raise exception 'Student A must not read lessons inherited from a draft course';
+  end if;
+
+  begin
+    perform public.record_lesson_progress(
+      '42000000-0000-4000-8000-000000000099',
+      50,
+      120
+    );
+    raise exception 'Student A must not write progress for a draft course';
+  exception
+    when insufficient_privilege then
+      null;
+  end;
+
+  begin
+    perform public.track_product_event(
+      'lesson_started',
+      '42000000-0000-4000-8000-000000000099',
+      '{}'::jsonb,
+      'lesson_started:42000000-0000-4000-8000-000000000099'
+    );
+    raise exception 'Student A must not track analytics for a draft lesson';
+  exception
+    when insufficient_privilege then
+      null;
+  end;
 
   select count(*) into visible_count
   from public.materials
