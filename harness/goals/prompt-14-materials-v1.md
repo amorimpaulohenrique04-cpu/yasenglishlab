@@ -58,8 +58,13 @@ An authenticated student can open `/materiais`, see only authorized active mater
 - `tests/unit/**`, `tests/integration/**`, `tests/e2e/**`, `tests/a11y/**`, `tests/visual/**` for Materiais coverage.
 - `playwright.golden.config.ts` only if required to register approved Materiais golden names.
 - `supabase/migrations/**` and `supabase/tests/**` only if a real DB/RLS gap is proven before implementation.
-- Matching Materials/architecture/testing documentation only where the executable contract changes.
-- Harness goal, plan, progress, registry and durable evidence for this task.
+- `docs/MATERIALS.md` only for the V1 executable-contract note.
+- Matching architecture/testing documentation only if the executable contract requires it.
+- `harness/goals/prompt-14-materials-v1.md`
+- `harness/agent-state/plan.md`
+- `harness/agent-state/progress.md`
+- `harness/feature_list.json`
+- `harness/evidence/prompt-14-materials-v1/**`
 
 ## Forbidden areas
 

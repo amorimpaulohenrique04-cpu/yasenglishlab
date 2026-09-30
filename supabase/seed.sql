@@ -146,3 +146,93 @@ on conflict (id) do update set
   position = excluded.position,
   content = excluded.content,
   metadata = excluded.metadata;
+
+insert into public.materials (
+  id,
+  title,
+  material_type,
+  module_id,
+  lesson_id,
+  storage_path,
+  metadata,
+  active,
+  required_entitlement_key
+)
+values
+  (
+    '81710000-0000-4000-8000-000000000001',
+    'Welcome Summary',
+    'SUMMARY',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
+    'materials/getting-started/welcome-summary.pdf',
+    '{"pages":8}'::jsonb,
+    true,
+    null
+  ),
+  (
+    '81710000-0000-4000-8000-000000000002',
+    'Natural Introductions Vocabulary',
+    'VOCABULARY',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    'materials/getting-started/natural-introductions-vocabulary.pdf',
+    '{"words":24}'::jsonb,
+    true,
+    null
+  ),
+  (
+    '81710000-0000-4000-8000-000000000003',
+    'Present Simple Guide',
+    'GRAMMAR',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    'materials/getting-started/present-simple-guide.pdf',
+    '{"pages":6}'::jsonb,
+    true,
+    null
+  ),
+  (
+    '81710000-0000-4000-8000-000000000004',
+    'Conversation Listening Pack',
+    'AUDIO',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000003',
+    'materials/getting-started/conversation-listening-pack.mp3',
+    '{"duration_minutes":12}'::jsonb,
+    true,
+    null
+  ),
+  (
+    '81710000-0000-4000-8000-000000000005',
+    'First Conversation Worksheet',
+    'WORKSHEET',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000003',
+    'materials/getting-started/first-conversation-worksheet.pdf',
+    '{"pages":4}'::jsonb,
+    true,
+    null
+  ),
+  (
+    '81710000-0000-4000-8000-000000000006',
+    'First Conversation Answer Key',
+    'ANSWER_KEY',
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000003',
+    'materials/getting-started/first-conversation-answer-key.pdf',
+    '{"pages":2}'::jsonb,
+    true,
+    null
+  )
+on conflict (id) do update set
+  title = excluded.title,
+  material_type = excluded.material_type,
+  module_id = excluded.module_id,
+  lesson_id = excluded.lesson_id,
+  storage_path = excluded.storage_path,
+  external_url = null,
+  metadata = excluded.metadata,
+  active = excluded.active,
+  required_entitlement_key = excluded.required_entitlement_key;
+

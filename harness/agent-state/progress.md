@@ -148,3 +148,14 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - No DB/RLS change is currently required. Favorite idempotency can be implemented through existing unique ownership plus insert-conflict handling/delete semantics under RLS.
 - Recents is intentionally excluded from V1 because there is no durable material-access history model and product analytics is explicitly not a system of record.
 - Implementation and verification remain pending; no success claim has been made.
+
+## 2026-09-30 — prompt-14-materials-v1 implementation
+
+- Added a dedicated Materials domain/application boundary and server-only Supabase repository that reads only Data API columns already granted to authenticated users; `storage_path` is never selected by the feature.
+- Added `/materiais` with deterministic search/category filters, module/lesson context, favorites, loading/empty/error/unauthorized states and responsive composition based on the approved reference.
+- Favorite writes stay on the authenticated RLS client. Duplicate inserts are treated as the same desired state through the existing unique constraint; delete is naturally idempotent.
+- Protected opens use an internal GET route with no Next prefetch, re-authorize the material, call the existing short signed-URL service and emit minimized `material_opened` analytics only after signing succeeds.
+- Added deterministic material metadata to the development seed. No public material URL was introduced.
+- No migration or RLS change was required; existing negative SQL evidence for entitlement denial and protected `storage_path` remains the security source of truth.
+- Verification is pending; registry remains `in_progress` / unverified.
+

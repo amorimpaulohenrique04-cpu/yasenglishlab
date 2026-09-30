@@ -36,3 +36,13 @@ Ativos protegidos usam storage privado/signed URL conforme [SECURITY.md](./SECUR
 - Material é encontrável por contexto/tipo.
 - Recurso protegido exige autorização.
 - Relação com aula/módulo é preservada.
+
+## Implementação V1
+
+- A biblioteca lê somente materiais ativos autorizados pelas policies existentes de enrollment + entitlement.
+- Busca e filtro são projeções determinísticas sobre o conjunto já autorizado; não alteram autorização.
+- Favoritos usam ownership por `auth.uid()` e a unicidade `user_id + material_id`; repetir o mesmo estado não cria uma segunda relação.
+- Abertura de asset protegido passa pelo serviço server-only de signed URL curta; a UI nunca recebe `storage_path`.
+- `material_opened` e `material_favorited` permanecem analytics minimizados, nunca fonte de verdade.
+- **Recentes não faz parte do V1 atual:** o modelo ainda não possui histórico durável de abertura de material e analytics não pode ser usado como sistema de registro para essa UI.
+
