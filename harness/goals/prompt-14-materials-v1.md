@@ -114,4 +114,3 @@ Done means every applicable acceptance criterion is proven, all official gates p
 - Product goldens: 3/3 passed; Materials-specific loaded screenshots were preserved and manually inspected for desktop, tablet and mobile.
 - Database clean validation and replay passed, including `supabase/tests/rls_permissions.sql`; no P14 migration/RLS change was required.
 - Durable evidence: `harness/evidence/prompt-14-materials-v1/`.
-
