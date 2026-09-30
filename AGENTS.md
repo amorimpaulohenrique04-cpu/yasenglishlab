@@ -23,7 +23,7 @@ Windows PowerShell: copy `.env.example` to `.env.local` with `Copy-Item`.
 - Domain contracts: the matching file in `docs/`
 - Testing/Done: `docs/TESTING.md`, `docs/DEFINITION_OF_DONE.md`
 - Undecided items: `docs/OPEN_QUESTIONS.md`
-- Harness process: `harness/README.md`
+- Harness process: `harness/README.md`, `harness/ratchet.md`
 
 ## Before changing code
 
@@ -57,6 +57,7 @@ Windows wrappers are available in `scripts/*.ps1`; Bash wrappers are in `scripts
 - Approved visual references require explicit evidence for intentional changes.
 - Do not touch files outside the task scope without updating the goal and recording why.
 - Critical TODOs/blockers must be recorded before conclusion.
+- Resolved repeatable failures must gain permanent protection + a test/eval through `harness/ratchet.md`.
 
 ## Persistent state
 

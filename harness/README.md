@@ -16,9 +16,10 @@ Every non-trivial task follows this order:
 6. **Verify** — run mandatory task checks.
 7. **Inspect evidence** — do not rely on command exit code alone when visual/security behavior matters.
 8. **Correct if necessary** — failures are information, not success.
-9. **Record decision** — only durable/non-obvious choices belong in decisions/ADR.
-10. **Update progress** — feature registry + progress/failure log must match reality.
-11. **Conclude only then** — run behavioral evals and report verified state.
+9. **Ratchet repeatable failures** — use `ratchet.md` to convert relevant recurring failure classes into permanent guards.
+10. **Record decision** — only durable/non-obvious choices belong in decisions/ADR.
+11. **Update progress** — feature registry + progress/failure log must match reality.
+12. **Conclude only then** — run behavioral evals and report verified state.
 
 ## Starting a task
 
@@ -47,6 +48,7 @@ A task may become `done` only when:
 
 ```bash
 npm run verify:agent
+npm run verify:ratchet
 npm run verify:security
 npm run verify:db
 npm run verify:ui
@@ -54,6 +56,7 @@ npm run verify:full
 ```
 
 - `verify:agent`: foundation + harness + security + DB structural checks.
+- `verify:ratchet`: repeatable-failure contract + controlled red→green proof.
 - `verify:security`: server/client secret-boundary checks and high-confidence secret scan.
 - `verify:db`: migration/seed discipline.
 - `verify:ui`: approved-reference presence + Storybook build + Playwright E2E.

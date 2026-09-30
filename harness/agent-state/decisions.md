@@ -31,3 +31,7 @@ Storybook's accessibility addon remains enabled and the Playwright visual suite 
 ## H-008 — Visual evidence proves primitives, not product pages
 
 Design-system stories demonstrate states, hierarchy, responsiveness and layout primitives without recreating Home/Aulas/Prática or other product screens. Approved product screenshots remain the later page-level source of truth.
+
+## H-009 — Repeatable failures become executable guards
+
+A relevant repeatable failure is not considered resolved until it has permanent protection, a test/eval and red-to-green proof. ADR 0005 owns the durable rationale; `harness/ratchet.md` owns the operating loop so this file does not duplicate the full policy.

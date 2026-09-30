@@ -55,3 +55,18 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final structured log uses snake_case correlation fields, omits absent user identity, preserves ISO timestamp/version, and retains redaction for actual sensitive values.
 - Durable evidence recorded under `harness/evidence/prompt-10-observability/`.
 - Registry moved to `done` + `verified: true` only after the green run and evidence inspection.
+
+## 2026-09-29 — prompt-11-ratchet-adrs
+
+- Started from main commit `218a62872cbc00e8a71e43af3a746a3307536655`.
+- Audited the existing harness and found `docs/adr/` and `harness/failure-log/` already present, so PROMPT 11 extends those sources instead of creating duplicate process trees.
+- Identified a real harness gap: a repeatable failure could be recorded/resolved without mandatory root cause, permanent protection, test/eval or red-to-green proof.
+- Implemented the failure-to-guard contract, ADR template, failure classification schema, periodic harness-review process and executable ratchet verifier.
+- Added a controlled red fixture that must be rejected when permanent protection/test are absent and a corrected green fixture that must pass.
+- Wired `npm run verify:ratchet` into the existing Harness invariants gate used by Official CI.
+- Verification is pending; feature remains `in_progress` and `verified: false` until Official CI is green.
+
+- Official CI run 36653227178 passed Supply Chain, Database, Guardrail Simulations, Quality, Preview and CI Gate on implementation head `06a8c20b7b46e0604f8119a63ba93e4640f55d71`.
+- The Harness invariants log proved the controlled ratchet cycle: red fixture rejected, green fixture accepted and 1 durable failure record verified.
+- Durable verification evidence was persisted under `harness/evidence/prompt-11-ratchet-adrs/`.
+- Feature registry moved to `done` + `verified: true` only after the green Official CI run.

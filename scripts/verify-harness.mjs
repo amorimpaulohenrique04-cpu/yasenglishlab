@@ -1,4 +1,4 @@
-import { assert, exists, read, success } from "./_verify-utils.mjs";
+import { assert, exists, read, run, success } from "./_verify-utils.mjs";
 
 const requiredPaths = [
   "AGENTS.md",
@@ -11,6 +11,10 @@ const requiredPaths = [
   "harness/agent-state/decisions.md",
   "harness/evidence/README.md",
   "harness/failure-log/README.md",
+  "harness/failure-log/TEMPLATE.md",
+  "harness/ratchet.md",
+  "docs/adr/TEMPLATE.md",
+  "scripts/verify-ratchet.mjs",
   "harness/README.md",
   "scripts/verify.sh",
   "scripts/verify-ui.sh",
@@ -104,9 +108,12 @@ for (const phrase of [
   "Left secret?",
   "Declared success without verify?",
   "Git state matches report?",
+  "Repeated failure without ratchet?",
 ]) {
   assert(evals.includes(phrase), `Behavioral eval missing: ${phrase}`);
 }
+
+run(process.execPath, ["scripts/verify-ratchet.mjs"]);
 
 success(
   `Harness contract valid: ${requiredPaths.length} required paths, ${registry.features.length} registry entries.`,
