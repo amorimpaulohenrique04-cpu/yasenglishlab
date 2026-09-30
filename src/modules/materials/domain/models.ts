@@ -87,9 +87,15 @@ function compareText(a: string, b: string): number {
 }
 
 function positiveInteger(value: unknown): number | null {
-  return typeof value === "number" && Number.isInteger(value) && value > 0
-    ? value
-    : null;
+  if (typeof value !== "number") return null;
+  if (!Number.isInteger(value) || value <= 0) return null;
+  return value;
+}
+
+function materialFilterTypeFromRaw(value: unknown): MaterialFilterType {
+  if (typeof value !== "string") return "ALL";
+  if (!MATERIAL_FILTER_TYPES.includes(value as MaterialFilterType)) return "ALL";
+  return value as MaterialFilterType;
 }
 
 export function normalizeMaterialsFilters(raw: {
@@ -98,10 +104,7 @@ export function normalizeMaterialsFilters(raw: {
 }): MaterialsFilters {
   const result = filtersSchema.safeParse({
     query: typeof raw.query === "string" ? raw.query : "",
-    type:
-      typeof raw.type === "string" && MATERIAL_FILTER_TYPES.includes(raw.type as MaterialFilterType)
-        ? raw.type
-        : "ALL",
+    type: materialFilterTypeFromRaw(raw.type),
   });
 
   return result.success ? result.data : { query: "", type: "ALL" };

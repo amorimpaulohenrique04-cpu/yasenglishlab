@@ -114,23 +114,27 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
     const favorites = new Set((favoriteRows ?? []).map((row) => String(row.material_id)));
 
     return rows.map((row) => {
-      const lessonWithModule =
-        typeof row.lesson_id === "string"
-          ? lessonsById.get(row.lesson_id) ?? null
-          : null;
+      let lessonWithModule: (MaterialLessonContext & { moduleId: string }) | null = null;
+      if (typeof row.lesson_id === "string") {
+        lessonWithModule = lessonsById.get(row.lesson_id) ?? null;
+      }
+
       const directModuleId = typeof row.module_id === "string" ? row.module_id : null;
-      const module = directModuleId
-        ? modulesById.get(directModuleId) ?? null
-        : lessonWithModule
-          ? modulesById.get(lessonWithModule.moduleId) ?? null
-          : null;
-      const lesson: MaterialLessonContext | null = lessonWithModule
-        ? {
-            id: lessonWithModule.id,
-            position: lessonWithModule.position,
-            title: lessonWithModule.title,
-          }
-        : null;
+      let module: MaterialModuleContext | null = null;
+      if (directModuleId) {
+        module = modulesById.get(directModuleId) ?? null;
+      } else if (lessonWithModule) {
+        module = modulesById.get(lessonWithModule.moduleId) ?? null;
+      }
+
+      let lesson: MaterialLessonContext | null = null;
+      if (lessonWithModule) {
+        lesson = {
+          id: lessonWithModule.id,
+          position: lessonWithModule.position,
+          title: lessonWithModule.title,
+        };
+      }
 
       return {
         id: String(row.id),

@@ -40,6 +40,10 @@ function filterHref(filters: MaterialsFilters, type: MaterialFilterType): string
   return query ? `/materiais?${query}` : "/materiais";
 }
 
+function searchResultLabel(count: number): string {
+  return `${count} ${count === 1 ? "resultado" : "resultados"} na busca atual.`;
+}
+
 function MaterialTypeIcon({ material }: { material: MaterialListItem }) {
   const short = {
     PDF: "PDF",
@@ -65,8 +69,12 @@ function MaterialRow({
   material: MaterialListItem;
   compact?: boolean;
 }) {
+  const rowClassName = compact
+    ? "yas-materials-row yas-materials-row--compact"
+    : "yas-materials-row";
+
   return (
-    <div className={compact ? "yas-materials-row yas-materials-row--compact" : "yas-materials-row"}>
+    <div className={rowClassName}>
       <MaterialTypeIcon material={material} />
       <div className="yas-materials-row-copy">
         <strong>{material.title}</strong>
@@ -205,9 +213,7 @@ export default async function MaterialsPage({ searchParams }: MaterialsPageProps
               <h2 id="materiais-curso-title">Materiais do curso</h2>
               <p>
                 {filtering
-                  ? `${materials.length} resultado${
-                      materials.length === 1 ? "" : "s"
-                    } na busca atual.`
+                  ? searchResultLabel(materials.length)
                   : "Organizados pelo contexto pedagógico da sua trilha."}
               </p>
             </div>
