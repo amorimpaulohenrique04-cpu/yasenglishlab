@@ -120,11 +120,11 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
       }
 
       const directModuleId = typeof row.module_id === "string" ? row.module_id : null;
-      let module: MaterialModuleContext | null = null;
+      let courseModule: MaterialModuleContext | null = null;
       if (directModuleId) {
-        module = modulesById.get(directModuleId) ?? null;
+        courseModule = modulesById.get(directModuleId) ?? null;
       } else if (lessonWithModule) {
-        module = modulesById.get(lessonWithModule.moduleId) ?? null;
+        courseModule = modulesById.get(lessonWithModule.moduleId) ?? null;
       }
 
       let lesson: MaterialLessonContext | null = null;
@@ -141,7 +141,7 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
         title: String(row.title),
         materialType: materialTypeFromRow(row.material_type),
         metadata: metadataFromRow(row.metadata),
-        module,
+        module: courseModule,
         lesson,
         favorite: favorites.has(String(row.id)),
       };
