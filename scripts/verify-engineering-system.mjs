@@ -87,7 +87,8 @@ function staleReadmeErrors(source) {
     .map((phrase) => `README contains stale statement: ${phrase}`);
 }
 
-const controlledBadUi = 'run(npm, ["run", "test:e2e"]); run(npm, ["run", "test:visual:storybook"]);';
+const controlledBadUi =
+  'run(npm, ["run", "test:e2e"]); run(npm, ["run", "test:visual:storybook"]);';
 const controlledGoodUi =
   'run(npm, ["run", "storybook:build"]); run(npm, ["run", "test:e2e"]); run(npm, ["run", "test:a11y"]); run(npm, ["run", "test:visual:storybook"]); run(npm, ["run", "test:visual:golden"]);';
 
@@ -101,7 +102,8 @@ assert(uiVerifierErrors(controlledGoodUi).length === 0, "Controlled complete UI 
 const controlledRegistry = {
   features: [{ id: "done-task", status: "done" }],
 };
-const controlledBadPlan = "# Agent Plan\n\n## Active task\n\n**done-task**\n\nState: merge pending.";
+const controlledBadPlan =
+  "# Agent Plan\\n\\n## Active task\\n\\n**done-task**\\n\\nState: merge pending.";
 const controlledGoodPlan = "# Agent Plan\n\n## Active task\n\n**done-task**\n\nState: complete.";
 assert(
   staleStateErrors(controlledBadPlan, controlledRegistry).length > 0,
@@ -119,12 +121,19 @@ assert(uiErrors.length === 0, uiErrors.join("\n"));
 const readme = read("README.md");
 const readmeErrors = staleReadmeErrors(readme);
 assert(readmeErrors.length === 0, readmeErrors.join("\n"));
-for (const marker of ["Yas Engineering System 1.0", "canonical learning vertical slice", "npm run verify:full"]) {
+for (const marker of [
+  "Yas Engineering System 1.0",
+  "canonical learning vertical slice",
+  "npm run verify:full",
+]) {
   assert(readme.includes(marker), `README is missing current-system marker: ${marker}`);
 }
 
 const stylesReadme = read("src/styles/README.md");
-assert(stylesReadme.includes("tokens.css"), "Styles README must point to executable design tokens.");
+assert(
+  stylesReadme.includes("tokens.css"),
+  "Styles README must point to executable design tokens.",
+);
 assert(
   !stylesReadme.includes("intentionally deferred"),
   "Styles README still claims design tokens are deferred.",
@@ -132,7 +141,10 @@ assert(
 
 const modulesReadme = read("src/modules/README.md");
 for (const marker of ["domain/", "auth/", "learning/", "application/"]) {
-  assert(modulesReadme.includes(marker), `Modules README missing current implementation: ${marker}`);
+  assert(
+    modulesReadme.includes(marker),
+    `Modules README missing current implementation: ${marker}`,
+  );
 }
 assert(
   !modulesReadme.includes("PROMPT 05 adds contracts"),
