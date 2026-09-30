@@ -184,3 +184,11 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - GitHub `main` is not effectively protected: branch endpoint reports `protected: false`; ruleset `Yas` id `24223415` is disabled and only contains deletion/non-fast-forward rules. `CI Gate` exists as a successful check but is not required by active protection.
 - Classic branch-protection read returns 403 to this integration and no administrative write action exists for branch protection/rulesets/environments. Staging/production workflow targets are observable, but required-reviewer/deployment-branch settings are not administratively readable through the connector.
 - Gate is therefore `blocked` pending manual GitHub administration. Green repository/CI checks cannot convert this gate to done until effective `main` protection is independently proven.
+
+## 2026-09-30 — pre-p15 governance CI verification
+
+- First PR CI attempt `36781405404` failed only canonical Prettier formatting in three governance files; those files were formatted without changing semantics.
+- Official CI run `36781582010` then passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate on head `9de5071fbe06bcfa03a17da7b4339d8771eaa3df`.
+- Quality explicitly passed `npm run format:check` and `npm run verify:harness`; the Harness verifier in turn passed Ratchet and Engineering System contracts. Security, build, DB/RLS/full-stack Preview coverage also passed.
+- The connected execution runtime could not clone GitHub for separate local aggregate-alias execution; this limitation is recorded in the PRE-P15 evidence rather than treated as a pass.
+- CI success does not resolve the governance blocker: `main` protection still requires manual GitHub administration and the PRE-P15 registry entry remains `blocked` / unverified.
