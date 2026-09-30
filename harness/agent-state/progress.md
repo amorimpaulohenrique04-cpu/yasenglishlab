@@ -195,10 +195,18 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 
 ## 2026-09-30 — pre-p15 governance protection closure
 
-- Repository operator completed the manual GitHub ruleset configuration requested by the PRE-P15 gate.
-- Independent re-audit now reports `main.protected = true` and ruleset `Yas` id `24223415` with `enforcement = active`, target `~DEFAULT_BRANCH`, empty bypass list and `current_user_can_bypass = never`.
-- The active ruleset blocks deletion/non-fast-forward updates, requires pull requests and resolved review threads, and uses strict required-status-check enforcement with exactly `CI Gate` (integration id `15368`) required.
-- The classic branch-protection subobject remains disabled because protection is provided by the repository ruleset; the environment administration endpoint remains unreadable to this integration and no unsupported positive claim is made about it.
-- PRE-P15 registry/evidence moved to `done` / `verified: true`. No P15 feature, GOAL or product implementation was created.
+- Repository operator completed the manual GitHub ruleset configuration requested by the PRE-P15
+  gate.
+- Independent re-audit now reports `main.protected = true` and ruleset `Yas` id `24223415` with
+  `enforcement = active`, target `~DEFAULT_BRANCH`, empty bypass list and
+  `current_user_can_bypass = never`.
+- The active ruleset blocks deletion/non-fast-forward updates, requires pull requests and resolved
+  review threads, and uses strict required-status-check enforcement with exactly `CI Gate`
+  (integration id `15368`) required.
+- The classic branch-protection subobject remains disabled because protection is provided by the
+  repository ruleset; the environment administration endpoint remains unreadable to this
+  integration and no unsupported positive claim is made about it.
+- PRE-P15 registry/evidence moved to `done` / `verified: true`. No P15 feature, GOAL or product
+  implementation was created.
 - The resulting closure head must pass Official CI before PR #18 is merged into `main`.
 
