@@ -66,11 +66,16 @@
     {
       "id": "prompt-11-ratchet-adrs",
       "title": "Engineering ratchet, ADRs and permanent failure learning",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["prompt-10-observability"],
-      "evidence": [],
-      "updated_at": "2026-09-29T21:42:00-03:00"
+      "evidence": [
+        "harness/evidence/prompt-11-ratchet-adrs/README.md",
+        "harness/evidence/prompt-11-ratchet-adrs/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36653227178",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/15"
+      ],
+      "updated_at": "2026-09-29T22:07:00-03:00"
     }
   ]
 }
