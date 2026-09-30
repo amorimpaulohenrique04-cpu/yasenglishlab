@@ -24,6 +24,7 @@
     "verify:harness": "node scripts/verify-harness.mjs",
     "verify:ratchet": "node scripts/verify-ratchet.mjs",
     "verify:system": "node scripts/verify-engineering-system.mjs",
+    "verify:platform": "node scripts/verify-platform.mjs",
     "verify:security": "node scripts/verify-security.mjs",
     "verify:db": "node scripts/verify-db.mjs",
     "verify:ui": "node scripts/verify-ui.mjs",

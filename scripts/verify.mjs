@@ -1,10 +1,8 @@
-import { spawnSync } from "node:child_process";
-
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+import { spawnNpmSync } from "./_npm-cli.mjs";
 
 function run(script) {
   console.log(`\n▶ npm run ${script}`);
-  const result = spawnSync(npmCommand, ["run", script], { stdio: "inherit" });
+  const result = spawnNpmSync(["run", script], { stdio: "inherit" });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 

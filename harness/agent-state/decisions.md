@@ -43,3 +43,11 @@ A relevant repeatable failure is not considered resolved until it has permanent 
 ## H-011 — Engineering System 1.0 consistency is executable
 
 `npm run verify:system` validates the cross-cutting surfaces that previously drifted silently: current README/module/style maps, complete engineering milestone registry, persistent plan consistency, full UI gate wiring, core CI/CD stages, RLS evidence, observability surfaces and Ratchet presence. Harness verification executes this contract so drift blocks CI.
+
+## H-012 — Verification runners invoke npm through Node
+
+Node verification scripts execute the npm JavaScript CLI with `process.execPath` and `process.env.npm_execpath`. They do not dispatch `npm.cmd` or enable a shell. This preserves arguments and executable paths across Windows and Linux, including paths containing spaces, while avoiding DEP0190 and shell parsing.
+
+## H-013 — Git checkout policy owns canonical LF
+
+`.gitattributes` defines `text=auto eol=lf` for repository text and excludes known binary assets. Formatter policy and checkout behavior therefore agree without relying on each developer's global Git configuration.

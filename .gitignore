@@ -11,6 +11,7 @@ next-env.d.ts
 /storybook-static/
 /playwright-report/
 /test-results/
+*.tsbuildinfo
 
 # local environment files
 .env

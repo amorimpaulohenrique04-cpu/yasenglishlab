@@ -2,14 +2,13 @@ import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+import { spawnNpmSync } from "./_npm-cli.mjs";
 
 function run(command, args, env = process.env, capture = false) {
   const result = spawnSync(command, args, {
     env,
     encoding: capture ? "utf8" : undefined,
     stdio: capture ? ["ignore", "pipe", "pipe"] : "inherit",
-    shell: process.platform === "win32",
   });
 
   if (result.error?.code === "ENOENT") {
@@ -23,6 +22,13 @@ function run(command, args, env = process.env, capture = false) {
     throw new Error(`Command failed: ${command} ${args.join(" ")}`);
   }
   return result;
+}
+
+function runNpm(args, env = process.env) {
+  const result = spawnNpmSync(args, { env, stdio: "inherit" });
+  if (result.status !== 0) {
+    throw new Error(`Command failed: npm ${args.join(" ")}`);
+  }
 }
 
 function parseEnv(text) {
@@ -79,30 +85,29 @@ try {
     CANONICAL_E2E_PASSWORD: randomBytes(30).toString("base64url"),
   };
 
-  run(npmCommand, ["run", "verify"], runtimeEnv);
-  run(npmCommand, ["run", "verify:harness"], runtimeEnv);
-  run(npmCommand, ["run", "verify:security"], runtimeEnv);
-  run(npmCommand, ["run", "eval:agent"], runtimeEnv);
+  runNpm(["run", "verify"], runtimeEnv);
+  runNpm(["run", "verify:harness"], runtimeEnv);
+  runNpm(["run", "verify:security"], runtimeEnv);
+  runNpm(["run", "eval:agent"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  run(npmCommand, ["run", "test:e2e"], runtimeEnv);
+  runNpm(["run", "test:e2e"], runtimeEnv);
   run(process.execPath, ["scripts/assert-canonical-e2e.mjs"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  run(npmCommand, ["run", "test:a11y"], runtimeEnv);
+  runNpm(["run", "test:a11y"], runtimeEnv);
 
-  run(npmCommand, ["run", "storybook:build"], runtimeEnv);
-  run(npmCommand, ["run", "test:visual:storybook"], runtimeEnv);
+  runNpm(["run", "storybook:build"], runtimeEnv);
+  runNpm(["run", "test:visual:storybook"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  run(npmCommand, ["run", "test:visual:golden"], runtimeEnv);
+  runNpm(["run", "test:visual:golden"], runtimeEnv);
 
   console.log("\n✓ Full verification passed: core + DB integration + RLS + E2E + a11y + visual.");
 } finally {
   if (supabaseStarted) {
     spawnSync("supabase", ["stop", "--no-backup"], {
       stdio: "inherit",
-      shell: process.platform === "win32",
     });
   }
 }
