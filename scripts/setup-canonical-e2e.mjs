@@ -54,6 +54,7 @@ const operations = [
       { onConflict: "user_id,course_id" },
     ),
   admin.from("lesson_progress").delete().eq("user_id", userId),
+  admin.from("material_favorites").delete().eq("user_id", userId),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
 ];
 

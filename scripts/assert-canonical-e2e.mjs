@@ -43,7 +43,7 @@ if (!progress.completed_at) {
 
 const { data: events, error: eventError } = await admin
   .from("product_analytics_events")
-  .select("event_name, idempotency_key")
+  .select("event_name, idempotency_key, properties")
   .eq("user_id", user.id);
 
 if (eventError) throw eventError;
@@ -59,6 +59,8 @@ for (const [event, minimum] of [
   ["lesson_started", 1],
   ["lesson_progressed", 2],
   ["lesson_completed", 1],
+  ["material_opened", 1],
+  ["material_favorited", 1],
 ]) {
   if ((counts.get(event) ?? 0) < minimum) {
     throw new Error(`Expected at least ${minimum} ${event} event(s).`);
@@ -83,6 +85,17 @@ const criticalKeys = (events ?? [])
 
 if (criticalKeys.some((key) => typeof key !== "string") || new Set(criticalKeys).size !== 7) {
   throw new Error("Critical learning analytics must persist one unique idempotency key each.");
+}
+
+for (const row of (events ?? []).filter((event) =>
+  ["material_opened", "material_favorited"].includes(String(event.event_name)),
+)) {
+  const serialized = JSON.stringify(row.properties ?? {}).toLowerCase();
+  for (const forbidden of ["storage_path", "signed_url", "service_role", "yas-protected-assets/"]) {
+    if (serialized.includes(forbidden)) {
+      throw new Error(`Material analytics leaked forbidden property: ${forbidden}.`);
+    }
+  }
 }
 
 console.log("Canonical E2E persistence and analytics evidence passed.");
