@@ -89,9 +89,9 @@ test("authorized materials can be searched, favorited and opened while unauthori
 
   const courseMaterials = page.getByRole("region", { name: "Materiais do curso" });
   await expect(courseMaterials.getByText("Welcome Summary", { exact: true })).toBeVisible();
-  await expect(courseMaterials.getByText("Conversation Lab Bonus Pack", { exact: true })).toHaveCount(
-    0,
-  );
+  await expect(
+    courseMaterials.getByText("Conversation Lab Bonus Pack", { exact: true }),
+  ).toHaveCount(0);
 
   const favorite = courseMaterials.getByRole("button", { name: "Favoritar Welcome Summary" });
   await favorite.click();
