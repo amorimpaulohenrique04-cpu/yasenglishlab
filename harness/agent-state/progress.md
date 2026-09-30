@@ -158,3 +158,18 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Added deterministic material metadata to the development seed. No public material URL was introduced.
 - No migration or RLS change was required; existing negative SQL evidence for entitlement denial and protected `storage_path` remains the security source of truth.
 - Verification is pending; registry remains `in_progress` / unverified.
+
+## 2026-09-30 — prompt-14-materials-v1 closure
+
+- Final implementation/evidence SHA `1f1018b998639b7285e898ae15d456939bcade8a` passed Official CI run `36770674489`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all completed with conclusion `success`.
+- Quality passed canonical formatting, lint, typecheck, unit, integration, Harness invariants, security invariants and production build. Materials-specific unit and integration suites each passed 4 tests.
+- Database validation applied migrations/seed in clean databases and executed all SQL invariant files, including `supabase/tests/rls_permissions.sql`; existing assertions prove entitlement denial and that authenticated Data API access cannot select `materials.storage_path`.
+- Preview Critical E2E passed 3/3, including authorized listing/open through a short private signed URL, direct unauthorized-open denial, deterministic search and favorite → unfavorite → favorite behavior.
+- `scripts/assert-canonical-e2e.mjs` printed `Canonical E2E persistence and analytics evidence passed.`; it requires `material_opened` and `material_favorited` and rejects material analytics containing storage paths, signed URLs, service-role material or protected-bucket paths.
+- Accessibility passed 6/6 across desktop and mobile projects; product golden regression passed 3/3.
+- Preview artifact `11124245839` (digest `sha256:63457b3fdfb841fd4b1a14548c350194c81d43454f93ace84ded03702cde3597`) preserves loaded Materiais screenshots for desktop, tablet and mobile. All three were manually inspected against the approved Materiais reference: hierarchy and responsive recomposition are sound with no overflow.
+- Reference-only history sections (`Continue revisando` / `Recentes`) remain intentionally absent because no durable non-analytics material-access history exists. Favoritos uses the existing durable favorite relation.
+- No migration/RLS change, admin/CMS, provider, public-material bypass, service-role browser exposure or unrelated future feature was introduced.
+- The Official CI distributes the same underlying checks orchestrated by local aggregate aliases such as `verify:agent`, `verify:ui` and `verify:full`; these aggregate wrapper names are not invoked literally by Actions. Exact `verify:security` runs in Quality, while Database/Preview execute the DB/RLS/UI/full-stack constituents.
+- Durable closure evidence was persisted under `harness/evidence/prompt-14-materials-v1/`; registry is now `done` and `verified: true`.
+

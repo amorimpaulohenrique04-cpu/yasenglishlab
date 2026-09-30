@@ -1,0 +1,103 @@
+{
+  "task_id": "prompt-14-materials-v1",
+  "status": "passed",
+  "verified_at": "2026-09-30T17:14:54-03:00",
+  "conclusion": "P14 CLOSED — READY FOR P15",
+  "implementation": {
+    "commit_sha": "1f1018b998639b7285e898ae15d456939bcade8a",
+    "commit_url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/commit/1f1018b998639b7285e898ae15d456939bcade8a"
+  },
+  "official_ci": {
+    "run_id": 36770674489,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "1f1018b998639b7285e898ae15d456939bcade8a",
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36770674489",
+    "jobs": {
+      "supply_chain": "success",
+      "quality": "success",
+      "database": "success",
+      "guardrail_simulations": "success",
+      "preview": "success",
+      "ci_gate": "success"
+    }
+  },
+  "evidence": {
+    "unit": {
+      "materials_tests": 4,
+      "result": "passed"
+    },
+    "integration": {
+      "materials_application_tests": 4,
+      "result": "passed",
+      "favorite_and_unfavorite_idempotency": true
+    },
+    "database_rls": {
+      "schema_or_rls_changed": false,
+      "rls_test": "supabase/tests/rls_permissions.sql",
+      "result": "passed in clean-database validation and replay",
+      "entitlement_denial": true,
+      "data_api_storage_path_hidden": true
+    },
+    "protected_asset": {
+      "bucket": "yas-protected-assets",
+      "public_bypass": false,
+      "signed_url_ttl_seconds": 120,
+      "authorized_open": "307 signed Storage redirect",
+      "unauthorized_open": "404"
+    },
+    "analytics": {
+      "events": ["material_opened", "material_favorited"],
+      "post_e2e_assertion": "Canonical E2E persistence and analytics evidence passed.",
+      "forbidden_property_scan": [
+        "storage_path",
+        "signed_url",
+        "service_role",
+        "yas-protected-assets/"
+      ],
+      "result": "passed"
+    },
+    "e2e": {
+      "result": "3 passed",
+      "materials_flow": "authorized list/open + unauthorized direct-open denial + search + favorite/unfavorite"
+    },
+    "accessibility": {
+      "result": "6 passed",
+      "projects": ["desktop-a11y", "mobile-a11y"]
+    },
+    "visual": {
+      "product_golden_result": "3 passed",
+      "materials_screenshots_inspected": [
+        "artifacts/canonical-slice/materiais-desktop.png",
+        "artifacts/canonical-slice/materiais-tablet.png",
+        "artifacts/canonical-slice/materiais-mobile.png"
+      ],
+      "approved_reference": "docs/reference-ui/materiais/reference.webp",
+      "manual_result": "passed"
+    },
+    "preview_artifact": {
+      "id": 11124245839,
+      "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36770674489/artifacts/11124245839",
+      "digest": "sha256:63457b3fdfb841fd4b1a14548c350194c81d43454f93ace84ded03702cde3597"
+    },
+    "recents": {
+      "implemented": false,
+      "reason": "No durable non-analytics material-access history exists; analytics is not a system of record."
+    }
+  },
+  "gate_mapping": {
+    "verify_security": "literal Quality step passed",
+    "verify_agent": "CI-equivalent constituents passed; aggregate wrapper not invoked literally",
+    "verify_ui": "CI-equivalent Preview E2E/a11y/visual constituents passed; aggregate wrapper not invoked literally",
+    "verify_db": "CI-equivalent Database clean migration + all SQL invariant tests passed; aggregate wrapper not invoked literally",
+    "verify_full": "CI-equivalent distributed Quality + Database + Preview + CI Gate passed; aggregate wrapper not invoked literally"
+  },
+  "scope": {
+    "db_or_rls_migration_added": false,
+    "admin_or_cms_added": false,
+    "new_provider_added": false,
+    "public_storage_bypass_added": false,
+    "service_role_exposed_to_browser": false,
+    "p15_started": false
+  }
+}

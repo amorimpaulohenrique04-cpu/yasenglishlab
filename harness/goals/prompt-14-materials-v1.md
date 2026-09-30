@@ -1,6 +1,6 @@
 # GOAL — prompt-14-materials-v1: Materiais V1
 
-Status: in_progress
+Status: done
 Owner: agent/human
 Created: 2026-09-30
 Updated: 2026-09-30
@@ -32,19 +32,19 @@ An authenticated student can open `/materiais`, see only authorized active mater
 
 ## Acceptance criteria
 
-- [ ] Student navigation exposes Materiais without redesigning the shared shell.
-- [ ] The page lists only active materials authorized by existing RLS/enrollment/entitlement rules.
-- [ ] Material context preserves module/lesson/type and ordering is deterministic.
-- [ ] Search and category filtering are deterministic and accessible.
-- [ ] Favorite/unfavorite is ownership-safe and idempotent.
-- [ ] Recent materials are shown only if a durable non-analytics source already exists; otherwise the section is intentionally omitted.
-- [ ] Protected assets open only after server-side authorization and use the existing short signed-URL service.
-- [ ] No product log/audit/analytics payload includes storage paths, service-role credentials or signed URLs.
-- [ ] `material_opened` and `material_favorited` are emitted with minimized properties and do not become a source of truth.
-- [ ] Loading, empty, error and unauthorized states exist.
-- [ ] UI composes existing Design System primitives and follows the approved Materiais desktop composition with responsive tablet/mobile recomposition.
-- [ ] Unit/integration, authorization/E2E, accessibility and visual evidence cover the delivered behavior.
-- [ ] No admin upload/CMS, new provider, public-storage bypass or unrelated future feature is introduced.
+- [x] Student navigation exposes Materiais without redesigning the shared shell.
+- [x] The page lists only active materials authorized by existing RLS/enrollment/entitlement rules.
+- [x] Material context preserves module/lesson/type and ordering is deterministic.
+- [x] Search and category filtering are deterministic and accessible.
+- [x] Favorite/unfavorite is ownership-safe and idempotent.
+- [x] Recent materials are shown only if a durable non-analytics source already exists; otherwise the section is intentionally omitted.
+- [x] Protected assets open only after server-side authorization and use the existing short signed-URL service.
+- [x] No product log/audit/analytics payload includes storage paths, service-role credentials or signed URLs.
+- [x] `material_opened` and `material_favorited` are emitted with minimized properties and do not become a source of truth.
+- [x] Loading, empty, error and unauthorized states exist.
+- [x] UI composes existing Design System primitives and follows the approved Materiais desktop composition with responsive tablet/mobile recomposition.
+- [x] Unit/integration, authorization/E2E, accessibility and visual evidence cover the delivered behavior.
+- [x] No admin upload/CMS, new provider, public-storage bypass or unrelated future feature is introduced.
 
 ## Allowed files / domains
 
@@ -55,6 +55,7 @@ An authenticated student can open `/materiais`, see only authorized active mater
 - `src/app/globals.css` only to register Materiais styles.
 - `supabase/seed.sql` for deterministic development material metadata only.
 - `scripts/setup-canonical-e2e.mjs` for isolated test user/storage fixtures only.
+- `scripts/assert-canonical-e2e.mjs` for post-E2E persistence/analytics/privacy assertions only.
 - `tests/unit/**`, `tests/integration/**`, `tests/e2e/**`, `tests/a11y/**`, `tests/visual/**` for Materiais coverage.
 - `playwright.golden.config.ts` only if required to register approved Materiais golden names.
 - `supabase/migrations/**` and `supabase/tests/**` only if a real DB/RLS gap is proven before implementation.
@@ -102,3 +103,15 @@ An authenticated student can open `/materiais`, see only authorized active mater
 ## Definition of done
 
 Done means every applicable acceptance criterion is proven, all official gates pass, security/visual evidence is inspected, no forbidden scope was introduced, blockers/TODOs are recorded, and the registry reflects the verified state.
+
+## Closure evidence
+
+- Implementation/evidence SHA: `1f1018b998639b7285e898ae15d456939bcade8a`
+- Official CI: `36770674489` — completed / success.
+- Preview artifact: `11124245839`, digest `sha256:63457b3fdfb841fd4b1a14548c350194c81d43454f93ace84ded03702cde3597`.
+- Critical E2E: 3/3 passed; post-E2E persistence/analytics/privacy assertion passed.
+- Accessibility: 6/6 passed across desktop and mobile projects.
+- Product goldens: 3/3 passed; Materials-specific loaded screenshots were preserved and manually inspected for desktop, tablet and mobile.
+- Database clean validation and replay passed, including `supabase/tests/rls_permissions.sql`; no P14 migration/RLS change was required.
+- Durable evidence: `harness/evidence/prompt-14-materials-v1/`.
+
