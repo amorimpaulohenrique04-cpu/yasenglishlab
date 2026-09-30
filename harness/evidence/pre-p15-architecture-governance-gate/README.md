@@ -47,7 +47,7 @@ After normalization, no completed feature depends on an incomplete or blocked de
 
 No `prompt-15-practice-engine` registry entry exists, no P15 GOAL exists, and the pre-task plan closed P14 with the explicit instruction not to start P15. This gate itself depends only on `prompt-14-materials-v1`.
 
-## GitHub main-protection audit
+## GitHub main-protection audit — baseline
 
 Readable surfaces were checked independently rather than treating one missing endpoint as absence of protection:
 
@@ -80,15 +80,25 @@ Readable surfaces were checked independently rather than treating one missing en
 
 ## Protection state before / after
 
-Before: non-compliant.
+Before manual administration: non-compliant.
 
-After this repository-only cleanup: unchanged / non-compliant.
+After manual administration and independent re-audit:
 
-No branch-protection/ruleset/environment mutation is claimed because the connected GitHub toolset contains only read access for those administration surfaces. There is no administrative write action to invoke.
+- `GET /branches/main` reports `protected: true`.
+- ruleset `Yas` (24223415) reports `enforcement: active`.
+- target condition is `~DEFAULT_BRANCH`.
+- bypass actors are empty and `current_user_can_bypass = never`.
+- deletion and non-fast-forward updates are blocked.
+- pull requests are required with review-thread resolution.
+- strict required-status-check policy is enabled.
+- required check is exactly `CI Gate` (integration id `15368`).
+- “do not require status checks on creation” is disabled.
 
-## Manual GitHub administration required
+The branch endpoint's classic-protection subobject still reports `enabled: false`; that field represents classic branch protection and does not negate the independently readable active ruleset. The connector still cannot read environment administration settings, so no positive environment-protection claim is fabricated.
 
-Repository operator must configure GitHub before this gate can pass:
+## Manual GitHub administration — completed by repository operator
+
+The repository operator completed the required ruleset configuration. The target checklist used for that manual change was:
 
 1. Open `https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/settings/rules`.
 2. Edit/replace ruleset `Yas` (id `24223415`) for `main` and set enforcement to **Active**.
@@ -116,9 +126,13 @@ A Git commit cannot contain its own SHA as file content without changing that SH
 
 ## Current conclusion
 
-`PRE-P15 GATE BLOCKED — MAIN PROTECTION REQUIRES MANUAL CONFIGURATION`
+`PRE-P15 GATE PASSED — READY FOR FINAL CI AND MERGE`
 
 No P15 product implementation was started.
+
+## Governance closure re-audit
+
+The post-configuration read proves the active ruleset state described above and resolves the sole PRE-P15 governance blocker. The immutable closure commit cannot embed its own SHA; its final head and Official CI run are therefore recorded on PR #18 and in the final operator report before merge.
 
 ## Verification before evidence seal
 
