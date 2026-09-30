@@ -117,3 +117,15 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - `format:check`, lint, typecheck, unit (20/20), integration (6 passed, 1 pre-existing live test skipped), harness, security and `verify:agent` all passed without DEP0190.
 - `verify:full` was not run: Supabase CLI and `psql` are missing from PATH, Playwright Chromium is absent, and Docker config access was denied despite Docker CLI 29.7.2 being installed. Exact evidence is stored under `harness/evidence/windows-local-tooling/`.
 - Registry moved to `done` + `verified: true` after evidence inspection; no product, UI, DB, migration, RLS, auth, domain, provider or golden change was made.
+
+## 2026-09-30 — prompt-13-learning-core closure
+
+- Implementation is complete at commit `1adb44e5ca75860d261da1afd6de1d50d1e68f15`; this closure task did not alter product behavior.
+- Official CI run `36756026206` for that SHA completed with conclusion `success`; Release run `36756622829` also completed with conclusion `success`.
+- Database evidence was inspected: migration policy passed for 5 migrations, clean-database validation/replay passed, and `20260930172100_harden_learning_progress_analytics.sql` was applied in the isolated Preview stack.
+- Executable SQL evidence was inspected: `supabase/tests/rls_permissions.sql` and `supabase/tests/vertical_slice_persistence.sql` ran successfully, including draft visibility/authorization and monotonic persistence/idempotency assertions.
+- Canonical E2E passed 2/2 for the learning flow, including logout/login persisted resume; the post-E2E persistence/analytics assertion printed `Canonical E2E persistence and analytics evidence passed.`.
+- Accessibility passed 4/4; product golden visual checks passed 3/3 across desktop, tablet and mobile; the uploaded Preview evidence artifact was inspected.
+- Durable evidence was added under `harness/evidence/prompt-13-learning-core/`.
+- `harness/feature_list.json` moved `prompt-13-learning-core` to `done` with `verified: true`; the active plan was closed without starting P14.
+

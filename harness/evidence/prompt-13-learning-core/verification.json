@@ -1,0 +1,92 @@
+{
+  "task_id": "prompt-13-learning-core",
+  "closed_at": "2026-09-30T15:13:00-03:00",
+  "conclusion": "P13 CLOSED — READY FOR P14",
+  "implementation": {
+    "commit_sha": "1adb44e5ca75860d261da1afd6de1d50d1e68f15",
+    "commit_url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/commit/1adb44e5ca75860d261da1afd6de1d50d1e68f15"
+  },
+  "official_ci": {
+    "run_id": 36756026206,
+    "name": "Official CI",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "1adb44e5ca75860d261da1afd6de1d50d1e68f15",
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36756026206",
+    "jobs": {
+      "supply_chain": "success",
+      "database": "success",
+      "guardrail_simulations": "success",
+      "quality": "success",
+      "preview": "success",
+      "ci_gate": "success"
+    }
+  },
+  "release": {
+    "run_id": 36756622829,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "1adb44e5ca75860d261da1afd6de1d50d1e68f15",
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36756622829"
+  },
+  "evidence": {
+    "migration": {
+      "applied": "supabase/migrations/20260930172100_harden_learning_progress_analytics.sql",
+      "migration_policy": "passed for 5 migrations",
+      "clean_database_validation": "passed",
+      "clean_database_replay": "passed"
+    },
+    "sql_rls": {
+      "files": [
+        "supabase/tests/rls_permissions.sql",
+        "supabase/tests/vertical_slice_persistence.sql"
+      ],
+      "result": "passed in Database clean-database validation",
+      "draft_visibility_and_authorization": "verified by executable SQL assertions"
+    },
+    "canonical_e2e": {
+      "command": "npm run test:e2e",
+      "result": "2 passed",
+      "flow": "login → progress → logout → login → persisted resume"
+    },
+    "persistence_resume": {
+      "assertion_script": "scripts/assert-canonical-e2e.mjs",
+      "result": "Canonical E2E persistence and analytics evidence passed.",
+      "monotonic_retry_assertion": "supabase/tests/vertical_slice_persistence.sql"
+    },
+    "analytics_idempotency": {
+      "critical_events": [
+        "lesson_started",
+        "lesson_completed",
+        "module_completed"
+      ],
+      "mechanism": "stable idempotency key plus unique user/idempotency-key constraint",
+      "post_e2e_assertion": "passed"
+    },
+    "accessibility": {
+      "result": "4 passed",
+      "projects": [
+        "desktop-a11y",
+        "mobile-a11y"
+      ]
+    },
+    "visual_golden": {
+      "result": "3 passed",
+      "projects": [
+        "desktop",
+        "tablet",
+        "mobile"
+      ]
+    },
+    "preview_artifact": {
+      "id": 11116523588,
+      "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36756026206/artifacts/11116523588",
+      "digest": "sha256:37471c9b9ced00dc1dff8128ae6dafcb7aff76e782eebbdefa3ead18071d1663"
+    }
+  },
+  "closure_scope": {
+    "product_code_changed": false,
+    "product_behavior_changed": false,
+    "p14_started": false
+  }
+}
