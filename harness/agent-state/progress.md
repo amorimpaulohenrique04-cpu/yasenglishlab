@@ -128,4 +128,3 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Accessibility passed 4/4; product golden visual checks passed 3/3 across desktop, tablet and mobile; the uploaded Preview evidence artifact was inspected.
 - Durable evidence was added under `harness/evidence/prompt-13-learning-core/`.
 - `harness/feature_list.json` moved `prompt-13-learning-core` to `done` with `verified: true`; the active plan was closed without starting P14.
-

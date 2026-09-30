@@ -62,4 +62,3 @@ No snapshot/golden update was made by the P13.1 closure task.
 The implementation commit was inspected for changed paths. P13 implementation touched the declared learning slice, matching tests/migration/docs and Harness state; it did not introduce Materiais/P14 or another future feature.
 
 P13.1 itself is limited to GOAL/plan/progress/registry/evidence closure files. No product code, UI, migration, schema, RLS, auth runtime, analytics runtime, functional test, golden, dependency or architecture file is changed by this closure.
-

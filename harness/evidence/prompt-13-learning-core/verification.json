@@ -55,28 +55,17 @@
       "monotonic_retry_assertion": "supabase/tests/vertical_slice_persistence.sql"
     },
     "analytics_idempotency": {
-      "critical_events": [
-        "lesson_started",
-        "lesson_completed",
-        "module_completed"
-      ],
+      "critical_events": ["lesson_started", "lesson_completed", "module_completed"],
       "mechanism": "stable idempotency key plus unique user/idempotency-key constraint",
       "post_e2e_assertion": "passed"
     },
     "accessibility": {
       "result": "4 passed",
-      "projects": [
-        "desktop-a11y",
-        "mobile-a11y"
-      ]
+      "projects": ["desktop-a11y", "mobile-a11y"]
     },
     "visual_golden": {
       "result": "3 passed",
-      "projects": [
-        "desktop",
-        "tablet",
-        "mobile"
-      ]
+      "projects": ["desktop", "tablet", "mobile"]
     },
     "preview_artifact": {
       "id": 11116523588,
