@@ -58,14 +58,40 @@
     "admin_protection_settings": "not_readable_or_writable_by_connected_integration"
   },
   "required_gates": {
-    "npm run format:check": "pending",
-    "npm run verify:harness": "pending",
-    "npm run verify:ratchet": "pending",
-    "npm run verify:system": "pending",
-    "npm run verify:agent": "pending",
-    "git diff --check": "pending",
-    "Official CI": "pending"
+    "npm run format:check": "passed exactly in Official CI run 36781582010",
+    "npm run verify:harness": "passed exactly in Official CI run 36781582010",
+    "npm run verify:ratchet": "underlying scripts/verify-ratchet.mjs passed through verify:harness in Official CI run 36781582010",
+    "npm run verify:system": "underlying scripts/verify-engineering-system.mjs passed through verify:harness in Official CI run 36781582010",
+    "npm run verify:agent": "literal aggregate alias not invoked by Official CI; its core/harness/security constituents passed, but the local execution runtime could not clone github.com to run the alias separately",
+    "git diff --check": "literal local command unavailable because the execution runtime could not clone github.com; canonical formatting passed and the remote diff is limited to documentation/Harness files",
+    "Official CI": "passed on pre-seal head in run 36781582010; final seal head must also pass before final report"
   },
   "product_runtime_changed": false,
-  "p15_product_implementation_started": false
+  "p15_product_implementation_started": false,
+  "official_ci_validation": {
+    "pre_seal_head": "9de5071fbe06bcfa03a17da7b4339d8771eaa3df",
+    "run_id": 36781582010,
+    "run_url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36781582010",
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    },
+    "final_seal_policy": "final PR head must be revalidated before the final operator report"
+  },
+  "changed_files": [
+    "docs/ROADMAP.md",
+    "harness/agent-state/plan.md",
+    "harness/agent-state/progress.md",
+    "harness/evidence/pre-p15-architecture-governance-gate/README.md",
+    "harness/evidence/pre-p15-architecture-governance-gate/verification.json",
+    "harness/evidence/windows-local-tooling/README.md",
+    "harness/feature_list.json",
+    "harness/goals/pre-p15-architecture-governance-gate.md",
+    "harness/goals/windows-local-tooling.md"
+  ]
 }
