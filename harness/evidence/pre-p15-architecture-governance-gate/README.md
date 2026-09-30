@@ -119,3 +119,19 @@ A Git commit cannot contain its own SHA as file content without changing that SH
 `PRE-P15 GATE BLOCKED — MAIN PROTECTION REQUIRES MANUAL CONFIGURATION`
 
 No P15 product implementation was started.
+
+## Verification before evidence seal
+
+Official CI run `36781582010` passed on head `9de5071fbe06bcfa03a17da7b4339d8771eaa3df`.
+
+- Supply Chain: success.
+- Quality: success, including exact `npm run format:check`, lint, typecheck, unit, integration, exact `npm run verify:harness`, exact `npm run verify:security` and production build.
+- `verify:harness` executed and passed the Ratchet verifier and Engineering System verifier internally.
+- Database: success.
+- Guardrail Simulations: success.
+- Preview: success, including isolated Supabase, critical E2E, accessibility and visual suites.
+- CI Gate: success.
+
+The hosted execution runtime available to this task could not resolve `github.com` for a local clone, so the literal aggregate alias `npm run verify:agent` and literal local `git diff --check` could not be run separately here. This is recorded rather than misrepresented. Official CI executed the applicable constituent quality/security/full-stack gates, and the final evidence-seal head is revalidated before the final report.
+
+The exact repository diff is limited to the nine documentation/Harness files recorded in `verification.json`.
