@@ -1,0 +1,38 @@
+{
+  "task": "pre-p13-environment-gate",
+  "status": "passed",
+  "verified_at": "2026-09-30T13:15:24-03:00",
+  "branch": "fix/windows-development-environment",
+  "base_head": "a936fb0",
+  "environment": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "docker_cli": "29.8.1",
+    "docker_daemon": "passed",
+    "supabase_cli": "2.118.0",
+    "psql": "18.6",
+    "playwright": "1.58.2",
+    "chromium": "installed_and_exercised"
+  },
+  "checks": [
+    { "name": "supabase start", "status": "passed" },
+    { "name": "supabase db reset", "status": "passed" },
+    { "name": "migrations and seed", "status": "passed" },
+    { "name": "test:integration:db", "status": "passed", "detail": "2 SQL files" },
+    { "name": "test:rls", "status": "passed", "detail": "1 SQL file" },
+    { "name": "test:e2e", "status": "passed", "detail": "2 tests" },
+    { "name": "test:a11y", "status": "passed", "detail": "4 tests" },
+    { "name": "storybook:build", "status": "passed" },
+    { "name": "test:visual:storybook", "status": "passed", "detail": "6 tests" },
+    { "name": "test:visual:golden", "status": "passed", "detail": "3 tests" },
+    {
+      "name": "verify:full clean-room",
+      "status": "passed",
+      "exit_code": 0,
+      "detail": "Full verification passed: core + DB integration + RLS + E2E + a11y + visual."
+    }
+  ],
+  "secrets_persisted": false,
+  "production_resources_used": false,
+  "prompt_13_started": false
+}

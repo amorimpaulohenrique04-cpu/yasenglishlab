@@ -117,6 +117,10 @@ assert(
 const uiVerifier = read("scripts/verify-ui.mjs");
 const uiErrors = uiVerifierErrors(uiVerifier);
 assert(uiErrors.length === 0, uiErrors.join("\n"));
+assert(
+  (uiVerifier.match(/if \(canonicalE2e\) prepareCanonicalFixture\(\);/g) ?? []).length === 3,
+  "UI verifier must reset the canonical fixture before E2E, accessibility and golden checks.",
+);
 
 const readme = read("README.md");
 const readmeErrors = staleReadmeErrors(readme);
@@ -213,12 +217,14 @@ const plan = read("harness/agent-state/plan.md");
 const planErrors = staleStateErrors(plan, registry);
 assert(planErrors.length === 0, planErrors.join("\n"));
 
-for (const viewport of ["desktop", "tablet", "mobile"]) {
-  for (const screen of ["login", "home", "aulas"]) {
-    assert(
-      exists(`tests/visual/goldens/${viewport}/${screen}.png`),
-      `Engineering System golden missing: ${viewport}/${screen}.png`,
-    );
+for (const platform of ["linux", "win32"]) {
+  for (const viewport of ["desktop", "tablet", "mobile"]) {
+    for (const screen of ["login", "home", "aulas"]) {
+      assert(
+        exists(`tests/visual/goldens/${viewport}/${screen}-${platform}.png`),
+        `Engineering System golden missing: ${viewport}/${screen}-${platform}.png`,
+      );
+    }
   }
 }
 

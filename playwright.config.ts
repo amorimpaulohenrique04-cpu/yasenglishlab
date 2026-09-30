@@ -3,7 +3,6 @@ import { defineConfig, devices } from "@playwright/test";
 const ciOverrides = process.env.CI
   ? {
       retries: 2,
-      workers: 1,
       reporter: "github" as const,
     }
   : {
@@ -14,6 +13,7 @@ const ciOverrides = process.env.CI
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   ...ciOverrides,
   use: {

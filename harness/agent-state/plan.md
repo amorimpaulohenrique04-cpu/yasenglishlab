@@ -2,21 +2,22 @@
 
 ## Active task
 
-**windows-local-tooling**
+**pre-p13-environment-gate**
 
-State: implementation complete, Official CI verification pending.
+State: complete.
 
-Result: Windows/Linux verification runners now use shell-free npm/native execution, Git enforces LF, and controlled regression evidence covers Windows paths containing spaces without changing product behavior.
+### Immediate plan
 
-### Verified protections
+1. Audit repository state, full-verification scripts, Supabase configuration and actual machine prerequisites.
+2. Repair only the concrete Windows/local-tooling and isolated Supabase integration failures found by execution.
+3. Prove database reset, integration and RLS suites independently before running the complete gate.
+4. Iterate `verify:full` to green without weakening any gate, then repeat from a stopped clean local stack.
+5. Inspect the final diff for secrets/artifacts, persist sanitized evidence and update the registry only from verified results.
 
-1. `.gitattributes` makes LF independent of local Git configuration.
-2. npm runs through Node + `npm-cli.js`; native tools run directly without shell parsing.
-3. `verify:platform` rejects the former Windows invocation and proves Windows/Linux specs plus a real path-with-spaces execution.
-4. Ratchet records and durable verification evidence cover both reproduced failure classes.
-5. Mandatory local gates, including `verify:agent`, passed without DEP0190.
-6. Local `verify:full` remains blocked by the external prerequisites explicitly recorded in task evidence.
+### Result
 
-### Scope boundary preserved
+The isolated Windows clean-room sequence and the official `npm run verify:full` completed with exit code 0. Durable evidence is stored under `harness/evidence/pre-p13-environment-gate/`; no Prompt 13 feature or production resource was touched.
 
-No product feature behavior, approved visual design, database schema, migration, RLS policy, auth/domain contract, provider decision or golden changed.
+### Scope boundary
+
+No Prompt 13 feature, product behavior, production environment, RLS/security weakening, arbitrary snapshot update or unrelated refactor is permitted.

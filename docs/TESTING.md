@@ -126,20 +126,29 @@ Baselines versionados ficam em:
 ```text
 tests/visual/goldens/
   desktop/
-    login.png
-    home.png
-    aulas.png
+    login-linux.png
+    login-win32.png
+    home-linux.png
+    home-win32.png
+    aulas-linux.png
+    aulas-win32.png
   tablet/
-    login.png
-    home.png
-    aulas.png
+    login-linux.png
+    login-win32.png
+    home-linux.png
+    home-win32.png
+    aulas-linux.png
+    aulas-win32.png
   mobile/
-    login.png
-    home.png
-    aulas.png
+    login-linux.png
+    login-win32.png
+    home-linux.png
+    home-win32.png
+    aulas-linux.png
+    aulas-win32.png
 ```
 
-`npm run test:visual:golden` compara a UI atual com esses arquivos e falha em diferença acima da tolerância definida.
+`npm run test:visual:golden` seleciona o baseline do sistema operacional atual (`linux` ou `win32`), compara a UI com esses arquivos e falha em diferença acima da tolerância definida. A separação evita falsos positivos de rasterização de fontes sem aumentar a tolerância visual.
 
 Para uma mudança visual intencional:
 

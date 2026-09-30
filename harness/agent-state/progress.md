@@ -2,6 +2,17 @@
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-09-30 — pre-p13-environment-gate
+
+- Started on branch `fix/windows-development-environment` at `a936fb0` with pre-existing untracked `supabase/config.toml` and `supabase/.gitignore`; both are preserved pending review.
+- Initial audit confirmed Node 24.19.0, npm 11.17.0 through `npm.cmd`, Docker CLI 29.8.1, a stopped Docker daemon, PowerShell execution-policy interception of `npm.ps1`/`npx.ps1`, Supabase installed through Scoop but absent from the process PATH, and no discoverable `psql` yet.
+- Scope excludes Prompt 13, product behavior, production Supabase and any weakening of tests/security/RLS.
+- First complete local gate passed after isolating Supabase on ports 55320–55329, repairing a corrupt cached `postgres-meta:v0.99.0` image, serializing the Windows E2E cold start and separating Linux/Windows golden rasterization baselines without changing visual tolerance.
+- Windows login/home/aulas baselines for desktop, tablet and mobile were inspected directly before the first successful `npm run verify:full`.
+- Final clean-room proof stopped the Yas stack without backup, restarted it, rebuilt migrations and seed, passed direct `verify:ui`, then passed `npm run verify:full` with exit code 0 and stopped the stack again.
+- Final full-gate counts: DB integration 2 SQL files, RLS 1 SQL file, E2E 2/2, accessibility 4/4, Storybook visual 6/6 and golden regression 3/3.
+- Sanitized evidence was persisted under `harness/evidence/pre-p13-environment-gate/`; the task registry moved to `done` and `verified: true` only after the successful clean-room run.
+
 ## 2026-09-28 — prompt-03-harness-engineering
 
 - Started from main commit `4911b389a48219a5e4d00bdac969fff5fc9de462`.

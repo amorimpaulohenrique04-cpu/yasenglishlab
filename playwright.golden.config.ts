@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: process.env.CI
     ? [["github"], ["json", { outputFile: "artifacts/golden/results.json" }]]
     : "list",
-  snapshotPathTemplate: "{testDir}/goldens/{projectName}/{arg}{ext}",
+  snapshotPathTemplate: "{testDir}/goldens/{projectName}/{arg}-{platform}{ext}",
   expect: {
     toHaveScreenshot: {
       animations: "disabled",

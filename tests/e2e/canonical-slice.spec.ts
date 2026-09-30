@@ -17,6 +17,7 @@ async function captureEvidence(page: Page, filename: string): Promise<void> {
 
 test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
+  test.setTimeout(60_000);
 
   test("login → progress → logout → login → persisted resume", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");

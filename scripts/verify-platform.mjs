@@ -53,6 +53,24 @@ assert(
   "Shell-free Linux npm invocation was not accepted.",
 );
 
+const playwrightConfig = readFileSync("playwright.config.ts", "utf8");
+assert(
+  /\bworkers:\s*1\b/.test(playwrightConfig),
+  "Canonical Playwright E2E must use one worker for deterministic Windows cold starts.",
+);
+
+const canonicalE2e = readFileSync("tests/e2e/canonical-slice.spec.ts", "utf8");
+assert(
+  canonicalE2e.includes("test.setTimeout(60_000)"),
+  "The multi-viewport canonical E2E needs its explicit Windows-safe time budget.",
+);
+
+const goldenConfig = readFileSync("playwright.golden.config.ts", "utf8");
+assert(
+  goldenConfig.includes("{platform}"),
+  "Golden screenshot paths must separate host platforms to avoid font-rasterization false positives.",
+);
+
 const scratch = mkdtempSync(join(tmpdir(), "yas runner path with spaces "));
 try {
   const probe = join(scratch, "argument probe.mjs");
