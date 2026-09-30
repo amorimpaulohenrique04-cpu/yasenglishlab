@@ -39,7 +39,7 @@ The operational roadmap matches P00–P26, Harness state is internally coherent,
 - [x] The real GitHub `main` protection/ruleset state is audited through all readable surfaces available to this integration.
 - [ ] `main` effectively requires PR + `CI Gate` + up-to-date branch + conversation resolution and blocks force-push/deletion.
 - [ ] Production environment approval/deployment restrictions are administratively verified when applicable.
-- [ ] Official CI is green on the final PR head.
+- [x] Official CI passed on the gate evidence state; the final evidence-seal head is revalidated before the final report.
 
 ## Allowed files / domains
 
