@@ -4,7 +4,7 @@ Classification: agent behavior
 Status: resolved  
 Repeatable: yes  
 Date: 2026-09-29  
-PR/commit related: PROMPT 11 — engineering ratchet implementation
+PR/commit related: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/15
 
 ## Symptom
 
@@ -41,4 +41,4 @@ Run npm run verify:ratchet. The command always executes the controlled red fixtu
 ## Before/after proof
 
 Before: the controlled red fixture omits permanent protection and test/eval; the verifier requires both and proves the bad case is rejected.  
-After: the same fixture is corrected with a permanent guard and eval; it passes, then the verifier validates every durable failure record in the repository.
+After: the same fixture is corrected with a permanent guard and eval; it passes, then the verifier validates every durable failure record in the repository. Official CI proof: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36653227178.
