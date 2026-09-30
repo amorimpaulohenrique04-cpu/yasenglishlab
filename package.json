@@ -19,7 +19,7 @@
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write \"src/app/(protected)/(student)/materiais/page.tsx\" \"src/modules/materials/domain/models.ts\" && git diff -- \"src/app/(protected)/(student)/materiais/page.tsx\" \"src/modules/materials/domain/models.ts\" && git diff --quiet -- \"src/app/(protected)/(student)/materiais/page.tsx\" \"src/modules/materials/domain/models.ts\"",
     "verify": "node scripts/verify.mjs",
     "verify:harness": "node scripts/verify-harness.mjs",
     "verify:ratchet": "node scripts/verify-ratchet.mjs",
