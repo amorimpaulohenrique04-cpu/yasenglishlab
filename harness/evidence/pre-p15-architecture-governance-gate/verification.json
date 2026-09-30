@@ -39,10 +39,7 @@
         "id": 24223415,
         "name": "Yas",
         "enforcement": "disabled",
-        "rules": [
-          "deletion",
-          "non_fast_forward"
-        ],
+        "rules": ["deletion", "non_fast_forward"],
         "bypass_actors": []
       },
       "ci_gate_required": false
@@ -56,9 +53,7 @@
         "name": "Yas",
         "enforcement": "active",
         "target": "branch",
-        "include": [
-          "~DEFAULT_BRANCH"
-        ],
+        "include": ["~DEFAULT_BRANCH"],
         "bypass_actors": [],
         "current_user_can_bypass": "never",
         "deletion_blocked": true,
