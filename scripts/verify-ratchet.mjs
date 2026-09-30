@@ -203,10 +203,7 @@ assert(
 
 const records = walk(
   "harness/failure-log",
-  (path) =>
-    path.endsWith(".md") &&
-    !path.endsWith("/README.md") &&
-    !path.endsWith("/TEMPLATE.md"),
+  (path) => path.endsWith(".md") && !path.endsWith("/README.md") && !path.endsWith("/TEMPLATE.md"),
 );
 
 for (const path of records) {
