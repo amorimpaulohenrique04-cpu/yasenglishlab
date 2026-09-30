@@ -1,0 +1,74 @@
+{
+  "task": "pre-p15-architecture-governance-gate",
+  "status": "blocked_manual_github_administration_required",
+  "verified_at": "2026-09-30T18:38:00-03:00",
+  "baseline_sha": "d57bf780f1b5d5eafd55700c58f4462c29277020",
+  "branch": "chore/pre-p15-architecture-governance-gate",
+  "final_sha_resolution": "PR head after evidence commit; recorded in PR/final operator report because a commit cannot self-embed its own SHA",
+  "roadmap": {
+    "before": "legacy P0-P19 sequence presented as active",
+    "after": "official P00-P26 operational sequence with legacy section explicitly superseded"
+  },
+  "windows_local_tooling": {
+    "before": {
+      "status": "in_progress",
+      "verified": false
+    },
+    "later_closure_evidence": "harness/evidence/pre-p13-environment-gate/verification.json",
+    "clean_room_verify_full": "passed_exit_0",
+    "after": {
+      "status": "done",
+      "verified": true
+    }
+  },
+  "harness_registry": {
+    "baseline_dependency_issues": [
+      "pre-p13-environment-gate: done depends on windows-local-tooling=in_progress"
+    ],
+    "missing_local_evidence": [],
+    "p02_through_p14": "done_and_verified",
+    "prompt_15_entry_exists": false,
+    "prompt_15_goal_exists": false,
+    "after_dependency_issues": []
+  },
+  "main_protection": {
+    "branch_endpoint": {
+      "protected": false,
+      "enabled": false,
+      "required_status_checks_enforcement": "off"
+    },
+    "classic_protection_endpoint": "403 Resource not accessible by integration",
+    "rulesets": [
+      {
+        "id": 24223415,
+        "name": "Yas",
+        "enforcement": "disabled",
+        "rules": [
+          "deletion",
+          "non_fast_forward"
+        ],
+        "bypass_actors": []
+      }
+    ],
+    "ci_gate_check_exists_on_baseline": true,
+    "ci_gate_required_by_protection": false,
+    "after": "unchanged_non_compliant_no_admin_write_action_available"
+  },
+  "environments": {
+    "staging_workflow_target_exists": true,
+    "production_workflow_target_exists": true,
+    "baseline_release_jobs_success": true,
+    "admin_protection_settings": "not_readable_or_writable_by_connected_integration"
+  },
+  "required_gates": {
+    "npm run format:check": "pending",
+    "npm run verify:harness": "pending",
+    "npm run verify:ratchet": "pending",
+    "npm run verify:system": "pending",
+    "npm run verify:agent": "pending",
+    "git diff --check": "pending",
+    "Official CI": "pending"
+  },
+  "product_runtime_changed": false,
+  "p15_product_implementation_started": false
+}
