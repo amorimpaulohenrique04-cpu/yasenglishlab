@@ -35,3 +35,11 @@ Design-system stories demonstrate states, hierarchy, responsiveness and layout p
 ## H-009 — Repeatable failures become executable guards
 
 A relevant repeatable failure is not considered resolved until it has permanent protection, a test/eval and red-to-green proof. ADR 0005 owns the durable rationale; `harness/ratchet.md` owns the operating loop so this file does not duplicate the full policy.
+
+## H-010 — The local UI gate must equal the UI contract, not a subset
+
+`npm run verify:ui` is the single local visual gate referenced by `AGENTS.md`. It must execute E2E, critical-flow accessibility, design-system visual checks and product golden regression tests; merely checking that test files exist is insufficient.
+
+## H-011 — Engineering System 1.0 consistency is executable
+
+`npm run verify:system` validates the cross-cutting surfaces that previously drifted silently: current README/module/style maps, complete engineering milestone registry, persistent plan consistency, full UI gate wiring, core CI/CD stages, RLS evidence, observability surfaces and Ratchet presence. Harness verification executes this contract so drift blocks CI.

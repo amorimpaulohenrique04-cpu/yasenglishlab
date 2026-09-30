@@ -1,6 +1,11 @@
 {
   "schema_version": 1,
-  "allowed_statuses": ["planned", "in_progress", "blocked", "done"],
+  "allowed_statuses": [
+    "planned",
+    "in_progress",
+    "blocked",
+    "done"
+  ],
   "field_contract": {
     "id": "unique kebab-case identifier",
     "title": "human-readable task or engineering capability",
@@ -12,11 +17,26 @@
   },
   "features": [
     {
+      "id": "prompt-02-engineering-foundation",
+      "title": "Repository engineering foundation",
+      "status": "done",
+      "verified": true,
+      "dependencies": [],
+      "evidence": [
+        "README.md",
+        "package.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654358627"
+      ],
+      "updated_at": "2026-09-29T22:25:00-03:00"
+    },
+    {
       "id": "prompt-03-harness-engineering",
       "title": "Official Harness Engineering foundation",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-02-engineering-foundation"],
+      "dependencies": [
+        "prompt-02-engineering-foundation"
+      ],
       "evidence": [
         "harness/evidence/prompt-03-harness-engineering/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36510847571"
@@ -28,7 +48,9 @@
       "title": "Executable Yas design system",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-03-harness-engineering"],
+      "dependencies": [
+        "prompt-03-harness-engineering"
+      ],
       "evidence": [
         "harness/evidence/prompt-04-design-system/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36517734330"
@@ -36,11 +58,61 @@
       "updated_at": "2026-09-29T00:35:00-03:00"
     },
     {
+      "id": "prompt-05-domain-model",
+      "title": "Durable domain model and database contracts",
+      "status": "done",
+      "verified": true,
+      "dependencies": [
+        "prompt-04-design-system"
+      ],
+      "evidence": [
+        "docs/DATA_MODEL.md",
+        "supabase/migrations/20260929035100_create_domain_contracts.sql",
+        "supabase/tests/domain_invariants.sql",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654358627"
+      ],
+      "updated_at": "2026-09-29T22:25:00-03:00"
+    },
+    {
+      "id": "prompt-06-auth-rbac-rls",
+      "title": "Authentication, RBAC, RLS and security boundaries",
+      "status": "done",
+      "verified": true,
+      "dependencies": [
+        "prompt-05-domain-model"
+      ],
+      "evidence": [
+        "docs/AUTH_RBAC_RLS.md",
+        "docs/THREAT_MODEL.md",
+        "supabase/tests/rls_permissions.sql",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654358627"
+      ],
+      "updated_at": "2026-09-29T22:25:00-03:00"
+    },
+    {
+      "id": "prompt-07-canonical-vertical-slice",
+      "title": "Canonical learning vertical slice",
+      "status": "done",
+      "verified": true,
+      "dependencies": [
+        "prompt-06-auth-rbac-rls"
+      ],
+      "evidence": [
+        "docs/ARCHITECTURE.md",
+        "tests/e2e/canonical-slice.spec.ts",
+        "supabase/tests/vertical_slice_persistence.sql",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654358627"
+      ],
+      "updated_at": "2026-09-29T22:25:00-03:00"
+    },
+    {
       "id": "prompt-08-testing-evals",
       "title": "Complete testing and coding-agent eval system",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-04-design-system"],
+      "dependencies": [
+        "prompt-07-canonical-vertical-slice"
+      ],
       "evidence": [
         "harness/evidence/prompt-08-testing-evals/README.md",
         "harness/evidence/prompt-08-testing-evals/verification.json",
@@ -51,11 +123,30 @@
       "updated_at": "2026-09-29T14:00:00-03:00"
     },
     {
+      "id": "prompt-09-ci-cd",
+      "title": "Fail-closed CI/CD and isolated environments",
+      "status": "done",
+      "verified": true,
+      "dependencies": [
+        "prompt-08-testing-evals"
+      ],
+      "evidence": [
+        "docs/CI_CD.md",
+        ".github/workflows/foundation-verify.yml",
+        ".github/workflows/release.yml",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654358627",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36654787228"
+      ],
+      "updated_at": "2026-09-29T22:25:00-03:00"
+    },
+    {
       "id": "prompt-10-observability",
       "title": "Observability, product analytics and auditability",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-08-testing-evals"],
+      "dependencies": [
+        "prompt-09-ci-cd"
+      ],
       "evidence": [
         "harness/evidence/prompt-10-observability/README.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36640424406",
@@ -68,7 +159,9 @@
       "title": "Engineering ratchet, ADRs and permanent failure learning",
       "status": "done",
       "verified": true,
-      "dependencies": ["prompt-10-observability"],
+      "dependencies": [
+        "prompt-10-observability"
+      ],
       "evidence": [
         "harness/evidence/prompt-11-ratchet-adrs/README.md",
         "harness/evidence/prompt-11-ratchet-adrs/verification.json",
@@ -76,6 +169,17 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/15"
       ],
       "updated_at": "2026-09-29T22:07:00-03:00"
+    },
+    {
+      "id": "prompt-12-engineering-system-1-0",
+      "title": "Yas Engineering System 1.0 final audit and remediation",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [
+        "prompt-11-ratchet-adrs"
+      ],
+      "evidence": [],
+      "updated_at": "2026-09-29T22:30:00-03:00"
     }
   ]
 }

@@ -8,6 +8,7 @@ for (const screen of screens) {
     `Missing approved UI reference: ${screen}`,
   );
 }
+
 assert(exists(".storybook/main.ts"), "Missing Storybook configuration.");
 assert(exists("tests/e2e/foundation.spec.ts"), "Missing E2E foundation.");
 assert(
@@ -30,10 +31,13 @@ for (const viewport of ["desktop", "tablet", "mobile"]) {
 }
 
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
+
 run(npm, ["run", "storybook:build"]);
 run(npm, ["run", "test:e2e"]);
-run(npm, ["run", "test:visual"]);
+run(npm, ["run", "test:a11y"]);
+run(npm, ["run", "test:visual:storybook"]);
+run(npm, ["run", "test:visual:golden"]);
 
 success(
-  `UI verification passed with ${screens.length} approved references, 9 product goldens, accessibility contracts, Storybook and design-system visual checks.`,
+  `UI verification passed with ${screens.length} approved references, 9 product goldens, E2E, accessibility, Storybook and visual regression checks.`,
 );

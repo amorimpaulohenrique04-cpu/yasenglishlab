@@ -2,13 +2,15 @@
 
 Official repository for the Yas English Lab SaaS.
 
-This repository currently contains the **engineering foundation only**. Product screens and business domains are intentionally deferred to later phases.
+The repository contains the **Yas Engineering System 1.0 foundation** plus the canonical learning vertical slice used as the reference implementation for future product work. It is intentionally not the full portal yet: new domains and screens must be added incrementally through the documented architecture, Harness and verification gates.
 
 ## Requirements
 
 - Node.js 24 LTS
 - npm bundled with Node 24
 - Git
+- Docker + Supabase CLI + PostgreSQL client for full local verification
+- Playwright Chromium for browser verification
 
 Next.js 16 requires Node.js 20.9+; this repository standardizes on Node 24 because the current Supabase JavaScript ecosystem has ended Node 20 support.
 
@@ -23,13 +25,11 @@ cp .env.example .env.local
 npm run dev
 ```
 
-On Windows without `cp`, copy `.env.example` to `.env.local` using Explorer or PowerShell.
+On Windows, use `Copy-Item .env.example .env.local`.
 
-The placeholder app runs at `http://localhost:3000`.
+The application runs at `http://localhost:3000`. Protected/authenticated flows require the Supabase environment documented in `.env.example`.
 
 ## Environment
-
-`.env.example` documents every foundation variable.
 
 Browser-safe:
 
@@ -39,10 +39,9 @@ Browser-safe:
 Server-only:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_PROTECTED_ASSETS_BUCKET`
 
-**Never** expose the service-role key through a `NEXT_PUBLIC_` variable. Client-safe Supabase helpers live in `src/lib/supabase/`; privileged helpers live in `src/server/` and use the `server-only` boundary.
-
-The placeholder page does not require Supabase credentials to build or boot.
+Never expose the service-role key through a `NEXT_PUBLIC_*` variable. Client-safe Supabase helpers live in `src/lib/supabase/`; privileged helpers live in `src/server/` behind the `server-only` boundary.
 
 ## Official commands
 
@@ -52,40 +51,47 @@ npm run lint
 npm run typecheck
 npm run test
 npm run test:e2e
+npm run test:a11y
+npm run test:visual:storybook
+npm run test:visual:golden
 npm run build
 npm run storybook
 npm run storybook:build
-npm run format
-npm run format:check
-npm run verify
+
+npm run verify:agent
+npm run verify:system
+npm run verify:ui
+npm run verify:security
+npm run verify:db
 npm run verify:full
 ```
 
-`npm run verify` runs formatting check, lint, strict TypeScript, Vitest and the production Next.js build. `verify:full` additionally builds Storybook and runs Playwright.
+`verify:full` is the release-grade local verifier: it provisions isolated Supabase, runs database/RLS tests, E2E, accessibility, Storybook visual checks and product golden regression tests.
 
 ## Source layout
 
 ```text
 src/
-├── app/                 # Next.js App Router
-├── modules/             # business domains, added only when behavior exists
+├── app/                 # Next.js App Router routes and Server Actions
+├── modules/             # domain/application contracts and behavior
 ├── components/
-│   ├── ui/              # shared primitives (future design-system task)
+│   ├── ui/              # shared design-system primitives
 │   └── layout/          # shared shell/layout components
 ├── lib/                 # client-safe/shared infrastructure
-├── server/              # server-only privileged infrastructure
-├── styles/              # cross-cutting style infrastructure
+├── server/              # server-only adapters and privileged boundaries
+├── styles/              # executable design tokens and shared styles
 └── types/               # project declarations
 
 supabase/
-├── migrations/
-└── seed/
+├── migrations/          # immutable schema history
+├── tests/               # real SQL integration/RLS contracts
+└── seed.sql             # deterministic canonical fixture
 
 tests/
 ├── unit/
 ├── integration/
 ├── e2e/
-├── rls/
+├── a11y/
 └── visual/
 
 scripts/
@@ -93,41 +99,44 @@ docs/
 harness/
 ```
 
-## Import alias
+## Current engineering surface
 
-`@/*` maps to `src/*`.
+Implemented and executable:
 
-Example:
+- modular product/architecture/domain/security/testing/operations documentation;
+- progressive-disclosure Harness with GOAL, persistent state, registry, evidence and behavioral evals;
+- design tokens, reusable primitives, Storybook and approved UI references;
+- durable domain schema, RBAC/RLS and threat model;
+- canonical learning vertical slice with persistence and product analytics;
+- unit, integration, SQL/RLS, E2E, accessibility and golden visual regression tests;
+- fail-closed Official CI, isolated Preview verification and release promotion gates;
+- structured logs, correlation, technical error persistence and append-only audit logs;
+- ADRs, failure log and executable failure-to-guard Ratchet.
 
-```ts
-import { APP_NAME } from "@/lib/constants";
-```
+Provider-specific product decisions that remain intentionally open are listed in `docs/OPEN_QUESTIONS.md`.
 
 ## Architecture boundaries
 
-- Organize product behavior by domain under `src/modules/`.
+- Product behavior is organized by domain under `src/modules/`.
 - UI must not import privileged server infrastructure.
-- `src/server/` may use server-only secrets.
-- The browser Supabase client can use only publishable public values.
-- No dashboard, plan logic, Stripe integration or product database schema exists yet.
+- `src/server/` may use server-only secrets only after explicit authorization.
+- Browser Supabase clients use publishable values only.
+- Durable writes derive identity from verified auth context; browser-supplied `user_id` is never authority.
+- Product capabilities use entitlements instead of scattered plan-name conditionals.
+- Relevant structural decisions are recorded in `docs/adr/`.
 
-Read:
+Start with:
 
-- `docs/ARCHITECTURE.md`
-- `docs/SECURITY.md`
-- `docs/UI_CONTRACT.md`
-- `docs/adr/0001-foundation-stack.md`
+- `AGENTS.md`
+- `docs/README.md`
+- `harness/README.md`
 
 ## Verification
 
-A clean checkout is considered healthy when:
+A clean checkout intended for engineering work is healthy when the applicable fast gates pass. Before declaring a release-grade task complete, run:
 
 ```bash
-npm ci
-npm run verify
-npm run storybook:build
-npx playwright install chromium
-npm run test:e2e
+npm run verify:full
 ```
 
-The repository keeps a minimal GitHub Actions foundation verifier so the same commands run in a clean Linux environment. Full CI/CD policy is intentionally deferred to the dedicated CI/CD phase.
+GitHub Actions runs the same critical contracts against a clean Linux/Supabase environment and publishes preview evidence.
