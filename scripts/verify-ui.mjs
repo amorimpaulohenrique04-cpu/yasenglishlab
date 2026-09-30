@@ -1,4 +1,4 @@
-import { assert, exists, run, success } from "./_verify-utils.mjs";
+import { assert, exists, runNpm, success } from "./_verify-utils.mjs";
 
 const screens = ["login", "home", "aulas", "pratica", "materiais", "progresso", "agenda", "perfil"];
 
@@ -30,13 +30,11 @@ for (const viewport of ["desktop", "tablet", "mobile"]) {
   }
 }
 
-const npm = process.platform === "win32" ? "npm.cmd" : "npm";
-
-run(npm, ["run", "storybook:build"]);
-run(npm, ["run", "test:e2e"]);
-run(npm, ["run", "test:a11y"]);
-run(npm, ["run", "test:visual:storybook"]);
-run(npm, ["run", "test:visual:golden"]);
+runNpm(["run", "storybook:build"]);
+runNpm(["run", "test:e2e"]);
+runNpm(["run", "test:a11y"]);
+runNpm(["run", "test:visual:storybook"]);
+runNpm(["run", "test:visual:golden"]);
 
 success(
   `UI verification passed with ${screens.length} approved references, 9 product goldens, E2E, accessibility, Storybook and visual regression checks.`,

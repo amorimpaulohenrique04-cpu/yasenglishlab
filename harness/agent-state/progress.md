@@ -86,3 +86,15 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Preview artifact 11073276378 was uploaded with digest `sha256:70e3640fbd4765300238556bc7327a03cc18d5fff0b173255407ed365778526d`.
 - Durable evidence stored under `harness/evidence/prompt-12-engineering-system-1-0/`.
 - Registry moved to `done` + `verified: true` only after the green implementation run.
+
+## 2026-09-30 — windows-local-tooling
+
+- Audited all pre-existing local changes before implementation: temporary Windows runner fixes in four scripts, Next.js 16.3.6 `tsconfig.json` changes, and generated `tsconfig.tsbuildinfo`.
+- Confirmed the same unnecessary-shell class in SQL verification and Supabase cleanup; the remaining scripts use direct native execution and did not require changes.
+- Added the repository LF policy, direct Node/npm CLI dispatch, native no-shell execution and a controlled cross-platform regression verifier.
+- Inspected the installed Next.js 16.3.6 configuration writer and retained its required React JSX runtime plus dev/build generated-type includes.
+- Initial `npm run verify:platform` passed on Windows: controlled red fixture rejected, corrected Windows fixture accepted, real path-with-spaces arguments preserved, 16 Node scripts audited and LF attributes enforced.
+- Expanded the permanent audit to all 19 Node scripts under `scripts/` and added a Linux invocation fixture; an initial Windows path-separator bug in the recursive verifier was caught immediately and corrected before final gates.
+- `format:check`, lint, typecheck, unit (20/20), integration (6 passed, 1 pre-existing live test skipped), harness, security and `verify:agent` all passed without DEP0190.
+- `verify:full` was not run: Supabase CLI and `psql` are missing from PATH, Playwright Chromium is absent, and Docker config access was denied despite Docker CLI 29.7.2 being installed. Exact evidence is stored under `harness/evidence/windows-local-tooling/`.
+- Registry moved to `done` + `verified: true` after evidence inspection; no product, UI, DB, migration, RLS, auth, domain, provider or golden change was made.

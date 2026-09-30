@@ -23,7 +23,6 @@ for (const file of files) {
   console.log(`\n▶ psql ${file}`);
   const result = spawnSync("psql", [...psqlArgs, "-f", file], {
     stdio: "inherit",
-    shell: process.platform === "win32",
   });
   if (result.error?.code === "ENOENT") {
     console.error("psql is required for executable database/RLS tests.");

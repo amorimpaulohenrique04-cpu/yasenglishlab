@@ -1,0 +1,50 @@
+{
+  "task": "windows-local-tooling",
+  "status": "passed_with_full_verification_prerequisites_missing",
+  "verified_at": "2026-09-30T00:41:17-03:00",
+  "base_head": "bda6c70d4325c8de6cf7f92b4375e0427021822d",
+  "checks": [
+    {
+      "name": "format:check",
+      "status": "passed"
+    },
+    {
+      "name": "lint",
+      "status": "passed"
+    },
+    {
+      "name": "typecheck",
+      "status": "passed"
+    },
+    {
+      "name": "test:unit",
+      "status": "passed",
+      "detail": "6 files, 20 tests passed"
+    },
+    {
+      "name": "test:integration",
+      "status": "passed",
+      "detail": "2 files passed, 1 pre-existing live-environment file skipped; 6 tests passed, 1 skipped"
+    },
+    {
+      "name": "verify:harness",
+      "status": "passed",
+      "detail": "controlled Ratchet fixtures, engineering-system contract and cross-platform runner/LF guard passed"
+    },
+    {
+      "name": "verify:security",
+      "status": "passed",
+      "detail": "77 source files checked"
+    },
+    {
+      "name": "verify:agent",
+      "status": "passed",
+      "detail": "core, build, harness, security and behavioral eval passed without DEP0190"
+    },
+    {
+      "name": "verify:full",
+      "status": "not_run",
+      "detail": "Supabase CLI and psql are missing from PATH; Playwright Chromium is absent at C:\\Users\\PAULO HENRIQUE\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe. Docker CLI 29.7.2 is installed, but this environment also denied access to C:\\Users\\PAULO HENRIQUE\\.docker\\config.json."
+    }
+  ]
+}

@@ -1,6 +1,5 @@
-import { spawnSync } from "node:child_process";
+import { spawnNpmSync } from "./_npm-cli.mjs";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const checks = [
   "format:check",
   "lint",
@@ -13,7 +12,7 @@ const checks = [
 
 for (const check of checks) {
   console.log(`\n▶ npm run ${check}`);
-  const result = spawnSync(npmCommand, ["run", check], { stdio: "inherit" });
+  const result = spawnNpmSync(["run", check], { stdio: "inherit" });
 
   if (result.status !== 0) {
     console.error(`\nVerification failed at: ${check}`);
