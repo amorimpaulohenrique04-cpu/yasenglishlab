@@ -15,6 +15,7 @@ const requiredPaths = [
   "harness/ratchet.md",
   "docs/adr/TEMPLATE.md",
   "scripts/verify-ratchet.mjs",
+  "scripts/verify-engineering-system.mjs",
   "harness/README.md",
   "scripts/verify.sh",
   "scripts/verify-ui.sh",
@@ -114,6 +115,7 @@ for (const phrase of [
 }
 
 run(process.execPath, ["scripts/verify-ratchet.mjs"]);
+run(process.execPath, ["scripts/verify-engineering-system.mjs"]);
 
 success(
   `Harness contract valid: ${requiredPaths.length} required paths, ${registry.features.length} registry entries.`,

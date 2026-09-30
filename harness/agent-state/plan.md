@@ -2,22 +2,25 @@
 
 ## Active task
 
-**prompt-11-ratchet-adrs**
+No active task.
 
-State: implementation complete and verified by Official CI; final state-only CI and merge pending.
+## Last completed
 
-Goal: make every relevant repeatable failure produce a durable guard and evidence without turning the harness into bureaucracy.
+**prompt-12-engineering-system-1-0**
 
-### Completed
+State: complete and verified by Official CI.
 
-1. Reused the existing `docs/adr/` and `harness/failure-log/` structures instead of creating parallel systems.
-2. Added explicit ADR and failure-record templates.
-3. Added `harness/ratchet.md` with the reproduce → evidence → root cause → structural fix → test/eval → red/green → record loop.
-4. Added `verify:ratchet` with a controlled bad/good fixture and durable-record validation.
-5. Wired the ratchet into the existing Harness invariants check so Official CI blocks on it.
-6. Recorded the pre-existing harness gap as the controlled failure transformed into permanent protection.
-7. Official CI #169 passed all mandatory gates; durable evidence is stored under `harness/evidence/prompt-11-ratchet-adrs/`.
+Result: the repository-internal Yas Engineering System 1.0 audit gaps were remediated without adding product features or changing runtime/database/UI behavior.
 
-### Scope boundary
+### Verified protections
 
-Harness, ADR/process documentation and verification scripts only. No product UI, domain behavior, database or runtime application changes.
+1. Current entry-point docs match the implemented engineering surface.
+2. Persistent state and the engineering milestone registry are internally consistent.
+3. `verify:ui` executes E2E, accessibility, Storybook visual and product golden regression checks.
+4. `verify:system` rejects controlled stale-state and incomplete-UI fixtures.
+5. Harness runs Ratchet + Engineering System verification in Official CI.
+6. Official CI run 36657346038 passed all mandatory gates on the implementation head.
+
+### Scope boundary preserved
+
+No product feature behavior, approved visual design, database schema, RLS policy or provider decision changed.

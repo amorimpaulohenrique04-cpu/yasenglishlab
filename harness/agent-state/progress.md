@@ -70,3 +70,19 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - The Harness invariants log proved the controlled ratchet cycle: red fixture rejected, green fixture accepted and 1 durable failure record verified.
 - Durable verification evidence was persisted under `harness/evidence/prompt-11-ratchet-adrs/`.
 - Feature registry moved to `done` + `verified: true` only after the green Official CI run.
+
+## 2026-09-29 — prompt-12-engineering-system-1-0
+
+- Audited the current `main` independently from prior completion claims.
+- Found stale entry-point documentation, stale persistent plan state, missing engineering milestones in the registry and an incomplete local `verify:ui` gate.
+- Corrected documentation/state without changing product behavior, runtime code, DB schema, RLS or approved UI.
+- Added `scripts/verify-engineering-system.mjs` with controlled stale-state and incomplete-UI red→green fixtures.
+- Expanded `verify:ui` so the local official UI gate runs E2E, critical-flow a11y, Storybook visual checks and product golden regression.
+- Added two durable Ratchet incidents; `verify:ratchet` now validates 3 durable failure records.
+- Initial Official CI run failed only canonical formatting in two new/updated files; formatting was corrected without changing behavior.
+- Official CI run 36657346038 passed Supply Chain, Guardrail Simulations, Quality, Database, Preview and CI Gate on branch head `a49327f03b3d9726b5da02a2775734af181cb874`.
+- Quality proved: Engineering System 1.0 contract valid, Harness 24 required paths / 11 registry entries, security boundary valid across 77 source files.
+- Preview proved isolated Supabase, intentional observability error, canonical E2E, persistence/analytics, accessibility, Storybook visual and product golden visual checks.
+- Preview artifact 11073276378 was uploaded with digest `sha256:70e3640fbd4765300238556bc7327a03cc18d5fff0b173255407ed365778526d`.
+- Durable evidence stored under `harness/evidence/prompt-12-engineering-system-1-0/`.
+- Registry moved to `done` + `verified: true` only after the green implementation run.

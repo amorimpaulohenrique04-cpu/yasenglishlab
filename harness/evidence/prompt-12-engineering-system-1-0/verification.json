@@ -1,0 +1,48 @@
+{
+  "task": "prompt-12-engineering-system-1-0",
+  "status": "passed",
+  "verified_at": "2026-09-30T01:59:52Z",
+  "implementation_head": "a49327f03b3d9726b5da02a2775734af181cb874",
+  "pull_request": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/16",
+  "official_ci": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36657346038",
+  "preview_artifact": {
+    "id": 11073276378,
+    "digest": "sha256:70e3640fbd4765300238556bc7327a03cc18d5fff0b173255407ed365778526d"
+  },
+  "checks": [
+    {
+      "name": "supply-chain",
+      "status": "passed"
+    },
+    {
+      "name": "database",
+      "status": "passed"
+    },
+    {
+      "name": "guardrail-simulations",
+      "status": "passed"
+    },
+    {
+      "name": "quality",
+      "status": "passed"
+    },
+    {
+      "name": "engineering-system-contract",
+      "status": "passed",
+      "detail": "controlled stale-state and incomplete-UI fixtures rejected; real repository accepted"
+    },
+    {
+      "name": "ratchet",
+      "status": "passed",
+      "detail": "controlled red fixture rejected; green fixture accepted; 3 durable failure records verified"
+    },
+    {
+      "name": "preview",
+      "status": "passed"
+    },
+    {
+      "name": "ci-gate",
+      "status": "passed"
+    }
+  ]
+}
