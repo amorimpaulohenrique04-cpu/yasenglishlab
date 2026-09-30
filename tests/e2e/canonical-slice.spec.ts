@@ -5,7 +5,7 @@ import { expect, test, type Page } from "@playwright/test";
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
-const evidenceDir = "test-results/canonical-slice";
+const evidenceDir = "artifacts/canonical-slice";
 
 async function captureEvidence(page: Page, filename: string): Promise<void> {
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
