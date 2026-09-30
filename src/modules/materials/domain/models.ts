@@ -87,7 +87,9 @@ function compareText(a: string, b: string): number {
 }
 
 function positiveInteger(value: unknown): number | null {
-  return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : null;
+  return typeof value === "number" && Number.isInteger(value) && value > 0
+    ? value
+    : null;
 }
 
 export function normalizeMaterialsFilters(raw: {
@@ -97,8 +99,7 @@ export function normalizeMaterialsFilters(raw: {
   const result = filtersSchema.safeParse({
     query: typeof raw.query === "string" ? raw.query : "",
     type:
-      typeof raw.type === "string" &&
-      MATERIAL_FILTER_TYPES.includes(raw.type as MaterialFilterType)
+      typeof raw.type === "string" && MATERIAL_FILTER_TYPES.includes(raw.type as MaterialFilterType)
         ? raw.type
         : "ALL",
   });

@@ -135,7 +135,10 @@ export default async function MaterialsPage({ searchParams }: MaterialsPageProps
   if (state.status === "empty") {
     return (
       <div className="yas-materials-page">
-        <PageHeader title="Materiais" description="Encontre, revise e abra os recursos do seu curso." />
+        <PageHeader
+          title="Materiais"
+          description="Encontre, revise e abra os recursos do seu curso."
+        />
         <EmptyState
           title="Nenhum material disponível"
           description="Os recursos autorizados do seu curso aparecerão aqui quando forem publicados."
@@ -202,7 +205,9 @@ export default async function MaterialsPage({ searchParams }: MaterialsPageProps
               <h2 id="materiais-curso-title">Materiais do curso</h2>
               <p>
                 {filtering
-                  ? `${materials.length} resultado${materials.length === 1 ? "" : "s"} na busca atual.`
+                  ? `${materials.length} resultado${
+                      materials.length === 1 ? "" : "s"
+                    } na busca atual.`
                   : "Organizados pelo contexto pedagógico da sua trilha."}
               </p>
             </div>

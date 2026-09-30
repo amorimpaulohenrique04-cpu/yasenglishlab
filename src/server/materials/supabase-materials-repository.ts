@@ -115,7 +115,9 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
 
     return rows.map((row) => {
       const lessonWithModule =
-        typeof row.lesson_id === "string" ? lessonsById.get(row.lesson_id) ?? null : null;
+        typeof row.lesson_id === "string"
+          ? lessonsById.get(row.lesson_id) ?? null
+          : null;
       const directModuleId = typeof row.module_id === "string" ? row.module_id : null;
       const module = directModuleId
         ? modulesById.get(directModuleId) ?? null
