@@ -2,25 +2,25 @@
 
 ## Active task
 
-**prompt-19-assessment-engine-v1**
+**prompt-20-progress-v1**
 
-State: done / verified — Official CI #319 passed every mandatory CI job and durable evidence is recorded.
+State: in_progress / unverified.
 
-Baseline: `main@af0857d79345db9ed02f8624868c6b061cc71d0f`.  
-Branch: `feat/p19-assessment-engine-v1`.  
-Pull request: #23 — open and unmerged.
+Baseline: `main@93666bf0478b9dabdc35c89dab72596026d7da9e`.  
+Branch: `feat/p20-progress-v1`.
 
-### Closure
+### Small plan
 
-Assessment Engine V1 is complete within the declared scope. The implementation preserves CEFR standard setting, retake policy, Assessment Authoring and Speaking/Pronunciation automation as open decisions rather than inventing policy.
+1. Compose one explicit Progress DTO from Learning, Practice, Attendance and Assessment source facts; keep CEFR unavailable while standard setting remains open.
+2. Implement a server-only authenticated adapter with bounded bulk reads and `Promise.allSettled` orchestration so one failed domain yields `partial` instead of false zeros.
+3. Build `/progresso` with the existing Student shell/primitives, add Progress navigation, responsive CSS and explicit unavailable/empty/local-error states.
+4. Add unit/application tests for semantics, concurrency/bounded repository calls and no-write behavior; extend E2E/a11y/golden through the existing test systems.
+5. Open PR, inspect Official CI for the head SHA, correct root causes only, then mark Harness done/verified only after all applicable gates are green.
 
-Verification evidence:
+### Scope guard
 
-- `harness/evidence/prompt-19-assessment-engine-v1/README.md`
-- `harness/evidence/prompt-19-assessment-engine-v1/verification.json`
-- https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36926422998
-- https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/23
+No DB migration is planned. No Progress source-of-truth table, persisted streak/goal, CEFR mapping, analytics event, service-role bypass or unrelated write-path change is allowed.
 
-## Previous active task state
+## Parallel repository state
 
-P18 remains independently recorded as `in_progress / verified:false` in the registry. P19 does not mark P18 done and does not alter its unresolved verification history.
+P18 remains independently `in_progress / verified:false`. P19 is incorporated in `main` and is the Assessment dependency for P20.
