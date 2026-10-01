@@ -20,7 +20,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Quais recursos exatos diferenciam suporte/prioridade do Talk e Boost sem conflitar com os entitlements já definidos?
 
 ## Operação / conteúdo
-- Quando entram Teacher Portal e Admin CMS de autoria?
+- Teacher Operations V1 já cobre sessões próprias, roster mínimo e attendance. Quando entram o Teacher Portal amplo/autoria e o Admin CMS?
 - Quem pode publicar/editar uma versão de assessment?
 - Qual fluxo de revisão pedagógica antes de publicar aula/material/prática?
 

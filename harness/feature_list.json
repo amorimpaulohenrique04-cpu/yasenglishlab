@@ -271,6 +271,22 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36802148610/artifacts/11136452829"
       ],
       "updated_at": "2026-09-30T22:47:00-03:00"
+    },
+    {
+      "id": "prompt-17-teacher-operations-v1",
+      "title": "Teacher Operations V1",
+      "status": "done",
+      "verified": true,
+      "dependencies": ["prompt-16-agenda-v1"],
+      "evidence": [
+        "harness/goals/prompt-17-teacher-operations-v1.md",
+        "harness/evidence/prompt-17-teacher-operations-v1/README.md",
+        "harness/evidence/prompt-17-teacher-operations-v1/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36816618361",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36816618361/artifacts/11142120950",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/21"
+      ],
+      "updated_at": "2026-10-01T01:52:00-03:00"
     }
   ]
 }

@@ -1,13 +1,19 @@
+import { spawnSync } from "node:child_process";
+
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const databaseUrl = process.env.DATABASE_URL;
 const email = "canonical.student@example.test";
 const lessonId = "42000000-0000-4000-8000-000000000001";
 const agendaSessionId = "88100000-0000-4000-8000-000000000001";
+const teacherEmail = "canonical.teacher@example.test";
+const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
+const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 
-if (!url || !serviceRoleKey) {
-  throw new Error("Canonical E2E assertion requires local Supabase credentials.");
+if (!url || !serviceRoleKey || !databaseUrl) {
+  throw new Error("Canonical E2E assertion requires local Supabase and database credentials.");
 }
 
 const admin = createClient(url, serviceRoleKey, {
@@ -22,17 +28,38 @@ if (listError) throw listError;
 
 const user = listed.users.find((candidate) => candidate.email === email);
 if (!user) throw new Error("Canonical E2E user was not found.");
+const teacherUser = listed.users.find((candidate) => candidate.email === teacherEmail);
+if (!teacherUser) throw new Error("Canonical Teacher E2E user was not found.");
 
-const { data: progress, error: progressError } = await admin
-  .from("lesson_progress")
-  .select("user_id, lesson_id, completion_percent, last_position_seconds, completed_at")
-  .eq("user_id", user.id)
-  .eq("lesson_id", lessonId)
-  .single();
+const progressSql = `
+select jsonb_build_object(
+  'completion_percent', completion_percent,
+  'completed_at', completed_at
+)::text
+from public.lesson_progress
+where user_id = '${user.id}'::uuid
+  and lesson_id = '${lessonId}'::uuid
+limit 1;
+`;
 
-if (progressError || !progress) {
-  throw progressError ?? new Error("Persisted lesson progress was not found.");
+const progressResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", progressSql],
+  { encoding: "utf8" },
+);
+
+if (progressResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for lesson progress verification.");
 }
+if (progressResult.status !== 0) {
+  throw new Error(progressResult.stderr.trim() || "Lesson progress verification failed.");
+}
+
+const progressRaw = progressResult.stdout.trim();
+if (!progressRaw) {
+  throw new Error("Persisted lesson progress was not found.");
+}
+const progress = JSON.parse(progressRaw);
 
 if (Number(progress.completion_percent) !== 100) {
   throw new Error(`Expected final completion 100, got ${progress.completion_percent}.`);
@@ -42,26 +69,158 @@ if (!progress.completed_at) {
   throw new Error("Completed lesson must persist completed_at.");
 }
 
-const { data: agendaBooking, error: agendaBookingError } = await admin
-  .from("session_bookings")
-  .select("id, live_session_id, user_id, status")
-  .eq("user_id", user.id)
-  .eq("live_session_id", agendaSessionId)
-  .single();
+const agendaBookingSql = `
+select jsonb_build_object(
+  'id', id,
+  'user_id', user_id,
+  'status', status
+)::text
+from public.session_bookings
+where user_id = '${user.id}'::uuid
+  and live_session_id = '${agendaSessionId}'::uuid
+limit 1;
+`;
 
-if (agendaBookingError || !agendaBooking) {
-  throw agendaBookingError ?? new Error("Persisted Agenda booking was not found.");
+const agendaBookingResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", agendaBookingSql],
+  { encoding: "utf8" },
+);
+
+if (agendaBookingResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for Agenda booking verification.");
 }
+if (agendaBookingResult.status !== 0) {
+  throw new Error(agendaBookingResult.stderr.trim() || "Agenda booking verification failed.");
+}
+
+const agendaBookingRaw = agendaBookingResult.stdout.trim();
+if (!agendaBookingRaw) {
+  throw new Error("Persisted Agenda booking was not found.");
+}
+const agendaBooking = JSON.parse(agendaBookingRaw);
 if (agendaBooking.status !== "BOOKED" || agendaBooking.user_id !== user.id) {
   throw new Error("Agenda booking did not persist as BOOKED for the authenticated student.");
 }
 
-const { data: events, error: eventError } = await admin
-  .from("product_analytics_events")
-  .select("event_name, idempotency_key, properties")
-  .eq("user_id", user.id);
+const teacherAttendanceSql = `
+select jsonb_build_object(
+  'id', id,
+  'status', status,
+  'marked_by_user_id', marked_by_user_id,
+  'marked_at', marked_at
+)::text
+from public.attendance
+where session_booking_id = '${teacherOpsBookingId}'::uuid
+limit 1;
+`;
 
-if (eventError) throw eventError;
+const teacherAttendanceResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", teacherAttendanceSql],
+  { encoding: "utf8" },
+);
+
+if (teacherAttendanceResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for Teacher attendance verification.");
+}
+if (teacherAttendanceResult.status !== 0) {
+  throw new Error(
+    teacherAttendanceResult.stderr.trim() || "Teacher attendance verification failed.",
+  );
+}
+
+const teacherAttendanceRaw = teacherAttendanceResult.stdout.trim();
+if (!teacherAttendanceRaw) {
+  throw new Error("Persisted Teacher attendance was not found.");
+}
+
+const teacherAttendance = JSON.parse(teacherAttendanceRaw);
+if (
+  teacherAttendance.status !== "ATTENDED" ||
+  teacherAttendance.marked_by_user_id !== teacherUser.id
+) {
+  throw new Error("Teacher attendance did not persist as ATTENDED for the authenticated Teacher.");
+}
+
+const attendanceAuditSql = `
+select coalesce(jsonb_agg(data), '[]'::jsonb)::text
+from public.audit_logs
+where action = 'attendance_marked'
+  and entity_id = '${teacherAttendance.id}'::uuid
+  and actor_user_id = '${teacherUser.id}'::uuid
+  and data ->> 'live_session_id' = '${teacherOpsSessionId}'
+  and data ->> 'session_booking_id' = '${teacherOpsBookingId}'
+  and data ->> 'new_status' = 'ATTENDED';
+`;
+
+const attendanceAuditResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", attendanceAuditSql],
+  { encoding: "utf8" },
+);
+
+if (attendanceAuditResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for canonical Teacher audit verification.");
+}
+if (attendanceAuditResult.status !== 0) {
+  throw new Error(
+    attendanceAuditResult.stderr.trim() || "Teacher attendance audit verification failed.",
+  );
+}
+
+const attendanceAudits = JSON.parse(attendanceAuditResult.stdout.trim() || "[]");
+if (!Array.isArray(attendanceAudits) || attendanceAudits.length === 0) {
+  throw new Error("Teacher attendance audit fact was not found.");
+}
+
+const serializedAttendanceAudit = JSON.stringify(attendanceAudits).toLowerCase();
+for (const forbidden of [
+  "email",
+  "phone",
+  "password",
+  "jwt",
+  "token",
+  "cookie",
+  "secret",
+  "meeting",
+  "billing",
+  "assessment",
+]) {
+  if (serializedAttendanceAudit.includes(forbidden)) {
+    throw new Error("Teacher attendance audit leaked forbidden category: " + forbidden + ".");
+  }
+}
+
+const eventsSql = `
+select coalesce(
+  jsonb_agg(
+    jsonb_build_object(
+      'event_name', event_name,
+      'idempotency_key', idempotency_key,
+      'properties', properties
+    )
+  ),
+  '[]'::jsonb
+)::text
+from public.product_analytics_events
+where user_id = '${user.id}'::uuid;
+`;
+
+const eventsResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", eventsSql],
+  { encoding: "utf8" },
+);
+
+if (eventsResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for analytics verification.");
+}
+if (eventsResult.status !== 0) {
+  throw new Error(eventsResult.stderr.trim() || "Analytics verification failed.");
+}
+
+const events = JSON.parse(eventsResult.stdout.trim() || "[]");
 
 const counts = new Map();
 for (const row of events ?? []) {

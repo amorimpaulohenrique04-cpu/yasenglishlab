@@ -2,20 +2,29 @@
 
 ## Active task
 
-No active task.
+**prompt-17-teacher-operations-v1**
 
-Prompt 16 — Agenda V1 / Live Session Booking — is complete and verified.
+State: done — verified by Official CI #300; PR #21 remains open and unmerged.
 
-## Last closed task
+Baseline: `main` at `a77386df147805f8ecd236f63657c90d251b3c63`.  
+Branch: `feat/teacher-operations-v1`.
 
-**prompt-16-agenda-v1**
+### Objective
 
-State: done — implementation, verification, evidence inspection and scope audit completed.
+Deliver Teacher Operations V1 with strict TEACHER + AAL2 entry, explicit teacher-scoped session/roster read models, authorized ATTENDED/NO_SHOW mutation, and durable auditability without expanding Teacher into Admin/Support/commercial capabilities.
 
-### Verified result
+### Small plan
 
-- Agenda is a projection of the existing Live domain, with safe aggregated availability and Student-owned booking through PostgreSQL `auth.uid()`.
-- Existing `private.validate_booking()` remains authoritative for scheduled state, entitlement and capacity.
-- Real PostgreSQL concurrency, RLS, E2E persistence, analytics, accessibility and visual checks passed.
-- Official CI #253 / run `36802148610` concluded `success`.
-- PR #20 remains open and unmerged.
+1. Inspect the existing Live schema, auth/RLS helpers, audit contracts, Agenda V1 vertical-slice patterns and canonical test/CI wiring.
+2. Add the smallest append-only DB boundary required for teacher-scoped session/roster reads and atomic attendance + audit mutation, deriving identity from `auth.uid()`.
+3. Implement a dedicated Teacher application/domain/server slice and `/teacher` UI using existing Design System primitives and current Next.js patterns.
+4. Add deterministic fixtures plus unit/integration/DB-RLS/E2E/a11y/visual coverage, including cross-teacher and MFA negative paths.
+5. Run/inspect Official CI, correct only root causes, then persist evidence and mark the registry done/verified only after every required gate is green.
+
+### Declared scope
+
+Teacher Operations only: own sessions, minimum roster, ATTENDED/NO_SHOW and audit. No Admin CMS, authoring, billing, assignment management, availability CRUD, cancellation/rescheduling, credit/no-show policy, meeting provider or unrelated Practice/CEFR changes.
+
+### Closure
+
+Teacher Operations V1 passed Official CI run `36816618361` with every mandatory gate green. Persistence/audit and responsive visual artifacts were inspected. Durable evidence is under `harness/evidence/prompt-17-teacher-operations-v1/`. No merge to `main` was performed.

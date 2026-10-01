@@ -54,6 +54,10 @@ const requiredInvariants = [
   "create or replace function public.submit_practice_attempt",
   "create or replace function public.get_agenda_sessions",
   "create or replace function public.book_live_session",
+  "create or replace function public.get_teacher_sessions",
+  "create or replace function public.get_teacher_session_roster",
+  "create or replace function public.mark_teacher_attendance",
+  "create or replace function private.audit_attendance_change",
   "auth.uid()",
 ];
 
@@ -98,6 +102,10 @@ assert(
 assert(
   exists("scripts/test-schedule-concurrency.mjs"),
   "Agenda V1 needs a real two-connection PostgreSQL concurrency test.",
+);
+assert(
+  exists("supabase/tests/teacher_operations.sql"),
+  "Teacher Operations V1 needs real role/AAL2/scope/attendance/audit SQL evidence.",
 );
 
 success(

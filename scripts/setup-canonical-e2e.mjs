@@ -5,8 +5,15 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const email = "canonical.student@example.test";
 const teacherEmail = "canonical.teacher@example.test";
+const teacherBEmail = "canonical.teacher-b@example.test";
+const teacherStudentEmail = "canonical.teacher-student@example.test";
 const courseId = "40000000-0000-4000-8000-000000000001";
 const teacherId = "88000000-0000-4000-8000-000000000001";
+const teacherBId = "88000000-0000-4000-8000-000000000003";
+const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
+const teacherOtherSessionId = "88200000-0000-4000-8000-000000000002";
+const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
+const teacherOtherBookingId = "88300000-0000-4000-8000-000000000002";
 const subscriptionId = "88000000-0000-4000-8000-000000000002";
 const sessionIds = [
   "88100000-0000-4000-8000-000000000001",
@@ -52,6 +59,8 @@ async function ensureUser(userEmail, displayName) {
 
 const user = await ensureUser(email, "Ana Souza");
 const teacherUser = await ensureUser(teacherEmail, "Yasmin");
+const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
+const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
 const userId = user.id;
 
 const cleanup = [
@@ -80,6 +89,12 @@ const operations = [
     .from("user_roles")
     .upsert({ user_id: teacherUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),
   admin
+    .from("user_roles")
+    .upsert({ user_id: teacherBUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),
+  admin
+    .from("user_roles")
+    .upsert({ user_id: teacherStudentUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
+  admin
     .from("enrollments")
     .upsert(
       { user_id: userId, course_id: courseId, status: "ACTIVE" },
@@ -88,6 +103,9 @@ const operations = [
   admin
     .from("teachers")
     .upsert({ id: teacherId, user_id: teacherUser.id, active: true }, { onConflict: "id" }),
+  admin
+    .from("teachers")
+    .upsert({ id: teacherBId, user_id: teacherBUser.id, active: true }, { onConflict: "id" }),
   admin.from("subscriptions").upsert(
     {
       id: subscriptionId,
@@ -113,6 +131,8 @@ const nonCanonicalAgendaSessionIds = [
   "85400000-0000-0000-0000-000000000002",
   "85400000-0000-0000-0000-000000000003",
   "86400000-0000-0000-0000-000000000001",
+  "89400000-0000-4000-8000-000000000001",
+  "89400000-0000-4000-8000-000000000002",
 ];
 
 const { error: testBookingCleanupError } = await admin
@@ -161,11 +181,54 @@ const sessions = [
     required_entitlement_key: "monthly_private_sessions",
     status: "SCHEDULED",
   },
+  {
+    id: teacherOpsSessionId,
+    teacher_id: teacherId,
+    session_type: "CONVERSATION_LAB",
+    title: "Teacher Ops · Conversation Practice",
+    starts_at: inDays(4),
+    ends_at: inDays(4, 60),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  },
+  {
+    id: teacherOtherSessionId,
+    teacher_id: teacherBId,
+    session_type: "CORE_CLASS",
+    title: "Teacher B · Private scope",
+    starts_at: inDays(5),
+    ends_at: inDays(5, 60),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  },
 ];
 
 const { error: sessionError } = await admin.from("live_sessions").upsert(sessions, {
   onConflict: "id",
 });
 if (sessionError) throw sessionError;
+
+const { error: teacherBookingError } = await admin.from("session_bookings").upsert(
+  [
+    {
+      id: teacherOpsBookingId,
+      live_session_id: teacherOpsSessionId,
+      user_id: teacherStudentUser.id,
+      status: "BOOKED",
+      cancelled_at: null,
+    },
+    {
+      id: teacherOtherBookingId,
+      live_session_id: teacherOtherSessionId,
+      user_id: teacherStudentUser.id,
+      status: "BOOKED",
+      cancelled_at: null,
+    },
+  ],
+  { onConflict: "id" },
+);
+if (teacherBookingError) throw teacherBookingError;
 
 console.log("Canonical E2E fixture ready.");

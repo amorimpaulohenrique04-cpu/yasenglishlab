@@ -246,3 +246,34 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final implementation head `14b577729aeafcd7986d7da35903499e4ebb5adc` passed Official CI #253 / run `36802148610`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
 - Final `main...feat/agenda-v1` scope audit found no Teacher/Admin portal, cancellation/rescheduling/no-show/attendance mutation, credit-window policy, meeting provider, CEFR logic or curricular-progress behavior.
 - Durable evidence is stored under `harness/evidence/prompt-16-agenda-v1/`; registry is `done / verified:true`. PR #20 remains open and unmerged.
+
+## 2026-09-30 — prompt-17-teacher-operations-v1
+
+- Baseline confirmed at `main@a77386df147805f8ecd236f63657c90d251b3c63`; Agenda PR #20 is incorporated and P15/P16 are done/verified.
+- Created `feat/teacher-operations-v1` without writing to main.
+- Added Teacher-only + AAL2 read models for own sessions and own-session roster.
+- Added atomic attendance upsert + attendance audit trigger; no direct authenticated attendance DML was granted.
+- Added dedicated Teacher shell/routes, unit/application/real-PostgreSQL/E2E/a11y coverage and responsive screenshot capture.
+- Added canonical Teacher A/Teacher B fixtures and real MFA TOTP test helper with the secret stored only in the OS temporary directory.
+- Synchronized Live/Auth/Audit/Data Model/Open Questions contracts.
+- Current state: implementation complete enough for Official CI; feature remains `in_progress` / `verified: false` until all mandatory gates are inspected green.
+
+## 2026-10-01 — prompt-17 Teacher MFA verification correction
+
+- Official CI #282 / run `36810184169` passed Supply Chain, Quality, Database and Guardrail Simulations. Preview also passed the real database integration and RLS steps, proving the prior Teacher audit/DB assertion failure was corrected.
+- Critical E2E then failed only in the real Teacher MFA path: the MFA page rendered, but Supabase returned `mfa_totp_enroll_not_enabled`, so the authenticator-code field never became available.
+- Preview artifact `11139423780` and its Playwright trace confirmed the exact Auth response. The checked-in local Supabase config had both TOTP enrollment and verification disabled.
+- Corrective action is intentionally environment-scoped: enable TOTP enrollment/verification in `supabase/config.toml` for local/Preview verification. No production migration, RLS policy, role rule, attendance boundary or MFA assertion is weakened.
+- P17 remains `in_progress` / `verified: false` until a fresh full Official CI reaches persistence, a11y, visual evidence, artifact upload and CI Gate successfully.
+
+## 2026-10-01 — prompt-17 Teacher Operations V1 closure
+
+- Final implementation head `30bd79874cf7a05218f5ce1f2fa5f67c88f22b6b` passed Official CI #300 / run `36816618361`.
+- Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
+- Preview re-proved clean DB integration, RLS, observability, real Teacher MFA, 5/5 Critical E2E, post-E2E persistence/analytics, 12/12 accessibility, Storybook, 6/6 design-system visuals and 3/3 product golden visuals.
+- Post-E2E Teacher attendance and audit evidence is verified directly against PostgreSQL: attendance persisted as ATTENDED, `marked_by_user_id` matched the authenticated Teacher, and the audit fact retained actor/session/booking/attendance/final-state evidence without forbidden privacy categories.
+- Preview artifact `11142120950` with digest `sha256:3edba2c1deaca02790e34f567950e88456d037346e47ebde6b60474c3a53c865` was downloaded. Teacher desktop/tablet/mobile screenshots were manually inspected with no visible clipping/overflow; persisted attendance and action controls are visible on tablet/mobile.
+- Failure history remains preserved: semantic audit ordering, local TOTP enablement, stale MFA factor recovery, attendance locator specificity and privileged post-E2E persistence inspection were each corrected at the first real failing gate without weakening authorization or assertions.
+- Final scope audit found no billing editor, Practice/CEFR feature, cancellation/rescheduling, meeting provider, Admin CMS, availability CRUD, historical migration edit or global authorization widening.
+- Durable closure evidence is stored under `harness/evidence/prompt-17-teacher-operations-v1/`; registry is now `done / verified:true`.
+- PR #21 remains open and unmerged. No merge to `main` was performed.

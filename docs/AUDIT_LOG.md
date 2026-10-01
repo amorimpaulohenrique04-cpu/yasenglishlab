@@ -83,3 +83,12 @@ O writer aplica o mesmo sanitizer da observability antes de persistir `data`.
 ## Interfaces
 
 [OBSERVABILITY.md](./OBSERVABILITY.md) · [SECURITY.md](./SECURITY.md) · [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [OPERATIONS.md](./OPERATIONS.md)
+
+
+## Teacher attendance
+
+Teacher Operations V1 registra `attendance_marked` como fato de auditoria explícito. A gravação é feita por trigger no mesmo statement/transação do upsert de `attendance`, portanto a operação não pode ser declarada bem-sucedida se o audit insert falhar.
+
+O actor é `auth.uid()`; o payload contém somente `live_session_id`, `session_booking_id`, `previous_status` quando aplicável e `new_status`. Nome, e-mail, telefone, JWT/cookie/token, meeting data, billing e respostas de assessment não são copiados para o audit.
+
+Esse caminho transacional usa os defaults existentes de correlação quando não há request context disponível no PostgreSQL e não cria um segundo sistema de logs.

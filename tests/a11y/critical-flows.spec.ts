@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
+import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
+
 const email = "canonical.student@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 
@@ -142,6 +144,28 @@ test("Agenda exposes booking states, disabled eligibility and WCAG A/AA complian
   const entitlementBlocked = page.getByRole("button", { name: "Acesso não disponível" });
   await expect(entitlementBlocked).toHaveCount(2);
   await expect(entitlementBlocked.first()).toBeDisabled();
+
+  await assertAxe(page);
+});
+
+test("Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await loginCanonicalTeacher(page, password!);
+  await page.goto("/teacher/sessoes/" + canonicalTeacherSessionId);
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Teacher Ops · Conversation Practice" }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Participantes" })).toBeVisible();
+
+  const present = page.getByRole("button", { name: "Marcar Teacher Ops Student como Presente" });
+  const absent = page.getByRole("button", { name: "Marcar Teacher Ops Student como Ausente" });
+
+  await present.focus();
+  await expect(present).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(absent).toBeFocused();
 
   await assertAxe(page);
 });
