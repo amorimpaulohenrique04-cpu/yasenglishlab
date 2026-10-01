@@ -48,11 +48,7 @@ function practiceStatusLabel(item: ProgressPracticeView["recent"][number]): stri
   return "Concluída";
 }
 
-function CurriculumSection({
-  section,
-}: {
-  section: ProgressSection<ProgressCurriculumView>;
-}) {
+function CurriculumSection({ section }: { section: ProgressSection<ProgressCurriculumView> }) {
   return (
     <section className="yas-progress-section" aria-labelledby="progress-curriculum-title">
       <SectionHeader
@@ -103,7 +99,9 @@ function CurriculumSection({
                   </div>
                 </dl>
                 {course.lastActivityAt && (
-                  <small>Atividade curricular mais recente: {formatDate(course.lastActivityAt)}</small>
+                  <small>
+                    Atividade curricular mais recente: {formatDate(course.lastActivityAt)}
+                  </small>
                 )}
                 <Link className="yas-progress-link yas-focusable" href={`/aulas/${course.slug}`}>
                   Ver curso →
@@ -255,21 +253,13 @@ function SkillRow({ item }: { item: ProgressSkillSummary }) {
         </span>
       </div>
       {ratio !== null && (
-        <ProgressBar
-          value={ratio}
-          label="Pontuação desta avaliação"
-          showValue={false}
-        />
+        <ProgressBar value={ratio} label="Pontuação desta avaliação" showValue={false} />
       )}
     </li>
   );
 }
 
-function AssessmentSection({
-  section,
-}: {
-  section: ProgressSection<ProgressAssessmentView>;
-}) {
+function AssessmentSection({ section }: { section: ProgressSection<ProgressAssessmentView> }) {
   return (
     <section className="yas-progress-section" aria-labelledby="progress-assessment-title">
       <SectionHeader

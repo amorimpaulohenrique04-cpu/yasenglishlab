@@ -151,9 +151,7 @@ test("Progresso preserves semantic indicators, navigation and WCAG A/AA complian
 
   await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
   await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
-  await expect(
-    page.getByRole("progressbar", { name: "Pontuação desta avaliação" }),
-  ).toBeVisible();
+  await expect(page.getByRole("progressbar", { name: "Pontuação desta avaliação" })).toBeVisible();
   await assertAxe(page);
 });
 

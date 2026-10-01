@@ -53,9 +53,7 @@ const assessment: ProgressAssessmentFact = {
   submittedAt: "2026-09-28T10:30:00Z",
   scoredAt: "2026-09-28T10:35:00Z",
   rawScore: 1,
-  skillScores: [
-    { skill: "GRAMMAR", score: 1, maxScore: 1, createdAt: "2026-09-28T10:35:00Z" },
-  ],
+  skillScores: [{ skill: "GRAMMAR", score: 1, maxScore: 1, createdAt: "2026-09-28T10:35:00Z" }],
 };
 
 function repository(overrides: Partial<ProgressRepository> = {}): ProgressRepository {

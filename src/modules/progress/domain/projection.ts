@@ -26,7 +26,9 @@ function time(value: string | null): number {
 
 function newest(values: Array<string | null>): string | null {
   const present = values.filter((value): value is string => Boolean(value));
-  return present.sort((left, right) => time(right) - time(left) || right.localeCompare(left))[0] ?? null;
+  return (
+    present.sort((left, right) => time(right) - time(left) || right.localeCompare(left))[0] ?? null
+  );
 }
 
 function withinLastDays(value: string | null, now: Date, days: number): boolean {
@@ -51,9 +53,7 @@ export function buildCurriculumView(courses: readonly LearningCourse[]): Progres
         totalLessons: lessons.length,
         modulesCompleted: applicableModules.filter(isModuleComplete).length,
         totalModules: applicableModules.length,
-        lastActivityAt: newest(
-          lessons.map((lesson) => lesson.progress?.lastAccessedAt ?? null),
-        ),
+        lastActivityAt: newest(lessons.map((lesson) => lesson.progress?.lastAccessedAt ?? null)),
       };
     }),
   };
@@ -138,8 +138,7 @@ export function buildAssessmentView(
         .filter((candidate) => candidate.skill === skill)
         .sort(
           (left, right) =>
-            time(right.createdAt) - time(left.createdAt) ||
-            left.skill.localeCompare(right.skill),
+            time(right.createdAt) - time(left.createdAt) || left.skill.localeCompare(right.skill),
         )[0];
       if (score) {
         return {
@@ -258,8 +257,7 @@ export function buildConsistency(
         if (event.kind === "attendance_marked") {
           return attendance.some(
             (fact) =>
-              fact.attendanceStatus === "ATTENDED" &&
-              fact.attendanceMarkedAt === event.occurredAt,
+              fact.attendanceStatus === "ATTENDED" && fact.attendanceMarkedAt === event.occurredAt,
           );
         }
         return event.kind === "lesson_completed" || event.kind === "practice_submitted";
@@ -269,9 +267,8 @@ export function buildConsistency(
 
   return {
     activeDaysLast7Days: activeDays.size,
-    lessonsCompletedLast7Days: recentHistory.filter(
-      (event) => event.kind === "lesson_completed",
-    ).length,
+    lessonsCompletedLast7Days: recentHistory.filter((event) => event.kind === "lesson_completed")
+      .length,
     practicesCompletedLast7Days: recentHistory.filter(
       (event) => event.kind === "practice_submitted",
     ).length,

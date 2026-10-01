@@ -122,10 +122,7 @@ const operations = [
     .upsert({ user_id: userId, role: "STUDENT" }, { onConflict: "user_id,role" }),
   admin
     .from("user_roles")
-    .upsert(
-      { user_id: progressEmptyUser.id, role: "STUDENT" },
-      { onConflict: "user_id,role" },
-    ),
+    .upsert({ user_id: progressEmptyUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
   admin
     .from("user_roles")
     .upsert({ user_id: teacherUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),

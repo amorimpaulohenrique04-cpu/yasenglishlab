@@ -53,8 +53,7 @@ function course(
                     lastPositionSeconds: 60,
                     startedAt: "2026-09-29T10:00:00Z",
                     lastAccessedAt: "2026-09-30T10:00:00Z",
-                    completedAt:
-                      firstCompletion === 100 ? "2026-09-30T10:00:00Z" : null,
+                    completedAt: firstCompletion === 100 ? "2026-09-30T10:00:00Z" : null,
                     updatedAt: "2026-09-30T10:00:00Z",
                   },
           },
@@ -90,9 +89,7 @@ function practice(overrides: Partial<ProgressPracticeFact> = {}): ProgressPracti
   };
 }
 
-function attendance(
-  overrides: Partial<ProgressAttendanceFact> = {},
-): ProgressAttendanceFact {
+function attendance(overrides: Partial<ProgressAttendanceFact> = {}): ProgressAttendanceFact {
   return {
     bookingId: "85000000-0000-4000-8000-000000000001",
     liveSessionId: "85100000-0000-4000-8000-000000000001",
@@ -108,9 +105,7 @@ function attendance(
   };
 }
 
-function assessment(
-  overrides: Partial<ProgressAssessmentFact> = {},
-): ProgressAssessmentFact {
+function assessment(overrides: Partial<ProgressAssessmentFact> = {}): ProgressAssessmentFact {
   return {
     attemptId: "86000000-0000-4000-8000-000000000001",
     status: "SCORED",

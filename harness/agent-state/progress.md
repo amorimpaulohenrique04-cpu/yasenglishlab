@@ -321,4 +321,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Chosen architecture is a read-only Progress projection: server-authenticated Student identity, four independent domain reads, bounded bulk queries, `Promise.allSettled` partial-failure semantics, and no new source of truth.
 - Learning completion will reuse existing progress functions; Practice, Attendance and SkillScores remain semantically separate; CEFR will render unavailable rather than inferred.
 - No database migration is currently justified. Registry is `in_progress / verified:false`; all verification remains pending.
-

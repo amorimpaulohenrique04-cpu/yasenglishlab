@@ -125,10 +125,7 @@ export class SupabaseProgressRepository implements ProgressRepository {
       ((activitiesResult.data ?? []) as Row[]).map((row) => [String(row.id), row]),
     );
     const results = new Map(
-      ((resultsResult.data ?? []) as Row[]).map((row) => [
-        String(row.practice_attempt_id),
-        row,
-      ]),
+      ((resultsResult.data ?? []) as Row[]).map((row) => [String(row.practice_attempt_id), row]),
     );
 
     return attemptRows.flatMap((row) => {
@@ -187,10 +184,7 @@ export class SupabaseProgressRepository implements ProgressRepository {
       ((sessionsResult.data ?? []) as Row[]).map((row) => [String(row.id), row]),
     );
     const attendance = new Map(
-      ((attendanceResult.data ?? []) as Row[]).map((row) => [
-        String(row.session_booking_id),
-        row,
-      ]),
+      ((attendanceResult.data ?? []) as Row[]).map((row) => [String(row.session_booking_id), row]),
     );
 
     return bookingRows.flatMap((row) => {

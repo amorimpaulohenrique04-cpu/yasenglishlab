@@ -3,11 +3,7 @@ import type { PracticeSkill } from "@/modules/domain";
 
 export type ProgressPracticeStatus = "IN_PROGRESS" | "SUBMITTED" | "ABANDONED";
 export type ProgressPracticeEvaluationStatus =
-  | "CORRECT"
-  | "INCORRECT"
-  | "PENDING_MANUAL"
-  | "NOT_SCORED"
-  | null;
+  "CORRECT" | "INCORRECT" | "PENDING_MANUAL" | "NOT_SCORED" | null;
 
 export interface ProgressPracticeFact {
   attemptId: string;
@@ -26,10 +22,7 @@ export interface ProgressPracticeFact {
 export type ProgressBookingStatus = "BOOKED" | "CANCELLED" | "TEACHER_CANCELLED";
 export type ProgressAttendanceStatus = "ATTENDED" | "NO_SHOW" | null;
 export type ProgressSessionType =
-  | "CORE_CLASS"
-  | "CONVERSATION_LAB"
-  | "PRIVATE_SESSION"
-  | "WORKSHOP";
+  "CORE_CLASS" | "CONVERSATION_LAB" | "PRIVATE_SESSION" | "WORKSHOP";
 
 export interface ProgressAttendanceFact {
   bookingId: string;
