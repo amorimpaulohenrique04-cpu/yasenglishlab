@@ -8,6 +8,7 @@ export const PRIVILEGED_AUDIT_ACTIONS = {
 } as const;
 
 export const SECURITY_AUDIT_ACTIONS = {
+  ATTENDANCE_MARKED: "attendance_marked",
   LIVE_SESSION_BOOKED: "live_session_booked",
   PROTECTED_ASSET_ACCESS_GRANTED: "protected_asset_access_granted",
   PASSWORD_UPDATED: "PASSWORD_UPDATED",
