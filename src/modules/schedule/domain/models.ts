@@ -1,10 +1,7 @@
 export const YAS_SCHEDULE_TIME_ZONE = "America/Recife";
 
 export type ScheduleSessionType =
-  | "CORE_CLASS"
-  | "CONVERSATION_LAB"
-  | "PRIVATE_SESSION"
-  | "WORKSHOP";
+  "CORE_CLASS" | "CONVERSATION_LAB" | "PRIVATE_SESSION" | "WORKSHOP";
 
 export type ScheduleSessionStatus = "SCHEDULED" | "CANCELLED" | "COMPLETED";
 export type ScheduleBookingStatus = "BOOKED" | "CANCELLED" | "TEACHER_CANCELLED";
@@ -37,11 +34,7 @@ export interface ScheduleSessionView extends ScheduleSessionRecord {
   };
 }
 
-export type ScheduleBookingErrorCode =
-  | "ENTITLEMENT_REQUIRED"
-  | "FULL"
-  | "CLOSED"
-  | "UNAVAILABLE";
+export type ScheduleBookingErrorCode = "ENTITLEMENT_REQUIRED" | "FULL" | "CLOSED" | "UNAVAILABLE";
 
 export class ScheduleBookingError extends Error {
   constructor(readonly code: ScheduleBookingErrorCode) {
