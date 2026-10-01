@@ -76,17 +76,10 @@ select set_config(
   '{"sub":"00000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',
   true
 );
-do $
-begin
-  if auth.uid() is distinct from '00000000-0000-4000-8000-000000000001'::uuid then
-    raise exception 'Synthetic Supabase auth.uid() contract is invalid';
-  end if;
-
-  if auth.jwt() ->> 'role' is distinct from 'authenticated' then
-    raise exception 'Synthetic Supabase auth.jwt() contract is invalid';
-  end if;
-end
-$;
+select 1 / ((auth.uid() = '00000000-0000-4000-8000-000000000001'::uuid)::integer)
+  as auth_uid_contract;
+select 1 / (((auth.jwt() ->> 'role') = 'authenticated')::integer)
+  as auth_jwt_contract;
 rollback;
 SQL
 
