@@ -36,7 +36,9 @@ describe("assessment domain", () => {
       maxScore: 1,
     });
 
-    expect(evaluateAssessmentItem(item(), { optionId: "works" })).toMatchObject({
+    expect(
+      evaluateAssessmentItem(item(), { optionId: "works" }),
+    ).toMatchObject({
       status: "SCORED",
       score: 0,
       maxScore: 1,
@@ -84,18 +86,21 @@ describe("assessment domain", () => {
     },
   );
 
-  it("marks unknown item semantics unsupported instead of inferring a score", () => {
-    expect(
-      evaluateAssessmentItem(
-        item({ itemType: "AI_PRONUNCIATION", answerKey: null }),
-        { text: "Do not infer a score." },
-      ),
-    ).toMatchObject({
-      status: "UNSUPPORTED",
-      score: null,
-      maxScore: null,
-    });
-  });
+  it(
+    "marks unknown item semantics unsupported instead of inferring a score",
+    () => {
+      expect(
+        evaluateAssessmentItem(
+          item({ itemType: "AI_PRONUNCIATION", answerKey: null }),
+          { text: "Do not infer a score." },
+        ),
+      ).toMatchObject({
+        status: "UNSUPPORTED",
+        score: null,
+        maxScore: null,
+      });
+    },
+  );
 
   it("aggregates only objective skill metrics and never derives CEFR", () => {
     const evaluations = [
