@@ -230,7 +230,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Scope decision: add only a safe aggregate read model and authenticated booking RPC that derives `auth.uid()`; do not implement cancellation, credit-window consumption, meeting provider or Teacher/Admin portals.
 - Registered the P16 goal, plan and registry entry before runtime implementation.
 
-
 ## 2026-09-30 — prompt-16-agenda-v1 closure
 
 - Implemented the Agenda V1 Student vertical slice on top of the existing Live domain: aggregate availability projection, upcoming own bookings, authenticated booking RPC, schedule domain/application/server adapter, responsive `/agenda` UI and Student navigation.
