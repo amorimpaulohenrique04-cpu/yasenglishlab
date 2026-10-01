@@ -52,6 +52,8 @@ const requiredInvariants = [
   "create or replace function public.record_lesson_progress",
   "create or replace function public.start_practice_attempt",
   "create or replace function public.submit_practice_attempt",
+  "create or replace function public.get_agenda_sessions",
+  "create or replace function public.book_live_session",
   "auth.uid()",
 ];
 
@@ -88,6 +90,14 @@ assert(
 assert(
   exists("supabase/tests/practice_persistence.sql"),
   "Practice V1 needs idempotency, ownership and scoring-boundary SQL evidence.",
+);
+assert(
+  exists("supabase/tests/schedule_booking.sql"),
+  "Agenda V1 needs booking, ownership, entitlement, capacity and aggregate SQL evidence.",
+);
+assert(
+  exists("scripts/test-schedule-concurrency.mjs"),
+  "Agenda V1 needs a real two-connection PostgreSQL concurrency test.",
 );
 
 success(
