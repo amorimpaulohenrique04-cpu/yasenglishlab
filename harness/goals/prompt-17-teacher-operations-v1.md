@@ -1,6 +1,6 @@
 # GOAL — prompt-17-teacher-operations-v1: Teacher Operations V1
 
-Status: in_progress  
+Status: done  
 Owner: agent  
 Created: 2026-09-30  
 Updated: 2026-10-01
@@ -35,24 +35,24 @@ A TEACHER at AAL2 can open `/teacher`, see only their own sessions, open a sessi
 
 ## Acceptance criteria
 
-- [ ] `/teacher` exists and requires durable role TEACHER + AAL2.
-- [ ] STUDENT, SUPPORT-only, ADMIN-only and TEACHER AAL1 are denied.
-- [ ] Multi-role users remain teacher-scoped inside Teacher Operations.
-- [ ] Teacher session reads derive teacher identity from `auth.uid()`; no caller-supplied teacher id exists.
-- [ ] Teacher sees only sessions whose `live_sessions.teacher_id -> teachers.user_id` matches the authenticated user and whose teacher record is active.
-- [ ] Roster is available only for the authenticated teacher's own session and exposes only operational fields required by V1.
-- [ ] Broader pedagogical student context remains governed by active `teacher_student_assignments`.
-- [ ] Attendance accepts only `ATTENDED` and `NO_SHOW`, only for a valid `BOOKED` booking in the teacher's own session.
-- [ ] Attendance retry/update reuses the existing unique row; no duplicate attendance history table is created.
-- [ ] `marked_by_user_id` is derived from authenticated context and `marked_at` is set by the trusted boundary.
-- [ ] Direct authenticated INSERT/UPDATE on `attendance` remains denied.
-- [ ] Attendance mutation produces a durable audit fact identifying actor, session, booking, attendance and resulting status without secrets or unnecessary PII.
-- [ ] NO_SHOW has no invented commercial consequence.
-- [ ] No cancellation, rescheduling, credit policy, meeting provider, Admin CMS, Teacher authoring or availability CRUD is introduced.
-- [ ] Loading, empty, error, success, forbidden, MFA-required and no-participant states are covered according to existing route/guard patterns.
-- [ ] DB/RLS, integration, E2E, a11y and visual evidence pass.
-- [ ] Official CI is green and the final diff is scope-audited before closure.
-- [ ] No unrelated behavior regressed.
+- [x] `/teacher` exists and requires durable role TEACHER + AAL2.
+- [x] STUDENT, SUPPORT-only, ADMIN-only and TEACHER AAL1 are denied.
+- [x] Multi-role users remain teacher-scoped inside Teacher Operations.
+- [x] Teacher session reads derive teacher identity from `auth.uid()`; no caller-supplied teacher id exists.
+- [x] Teacher sees only sessions whose `live_sessions.teacher_id -> teachers.user_id` matches the authenticated user and whose teacher record is active.
+- [x] Roster is available only for the authenticated teacher's own session and exposes only operational fields required by V1.
+- [x] Broader pedagogical student context remains governed by active `teacher_student_assignments`.
+- [x] Attendance accepts only `ATTENDED` and `NO_SHOW`, only for a valid `BOOKED` booking in the teacher's own session.
+- [x] Attendance retry/update reuses the existing unique row; no duplicate attendance history table is created.
+- [x] `marked_by_user_id` is derived from authenticated context and `marked_at` is set by the trusted boundary.
+- [x] Direct authenticated INSERT/UPDATE on `attendance` remains denied.
+- [x] Attendance mutation produces a durable audit fact identifying actor, session, booking, attendance and resulting status without secrets or unnecessary PII.
+- [x] NO_SHOW has no invented commercial consequence.
+- [x] No cancellation, rescheduling, credit policy, meeting provider, Admin CMS, Teacher authoring or availability CRUD is introduced.
+- [x] Loading, empty, error, success, forbidden, MFA-required and no-participant states are covered according to existing route/guard patterns.
+- [x] DB/RLS, integration, E2E, a11y and visual evidence pass.
+- [x] Official CI is green and the final diff is scope-audited before closure.
+- [x] No unrelated behavior regressed.
 
 ## Allowed files / domains
 

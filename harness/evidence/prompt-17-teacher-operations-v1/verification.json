@@ -1,0 +1,60 @@
+{
+  "task": "prompt-17-teacher-operations-v1",
+  "status": "passed",
+  "verified_at": "2026-10-01T01:52:00-03:00",
+  "pull_request": 21,
+  "implementation_head": "30bd79874cf7a05218f5ce1f2fa5f67c88f22b6b",
+  "official_ci": {
+    "run_id": 36816618361,
+    "run_number": 300,
+    "conclusion": "success",
+    "jobs": [
+      "Supply Chain",
+      "Quality",
+      "Database",
+      "Guardrail Simulations",
+      "Preview",
+      "CI Gate"
+    ]
+  },
+  "preview": {
+    "merge_ref": "294b5bddf1c3746bae15cdf03ae708153b3a2432",
+    "artifact_id": 11142120950,
+    "artifact_sha256": "3edba2c1deaca02790e34f567950e88456d037346e47ebde6b60474c3a53c865",
+    "critical_e2e_passed": 5,
+    "accessibility_passed": 12,
+    "design_system_visual_passed": 6,
+    "golden_visual_passed": 3,
+    "persistence_and_analytics": "passed"
+  },
+  "teacher_proofs": {
+    "durable_role_and_aal2": "passed",
+    "teacher_aal1_denied": true,
+    "student_denied": true,
+    "support_only_denied": true,
+    "admin_only_denied": true,
+    "multi_role_teacher_scoped": true,
+    "teacher_identity": "auth.uid()",
+    "cross_teacher_isolation": "passed both directions",
+    "roster_minimization": "passed",
+    "direct_authenticated_attendance_dml": "denied",
+    "attendance_states": [
+      "ATTENDED",
+      "NO_SHOW"
+    ],
+    "attendance_retry_unique": true,
+    "marked_by_user_id": "authenticated Teacher",
+    "refresh_preserves_attendance": true,
+    "audit_actor_session_booking_attendance_status": "passed",
+    "audit_privacy_scan": "passed",
+    "no_show_commercial_consequence": "none introduced"
+  },
+  "visual_evidence": [
+    "artifacts/canonical-slice/teacher-desktop.png",
+    "artifacts/canonical-slice/teacher-tablet.png",
+    "artifacts/canonical-slice/teacher-mobile.png"
+  ],
+  "visual_inspection": "passed",
+  "scope_audit": "passed",
+  "merged": false
+}

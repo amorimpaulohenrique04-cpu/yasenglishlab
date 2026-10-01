@@ -4,7 +4,7 @@
 
 **prompt-17-teacher-operations-v1**
 
-State: in progress — implementation and verification pending.
+State: done — verified by Official CI #300; PR #21 remains open and unmerged.
 
 Baseline: `main` at `a77386df147805f8ecd236f63657c90d251b3c63`.  
 Branch: `feat/teacher-operations-v1`.
@@ -24,3 +24,8 @@ Deliver Teacher Operations V1 with strict TEACHER + AAL2 entry, explicit teacher
 ### Declared scope
 
 Teacher Operations only: own sessions, minimum roster, ATTENDED/NO_SHOW and audit. No Admin CMS, authoring, billing, assignment management, availability CRUD, cancellation/rescheduling, credit/no-show policy, meeting provider or unrelated Practice/CEFR changes.
+
+
+### Closure
+
+Teacher Operations V1 passed Official CI run `36816618361` with every mandatory gate green. Persistence/audit and responsive visual artifacts were inspected. Durable evidence is under `harness/evidence/prompt-17-teacher-operations-v1/`. No merge to `main` was performed.
