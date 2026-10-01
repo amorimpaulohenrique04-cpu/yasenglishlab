@@ -4,9 +4,13 @@ const databaseUrl = process.env.DATABASE_URL;
 const connectionArgs = databaseUrl ? [`--dbname=${databaseUrl}`] : [];
 
 function runAdmin(sql) {
-  const result = spawnSync("psql", [...connectionArgs, "-X", "-v", "ON_ERROR_STOP=1", "-Atqc", sql], {
-    encoding: "utf8",
-  });
+  const result = spawnSync(
+    "psql",
+    [...connectionArgs, "-X", "-v", "ON_ERROR_STOP=1", "-Atqc", sql],
+    {
+      encoding: "utf8",
+    },
+  );
 
   if (result.error?.code === "ENOENT") {
     throw new Error("psql is required for the Agenda concurrency test.");
@@ -19,11 +23,9 @@ function runAdmin(sql) {
 
 function runConcurrent(sql) {
   return new Promise((resolve, reject) => {
-    const child = spawn(
-      "psql",
-      [...connectionArgs, "-X", "-v", "ON_ERROR_STOP=1", "-Atqc", sql],
-      { stdio: ["ignore", "pipe", "pipe"] },
-    );
+    const child = spawn("psql", [...connectionArgs, "-X", "-v", "ON_ERROR_STOP=1", "-Atqc", sql], {
+      stdio: ["ignore", "pipe", "pipe"],
+    });
     let stdout = "";
     let stderr = "";
 
