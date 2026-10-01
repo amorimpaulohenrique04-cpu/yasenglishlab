@@ -59,7 +59,7 @@ An authenticated Student can open `/progresso` from Sidebar or mobile Drawer and
 - `src/app/globals.css` only to import Progress CSS
 - Progress-focused `tests/**`
 - existing E2E/a11y/golden configuration/specs only to include Progress
-- E2E fixture/setup only for deterministic Progress facts
+- `scripts/setup-canonical-e2e.mjs` only for deterministic Progress facts
 - existing RLS tests only for Progress-specific assertions if necessary
 - `harness/**`
 - `docs/**` only if executable behavior requires contract synchronization
