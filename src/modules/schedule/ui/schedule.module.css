@@ -11,6 +11,12 @@
   scrollbar-width: thin;
 }
 
+.dateStrip:focus-visible {
+  outline: var(--yas-focus-ring);
+  outline-offset: var(--yas-space-1);
+  border-radius: var(--yas-radius-md);
+}
+
 .dateChip {
   min-width: 7.5rem;
   display: inline-flex;
