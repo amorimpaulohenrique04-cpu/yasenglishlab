@@ -616,6 +616,12 @@ begin
     raise exception 'Assessment started/completed analytics must be logically idempotent';
   end if;
 
+  if has_table_privilege('anon', 'public.assessment_attempts', 'SELECT')
+    or has_table_privilege('anon', 'public.assessment_responses', 'SELECT')
+    or has_table_privilege('anon', 'public.skill_scores', 'SELECT') then
+    raise exception 'Anonymous role must not read protected Assessment lifecycle rows';
+  end if;
+
   if has_function_privilege(
     'anon',
     'public.start_assessment_attempt(uuid,uuid)',
