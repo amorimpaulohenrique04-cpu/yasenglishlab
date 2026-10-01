@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  ErrorState,
-  PageHeader,
-} from "@/components/ui";
+import { Alert, Badge, Button, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
 import {
   YAS_SCHEDULE_TIME_ZONE,
   scheduleAvailabilityLabel,
@@ -154,7 +146,8 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
           <span>Sua reserva está confirmada.</span>
         ) : (
           <span>
-            {session.spotsRemaining} {session.spotsRemaining === 1 ? "vaga restante" : "vagas restantes"}
+            {session.spotsRemaining}{" "}
+            {session.spotsRemaining === 1 ? "vaga restante" : "vagas restantes"}
             {" · "}
             capacidade {session.capacity}
           </span>
@@ -287,8 +280,8 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           <Card className={styles.contractCard} variant="soft">
             <strong>Agenda V1</strong>
             <p>
-              Reservas usam a capacidade e os entitlements do domínio Live. Cancelamento,
-              remarcação e acesso à reunião ainda não fazem parte deste fluxo.
+              Reservas usam a capacidade e os entitlements do domínio Live. Cancelamento, remarcação
+              e acesso à reunião ainda não fazem parte deste fluxo.
             </p>
           </Card>
         </aside>
