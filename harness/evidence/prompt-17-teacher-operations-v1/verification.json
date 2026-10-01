@@ -8,14 +8,7 @@
     "run_id": 36816618361,
     "run_number": 300,
     "conclusion": "success",
-    "jobs": [
-      "Supply Chain",
-      "Quality",
-      "Database",
-      "Guardrail Simulations",
-      "Preview",
-      "CI Gate"
-    ]
+    "jobs": ["Supply Chain", "Quality", "Database", "Guardrail Simulations", "Preview", "CI Gate"]
   },
   "preview": {
     "merge_ref": "294b5bddf1c3746bae15cdf03ae708153b3a2432",
@@ -38,10 +31,7 @@
     "cross_teacher_isolation": "passed both directions",
     "roster_minimization": "passed",
     "direct_authenticated_attendance_dml": "denied",
-    "attendance_states": [
-      "ATTENDED",
-      "NO_SHOW"
-    ],
+    "attendance_states": ["ATTENDED", "NO_SHOW"],
     "attendance_retry_unique": true,
     "marked_by_user_id": "authenticated Teacher",
     "refresh_preserves_attendance": true,

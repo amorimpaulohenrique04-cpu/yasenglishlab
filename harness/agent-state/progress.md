@@ -266,7 +266,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Corrective action is intentionally environment-scoped: enable TOTP enrollment/verification in `supabase/config.toml` for local/Preview verification. No production migration, RLS policy, role rule, attendance boundary or MFA assertion is weakened.
 - P17 remains `in_progress` / `verified: false` until a fresh full Official CI reaches persistence, a11y, visual evidence, artifact upload and CI Gate successfully.
 
-
 ## 2026-10-01 — prompt-17 Teacher Operations V1 closure
 
 - Final implementation head `30bd79874cf7a05218f5ce1f2fa5f67c88f22b6b` passed Official CI #300 / run `36816618361`.
