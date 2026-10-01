@@ -37,7 +37,7 @@ as $$
     s.required_entitlement_key,
     count(b.id) filter (where b.status = 'BOOKED') as booked_count,
     greatest(
-      s.capacity::integer - count(b.id) filter (where b.status = 'BOOKED')::integer,
+      s.capacity::integer - (count(b.id) filter (where b.status = 'BOOKED'))::integer,
       0
     ) as spots_remaining,
     own_booking.id as own_booking_id,
@@ -90,6 +90,10 @@ declare
 begin
   if current_user_id is null then
     raise exception 'authentication required' using errcode = '42501';
+  end if;
+
+  if not private.has_role('STUDENT', false) then
+    raise exception 'student role required' using errcode = '42501';
   end if;
 
   -- Serialize both duplicate retries and competing users on the same session.
