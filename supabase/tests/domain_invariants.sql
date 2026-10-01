@@ -30,8 +30,8 @@ values
     'test',
     'sub_one',
     'ACTIVE',
-    '2026-09-01T00:00:00Z',
-    '2026-10-01T00:00:00Z'
+    now() - interval '1 day',
+    now() + interval '30 days'
   ),
   (
     '92000000-0000-0000-0000-000000000002',
@@ -40,8 +40,8 @@ values
     'test',
     'sub_two',
     'ACTIVE',
-    '2026-09-01T00:00:00Z',
-    '2026-10-01T00:00:00Z'
+    now() - interval '1 day',
+    now() + interval '30 days'
   )
 on conflict (id) do nothing;
 
@@ -53,8 +53,8 @@ values (
   '91000000-0000-0000-0000-000000000001',
   'PRIVATE_SESSION',
   'Capacity invariant',
-  '2026-09-30T12:00:00Z',
-  '2026-09-30T12:45:00Z',
+  now() - interval '2 hours',
+  now() - interval '75 minutes',
   1,
   'monthly_private_sessions'
 )
@@ -65,7 +65,7 @@ values (
   '94000000-0000-0000-0000-000000000001',
   '93000000-0000-0000-0000-000000000001',
   '90000000-0000-0000-0000-000000000001',
-  '2026-09-29T00:00:00Z'
+  now()
 )
 on conflict (id) do nothing;
 
@@ -77,7 +77,7 @@ begin
       '94000000-0000-0000-0000-000000000002',
       '93000000-0000-0000-0000-000000000001',
       '90000000-0000-0000-0000-000000000002',
-      '2026-09-29T00:00:00Z'
+      now()
     );
     raise exception 'expected capacity guard to reject overbooking';
   exception

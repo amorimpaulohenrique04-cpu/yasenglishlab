@@ -6,6 +6,7 @@ const suites = {
     "supabase/tests/domain_invariants.sql",
     "supabase/tests/vertical_slice_persistence.sql",
     "supabase/tests/practice_persistence.sql",
+    "supabase/tests/schedule_booking.sql",
   ],
   rls: ["supabase/tests/rls_permissions.sql"],
 };
@@ -30,6 +31,15 @@ for (const file of files) {
     process.exit(2);
   }
   if (result.status !== 0) process.exit(result.status ?? 1);
+}
+
+if (suite === "integration") {
+  console.log("\n▶ real Agenda concurrency");
+  const concurrency = spawnSync(process.execPath, ["scripts/test-schedule-concurrency.mjs"], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (concurrency.status !== 0) process.exit(concurrency.status ?? 1);
 }
 
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);

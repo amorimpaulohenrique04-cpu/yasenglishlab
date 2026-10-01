@@ -12,6 +12,7 @@ const navigation = [
   { id: "lessons", label: "Aulas", href: "/aulas" },
   { id: "practice", label: "Prática", href: "/pratica" },
   { id: "materials", label: "Materiais", href: "/materiais" },
+  { id: "schedule", label: "Agenda", href: "/agenda" },
 ] as const;
 
 function HomeIcon() {
@@ -62,6 +63,22 @@ function MaterialsIcon() {
   );
 }
 
+function ScheduleIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M8 3v4M16 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01" />
+    </svg>
+  );
+}
+
 function PracticeIcon() {
   return (
     <svg
@@ -82,6 +99,7 @@ function navigationIcon(id: (typeof navigation)[number]["id"]) {
   if (id === "home") return <HomeIcon />;
   if (id === "practice") return <PracticeIcon />;
   if (id === "materials") return <MaterialsIcon />;
+  if (id === "schedule") return <ScheduleIcon />;
   return <LessonsIcon />;
 }
 

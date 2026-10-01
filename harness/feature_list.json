@@ -243,11 +243,34 @@
     {
       "id": "prompt-15-practice-engine-v1",
       "title": "Deterministic Practice Engine V1",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["pre-p15-architecture-governance-gate"],
-      "evidence": ["harness/goals/prompt-15-practice-engine-v1.md"],
-      "updated_at": "2026-09-30T19:41:56-03:00"
+      "evidence": [
+        "harness/goals/prompt-15-practice-engine-v1.md",
+        "harness/evidence/prompt-15-practice-engine-v1/README.md",
+        "harness/evidence/prompt-15-practice-engine-v1/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/19",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36796533133",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/commit/1dfe816ee1df811c313c27710c2fed24d3ddfbf1"
+      ],
+      "updated_at": "2026-09-30T21:41:00-03:00"
+    },
+    {
+      "id": "prompt-16-agenda-v1",
+      "title": "Agenda V1 / Live Session Booking",
+      "status": "done",
+      "verified": true,
+      "dependencies": ["prompt-15-practice-engine-v1"],
+      "evidence": [
+        "harness/goals/prompt-16-agenda-v1.md",
+        "harness/evidence/prompt-16-agenda-v1/README.md",
+        "harness/evidence/prompt-16-agenda-v1/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/20",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36802148610",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36802148610/artifacts/11136452829"
+      ],
+      "updated_at": "2026-09-30T22:47:00-03:00"
     }
   ]
 }

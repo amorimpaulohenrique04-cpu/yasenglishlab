@@ -211,3 +211,38 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Deletion and force-push style updates are blocked, with no bypass configured.
 - PRE-P15 is done and verified. P15 has not started.
 - The closure head must pass Official CI before merge.
+
+## 2026-09-30 — prompt-15-practice-engine-v1 reconciliation
+
+- Revalidated the stale P15 Harness state before P16.
+- PR #19 is merged into `main` at `1dfe816ee1df811c313c27710c2fed24d3ddfbf1`.
+- Official CI run `36796533133` / run number 223 for implementation head `f10fdfd33ba8d31679b511a81a51cee3b1e1b086` completed successfully.
+- Inspected jobs: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`; Preview includes Critical E2E, persistence/analytics, accessibility and visual gates.
+- Added durable P15 reconciliation evidence without claiming any unobserved local command, then moved P15 to `done / verified:true`.
+
+## 2026-09-30 — prompt-16-agenda-v1
+
+- Started from current `main` merge commit `1dfe816ee1df811c313c27710c2fed24d3ddfbf1` on branch `feat/agenda-v1`.
+- Read Product, Live, Billing, data, architecture, auth/RLS, security, UI, Design System, accessibility, analytics, observability, testing, Definition of Done, open questions and Agenda reference contracts.
+- Inspected the approved Agenda screenshot directly and preserved behavior/security precedence over its broader calendar/event affordances.
+- Confirmed existing source-of-truth contracts: `live_sessions.capacity`, `session_bookings` uniqueness, `private.entitlement_limit`, `private.current_user_has_entitlement`, `private.validate_booking()` row lock/capacity/entitlement guard, booking audit trigger and owner-only booking RLS.
+- Confirmed `authenticated` still has no direct INSERT on `session_bookings`; students may read scheduled/completed session metadata and only their own booking rows.
+- Scope decision: add only a safe aggregate read model and authenticated booking RPC that derives `auth.uid()`; do not implement cancellation, credit-window consumption, meeting provider or Teacher/Admin portals.
+- Registered the P16 goal, plan and registry entry before runtime implementation.
+
+## 2026-09-30 — prompt-16-agenda-v1 closure
+
+- Implemented the Agenda V1 Student vertical slice on top of the existing Live domain: aggregate availability projection, upcoming own bookings, authenticated booking RPC, schedule domain/application/server adapter, responsive `/agenda` UI and Student navigation.
+- Booking accepts only `live_session_id`; PostgreSQL derives ownership from `auth.uid()` and requires the durable Student role. The pre-existing service-role helper now delegates to this single boundary.
+- Existing `private.validate_booking()` remains the authoritative SCHEDULED/entitlement/capacity trigger. Direct authenticated INSERT into `session_bookings` remains denied.
+- Agenda SQL evidence proves entitlement denial, non-scheduled denial, capacity rejection, retry-safe duplicate booking, no cross-user booking-id leakage and owner derivation from auth context.
+- Official Preview executed real two-connection PostgreSQL concurrency at capacity=1 and logged: `Agenda real concurrency passed: two concurrent users, exactly one BOOKED.`
+- Critical E2E passed 3/3 and proved persisted booking → BOOKED → refresh remains BOOKED. The post-E2E assertion passed and requires exactly one `live_session_booked:<booking_id>` analytics record for the canonical booking.
+- Accessibility passed 10/10 after correcting the mobile horizontal date strip so the actual scroll container is keyboard-focusable and uses the existing Design System focus token.
+- Product golden regression passed 3/3; Storybook/design-system visuals also passed.
+- Preview artifact `11136452829` with digest `sha256:004fa095fb733331982783076932f2b5f3042bba4df3b8432343d2a2642fde4d` was downloaded. `agenda-desktop.png`, `agenda-tablet.png` and `agenda-mobile.png` were opened and inspected against the approved Agenda reference.
+- The visual implementation preserves the approved hierarchy and palette while intentionally omitting unsupported reference-only behavior such as full calendar scheduling, practice/event creation and meeting-provider actions.
+- Verification history remains visible: CI #225 caught canonical formatting; #243 caught the stale booking security invariant; #245 caught shared commercial-fixture regression; #251 caught the mobile scrollable-region a11y issue. Each root cause was corrected without weakening a gate.
+- Final implementation head `14b577729aeafcd7986d7da35903499e4ebb5adc` passed Official CI #253 / run `36802148610`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
+- Final `main...feat/agenda-v1` scope audit found no Teacher/Admin portal, cancellation/rescheduling/no-show/attendance mutation, credit-window policy, meeting provider, CEFR logic or curricular-progress behavior.
+- Durable evidence is stored under `harness/evidence/prompt-16-agenda-v1/`; registry is `done / verified:true`. PR #20 remains open and unmerged.

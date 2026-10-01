@@ -2,22 +2,20 @@
 
 ## Active task
 
-**prompt-15-practice-engine-v1**
+No active task.
 
-State: in progress — implementation and verification pending.
+Prompt 16 — Agenda V1 / Live Session Booking — is complete and verified.
 
-### Objective
+## Last closed task
 
-Deliver deterministic Practice V1 with a domain-owned catalog/recommendation rule, idempotent attempt/response/result persistence, owner-only access, objective feedback for answer-key activities, explicit pending/manual boundaries for Speaking/Pronunciation, analytics and the approved Practice UI.
+**prompt-16-agenda-v1**
 
-### Small plan
+State: done — implementation, verification, evidence inspection and scope audit completed.
 
-1. Refine Practice domain contracts and implement deterministic catalog, recommendation and evaluation policies behind ports.
-2. Add an append-only migration/RPC boundary for idempotent attempts, responses and results, with owner-only RLS and analytics idempotency.
-3. Seed only contracted content, then implement server adapters/actions and `/pratica` states using existing primitives.
-4. Add unit, integration, DB/RLS, E2E, accessibility and visual coverage; run every applicable official gate.
-5. Inspect evidence, update docs/progress/registry, and mark done only if all required checks are green.
+### Verified result
 
-### Declared scope
-
-Practice route/module/server adapter, a single Practice migration and seed additions, Practice tests/evidence/docs, and the student navigation entry. CEFR assessment, course progress and any invented Speaking/Pronunciation scoring are forbidden.
+- Agenda is a projection of the existing Live domain, with safe aggregated availability and Student-owned booking through PostgreSQL `auth.uid()`.
+- Existing `private.validate_booking()` remains authoritative for scheduled state, entitlement and capacity.
+- Real PostgreSQL concurrency, RLS, E2E persistence, analytics, accessibility and visual checks passed.
+- Official CI #253 / run `36802148610` concluded `success`.
+- PR #20 remains open and unmerged.
