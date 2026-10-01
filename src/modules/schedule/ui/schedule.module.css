@@ -12,9 +12,9 @@
 }
 
 .dateStrip:focus-visible {
-  outline: var(--yas-focus-ring);
-  outline-offset: var(--yas-space-1);
+  outline: none;
   border-radius: var(--yas-radius-md);
+  box-shadow: var(--yas-shadow-focus);
 }
 
 .dateChip {
