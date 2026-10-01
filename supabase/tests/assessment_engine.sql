@@ -1,4 +1,6 @@
 -- P19 executable evidence for Assessment lifecycle, objective scoring and RLS/security boundaries.
+-- The file is transactional because Preview executes it in both integration and RLS suites.
+begin;
 
 insert into auth.users (id, email, raw_user_meta_data)
 values
@@ -610,3 +612,5 @@ begin
   end if;
 end;
 $$;
+
+rollback;
