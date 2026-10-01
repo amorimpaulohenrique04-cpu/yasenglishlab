@@ -57,6 +57,7 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 - `src/app/(protected)/(student)/agenda/**`
 - `src/modules/schedule/**`
 - `src/server/schedule/**`
+- `src/server/live/book-session.ts` — compatibility wrapper only: the pre-existing service-role booking path must delegate to the single P16 schedule boundary so the repository does not keep two booking implementations or duplicate audit writes.
 - `src/modules/learning/ui/student-shell.tsx` (Agenda navigation only)
 - `src/modules/domain/contracts.ts` only if a typed existing contract requires synchronization
 - one new `supabase/migrations/**` migration for the minimum Agenda RPC/read model
