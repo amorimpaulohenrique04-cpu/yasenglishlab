@@ -362,22 +362,26 @@ const { error: progressAssessmentError } = await admin.from("assessments").upser
 );
 if (progressAssessmentError) throw progressAssessmentError;
 
-const { error: progressVersionError } = await admin.from("assessment_versions").upsert(
-  {
+const { data: existingProgressVersion, error: progressVersionLookupError } = await admin
+  .from("assessment_versions")
+  .select("id")
+  .eq("id", progressAssessmentVersionId)
+  .maybeSingle();
+if (progressVersionLookupError) throw progressVersionLookupError;
+
+if (!existingProgressVersion) {
+  const { error: progressVersionInsertError } = await admin.from("assessment_versions").insert({
     id: progressAssessmentVersionId,
     assessment_id: progressAssessmentId,
     version_number: 1,
-    status: "PUBLISHED",
+    status: "DRAFT",
     specification: { fixture: "progress-v1" },
     scoring_config: {},
-    published_at: inDays(-10),
-  },
-  { onConflict: "id", ignoreDuplicates: true },
-);
-if (progressVersionError) throw progressVersionError;
+    published_at: null,
+  });
+  if (progressVersionInsertError) throw progressVersionInsertError;
 
-const { error: progressItemError } = await admin.from("assessment_items").upsert(
-  {
+  const { error: progressItemError } = await admin.from("assessment_items").insert({
     id: progressAssessmentItemId,
     assessment_version_id: progressAssessmentVersionId,
     position: 1,
@@ -393,10 +397,15 @@ const { error: progressItemError } = await admin.from("assessment_items").upsert
     },
     answer_key: { optionId: "a" },
     rubric: null,
-  },
-  { onConflict: "id", ignoreDuplicates: true },
-);
-if (progressItemError) throw progressItemError;
+  });
+  if (progressItemError) throw progressItemError;
+
+  const { error: progressVersionPublishError } = await admin
+    .from("assessment_versions")
+    .update({ status: "PUBLISHED", published_at: inDays(-10) })
+    .eq("id", progressAssessmentVersionId);
+  if (progressVersionPublishError) throw progressVersionPublishError;
+}
 
 const { error: progressAttemptError } = await admin.from("assessment_attempts").insert({
   id: progressAssessmentAttemptId,
