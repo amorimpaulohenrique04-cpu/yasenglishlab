@@ -163,7 +163,9 @@ insert into public.materials (
   lesson_id,
   storage_path,
   required_entitlement_key,
-  active
+  active,
+  publication_status,
+  published_at
 )
 values (
   '81700000-0000-0000-0000-000000000001',
@@ -172,7 +174,9 @@ values (
   '42000000-0000-4000-8000-000000000001',
   'materials/rls-paid.pdf',
   'weekly_conversation_labs',
-  true
+  true,
+  'PUBLISHED',
+  now()
 )
 on conflict (id) do nothing;
 

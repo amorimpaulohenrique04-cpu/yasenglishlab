@@ -75,7 +75,7 @@ try {
 
   const runtimeEnv = {
     ...process.env,
-    APP_URL: "http://127.0.0.1:3000",
+    APP_URL: process.env.APP_URL ?? "http://127.0.0.1:3000",
     NEXT_PUBLIC_SUPABASE_URL: local.API_URL,
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publicKey,
     SUPABASE_SERVICE_ROLE_KEY: serviceKey,

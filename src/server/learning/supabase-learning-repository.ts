@@ -68,12 +68,14 @@ export class SupabaseLearningRepository implements LearningRepository {
           .select("id, slug, title, description")
           .in("id", courseIds)
           .eq("active", true)
+          .eq("publication_status", "PUBLISHED")
           .order("slug")
           .order("id"),
         this.client
           .from("modules")
           .select("id, course_id, position, title, description")
           .in("course_id", courseIds)
+          .eq("publication_status", "PUBLISHED")
           .order("position")
           .order("id"),
       ]);
@@ -88,6 +90,7 @@ export class SupabaseLearningRepository implements LearningRepository {
             .from("lessons")
             .select("id, module_id, position, slug, title, estimated_minutes")
             .in("module_id", moduleIds)
+            .eq("publication_status", "PUBLISHED")
             .order("position")
             .order("id");
 
@@ -163,6 +166,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       .select("content")
       .eq("lesson_id", lessonId)
       .eq("asset_type", "TEXT")
+      .eq("publication_status", "PUBLISHED")
       .order("position")
       .limit(1)
       .maybeSingle();

@@ -1,4 +1,9 @@
 export const PRIVILEGED_AUDIT_ACTIONS = {
+  CONTENT_CREATED: "content_created",
+  CONTENT_UPDATED: "content_updated",
+  CONTENT_PUBLISHED: "content_published",
+  CONTENT_UNPUBLISHED: "content_unpublished",
+  CONTENT_REORDERED: "content_reordered",
   ROLE_CHANGE: "role_change",
   ENTITLEMENT_CHANGE: "entitlement_change",
   MANUAL_SUBSCRIPTION_CHANGE: "manual_subscription_change",

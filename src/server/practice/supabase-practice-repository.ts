@@ -75,6 +75,7 @@ export class SupabasePracticeRepository implements PracticeRepository {
         "id, slug, title, skill, cefr_target, difficulty, estimated_minutes, related_module_id, related_lesson_id, content",
       )
       .eq("active", true)
+      .eq("publication_status", "PUBLISHED")
       .order("estimated_minutes")
       .order("slug");
 
@@ -164,6 +165,7 @@ export class SupabasePracticeRepository implements PracticeRepository {
           )
           .eq("id", attempt.practice_activity_id)
           .eq("active", true)
+          .eq("publication_status", "PUBLISHED")
           .maybeSingle(),
         this.client
           .from("practice_results")

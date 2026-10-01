@@ -2,6 +2,16 @@
 
 ## Active task
 
+**prompt-18-admin-content-v1**
+
+State: in_progress — product owner explicitly resolved the V1 publication decision; historical discovery below is preserved.
+
+Execution: inspect two read-only reports; principal owns migration/RLS/RPC/audit and final persistence review; delegate isolated Admin domain/server/UI and Student consumer/test changes with disjoint files; validate focused tests, real DB, Admin E2E/a11y then official gates once stable. Runtime allowlist is declared in the P18 goal. Workflow is separate DRAFT/PUBLISHED, Admin+AAL2 direct publication, unpublish-before-edit, no versions or review queues.
+
+Plan: two read-only investigations → principal synthesis → record the initial blocker → apply the explicit owner decision through the smallest migration, server/UI slice and focused tests. Investigation/synthesis completed. Runtime/schema work is authorized by ADR 0006 and the P18 goal. Previous P17 closure below is historical state.
+
+## Historical task
+
 **prompt-17-teacher-operations-v1**
 
 State: done — verified by Official CI #300; PR #21 remains open and unmerged.

@@ -7,6 +7,7 @@ const email = "canonical.student@example.test";
 const teacherEmail = "canonical.teacher@example.test";
 const teacherBEmail = "canonical.teacher-b@example.test";
 const teacherStudentEmail = "canonical.teacher-student@example.test";
+const adminEmail = "canonical.admin@example.test";
 const courseId = "40000000-0000-4000-8000-000000000001";
 const teacherId = "88000000-0000-4000-8000-000000000001";
 const teacherBId = "88000000-0000-4000-8000-000000000003";
@@ -15,6 +16,7 @@ const teacherOtherSessionId = "88200000-0000-4000-8000-000000000002";
 const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 const teacherOtherBookingId = "88300000-0000-4000-8000-000000000002";
 const subscriptionId = "88000000-0000-4000-8000-000000000002";
+const adminContentTestTitle = "Canonical E2E Module";
 const sessionIds = [
   "88100000-0000-4000-8000-000000000001",
   "88100000-0000-4000-8000-000000000002",
@@ -28,6 +30,18 @@ if (!url || !serviceRoleKey || !password) {
 const admin = createClient(url, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
+
+const { data: priorAdminContent, error: priorAdminContentError } = await admin
+  .from("modules")
+  .select("id")
+  .eq("course_id", courseId)
+  .eq("title", adminContentTestTitle)
+  .maybeSingle();
+if (priorAdminContentError) throw priorAdminContentError;
+if (priorAdminContent) {
+  const { error } = await admin.from("modules").delete().eq("id", priorAdminContent.id);
+  if (error) throw error;
+}
 
 const { data: listed, error: listError } = await admin.auth.admin.listUsers({
   page: 1,
@@ -61,9 +75,18 @@ const user = await ensureUser(email, "Ana Souza");
 const teacherUser = await ensureUser(teacherEmail, "Yasmin");
 const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
 const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
+const adminUser = await ensureUser(adminEmail, "Canonical Admin");
 const userId = user.id;
+const canonicalUserIds = [
+  user.id,
+  teacherUser.id,
+  teacherBUser.id,
+  teacherStudentUser.id,
+  adminUser.id,
+];
 
 const cleanup = [
+  admin.from("user_roles").delete().in("user_id", canonicalUserIds),
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("material_favorites").delete().eq("user_id", userId),
   admin.from("practice_attempts").delete().eq("user_id", userId),
@@ -94,6 +117,53 @@ const operations = [
   admin
     .from("user_roles")
     .upsert({ user_id: teacherStudentUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
+  admin
+    .from("user_roles")
+    .upsert({ user_id: adminUser.id, role: "ADMIN" }, { onConflict: "user_id,role" }),
+  admin
+    .from("courses")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .eq("id", courseId),
+  admin
+    .from("modules")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .eq("course_id", courseId),
+  admin
+    .from("lessons")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .in("id", [
+      "42000000-0000-4000-8000-000000000001",
+      "42000000-0000-4000-8000-000000000002",
+      "42000000-0000-4000-8000-000000000003",
+    ]),
+  admin
+    .from("lesson_assets")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .in("id", [
+      "43000000-0000-4000-8000-000000000001",
+      "43000000-0000-4000-8000-000000000002",
+      "43000000-0000-4000-8000-000000000003",
+    ]),
+  admin
+    .from("materials")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .in("id", [
+      "81710000-0000-4000-8000-000000000001",
+      "81710000-0000-4000-8000-000000000002",
+      "81710000-0000-4000-8000-000000000003",
+      "81710000-0000-4000-8000-000000000004",
+      "81710000-0000-4000-8000-000000000005",
+      "81710000-0000-4000-8000-000000000006",
+    ]),
+  admin
+    .from("practice_activities")
+    .update({ publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" })
+    .in("id", [
+      "83000000-0000-4000-8000-000000000001",
+      "83000000-0000-4000-8000-000000000002",
+      "83000000-0000-4000-8000-000000000003",
+      "83000000-0000-4000-8000-000000000004",
+    ]),
   admin
     .from("enrollments")
     .upsert(

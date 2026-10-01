@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
+import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
 const email = "canonical.student@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
@@ -167,5 +168,22 @@ test("Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A
   await page.keyboard.press("Tab");
   await expect(absent).toBeFocused();
 
+  await assertAxe(page);
+});
+
+test("Admin Content exposes keyboard navigation and WCAG A/AA compliance", async ({ page }) => {
+  if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+  await loginCanonicalAdmin(page, password);
+  await page.goto("/admin/content?kind=modules");
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Administração de conteúdo", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Módulos", exact: true })).toBeVisible();
+
+  const createModule = page.getByRole("button", { name: "Novo módulo" });
+  await createModule.focus();
+  await expect(createModule).toBeFocused();
   await assertAxe(page);
 });

@@ -25,3 +25,4 @@ Start new records from [TEMPLATE.md](./TEMPLATE.md). The required decision field
 - [0003 — Auth, RBAC and RLS](./0003-auth-rbac-rls.md)
 - [0004 — Provider-neutral observability boundary](./0004-provider-neutral-observability-boundary.md)
 - [0005 — Failure-to-guard engineering ratchet](./0005-engineering-ratchet.md)
+- [0006 — Admin Content V1 publication](./0006-admin-content-publication.md)

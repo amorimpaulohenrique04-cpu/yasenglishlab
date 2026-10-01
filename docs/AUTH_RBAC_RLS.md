@@ -25,6 +25,7 @@ O root `proxy.ts` renova a sessão e usa `auth.getClaims()` para verificar ident
 - **TEACHER:** sessões próprias e somente alunos com uma `teacher_student_assignment` ativa.
 - **SUPPORT:** contexto mínimo de atendimento e assinatura; não recebe histórico pedagógico por padrão nem payload privilegiado de billing.
 - **ADMIN:** operações administrativas explícitas e auditáveis.
+- Admin Content uses ADMIN+AAL2 at both server and authenticated Postgres RPC boundaries. Direct authenticated content DML remains denied. Only ADMIN+AAL2 may preview drafts; Teacher/Support have no editorial grant. Student RLS and consumption RPCs enforce published ancestors plus existing enrollment/entitlement/availability. See [ADMIN_CONTENT.md](./ADMIN_CONTENT.md).
 
 Roles são lidas de `public.user_roles` no servidor. `user_metadata`, query string, formulário e JavaScript do browser nunca são autoridade para role.
 

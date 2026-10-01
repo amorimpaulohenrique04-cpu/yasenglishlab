@@ -1,5 +1,7 @@
 # Architecture
 
+Admin Content V1 follows UI → application/domain/ports → server-only authenticated adapter → narrow Postgres RPCs. It edits the same Student content entities; publication/RLS/audit are durable database boundaries. See [ADMIN_CONTENT.md](./ADMIN_CONTENT.md) and ADR 0006.
+
 ## Propósito
 Registrar fronteiras arquiteturais conhecidas sem transformar decisões provisórias em dogma.
 
