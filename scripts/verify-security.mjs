@@ -10,6 +10,9 @@ const signedUrlService = read("src/server/assets/signed-url.ts");
 const bookingService = read("src/server/live/book-session.ts");
 const scheduleBookingService = read("src/server/schedule/schedule.ts");
 const agendaMigration = read("supabase/migrations/20261001005500_agenda_v1_booking.sql");
+const teacherOperationsService = read("src/server/teacher-operations/teacher-operations.ts");
+const teacherMigration = read("supabase/migrations/20261001030000_teacher_operations_v1.sql");
+const teacherEvidence = read("supabase/tests/teacher_operations.sql");
 const observabilityPrivacy = read("src/server/observability/privacy.ts");
 const observabilityMigration = read(
   "supabase/migrations/20260929233000_observability_analytics_audit.sql",
@@ -60,6 +63,34 @@ assert(
     !agendaMigration.includes("book_live_session(p_live_session_id uuid, p_user_id"),
   "Booking identity must come from verified server auth plus PostgreSQL auth.uid(), never client input or service role.",
 );
+assert(
+  teacherOperationsService.includes('requirePageRole("TEACHER")') &&
+    teacherOperationsService.includes('assertRole("TEACHER")') &&
+    teacherMigration.includes("private.has_role('TEACHER', true)") &&
+    teacherMigration.includes("current_user_id uuid := auth.uid()") &&
+    teacherMigration.includes("where s.teacher_id = current_teacher_id") &&
+    teacherMigration.includes("where s.id = p_live_session_id") &&
+    teacherMigration.includes("t.user_id = current_user_id") &&
+    teacherMigration.includes("p_status not in ('ATTENDED', 'NO_SHOW')") &&
+    teacherMigration.includes("'attendance_marked'") &&
+    !teacherMigration.includes("p_teacher_user_id") &&
+    !teacherMigration.includes("p_marked_by_user_id"),
+  "Teacher Operations must enforce TEACHER+AAL2, derive identity from auth.uid() and keep attendance/audit teacher-scoped.",
+);
+for (const token of [
+  "STUDENT must not access Teacher Operations",
+  "SUPPORT without TEACHER must not access Teacher Operations",
+  "ADMIN without TEACHER must not access Teacher Operations",
+  "TEACHER at AAL1 must not access Teacher Operations",
+  "Teacher A read model leaked Teacher B session",
+  "Teacher A must not read Teacher B roster",
+  "Authenticated must not gain direct attendance DML",
+  "marked_by_user_id must derive from authenticated Teacher",
+  "Multi-role TEACHER + ADMIN must remain Teacher-scoped",
+  "Attendance audit contains forbidden PII/secret categories",
+]) {
+  assert(teacherEvidence.includes(token), "Teacher security evidence is missing: " + token);
+}
 assert(
   signedUrlService.includes('.select("id")') &&
     signedUrlService.includes('.select("storage_path")') &&
