@@ -1,10 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
-import {
-  canonicalTeacherSessionId,
-  loginCanonicalTeacher,
-} from "../helpers/teacher-mfa";
+import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
 const email = "canonical.student@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
@@ -150,7 +147,6 @@ test("Agenda exposes booking states, disabled eligibility and WCAG A/AA complian
 
   await assertAxe(page);
 });
-
 
 test("Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A/AA compliance", async ({
   page,
