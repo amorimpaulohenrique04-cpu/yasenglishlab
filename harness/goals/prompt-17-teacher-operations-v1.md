@@ -80,6 +80,7 @@ When necessary:
 - `docs/DATA_MODEL.md`
 - `docs/OPEN_QUESTIONS.md`
 - `harness/**`
+- `.github/workflows/foundation-verify.yml` — temporary format-only diagnostic: print the canonical pinned-Prettier patch after the observed `format:check` failure; remove it before final verification and never treat it as passing evidence.
 
 Any file outside this list requires a justification recorded in this GOAL before modification.
 
