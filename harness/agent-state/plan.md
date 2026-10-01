@@ -2,39 +2,33 @@
 
 ## Active task
 
-**prompt-18-admin-content-v1**
+**prompt-19-assessment-engine-v1**
 
-State: in_progress — product owner explicitly resolved the V1 publication decision; historical discovery below is preserved.
+State: in_progress — discovery complete; implementation and verification pending.
 
-Execution: inspect two read-only reports; principal owns migration/RLS/RPC/audit and final persistence review; delegate isolated Admin domain/server/UI and Student consumer/test changes with disjoint files; validate focused tests, real DB, Admin E2E/a11y then official gates once stable. Runtime allowlist is declared in the P18 goal. Workflow is separate DRAFT/PUBLISHED, Admin+AAL2 direct publication, unpublish-before-edit, no versions or review queues.
-
-Plan: two read-only investigations → principal synthesis → record the initial blocker → apply the explicit owner decision through the smallest migration, server/UI slice and focused tests. Investigation/synthesis completed. Runtime/schema work is authorized by ADR 0006 and the P18 goal. Previous P17 closure below is historical state.
-
-## Historical task
-
-**prompt-17-teacher-operations-v1**
-
-State: done — verified by Official CI #300; PR #21 remains open and unmerged.
-
-Baseline: `main` at `a77386df147805f8ecd236f63657c90d251b3c63`.  
-Branch: `feat/teacher-operations-v1`.
+Baseline: `main@af0857d79345db9ed02f8624868c6b061cc71d0f`.  
+Branch: `feat/p19-assessment-engine-v1`.
 
 ### Objective
 
-Deliver Teacher Operations V1 with strict TEACHER + AAL2 entry, explicit teacher-scoped session/roster read models, authorized ATTENDED/NO_SHOW mutation, and durable auditability without expanding Teacher into Admin/Support/commercial capabilities.
+Deliver the existing Assessment domain as a secure, immutable-version, retry-safe engine. Preserve all open pedagogical decisions and keep CEFR interpretation absent from V1.
 
 ### Small plan
 
-1. Inspect the existing Live schema, auth/RLS helpers, audit contracts, Agenda V1 vertical-slice patterns and canonical test/CI wiring.
-2. Add the smallest append-only DB boundary required for teacher-scoped session/roster reads and atomic attendance + audit mutation, deriving identity from `auth.uid()`.
-3. Implement a dedicated Teacher application/domain/server slice and `/teacher` UI using existing Design System primitives and current Next.js patterns.
-4. Add deterministic fixtures plus unit/integration/DB-RLS/E2E/a11y/visual coverage, including cross-teacher and MFA negative paths.
-5. Run/inspect Official CI, correct only root causes, then persist evidence and mark the registry done/verified only after every required gate is green.
+1. Reuse the existing Assessment tables/triggers and Practice V1 layering; do not create parallel result/version tables.
+2. Add the smallest append-only migration for start idempotency, version freeze, narrow safe Student read columns and authenticated lifecycle RPCs.
+3. Implement `src/modules/assessments/**` and `src/server/assessments/**` with explicit objective/manual item contracts, ProductAnalyticsPort integration and no UI route.
+4. Add unit/application and real PostgreSQL/RLS tests covering retries, ownership, cross-version rejection, answer-key secrecy, historical immutability, pending/manual and CEFR-null invariants.
+5. Wire the Assessment SQL proof into existing DB/RLS runners, open a PR, inspect every Official CI job, correct root causes only, then persist verification evidence. Do not merge.
 
 ### Declared scope
 
-Teacher Operations only: own sessions, minimum roster, ATTENDED/NO_SHOW and audit. No Admin CMS, authoring, billing, assignment management, availability CRUD, cancellation/rescheduling, credit/no-show policy, meeting provider or unrelated Practice/CEFR changes.
+Assessment Engine only. No Progress dashboard, Assessment Authoring/CMS, new analytics provider, standard-setting/cut-score policy, retake policy or automatic Speaking/Pronunciation scoring.
 
-### Closure
+### Known security gap being closed
 
-Teacher Operations V1 passed Official CI run `36816618361` with every mandatory gate green. Persistence/audit and responsive visual artifacts were inspected. Durable evidence is under `harness/evidence/prompt-17-teacher-operations-v1/`. No merge to `main` was performed.
+Current historical grants give `authenticated` table-wide SELECT on `assessment_versions` and `assessment_items`, exposing fields that include scoring configuration and answer keys whenever row RLS allows access. P19 will replace those grants with safe column-level reads and keep scoring server-side.
+
+## Previous active task state
+
+P18 remains independently recorded as `in_progress / verified:false` in the registry. P19 does not mark P18 done and does not alter its unresolved verification history.
