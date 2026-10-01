@@ -45,20 +45,7 @@ function totp(secret: string, now = Date.now()): string {
 }
 
 async function resolveTotpSecret(page: Page): Promise<string> {
-  const codeInput = page.getByLabel("Código do autenticador");
-  const preparationError = page.getByText(
-    "Não foi possível preparar a verificação em duas etapas.",
-  );
-
-  await Promise.race([
-    codeInput.waitFor({ state: "visible", timeout: 15_000 }),
-    preparationError.waitFor({ state: "visible", timeout: 15_000 }).then(() => {
-      throw new Error(
-        "Canonical Teacher MFA preparation failed in the real browser flow.",
-      );
-    }),
-  ]);
-
+  await page.getByLabel("Código do autenticador").waitFor();
   const manualSecret = page.locator(".yas-mfa-secret");
 
   if (await manualSecret.isVisible()) {
