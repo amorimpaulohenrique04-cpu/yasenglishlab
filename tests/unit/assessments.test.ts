@@ -6,9 +6,7 @@ import {
   type AssessmentItemForEvaluation,
 } from "@/modules/assessments";
 
-function item(
-  overrides: Partial<AssessmentItemForEvaluation> = {},
-): AssessmentItemForEvaluation {
+function item(overrides: Partial<AssessmentItemForEvaluation> = {}): AssessmentItemForEvaluation {
   return {
     id: "87000000-0000-4000-8000-000000000001",
     position: 1,
@@ -133,10 +131,7 @@ describe("assessment domain", () => {
         provenance: {
           engine: "assessment-engine-v1",
           formula: "sum_binary_item_scores",
-          itemIds: [
-            "87000000-0000-4000-8000-000000000001",
-            "87000000-0000-4000-8000-000000000002",
-          ],
+          itemIds: ["87000000-0000-4000-8000-000000000001", "87000000-0000-4000-8000-000000000002"],
         },
       },
     ]);
