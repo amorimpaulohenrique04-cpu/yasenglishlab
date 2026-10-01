@@ -97,7 +97,7 @@ const operations = [
       {
         id: subscriptionId,
         user_id: userId,
-        plan_id: "10000000-0000-0000-0000-000000000003",
+        plan_id: "10000000-0000-0000-0000-000000000002",
         provider: "test",
         provider_subscription_id: "canonical_e2e",
         status: "ACTIVE",
