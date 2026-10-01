@@ -459,8 +459,7 @@ do $$
 declare
   audit_count integer;
   bad_audit_count integer;
-  latest_actor uuid;
-  latest_data jsonb;
+  expected_transition_count integer;
 begin
   select count(*) into audit_count
   from public.audit_logs
@@ -471,21 +470,20 @@ begin
     raise exception 'Attendance INSERT/retry/correction must create durable audit facts';
   end if;
 
-  select actor_user_id, data
-    into latest_actor, latest_data
-  from public.audit_logs
-  where action = 'attendance_marked'
-    and data ->> 'session_booking_id' = '89500000-0000-4000-8000-000000000001'
-  order by occurred_at desc, id desc
-  limit 1;
+  select count(*) into expected_transition_count
+  from public.audit_logs l
+  join public.attendance a
+    on a.id = l.entity_id
+  where l.action = 'attendance_marked'
+    and l.actor_user_id = '89000000-0000-0000-0000-000000000001'::uuid
+    and a.session_booking_id = '89500000-0000-4000-8000-000000000001'
+    and l.data ->> 'live_session_id' = '89400000-0000-4000-8000-000000000001'
+    and l.data ->> 'session_booking_id' = '89500000-0000-4000-8000-000000000001'
+    and l.data ->> 'previous_status' = 'ATTENDED'
+    and l.data ->> 'new_status' = 'NO_SHOW';
 
-  if latest_actor <> '89000000-0000-0000-0000-000000000001'::uuid then
-    raise exception 'Attendance audit actor must derive from authenticated Teacher';
-  end if;
-
-  if latest_data ->> 'live_session_id' <> '89400000-0000-4000-8000-000000000001'
-    or latest_data ->> 'new_status' <> 'NO_SHOW' then
-    raise exception 'Attendance audit must identify session, booking and final state';
+  if expected_transition_count <> 1 then
+    raise exception 'Attendance audit must identify actor, attendance, session, booking and ATTENDED to NO_SHOW transition';
   end if;
 
   select count(*) into bad_audit_count
