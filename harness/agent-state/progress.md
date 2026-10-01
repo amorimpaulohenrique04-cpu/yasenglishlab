@@ -258,7 +258,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Synchronized Live/Auth/Audit/Data Model/Open Questions contracts.
 - Current state: implementation complete enough for Official CI; feature remains `in_progress` / `verified: false` until all mandatory gates are inspected green.
 
-
 ## 2026-10-01 — prompt-17 Teacher MFA verification correction
 
 - Official CI #282 / run `36810184169` passed Supply Chain, Quality, Database and Guardrail Simulations. Preview also passed the real database integration and RLS steps, proving the prior Teacher audit/DB assertion failure was corrected.
