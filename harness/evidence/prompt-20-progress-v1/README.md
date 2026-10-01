@@ -36,7 +36,7 @@ The implementation candidate
 `5f4ea8ccdad9cb394ba17d55b39fc60bc464d024` passed the mandatory gates:
 
 - `npm run verify:agent`: PASS in run
-  https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36940521369
+  https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36940587065
 - `npm run verify:security`: PASS as part of `verify:agent`.
 - `npm run verify:ui`: PASS in run
   https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36940763408
