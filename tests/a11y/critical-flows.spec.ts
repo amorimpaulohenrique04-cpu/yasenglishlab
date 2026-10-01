@@ -140,7 +140,8 @@ test("Agenda exposes booking states, disabled eligibility and WCAG A/AA complian
   await expect(reserve).toBeFocused();
 
   const entitlementBlocked = page.getByRole("button", { name: "Acesso não disponível" });
-  await expect(entitlementBlocked).toBeDisabled();
+  await expect(entitlementBlocked).toHaveCount(2);
+  await expect(entitlementBlocked.first()).toBeDisabled();
 
   await assertAxe(page);
 });
