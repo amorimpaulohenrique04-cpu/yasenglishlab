@@ -6,6 +6,7 @@ const password = process.env.CANONICAL_E2E_PASSWORD;
 const email = "canonical.student@example.test";
 const teacherEmail = "canonical.teacher@example.test";
 const teacherBEmail = "canonical.teacher-b@example.test";
+const teacherStudentEmail = "canonical.teacher-student@example.test";
 const courseId = "40000000-0000-4000-8000-000000000001";
 const teacherId = "88000000-0000-4000-8000-000000000001";
 const teacherBId = "88000000-0000-4000-8000-000000000003";
@@ -59,6 +60,7 @@ async function ensureUser(userEmail, displayName) {
 const user = await ensureUser(email, "Ana Souza");
 const teacherUser = await ensureUser(teacherEmail, "Yasmin");
 const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
+const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
 const userId = user.id;
 
 const cleanup = [
@@ -89,6 +91,9 @@ const operations = [
   admin
     .from("user_roles")
     .upsert({ user_id: teacherBUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),
+  admin
+    .from("user_roles")
+    .upsert({ user_id: teacherStudentUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
   admin
     .from("enrollments")
     .upsert(
@@ -208,14 +213,14 @@ const { error: teacherBookingError } = await admin.from("session_bookings").upse
     {
       id: teacherOpsBookingId,
       live_session_id: teacherOpsSessionId,
-      user_id: userId,
+      user_id: teacherStudentUser.id,
       status: "BOOKED",
       cancelled_at: null,
     },
     {
       id: teacherOtherBookingId,
       live_session_id: teacherOtherSessionId,
-      user_id: userId,
+      user_id: teacherStudentUser.id,
       status: "BOOKED",
       cancelled_at: null,
     },
