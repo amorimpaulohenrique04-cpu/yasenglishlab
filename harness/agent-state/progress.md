@@ -299,7 +299,6 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Confirmed no Assessment user-facing route/UX is contracted in the current repository, so P19 will not invent Progress/Assessment UI.
 - Standard setting/cut scores, retake policy, Speaking/Pronunciation evaluation and Assessment Authoring remain explicitly open. Registry is `in_progress / verified:false`; no verification PASS has been claimed.
 
-
 ## 2026-10-01 — prompt-19 Assessment Engine V1 closure
 
 - Implemented the Assessment lifecycle on `feat/p19-assessment-engine-v1` without adding a user-facing Assessment/Progress UI or inventing unresolved pedagogical policy.
