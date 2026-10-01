@@ -164,3 +164,16 @@ Teacher Operations não cria novas entidades. Reutiliza:
 - `teacher_student_assignments` como autoridade separada para contexto pedagógico amplo.
 
 A migration Teacher V1 adiciona apenas read models/command RPC e audit trigger. Não adiciona grants de DML em `attendance`, não abre `profiles` globalmente e não altera a semântica de booking.
+
+## Assessment Engine V1 — execução
+
+A cadeia existente `Assessment → AssessmentVersion → AssessmentItem → AssessmentAttempt → AssessmentResponse → SkillScore` permanece a source of truth. P19 não adiciona tabelas paralelas.
+
+- `assessment_attempts.idempotency_key` torna o start retry-safe por Student.
+- `assessment_version_id` do Attempt passa a ser identidade imutável após criação.
+- respostas continuam vinculadas ao item da mesma versão e só podem mudar enquanto o Attempt está `IN_PROGRESS`;
+- conclusão objetiva persiste `SkillScore` por habilidade somente quando há score determinístico;
+- habilidades pendentes não recebem `SkillScore` artificial;
+- `SUBMITTED` representa tentativa encerrada pelo Student com avaliação manual ainda pendente;
+- `SCORED` só é usado quando todos os itens da versão têm métrica suportada;
+- CEFR permanece separado: `result_cefr` e `cefr_level` ficam `NULL` no V1.
