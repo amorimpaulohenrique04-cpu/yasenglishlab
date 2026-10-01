@@ -5,6 +5,7 @@ const suites = {
   integration: [
     "supabase/tests/domain_invariants.sql",
     "supabase/tests/vertical_slice_persistence.sql",
+    "supabase/tests/practice_persistence.sql",
   ],
   rls: ["supabase/tests/rls_permissions.sql"],
 };

@@ -55,6 +55,7 @@ const operations = [
     ),
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("material_favorites").delete().eq("user_id", userId),
+  admin.from("practice_attempts").delete().eq("user_id", userId),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
 ];
 

@@ -10,6 +10,7 @@ import { Avatar, Drawer, IconButton } from "@/components/ui";
 const navigation = [
   { id: "home", label: "Início", href: "/home" },
   { id: "lessons", label: "Aulas", href: "/aulas" },
+  { id: "practice", label: "Prática", href: "/pratica" },
   { id: "materials", label: "Materiais", href: "/materiais" },
 ] as const;
 
@@ -61,8 +62,25 @@ function MaterialsIcon() {
   );
 }
 
+function PracticeIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M4 13v-2a8 8 0 0 1 16 0v2" />
+      <path d="M4 13h3v6H5a1 1 0 0 1-1-1zM20 13h-3v6h2a1 1 0 0 0 1-1z" />
+    </svg>
+  );
+}
+
 function navigationIcon(id: (typeof navigation)[number]["id"]) {
   if (id === "home") return <HomeIcon />;
+  if (id === "practice") return <PracticeIcon />;
   if (id === "materials") return <MaterialsIcon />;
   return <LessonsIcon />;
 }

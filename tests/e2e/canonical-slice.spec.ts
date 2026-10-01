@@ -17,7 +17,7 @@ async function captureEvidence(page: Page, filename: string): Promise<void> {
 
 test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
-  test.setTimeout(60_000);
+  test.setTimeout(120_000);
 
   test("login → progress → logout → login → persisted resume", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
@@ -42,6 +42,25 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Materiais do curso" })).toBeVisible();
     await captureEvidence(page, "materiais-desktop.png");
+
+    await page.goto("/pratica");
+    await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Escolha uma habilidade" })).toBeVisible();
+    await expect(page.getByText("Ainda sem conteúdo")).toBeVisible();
+    await captureEvidence(page, "pratica-desktop.png");
+
+    await page.getByRole("button", { name: "Começar prática →" }).click();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Vocabulário para apresentações" }),
+    ).toBeVisible();
+    await page.getByRole("radio", { name: "meet", exact: true }).check();
+    await page.getByRole("button", { name: "Concluir prática" }).click();
+    await expect(page.getByText(/Nice to meet you é a expressão/)).toBeVisible();
+    await expect(
+      page.getByText(/não altera seu progresso no curso nem define proficiência CEFR/),
+    ).toBeVisible();
+    await captureEvidence(page, "pratica-resultado-desktop.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -49,7 +68,8 @@ test.describe("canonical learning vertical slice", () => {
     await captureEvidence(page, "module-desktop.png");
 
     await page.getByRole("link", { name: "Abrir aula →" }).first().click();
-    await expect(page.getByRole("heading", { name: "Welcome to Yas" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
+    await page.waitForLoadState("networkidle");
     await captureEvidence(page, "lesson-desktop.png");
 
     const progress = page.getByRole("progressbar", { name: "Conclusão da aula" });
@@ -87,6 +107,7 @@ test.describe("canonical learning vertical slice", () => {
     await page
       .getByRole("link", { name: /Próxima aula: Introductions that sound natural/ })
       .click();
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Concluir aula" }).click();
     await expect(page.getByRole("progressbar", { name: "Conclusão da aula" })).toHaveAttribute(
       "aria-valuenow",
@@ -94,6 +115,7 @@ test.describe("canonical learning vertical slice", () => {
     );
 
     await page.getByRole("link", { name: /Próxima aula: Build your first conversation/ }).click();
+    await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Concluir aula" }).click();
     await expect(page.getByRole("progressbar", { name: "Conclusão da aula" })).toHaveAttribute(
       "aria-valuenow",
@@ -118,6 +140,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Materiais do curso" })).toBeVisible();
     await captureEvidence(page, "materiais-tablet.png");
+
+    await page.goto("/pratica");
+    await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
+    await captureEvidence(page, "pratica-tablet.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -138,6 +165,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Materiais do curso" })).toBeVisible();
     await captureEvidence(page, "materiais-mobile.png");
+
+    await page.goto("/pratica");
+    await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
+    await captureEvidence(page, "pratica-mobile.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();

@@ -236,3 +236,98 @@ on conflict (id) do update set
   active = excluded.active,
   required_entitlement_key = excluded.required_entitlement_key;
 
+-- P15 Practice content. CEFR targets are context only and never a learner result.
+-- Listening remains absent until an approved audio asset is available.
+insert into public.practice_activities (
+  id,
+  slug,
+  title,
+  skill,
+  cefr_target,
+  difficulty,
+  estimated_minutes,
+  related_module_id,
+  related_lesson_id,
+  content,
+  active
+)
+values
+  (
+    '83000000-0000-4000-8000-000000000001',
+    'natural-introductions-vocabulary',
+    'Vocabulário para apresentações',
+    'VOCABULARY',
+    'A1',
+    'FOUNDATION',
+    5,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    '{"kind":"MULTIPLE_CHOICE","evaluationMode":"DETERMINISTIC","prompt":"Qual expressão completa naturalmente: Nice to ___ you.","options":[{"id":"meet","label":"meet"},{"id":"meeting","label":"meeting"},{"id":"met","label":"met"}]}'::jsonb,
+    true
+  ),
+  (
+    '83000000-0000-4000-8000-000000000002',
+    'present-simple-introductions',
+    'Present simple em contexto',
+    'GRAMMAR',
+    'A1',
+    'FOUNDATION',
+    6,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    '{"kind":"MULTIPLE_CHOICE","evaluationMode":"DETERMINISTIC","prompt":"Escolha a frase correta para falar sobre rotina.","options":[{"id":"work","label":"I work from home on Fridays."},{"id":"works","label":"I works from home on Fridays."},{"id":"working","label":"I working from home on Fridays."}]}'::jsonb,
+    true
+  ),
+  (
+    '83000000-0000-4000-8000-000000000003',
+    'two-minute-introduction',
+    'Apresentação em dois minutos',
+    'SPEAKING',
+    'A1',
+    'FOUNDATION',
+    5,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    '{"kind":"MANUAL_TEXT","evaluationMode":"MANUAL_PENDING","prompt":"Prepare uma apresentação curta com seu nome, sua cidade e algo que você gosta.","instructions":"Registre o roteiro que você praticou. Nenhum score automático será criado."}'::jsonb,
+    true
+  ),
+  (
+    '83000000-0000-4000-8000-000000000004',
+    'introduction-word-stress',
+    'Ritmo de uma apresentação',
+    'PRONUNCIATION',
+    'A1',
+    'FOUNDATION',
+    4,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000002',
+    '{"kind":"MANUAL_TEXT","evaluationMode":"MANUAL_PENDING","prompt":"Pratique três vezes: My name is Ana and I live in São Paulo.","instructions":"Marque no texto as palavras que você enfatizou. A avaliação automática de pronúncia não está habilitada."}'::jsonb,
+    true
+  )
+on conflict (id) do update set
+  slug = excluded.slug,
+  title = excluded.title,
+  skill = excluded.skill,
+  cefr_target = excluded.cefr_target,
+  difficulty = excluded.difficulty,
+  estimated_minutes = excluded.estimated_minutes,
+  related_module_id = excluded.related_module_id,
+  related_lesson_id = excluded.related_lesson_id,
+  content = excluded.content,
+  active = excluded.active;
+
+insert into private.practice_answer_keys (practice_activity_id, answer_key, feedback)
+values
+  (
+    '83000000-0000-4000-8000-000000000001',
+    '{"optionId":"meet"}'::jsonb,
+    '{"correct":"Correto: Nice to meet you é a expressão usada ao conhecer alguém.","incorrect":"A forma correta é meet: Nice to meet you."}'::jsonb
+  ),
+  (
+    '83000000-0000-4000-8000-000000000002',
+    '{"optionId":"work"}'::jsonb,
+    '{"correct":"Correto: com I, usamos work no present simple.","incorrect":"Com I, use a forma base: I work from home on Fridays."}'::jsonb
+  )
+on conflict (practice_activity_id) do update set
+  answer_key = excluded.answer_key,
+  feedback = excluded.feedback;

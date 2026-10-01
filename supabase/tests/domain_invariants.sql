@@ -60,22 +60,24 @@ values (
 )
 on conflict (id) do nothing;
 
-insert into public.session_bookings (id, live_session_id, user_id)
+insert into public.session_bookings (id, live_session_id, user_id, booked_at)
 values (
   '94000000-0000-0000-0000-000000000001',
   '93000000-0000-0000-0000-000000000001',
-  '90000000-0000-0000-0000-000000000001'
+  '90000000-0000-0000-0000-000000000001',
+  '2026-09-29T00:00:00Z'
 )
 on conflict (id) do nothing;
 
 do $$
 begin
   begin
-    insert into public.session_bookings (id, live_session_id, user_id)
+    insert into public.session_bookings (id, live_session_id, user_id, booked_at)
     values (
       '94000000-0000-0000-0000-000000000002',
       '93000000-0000-0000-0000-000000000001',
-      '90000000-0000-0000-0000-000000000002'
+      '90000000-0000-0000-0000-000000000002',
+      '2026-09-29T00:00:00Z'
     );
     raise exception 'expected capacity guard to reject overbooking';
   exception

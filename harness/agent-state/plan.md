@@ -2,23 +2,22 @@
 
 ## Active task
 
-**pre-p15-architecture-governance-gate**
+**prompt-15-practice-engine-v1**
 
-State: complete — ready for final CI and merge.
+State: in progress — implementation and verification pending.
 
 ### Objective
 
-Close the pre-P15 documentation/Harness inconsistencies and prove the real repository-governance state without changing product behavior or starting P15.
+Deliver deterministic Practice V1 with a domain-owned catalog/recommendation rule, idempotent attempt/response/result persistence, owner-only access, objective feedback for answer-key activities, explicit pending/manual boundaries for Speaking/Pronunciation, analytics and the approved Practice UI.
 
-### Result
+### Small plan
 
-- Operational roadmap normalized to P00–P26 with the previous P0–P19 sequence explicitly superseded.
-- `windows-local-tooling` reconciled to `done` / `verified: true` using the later PRE-P13 clean-room `verify:full` evidence while preserving original failure history.
-- Registry dependency audit reduced from one contradiction to none.
-- P02–P14 remain closed and no P15 feature/GOAL was created.
-- Repository operator activated ruleset `Yas` (24223415); independent re-audit proves it targets the default branch, has no bypass, requires PR + resolved conversations + strict up-to-date `CI Gate`, and blocks deletion/non-fast-forward updates.
-- `main` now reports `protected: true`.
+1. Refine Practice domain contracts and implement deterministic catalog, recommendation and evaluation policies behind ports.
+2. Add an append-only migration/RPC boundary for idempotent attempts, responses and results, with owner-only RLS and analytics idempotency.
+3. Seed only contracted content, then implement server adapters/actions and `/pratica` states using existing primitives.
+4. Add unit, integration, DB/RLS, E2E, accessibility and visual coverage; run every applicable official gate.
+5. Inspect evidence, update docs/progress/registry, and mark done only if all required checks are green.
 
-### Verification requirement
+### Declared scope
 
-The closure head created by this state update must pass Official CI before PR #18 is merged. P15 remains unstarted until explicitly requested.
+Practice route/module/server adapter, a single Practice migration and seed additions, Practice tests/evidence/docs, and the student navigation entry. CEFR assessment, course progress and any invented Speaking/Pronunciation scoring are forbidden.

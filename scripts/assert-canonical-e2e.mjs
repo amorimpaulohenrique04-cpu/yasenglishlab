@@ -61,6 +61,8 @@ for (const [event, minimum] of [
   ["lesson_completed", 1],
   ["material_opened", 1],
   ["material_favorited", 1],
+  ["practice_started", 1],
+  ["practice_completed", 1],
 ]) {
   if ((counts.get(event) ?? 0) < minimum) {
     throw new Error(`Expected at least ${minimum} ${event} event(s).`);
@@ -71,6 +73,8 @@ for (const [event, exact] of [
   ["lesson_started", 3],
   ["lesson_completed", 3],
   ["module_completed", 1],
+  ["practice_started", 1],
+  ["practice_completed", 1],
 ]) {
   if ((counts.get(event) ?? 0) !== exact) {
     throw new Error(`Expected exactly ${exact} retry-safe ${event} event(s).`);
