@@ -51,6 +51,18 @@ Regras principais:
 - AuditLog: apenas ADMIN AAL2 para leitura.
 - Notification/favorite: ownership pelo `auth.uid()`.
 
+## Teacher Operations V1
+
+A área `/teacher` usa `requirePageRole("TEACHER")`; comandos usam `assertRole("TEACHER")`. Ambos preservam a exigência global de MFA para staff.
+
+No banco, `get_teacher_sessions()`, `get_teacher_session_roster(uuid)` e `mark_teacher_attendance(uuid,text)` repetem o boundary: `auth.uid()` não nulo, `private.has_role('TEACHER', true)`, professor ativo e sessão pertencente a esse professor. Nenhuma função recebe teacher/actor como parâmetro.
+
+Isso é intencionalmente mais restrito que policies genéricas de `live_sessions` / `session_bookings`: uma conta TEACHER + ADMIN continua vendo somente o escopo do professor quando usa Teacher Operations.
+
+O roster usa um read model mínimo SECURITY DEFINER para obter apenas o nome de exibição dos participantes da própria sessão sem ampliar `profiles_staff_select`. O acesso pedagógico amplo continua em `private.is_teacher_assigned()` / `private.can_view_student()`.
+
+`authenticated` continua sem INSERT/UPDATE direto em `attendance`. A mutação autorizada aceita apenas ATTENDED/NO_SHOW para booking BOOKED da própria sessão.
+
 ## Mutações críticas
 
 O papel `authenticated` **não possui DML direto** para:
