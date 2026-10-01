@@ -53,12 +53,17 @@ test.describe("Teacher Operations V1", () => {
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Teacher Ops Student" })).toBeVisible();
 
+    const participant = page.getByRole("listitem").filter({
+      has: page.getByRole("heading", { name: "Teacher Ops Student" }),
+    });
+    const attendedBadge = participant.locator(".yas-badge").filter({ hasText: "Presente" });
+
     await page.getByRole("button", { name: "Marcar Teacher Ops Student como Presente" }).click();
     await expect(page.getByText("Presença atualizada")).toBeVisible();
-    await expect(page.getByText("Presente", { exact: true })).toBeVisible();
+    await expect(attendedBadge).toBeVisible();
 
     await page.reload();
-    await expect(page.getByText("Presente", { exact: true })).toBeVisible();
+    await expect(attendedBadge).toBeVisible();
 
     await page.setViewportSize({ width: 834, height: 1112 });
     await captureEvidence(page, "teacher-tablet.png");
