@@ -36,6 +36,7 @@ test("login, home and aulas match golden baselines", async ({ page }) => {
 
   await page.goto("/progresso");
   await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+  await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
   await stabilize(page);
   await page.addStyleTag({
     content: ".yas-progress-timeline time { visibility: hidden !important; }",
