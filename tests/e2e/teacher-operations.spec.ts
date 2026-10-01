@@ -21,6 +21,18 @@ test.describe("Teacher Operations V1", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
+  test("Student cannot enter the Teacher area", async ({ page }) => {
+    if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+    await page.goto("/login?next=%2Fteacher");
+    await page.getByLabel("E-mail").fill("canonical.student@example.test");
+    await page.getByLabel("Senha").fill(password);
+    await page.getByRole("button", { name: "Entrar" }).click();
+
+    await expect(page).toHaveURL(/\/profile\?auth=forbidden$/);
+    await expect(page.getByRole("heading", { name: "Suas sessões" })).toHaveCount(0);
+  });
+
   test("AAL1 → MFA → own session → attendance persists; foreign session stays unavailable", async ({
     page,
   }) => {
