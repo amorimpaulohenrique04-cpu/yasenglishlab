@@ -211,3 +211,22 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Deletion and force-push style updates are blocked, with no bypass configured.
 - PRE-P15 is done and verified. P15 has not started.
 - The closure head must pass Official CI before merge.
+
+
+## 2026-09-30 — prompt-15-practice-engine-v1 reconciliation
+
+- Revalidated the stale P15 Harness state before P16.
+- PR #19 is merged into `main` at `1dfe816ee1df811c313c27710c2fed24d3ddfbf1`.
+- Official CI run `36796533133` / run number 223 for implementation head `f10fdfd33ba8d31679b511a81a51cee3b1e1b086` completed successfully.
+- Inspected jobs: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`; Preview includes Critical E2E, persistence/analytics, accessibility and visual gates.
+- Added durable P15 reconciliation evidence without claiming any unobserved local command, then moved P15 to `done / verified:true`.
+
+## 2026-09-30 — prompt-16-agenda-v1
+
+- Started from current `main` merge commit `1dfe816ee1df811c313c27710c2fed24d3ddfbf1` on branch `feat/agenda-v1`.
+- Read Product, Live, Billing, data, architecture, auth/RLS, security, UI, Design System, accessibility, analytics, observability, testing, Definition of Done, open questions and Agenda reference contracts.
+- Inspected the approved Agenda screenshot directly and preserved behavior/security precedence over its broader calendar/event affordances.
+- Confirmed existing source-of-truth contracts: `live_sessions.capacity`, `session_bookings` uniqueness, `private.entitlement_limit`, `private.current_user_has_entitlement`, `private.validate_booking()` row lock/capacity/entitlement guard, booking audit trigger and owner-only booking RLS.
+- Confirmed `authenticated` still has no direct INSERT on `session_bookings`; students may read scheduled/completed session metadata and only their own booking rows.
+- Scope decision: add only a safe aggregate read model and authenticated booking RPC that derives `auth.uid()`; do not implement cancellation, credit-window consumption, meeting provider or Teacher/Admin portals.
+- Registered the P16 goal, plan and registry entry before runtime implementation.
