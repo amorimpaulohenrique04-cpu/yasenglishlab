@@ -403,7 +403,7 @@ select set_config(
   false
 );
 
-do $
+do $$
 begin
   begin
     perform public.get_teacher_session_roster('89400000-0000-4000-8000-000000000001');
@@ -420,7 +420,7 @@ begin
   exception when insufficient_privilege then null;
   end;
 end;
-$;
+$$;
 
 reset role;
 
