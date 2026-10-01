@@ -105,7 +105,7 @@ function DateStrip({ sessions }: { sessions: ScheduleSessionView[] }) {
   }
 
   return (
-    <div className={styles.dateStrip} aria-label="Próximas datas com sessões">
+    <div className={styles.dateStrip} aria-label="Próximas datas com sessões" tabIndex={0}>
       {[...dates.entries()].map(([key, label], index) => (
         <span key={key} className={styles.dateChip} data-first={index === 0}>
           {label}
