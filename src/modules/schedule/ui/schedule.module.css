@@ -1,0 +1,252 @@
+.page {
+  display: grid;
+  gap: var(--yas-space-6);
+}
+
+.dateStrip {
+  display: flex;
+  gap: var(--yas-space-2);
+  overflow-x: auto;
+  padding-bottom: var(--yas-space-1);
+  scrollbar-width: thin;
+}
+
+.dateChip {
+  min-width: 7.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-surface);
+  padding: var(--yas-space-3) var(--yas-space-4);
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+  white-space: nowrap;
+}
+
+.dateChip[data-first="true"] {
+  border-color: var(--yas-color-purple-500);
+  background: var(--yas-color-purple-700);
+  color: var(--yas-color-white);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(18rem, 0.75fr);
+  align-items: start;
+  gap: var(--yas-space-5);
+}
+
+.schedulePanel {
+  min-width: 0;
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-xl);
+  background:
+    linear-gradient(180deg, var(--yas-color-purple-50), transparent 11rem),
+    var(--yas-color-surface);
+  padding: var(--yas-space-5);
+  box-shadow: var(--yas-shadow-card);
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--yas-space-4);
+  margin-bottom: var(--yas-space-4);
+}
+
+.sectionHeading h2,
+.sectionHeading p {
+  margin: 0;
+}
+
+.sectionHeading h2 {
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-xl);
+}
+
+.sectionHeading p {
+  margin-top: var(--yas-space-1);
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+
+.sessionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--yas-space-4);
+}
+
+.sessionCard {
+  min-height: 15rem;
+  display: grid;
+  align-content: start;
+  gap: var(--yas-space-3);
+  padding: var(--yas-space-4);
+}
+
+.sessionTopline,
+.sessionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--yas-space-2);
+}
+
+.sessionType {
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.sessionCopy {
+  display: grid;
+  gap: var(--yas-space-1);
+}
+
+.sessionCopy h3,
+.sessionCopy p {
+  margin: 0;
+}
+
+.sessionCopy h3 {
+  font-size: var(--yas-font-size-lg);
+}
+
+.sessionCopy p,
+.sessionMeta {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+
+.sessionMeta {
+  min-height: 3rem;
+  align-items: start;
+}
+
+.entitlementNote {
+  width: 100%;
+  color: var(--yas-color-warning);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.sessionCard form {
+  margin-top: auto;
+  padding-top: var(--yas-space-2);
+}
+
+.sessionCard form :global(.yas-button) {
+  width: 100%;
+}
+
+.sideColumn {
+  display: grid;
+  gap: var(--yas-space-4);
+  position: sticky;
+  top: var(--yas-space-4);
+}
+
+.upcomingCard,
+.contractCard {
+  padding: var(--yas-space-5);
+}
+
+.upcomingList {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upcomingList li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-2);
+  padding-block: var(--yas-space-3);
+  border-bottom: var(--yas-border-subtle);
+}
+
+.upcomingList li:last-child {
+  border-bottom: 0;
+}
+
+.upcomingList li > span:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: var(--yas-space-1);
+}
+
+.upcomingList strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upcomingList small,
+.sideEmpty,
+.contractCard p {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+}
+
+.upcomingMark {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-800);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.sideEmpty,
+.contractCard p {
+  margin: 0;
+  line-height: var(--yas-line-body);
+}
+
+.contractCard {
+  border-left: 0.25rem solid var(--yas-color-yellow-500);
+}
+
+.contractCard p {
+  margin-top: var(--yas-space-2);
+}
+
+@media (max-width: 63.99rem) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    position: static;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .schedulePanel {
+    padding: var(--yas-space-4);
+  }
+
+  .sessionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .upcomingList li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .upcomingList :global(.yas-badge) {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
