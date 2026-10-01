@@ -141,8 +141,8 @@ values
     'test',
     'rls_student_a',
     'ACTIVE',
-    '2026-09-01T00:00:00Z',
-    '2026-10-31T00:00:00Z'
+    now() - interval '1 day',
+    now() + interval '30 days'
   ),
   (
     '81600000-0000-0000-0000-000000000002',
@@ -151,8 +151,8 @@ values
     'test',
     'rls_student_b',
     'ACTIVE',
-    '2026-09-01T00:00:00Z',
-    '2026-10-31T00:00:00Z'
+    now() - interval '1 day',
+    now() + interval '30 days'
   )
 on conflict (id) do nothing;
 
@@ -192,8 +192,8 @@ values (
   '81200000-0000-0000-0000-000000000001',
   'CONVERSATION_LAB',
   'RLS Lab',
-  '2026-09-30T12:00:00Z',
-  '2026-09-30T13:00:00Z',
+  now() + interval '1 day',
+  now() + interval '1 day 1 hour',
   2,
   'weekly_conversation_labs',
   'SCHEDULED'
@@ -212,7 +212,7 @@ values (
   '81800000-0000-0000-0000-000000000001',
   '81000000-0000-0000-0000-000000000001',
   'BOOKED',
-  '2026-09-29T00:00:00Z'
+  now()
 )
 on conflict (id) do nothing;
 
@@ -228,7 +228,7 @@ values (
   '81800000-0000-0000-0000-000000000001',
   'recordings/rls-lab.mp4',
   'weekly_conversation_labs',
-  '2026-09-30T13:00:00Z'
+  now() + interval '1 day 1 hour'
 )
 on conflict (id) do nothing;
 
