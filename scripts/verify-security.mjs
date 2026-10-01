@@ -48,6 +48,12 @@ assert(
   browserClient.includes("createBrowserClient") && serverClient.includes("createServerClient"),
   "Supabase SSR browser/server clients must use @supabase/ssr.",
 );
+assert(
+  browserClient.includes("process.env.NEXT_PUBLIC_SUPABASE_URL") &&
+    browserClient.includes("process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") &&
+    !browserClient.includes("process.env[name]"),
+  "Browser public Supabase env must use statically analyzable NEXT_PUBLIC_* access for Next.js inlining.",
+);
 assert(proxy.includes("auth.getClaims()"), "Route protection must verify claims.");
 assert(
   authContext.includes('.from("user_roles")') && !authContext.includes("user_metadata"),
