@@ -1,0 +1,249 @@
+.yas-progress-page {
+  display: grid;
+  gap: var(--yas-space-6);
+}
+
+.yas-progress-overview,
+.yas-progress-two-column {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+  gap: var(--yas-space-5);
+  align-items: start;
+}
+
+.yas-progress-two-column--balanced {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.yas-progress-section {
+  display: grid;
+  gap: var(--yas-space-4);
+  min-width: 0;
+}
+
+.yas-progress-card-stack,
+.yas-progress-course-list {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.yas-progress-cefr h2,
+.yas-progress-card-heading h3 {
+  margin: var(--yas-space-1) 0 0;
+  color: var(--yas-color-ink);
+  line-height: var(--yas-line-tight);
+}
+
+.yas-progress-cefr h2 {
+  max-width: 28rem;
+  font-size: var(--yas-font-size-2xl);
+}
+
+.yas-progress-cefr p,
+.yas-progress-boundary-note,
+.yas-progress-card-stack small,
+.yas-progress-list small,
+.yas-progress-timeline small {
+  color: var(--yas-color-muted);
+  line-height: var(--yas-line-body);
+}
+
+.yas-progress-cefr p {
+  max-width: 42rem;
+  margin: var(--yas-space-2) 0 0;
+}
+
+.yas-progress-eyebrow {
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yas-progress-highlight {
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-2xl);
+  line-height: var(--yas-line-tight);
+}
+
+.yas-progress-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--yas-space-4);
+}
+
+.yas-progress-card-heading > strong {
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-2xl);
+}
+
+.yas-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--yas-space-3);
+  margin: 0;
+}
+
+.yas-progress-stats--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.yas-progress-stats > div {
+  min-width: 0;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-surface-soft);
+  padding: var(--yas-space-3);
+}
+
+.yas-progress-stats dt {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+}
+
+.yas-progress-stats dd {
+  margin: var(--yas-space-1) 0 0;
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-lg);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-progress-list,
+.yas-progress-skills,
+.yas-progress-timeline {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-progress-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--yas-space-4);
+  border-bottom: var(--yas-border-subtle);
+  padding: var(--yas-space-3) 0;
+}
+
+.yas-progress-list li:last-child {
+  border-bottom: 0;
+}
+
+.yas-progress-list li > div {
+  display: grid;
+  gap: var(--yas-space-1);
+}
+
+.yas-progress-skills {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--yas-space-5);
+}
+
+.yas-progress-skills li {
+  display: grid;
+  gap: var(--yas-space-3);
+  min-width: 0;
+}
+
+.yas-progress-skill-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--yas-space-4);
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-progress-skill-heading span {
+  color: var(--yas-color-muted);
+  text-align: right;
+}
+
+.yas-progress-boundary-note {
+  margin: var(--yas-space-5) 0 0;
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-progress-link {
+  width: fit-content;
+  color: var(--yas-color-purple-700);
+  text-decoration: none;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-progress-link:hover {
+  text-decoration: underline;
+}
+
+.yas-progress-timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--yas-space-3);
+  padding: 0 0 var(--yas-space-5);
+}
+
+.yas-progress-timeline li:last-child {
+  padding-bottom: 0;
+}
+
+.yas-progress-timeline-marker {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.35rem;
+  border: 2px solid var(--yas-color-purple-500);
+  border-radius: 50%;
+  background: var(--yas-color-white);
+}
+
+.yas-progress-timeline li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 1.1rem;
+  inset-block-end: 0;
+  inset-inline-start: 0.34rem;
+  width: 1px;
+  background: var(--yas-color-purple-200);
+}
+
+.yas-progress-timeline li > div {
+  display: grid;
+  gap: var(--yas-space-1);
+}
+
+@media (max-width: 63.99rem) {
+  .yas-progress-overview,
+  .yas-progress-two-column,
+  .yas-progress-two-column--balanced {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .yas-progress-stats,
+  .yas-progress-stats--compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .yas-progress-skills {
+    grid-template-columns: 1fr;
+  }
+
+  .yas-progress-card-heading,
+  .yas-progress-list li,
+  .yas-progress-skill-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .yas-progress-card-heading,
+  .yas-progress-list li,
+  .yas-progress-skill-heading {
+    display: flex;
+  }
+
+  .yas-progress-skill-heading span {
+    text-align: left;
+  }
+}
