@@ -6,8 +6,10 @@ import { join } from "node:path";
 import { expect, type Page } from "@playwright/test";
 
 export const canonicalTeacherEmail = "canonical.teacher@example.test";
-export const canonicalOtherTeacherSessionId = "88200000-0000-4000-8000-000000000002";
-export const canonicalTeacherSessionId = "88200000-0000-4000-8000-000000000001";
+export const canonicalOtherTeacherSessionId =
+  "88200000-0000-4000-8000-000000000002";
+export const canonicalTeacherSessionId =
+  "88200000-0000-4000-8000-000000000001";
 
 const secretPath = join(tmpdir(), "yas-canonical-teacher-totp.secret");
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -50,13 +52,17 @@ async function resolveTotpSecret(page: Page): Promise<string> {
 
   if (await manualSecret.isVisible()) {
     const secret = (await manualSecret.textContent())?.trim();
-    if (!secret) throw new Error("MFA enrollment did not expose a canonical TOTP secret.");
+    if (!secret) {
+      throw new Error("MFA enrollment did not expose a canonical TOTP secret.");
+    }
     writeFileSync(secretPath, secret, { encoding: "utf8", mode: 0o600 });
     return secret;
   }
 
   if (!existsSync(secretPath)) {
-    throw new Error("Verified canonical Teacher MFA exists but its temporary test secret is absent.");
+    throw new Error(
+      "Verified canonical Teacher MFA exists but its temporary test secret is absent.",
+    );
   }
 
   return readFileSync(secretPath, "utf8").trim();
