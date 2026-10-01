@@ -45,6 +45,7 @@ Status: in progress — Official CI evidence pending.
 ## UI evidence contract
 
 The Teacher E2E captures:
+
 - `artifacts/canonical-slice/teacher-desktop.png`
 - `artifacts/canonical-slice/teacher-tablet.png`
 - `artifacts/canonical-slice/teacher-mobile.png`
