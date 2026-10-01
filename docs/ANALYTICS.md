@@ -83,3 +83,7 @@ IDs internos pseudônimos podem ser usados quando necessários ao evento, mas an
 ## Interfaces
 
 [OBSERVABILITY.md](./OBSERVABILITY.md) · [AUDIT_LOG.md](./AUDIT_LOG.md) · [PRODUCT.md](./PRODUCT.md) · [SECURITY.md](./SECURITY.md)
+
+## Assessment Engine V1
+
+P19 emite `assessment_started` e `assessment_completed` pelo `ProductAnalyticsPort` existente. As chaves `assessment_started:<attempt_id>` e `assessment_completed:<attempt_id>` são estáveis; o sink com unicidade por usuário + idempotency key elimina duplicata lógica em retry. Analytics não substitui Attempt/Response/SkillScore como source of truth.

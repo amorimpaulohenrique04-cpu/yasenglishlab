@@ -1,0 +1,61 @@
+{
+  "task": "prompt-19-assessment-engine-v1",
+  "status": "passed",
+  "verified_at": "2026-10-01T18:15:00-03:00",
+  "pull_request": 23,
+  "baseline": "af0857d79345db9ed02f8624868c6b061cc71d0f",
+  "implementation_head": "31e49149fe6f2fb73f307d2fedc70db21608f5bd",
+  "official_ci": {
+    "run_id": 36926422998,
+    "run_number": 319,
+    "conclusion": "success",
+    "jobs": ["Supply Chain", "Quality", "Database", "Guardrail Simulations", "Preview", "CI Gate"]
+  },
+  "quality": {
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "unit_files_passed": 12,
+    "unit_tests_passed": 47,
+    "assessment_unit_tests_passed": 6,
+    "integration_files_passed": 8,
+    "integration_tests_passed": 32,
+    "integration_tests_skipped": 1,
+    "assessment_application_tests_passed": 4,
+    "harness": "passed",
+    "security": "passed",
+    "build": "passed"
+  },
+  "database_preview": {
+    "migration_policy": "passed",
+    "clean_migration_validation_runs": 2,
+    "integration_sql_files_passed": 7,
+    "rls_sql_files_passed": 4,
+    "assessment_sql_executed_in_integration": true,
+    "assessment_sql_executed_in_rls": true,
+    "critical_e2e_passed": 6,
+    "accessibility_passed": 14,
+    "design_system_visual_passed": 6,
+    "golden_visual_passed": 3,
+    "persistence_and_analytics": "passed"
+  },
+  "assessment_proofs": {
+    "published_version_start_only": true,
+    "start_idempotent": true,
+    "attempt_version_frozen": true,
+    "server_validated_responses": true,
+    "completion_idempotent": true,
+    "skill_scores_not_duplicated": true,
+    "deterministic_scoring_only": true,
+    "manual_pending_preserved": true,
+    "speaking_pronunciation_auto_score": false,
+    "result_cefr": null,
+    "skill_score_cefr": null,
+    "answer_key_rubric_scoring_config_exposed_to_student": false,
+    "cross_student_isolation": "passed",
+    "direct_authenticated_lifecycle_dml": "denied",
+    "analytics_idempotency": "passed"
+  },
+  "scope_audit": "passed",
+  "merged": false
+}
