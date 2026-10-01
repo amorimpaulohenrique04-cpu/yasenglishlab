@@ -70,7 +70,10 @@ const { data: teacherAttendance, error: teacherAttendanceError } = await admin
 if (teacherAttendanceError || !teacherAttendance) {
   throw teacherAttendanceError ?? new Error("Persisted Teacher attendance was not found.");
 }
-if (teacherAttendance.status !== "ATTENDED" || teacherAttendance.marked_by_user_id !== teacherUser.id) {
+if (
+  teacherAttendance.status !== "ATTENDED" ||
+  teacherAttendance.marked_by_user_id !== teacherUser.id
+) {
   throw new Error("Teacher attendance did not persist as ATTENDED for the authenticated Teacher.");
 }
 
