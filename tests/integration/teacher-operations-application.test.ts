@@ -85,6 +85,20 @@ describe("teacher operations application", () => {
     expect(repo.markAttendance).toHaveBeenCalledWith(roster.bookingId, "ATTENDED");
   });
 
+  it("propagates persistence failures instead of producing false success", async () => {
+    const repo = repository();
+    repo.markAttendance = vi.fn(async () => {
+      throw new Error("database rejected attendance");
+    });
+
+    await expect(
+      markTeacherAttendance(repo, {
+        sessionBookingId: roster.bookingId,
+        status: "ATTENDED",
+      }),
+    ).rejects.toThrow("database rejected attendance");
+  });
+
   it("rejects unsupported attendance before crossing the repository boundary", async () => {
     const repo = repository();
 
