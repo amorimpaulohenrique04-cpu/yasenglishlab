@@ -19,7 +19,6 @@ test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
-
   test("a Student without progress facts receives a real empty state", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
