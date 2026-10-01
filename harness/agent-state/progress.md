@@ -329,3 +329,28 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Stable Progress desktop/tablet/mobile captures from Official CI were inspected before promotion to golden baselines; the golden tolerance was not changed.
 - Progress browser-boundary E2E now inspects browser-visible `/progresso` payloads for forbidden Assessment/service-role fields in addition to the existing Student isolation and RLS evidence.
 - P20 remains `in_progress / verified:false` until the clean-head Official CI, including golden visual checks and CI Gate, completes successfully.
+
+## 2026-10-01 — prompt-20 Progresso V1 closure
+
+- P20 is complete as a read-only Student Progress projection over Learning,
+  Practice, Attendance and Assessment.
+- No new Progress source of truth, migration, runtime service-role path,
+  persisted streak/goal or write command was introduced.
+- Course completion reuses canonical Learning semantics; Practice, Attendance
+  and Assessment facts remain separate; missing/pending values are not
+  converted to zero.
+- CEFR remains unavailable while standard setting/cut scores are unresolved.
+- Browser-boundary E2E rejects Assessment answer keys, rubrics, scoring
+  configuration and service-role material.
+- Unit/application coverage proves unauthorized, empty, success, partial/error,
+  concurrent reads and bounded repository calls.
+- Desktop/tablet/mobile Progress screenshots were inspected before promotion to
+  golden baselines; no tolerance, skip or retry was weakened.
+- `verify:agent`, `verify:security`, `verify:ui` and isolated
+  `verify:full` passed.
+- Official CI #359 / run `36941525748` passed all mandatory jobs, including
+  Preview and CI Gate.
+- Durable evidence is stored under
+  `harness/evidence/prompt-20-progress-v1/`.
+- Registry is `done / verified:true`. PR #24 remains open and unmerged.
+

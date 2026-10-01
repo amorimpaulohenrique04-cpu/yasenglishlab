@@ -1,6 +1,6 @@
 # GOAL — prompt-20-progress-v1: Progresso V1 / Student Progress Read Model
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-10-01  
 Updated: 2026-10-01
@@ -35,20 +35,20 @@ An authenticated Student can open `/progresso` from Sidebar or mobile Drawer and
 
 ## Acceptance criteria
 
-- [ ] `/progresso` exists and is present in Student Sidebar + Drawer.
-- [ ] Progress is read-only and composes real Learning, Practice, Attendance and Assessment facts.
-- [ ] No new authoritative table, snapshot, persisted streak, goal, score or CEFR fallback is introduced.
-- [ ] Curricular completion reuses the Learning progress semantics; multiple courses remain separate.
-- [ ] Practice score/status remains Practice-only and pending is never converted to zero/proficiency.
-- [ ] Attendance distinguishes ATTENDED, NO_SHOW, BOOKED-without-attendance and cancelled bookings.
-- [ ] Assessment exposes only attempt/SkillScore facts needed by Progress; no answer key/rubric/scoring config.
-- [ ] CEFR remains unavailable while standard setting/cut scores are unresolved.
-- [ ] History uses real timestamps only and does not invent improvement claims.
-- [ ] unauthorized, empty, success, partial and error states are distinct.
-- [ ] Independent reads execute concurrently and repository/database calls remain bounded as row counts grow.
-- [ ] Student A/B isolation remains enforced by current RLS and no service-role bypass is used.
-- [ ] Desktop/tablet/mobile, a11y, E2E and golden visual coverage are integrated with the existing systems.
-- [ ] No unrelated behavior regressed and the PR is opened against `main` without merge.
+- [x] `/progresso` exists and is present in Student Sidebar + Drawer.
+- [x] Progress is read-only and composes real Learning, Practice, Attendance and Assessment facts.
+- [x] No new authoritative table, snapshot, persisted streak, goal, score or CEFR fallback is introduced.
+- [x] Curricular completion reuses the Learning progress semantics; multiple courses remain separate.
+- [x] Practice score/status remains Practice-only and pending is never converted to zero/proficiency.
+- [x] Attendance distinguishes ATTENDED, NO_SHOW, BOOKED-without-attendance and cancelled bookings.
+- [x] Assessment exposes only attempt/SkillScore facts needed by Progress; no answer key/rubric/scoring config.
+- [x] CEFR remains unavailable while standard setting/cut scores are unresolved.
+- [x] History uses real timestamps only and does not invent improvement claims.
+- [x] unauthorized, empty, success, partial and error states are distinct.
+- [x] Independent reads execute concurrently and repository/database calls remain bounded as row counts grow.
+- [x] Student A/B isolation remains enforced by current RLS and no service-role bypass is used.
+- [x] Desktop/tablet/mobile, a11y, E2E and golden visual coverage are integrated with the existing systems.
+- [x] No unrelated behavior regressed and the PR is opened against `main` without merge.
 
 ## Allowed files / domains
 
