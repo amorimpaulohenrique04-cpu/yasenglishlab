@@ -66,6 +66,7 @@ When necessary:
 
 - `src/server/auth/**` — reuse/refine only when justified
 - `src/lib/supabase/browser.ts` — P17 MFA exposed the pre-existing dynamic `process.env[name]` browser lookup; static `NEXT_PUBLIC_*` access is required so Next.js can inline the existing public Supabase configuration without changing auth semantics
+- `src/app/mfa/mfa-panel.tsx` — P17 real-MFA retries exposed a pre-existing enrollment recovery bug: Supabase returns unverified factors only in `data.all`, and stale Strict Mode effects can race enrollment; refine preparation only so the existing mandatory AAL2 contract is deterministic without changing authorization semantics
 - `src/server/audit/**` — attendance audit action/integration only
 - `src/modules/domain/contracts.ts` — Teacher contracts only if required
 - `supabase/migrations/**` — one append-only Teacher Operations V1 migration
