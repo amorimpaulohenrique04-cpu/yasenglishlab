@@ -1,9 +1,6 @@
 import type { ProductAnalyticsPort } from "@/modules/learning";
 
-import type {
-  AssessmentAttemptView,
-  AssessmentResponseView,
-} from "../domain/models";
+import type { AssessmentAttemptView, AssessmentResponseView } from "../domain/models";
 
 export interface AssessmentRepository {
   startAttempt(input: {
