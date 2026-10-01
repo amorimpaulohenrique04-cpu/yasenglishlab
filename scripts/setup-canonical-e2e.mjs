@@ -275,7 +275,7 @@ const sessions = [
     ends_at: inDays(-2, 60),
     capacity: 4,
     required_entitlement_key: null,
-    status: "COMPLETED",
+    status: "SCHEDULED",
   },
   {
     id: teacherOpsSessionId,
@@ -343,6 +343,12 @@ const { error: progressAttendanceError } = await admin.from("attendance").insert
   marked_by_user_id: teacherUser.id,
 });
 if (progressAttendanceError) throw progressAttendanceError;
+
+const { error: progressSessionCompleteError } = await admin
+  .from("live_sessions")
+  .update({ status: "COMPLETED" })
+  .eq("id", progressSessionId);
+if (progressSessionCompleteError) throw progressSessionCompleteError;
 
 const { error: progressAssessmentError } = await admin.from("assessments").upsert(
   {
