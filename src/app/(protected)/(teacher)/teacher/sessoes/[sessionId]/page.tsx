@@ -1,14 +1,6 @@
 import Link from "next/link";
 
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  ErrorState,
-  PageHeader,
-} from "@/components/ui";
+import { Alert, Badge, Button, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
 import {
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
@@ -50,9 +42,7 @@ function sessionTone(status: TeacherSessionStatus): "success" | "warning" | "neu
   return "neutral";
 }
 
-function attendanceTone(
-  status: TeacherAttendanceStatus | null,
-): "success" | "warning" | "neutral" {
+function attendanceTone(status: TeacherAttendanceStatus | null): "success" | "warning" | "neutral" {
   if (status === "ATTENDED") return "success";
   if (status === "NO_SHOW") return "warning";
   return "neutral";
@@ -127,10 +117,7 @@ export default async function TeacherSessionPage({
         <strong>{teacherSessionTypeLabel(session.sessionType)}</strong>
         <span className={styles.muted}>
           {session.participantCount}{" "}
-          {session.participantCount === 1
-            ? "participante reservado"
-            : "participantes reservados"}{" "}
-          ·{" "}
+          {session.participantCount === 1 ? "participante reservado" : "participantes reservados"} ·{" "}
           {session.attendanceMarkedCount} com presença marcada
         </span>
       </Card>
