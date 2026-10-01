@@ -54,11 +54,6 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Temporary P16 formatter diagnostic
-        run: |
-          npx prettier --write harness/agent-state/progress.md harness/evidence/prompt-16-agenda-v1/README.md harness/goals/prompt-16-agenda-v1.md
-          git diff -- harness/agent-state/progress.md harness/evidence/prompt-16-agenda-v1/README.md harness/goals/prompt-16-agenda-v1.md
-          git checkout -- harness/agent-state/progress.md harness/evidence/prompt-16-agenda-v1/README.md harness/goals/prompt-16-agenda-v1.md
       - name: Format
         run: npm run format:check
       - name: Lint
