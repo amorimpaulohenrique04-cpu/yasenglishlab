@@ -51,10 +51,7 @@ describe("teacher operations application", () => {
 
   it("does not request a roster for a session outside the returned teacher scope", async () => {
     const repo = repository();
-    const state = await getTeacherSessionPage(
-      repo,
-      "89400000-0000-4000-8000-000000000002",
-    );
+    const state = await getTeacherSessionPage(repo, "89400000-0000-4000-8000-000000000002");
 
     expect(state).toEqual({ status: "unavailable" });
     expect(repo.getSessionRoster).not.toHaveBeenCalled();
