@@ -24,10 +24,7 @@ export async function loadSchedulePage() {
   const auth = await requirePageAuth();
   const client = await createSupabaseServerClient();
 
-  return getScheduleView(
-    new SupabaseScheduleRepository(client),
-    auth.roles.includes("STUDENT"),
-  );
+  return getScheduleView(new SupabaseScheduleRepository(client), auth.roles.includes("STUDENT"));
 }
 
 export async function bookCurrentStudentSession(input: BookScheduleSessionInput) {
