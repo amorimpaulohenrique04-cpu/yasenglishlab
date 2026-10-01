@@ -48,7 +48,10 @@ const requiredInvariants = [
   "rename column progress_percent to completion_percent",
   "create table public.product_analytics_events",
   "create table public.observability_events",
+  "create table public.practice_responses",
   "create or replace function public.record_lesson_progress",
+  "create or replace function public.start_practice_attempt",
+  "create or replace function public.submit_practice_attempt",
   "auth.uid()",
 ];
 
@@ -70,6 +73,10 @@ for (const token of [
   "'welcome-to-yas'",
   "'introductions-that-sound-natural'",
   "'build-your-first-conversation'",
+  "'natural-introductions-vocabulary'",
+  "'present-simple-introductions'",
+  "'two-minute-introduction'",
+  "'introduction-word-stress'",
 ]) {
   assert(seedSql.includes(token), `Seed is missing required product data: ${token}`);
 }
@@ -77,6 +84,10 @@ for (const token of [
 assert(
   exists("supabase/tests/vertical_slice_persistence.sql"),
   "Canonical vertical slice needs real persistence integration evidence.",
+);
+assert(
+  exists("supabase/tests/practice_persistence.sql"),
+  "Practice V1 needs idempotency, ownership and scoring-boundary SQL evidence.",
 );
 
 success(

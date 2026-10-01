@@ -24,11 +24,11 @@ Local verification tooling.
 
 ## Immediate fix
 
-Set the canonical Playwright configuration to one worker for both local and CI runs, and assign only the long canonical spec a 60-second whole-test budget. No assertion, per-expect timeout, retry or product behavior changed.
+Set the canonical Playwright configuration to one worker for both local and CI runs, and assign only the long canonical spec an explicit whole-test budget. The budget is now 120 seconds because the same canonical journey also captures and verifies the Practice V1 desktop, tablet, mobile and result states. No assertion, per-expect timeout, retry or product behavior changed.
 
 ## Permanent protection
 
-`playwright.config.ts` declares `workers: 1` at the shared configuration level, while `canonical-slice.spec.ts` explicitly declares its 60-second end-to-end budget.
+`playwright.config.ts` declares `workers: 1` at the shared configuration level, while `canonical-slice.spec.ts` explicitly declares its 120-second end-to-end budget.
 
 ## Test/eval created
 

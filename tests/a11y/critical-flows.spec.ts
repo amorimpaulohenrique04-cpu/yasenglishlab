@@ -72,14 +72,16 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await moduleLink.focus();
   await expect(moduleLink).toBeFocused();
   await moduleLink.click();
-  await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
+  await expect(page).toHaveURL(/\/aulas\/[^/]+\/modulos\/[^/]+$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Getting Started" })).toBeVisible();
   await assertAxe(page);
 
   const lessonLink = page.getByRole("link", { name: /aula →$/ }).first();
   await lessonLink.focus();
   await expect(lessonLink).toBeFocused();
   await lessonLink.click();
-  await expect(page.getByRole("heading", { name: "Welcome to Yas" })).toBeVisible();
+  await expect(page).toHaveURL(/\/aulas\/[^/]+\/modulos\/[^/]+\/aulas\/[^/]+$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Navegação entre aulas" })).toBeVisible();
   await assertAxe(page);
 });
@@ -98,5 +100,27 @@ test("Materiais preserves search labels, keyboard focus and WCAG A/AA compliance
   const favorite = page.getByRole("button", { name: "Favoritar Welcome Summary" });
   await favorite.focus();
   await expect(favorite).toBeFocused();
+  await assertAxe(page);
+});
+
+test("Prática exposes skill availability, keyboard controls and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/pratica");
+
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Escolha uma habilidade" })).toBeVisible();
+
+  const vocabulary = page.getByRole("link", { name: /Vocabulário/ }).first();
+  await vocabulary.focus();
+  await expect(vocabulary).toBeFocused();
+  await assertAxe(page);
+
+  await page.getByRole("button", { name: "Começar prática →" }).click();
+  const answer = page.getByRole("radio").first();
+  await answer.focus();
+  await expect(answer).toBeFocused();
   await assertAxe(page);
 });

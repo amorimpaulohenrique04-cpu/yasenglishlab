@@ -239,6 +239,15 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/rules/24223415"
       ],
       "updated_at": "2026-09-30T19:11:30-03:00"
+    },
+    {
+      "id": "prompt-15-practice-engine-v1",
+      "title": "Deterministic Practice Engine V1",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["pre-p15-architecture-governance-gate"],
+      "evidence": ["harness/goals/prompt-15-practice-engine-v1.md"],
+      "updated_at": "2026-09-30T19:41:56-03:00"
     }
   ]
 }

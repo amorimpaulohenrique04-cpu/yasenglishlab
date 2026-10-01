@@ -31,6 +31,8 @@ A persistência bootstrap continua em `product_analytics_events` via `ProductAna
 
 A canonical slice mantém também `lesson_progressed` como evento interno já existente para análise de checkpoints. Ele não substitui `lesson_progress`.
 
+Practice V1 emite `practice_started` e `practice_completed` com `practice_activity_id` e chave idempotente derivada da tentativa. Esses eventos não substituem `practice_attempts`, respostas ou resultados.
+
 ## Implementação
 
 - contrato: `PRODUCT_ANALYTICS_EVENTS` em `src/modules/domain/contracts.ts`;

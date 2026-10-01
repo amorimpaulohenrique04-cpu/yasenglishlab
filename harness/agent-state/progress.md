@@ -2,6 +2,16 @@
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-09-30 — prompt-15-practice-engine-v1
+
+- Started from clean `main` at `038f63ad3f36ee114ddf96e89c30d7f7ab637c10` after the verified PRE-P15 gate.
+- Read the required product, Practice, data, architecture, UI, accessibility, analytics, testing, open-question and approved visual-reference contracts.
+- Inspected the existing Practice tables/RLS, canonical learning/materials slices, analytics port, Next.js 16.3.6 local documentation and current Supabase breaking-change feed.
+- Confirmed that the open Speaking/Pronunciation evaluation policy must remain behind a pending/manual port and that no practice signal may write course progress, `skill_scores` or inferred CEFR.
+- Gap audit found no Practice application/UI slice, no persisted response entity, no authenticated mutation RPC, no idempotency contract, no seeded contracted activity content and no Practice-specific verification.
+- Registered the P15 goal and minimum plan before runtime code changes; implementation and verification remain pending.
+- The first Supabase status check exposed a pre-existing UTF-8 BOM in ignored `.env.local`; the current CLI rejects it before reading `supabase/config.toml`. Scope was expanded only to normalize that encoding without reading or changing environment values.
+
 ## 2026-09-30 — prompt-13-learning-core
 
 - Started from clean `main` tracking `origin/main`; created `harness/goals/prompt-13-learning-core.md` and marked the registry entry `in_progress` / unverified before runtime changes.

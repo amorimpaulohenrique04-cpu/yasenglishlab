@@ -206,13 +206,15 @@ export const PRODUCT_ANALYTICS_EVENTS = [
 export const productAnalyticsEventSchema = z.enum(PRODUCT_ANALYTICS_EVENTS);
 export type ProductAnalyticsEvent = z.infer<typeof productAnalyticsEventSchema>;
 
-const practiceSkillSchema = z.enum([
+export const PRACTICE_SKILLS = [
   "SPEAKING",
   "LISTENING",
   "PRONUNCIATION",
   "VOCABULARY",
   "GRAMMAR",
-]);
+] as const;
+export const practiceSkillSchema = z.enum(PRACTICE_SKILLS);
+export type PracticeSkill = z.infer<typeof practiceSkillSchema>;
 
 export const practiceActivitySchema = z
   .object({
@@ -244,6 +246,16 @@ export const practiceAttemptSchema = z
   .strict();
 export type PracticeAttempt = z.infer<typeof practiceAttemptSchema>;
 
+export const practiceResponseSchema = z
+  .object({
+    id: idSchema,
+    practiceAttemptId: idSchema,
+    response: jsonObjectSchema,
+    createdAt: dateTimeSchema,
+  })
+  .strict();
+export type PracticeResponse = z.infer<typeof practiceResponseSchema>;
+
 export const practiceResultSchema = z
   .object({
     id: idSchema,
@@ -252,6 +264,7 @@ export const practiceResultSchema = z
     maxScore: z.number().nonnegative().nullable(),
     feedback: z.string().nullable(),
     metrics: jsonObjectSchema,
+    evaluationStatus: z.enum(["CORRECT", "INCORRECT", "PENDING_MANUAL", "NOT_SCORED"]),
     createdAt: dateTimeSchema,
   })
   .strict();

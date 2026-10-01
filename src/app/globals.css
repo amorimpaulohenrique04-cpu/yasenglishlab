@@ -4,6 +4,7 @@
 @import "../components/layout/layout.css";
 @import "../modules/learning/ui/learning.css";
 @import "../modules/materials/ui/materials.css";
+@import "../modules/practice/ui/practice.css";
 
 html {
   min-width: 320px;

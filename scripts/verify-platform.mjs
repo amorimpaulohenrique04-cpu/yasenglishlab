@@ -61,7 +61,7 @@ assert(
 
 const canonicalE2e = readFileSync("tests/e2e/canonical-slice.spec.ts", "utf8");
 assert(
-  canonicalE2e.includes("test.setTimeout(60_000)"),
+  canonicalE2e.includes("test.setTimeout(120_000)"),
   "The multi-viewport canonical E2E needs its explicit Windows-safe time budget.",
 );
 

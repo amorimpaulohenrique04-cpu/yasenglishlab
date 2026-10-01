@@ -32,8 +32,10 @@ Implementação inicial:
   - a unicidade por `user_id + lesson_id` mantém uma única linha idempotente por aluno/aula.
 
 ### Practice
-- **PracticeActivity → PracticeAttempt → PracticeResult**.
+- **PracticeActivity → PracticeAttempt → PracticeResponse + PracticeResult**.
 - Practice pode carregar `cefr_target` como contexto pedagógico, mas seu resultado não define proficiência CEFR.
+- `practice_attempts(user_id, idempotency_key)` torna retry de início idempotente; resposta e resultado são únicos por tentativa.
+- `practice_results.evaluation_status` distingue resposta objetiva (`CORRECT`/`INCORRECT`) de `PENDING_MANUAL`; pending/manual nunca carrega score inferido.
 
 ### Materials
 - **Material** pode apontar para Module/Lesson e declarar `required_entitlement_key`.
