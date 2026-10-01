@@ -106,7 +106,9 @@ if (bookingEvents[0].idempotency_key !== `live_session_booked:${agendaBooking.id
   throw new Error("Agenda booking analytics must use the persisted booking id as idempotency key.");
 }
 if (bookingEvents[0].properties?.live_session_id !== agendaSessionId) {
-  throw new Error("Agenda booking analytics must contain only the persisted live_session_id contract.");
+  throw new Error(
+    "Agenda booking analytics must contain only the persisted live_session_id contract.",
+  );
 }
 
 const criticalKeys = (events ?? [])
