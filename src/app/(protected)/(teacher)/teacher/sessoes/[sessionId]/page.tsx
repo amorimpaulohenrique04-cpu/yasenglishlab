@@ -1,6 +1,14 @@
 import Link from "next/link";
 
-import { Alert, Badge, Button, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  PageHeader,
+} from "@/components/ui";
 import {
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
@@ -119,7 +127,10 @@ export default async function TeacherSessionPage({
         <strong>{teacherSessionTypeLabel(session.sessionType)}</strong>
         <span className={styles.muted}>
           {session.participantCount}{" "}
-          {session.participantCount === 1 ? "participante reservado" : "participantes reservados"} ·{" "}
+          {session.participantCount === 1
+            ? "participante reservado"
+            : "participantes reservados"}{" "}
+          ·{" "}
           {session.attendanceMarkedCount} com presença marcada
         </span>
       </Card>
