@@ -1,6 +1,6 @@
 # GOAL — prompt-19-assessment-engine-v1: Assessment Engine V1
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-10-01  
 Updated: 2026-10-01
@@ -29,18 +29,18 @@ An authorized Student can start an attempt against an explicitly selected PUBLIS
 
 ## Acceptance criteria
 
-- [ ] Start is durable/idempotent, derives `auth.uid()`, and accepts only an authorized PUBLISHED version.
-- [ ] Attempt version identity is frozen after creation.
-- [ ] Response writes validate ownership, attempt state, item/version identity and the supported item payload contract.
-- [ ] Completion is durable/idempotent and never duplicates SkillScores.
-- [ ] Only deterministic objective metrics are scored; manual/unsupported evaluation remains pending without zero/fake score.
-- [ ] `result_cefr` and `skill_scores.cefr_level` remain NULL and no percentage-to-CEFR mapping exists.
-- [ ] Speaking/Pronunciation receive no automatic/AI score.
-- [ ] Student cannot read `answer_key`, `rubric` or `scoring_config` through authenticated Data API access.
-- [ ] Student isolation and legitimate existing staff read scope remain enforced by RLS.
-- [ ] Assessment analytics use the existing ProductAnalyticsPort with stable idempotency keys.
-- [ ] Historical migrations remain unchanged and no unrelated behavior regresses.
-- [ ] PR is opened against `main` and is not merged.
+- [x] Start is durable/idempotent, derives `auth.uid()`, and accepts only an authorized PUBLISHED version.
+- [x] Attempt version identity is frozen after creation.
+- [x] Response writes validate ownership, attempt state, item/version identity and the supported item payload contract.
+- [x] Completion is durable/idempotent and never duplicates SkillScores.
+- [x] Only deterministic objective metrics are scored; manual/unsupported evaluation remains pending without zero/fake score.
+- [x] `result_cefr` and `skill_scores.cefr_level` remain NULL and no percentage-to-CEFR mapping exists.
+- [x] Speaking/Pronunciation receive no automatic/AI score.
+- [x] Student cannot read `answer_key`, `rubric` or `scoring_config` through authenticated Data API access.
+- [x] Student isolation and legitimate existing staff read scope remain enforced by RLS.
+- [x] Assessment analytics use the existing ProductAnalyticsPort with stable idempotency keys.
+- [x] Historical migrations remain unchanged and no unrelated behavior regresses.
+- [x] PR is opened against `main` and is not merged.
 
 ## Allowed files / domains
 
