@@ -26,6 +26,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
     async function prepareMfa() {
       const aal = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (aal.error) throw aal.error;
+      if (!active) return;
 
       if (aal.data.currentLevel === "aal2") {
         router.replace(nextPath);
@@ -34,34 +35,36 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
 
       const factors = await supabase.auth.mfa.listFactors();
       if (factors.error) throw factors.error;
+      if (!active) return;
 
       const verified = factors.data.totp.find((factor) => factor.status === "verified");
       if (verified) {
-        if (active) {
-          setFactorId(verified.id);
-          setStatus("ready");
-        }
+        setFactorId(verified.id);
+        setStatus("ready");
         return;
       }
 
-      for (const factor of factors.data.totp) {
-        if (factor.status !== "verified") {
-          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      for (const factor of factors.data.all) {
+        if (!active) return;
+        if (factor.factor_type === "totp" && factor.status !== "verified") {
+          const removal = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+          if (removal.error) throw removal.error;
         }
       }
+
+      if (!active) return;
 
       const enrollment = await supabase.auth.mfa.enroll({
         factorType: "totp",
         friendlyName: "Yas English Lab",
       });
       if (enrollment.error) throw enrollment.error;
+      if (!active) return;
 
-      if (active) {
-        setFactorId(enrollment.data.id);
-        setQrCode(enrollment.data.totp.qr_code);
-        setSecret(enrollment.data.totp.secret);
-        setStatus("ready");
-      }
+      setFactorId(enrollment.data.id);
+      setQrCode(enrollment.data.totp.qr_code);
+      setSecret(enrollment.data.totp.secret);
+      setStatus("ready");
     }
 
     prepareMfa().catch(() => {
