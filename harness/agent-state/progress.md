@@ -289,3 +289,12 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - A clean local Supabase reset replayed nine migrations and canonical seed successfully. Focused real DB integration passed six SQL files plus the Agenda concurrency proof; focused RLS passed three SQL files. The new Admin SQL proof covers role/AAL2 denial, draft/direct-ID isolation, publication validation, parent visibility, atomic reorder, authenticated audit attribution/correlation and rollback on audit failure.
 - Admin Content E2E passed 1/1: real Admin MFA, draft creation/preview, Student draft invisibility, publication visibility, reorder, unpublish and persisted reload behavior. Focused a11y passed 2/2 at desktop and mobile with keyboard focus and WCAG A/AA checks. Desktop evidence was inspected under `artifacts/prompt-18-admin-content/`.
 - Operator requested that broad gates be listed rather than executed. P18 remains `in_progress` / unverified until those commands are run and their evidence is inspected.
+
+## 2026-10-01 — prompt-19 Assessment Engine V1 discovery
+
+- Started from `main@af0857d79345db9ed02f8624868c6b061cc71d0f` on `feat/p19-assessment-engine-v1`; main was not modified.
+- Read the required CEFR Assessment, data, product, architecture, auth/RLS, security, analytics, testing, Definition of Done, open-question and Harness contracts plus the Practice V1 canonical implementation.
+- Confirmed the existing Assessment tables and database guards for published-version attempts, published/used version/item immutability and response/version consistency.
+- Found a concrete security gap: historical grants expose complete `assessment_versions` and `assessment_items` rows to authenticated users, including `scoring_config` and `answer_key` when RLS permits the row.
+- Confirmed no Assessment user-facing route/UX is contracted in the current repository, so P19 will not invent Progress/Assessment UI.
+- Standard setting/cut scores, retake policy, Speaking/Pronunciation evaluation and Assessment Authoring remain explicitly open. Registry is `in_progress / verified:false`; no verification PASS has been claimed.
