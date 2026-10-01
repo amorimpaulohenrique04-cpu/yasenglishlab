@@ -192,8 +192,8 @@ values (
   '81200000-0000-0000-0000-000000000001',
   'CONVERSATION_LAB',
   'RLS Lab',
-  now() + interval '1 day',
-  now() + interval '1 day 1 hour',
+  now() - interval '2 hours',
+  now() - interval '1 hour',
   2,
   'weekly_conversation_labs',
   'SCHEDULED'
@@ -228,7 +228,7 @@ values (
   '81800000-0000-0000-0000-000000000001',
   'recordings/rls-lab.mp4',
   'weekly_conversation_labs',
-  now() + interval '1 day 1 hour'
+  now() - interval '1 hour'
 )
 on conflict (id) do nothing;
 
