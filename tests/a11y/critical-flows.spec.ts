@@ -124,3 +124,24 @@ test("Prática exposes skill availability, keyboard controls and WCAG A/AA compl
   await expect(answer).toBeFocused();
   await assertAxe(page);
 });
+
+
+test("Agenda exposes booking states, disabled eligibility and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/agenda");
+
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sessões disponíveis" })).toBeVisible();
+
+  const reserve = page.getByRole("button", { name: "Reservar" }).first();
+  await reserve.focus();
+  await expect(reserve).toBeFocused();
+
+  const entitlementBlocked = page.getByRole("button", { name: "Acesso não disponível" });
+  await expect(entitlementBlocked).toBeDisabled();
+
+  await assertAxe(page);
+});
