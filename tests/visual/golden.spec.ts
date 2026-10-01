@@ -16,7 +16,7 @@ async function stabilize(page: Page) {
   });
 }
 
-test("login, home and aulas match golden baselines", async ({ page }) => {
+test("login, home, aulas and progresso match golden baselines", async ({ page }) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
   await stabilize(page);
