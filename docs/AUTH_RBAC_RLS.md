@@ -108,3 +108,11 @@ CI recria duas bases vazias, reaplica migrations/seeds e executa todos os SQL te
 ## Interfaces
 
 [SECURITY.md](./SECURITY.md) · [THREAT_MODEL.md](./THREAT_MODEL.md) · [DATA_MODEL.md](./DATA_MODEL.md) · [BILLING.md](./BILLING.md) · [TESTING.md](./TESTING.md) · [ADR 0003](./adr/0003-auth-rbac-rls.md)
+
+## Assessment Engine V1
+
+O lifecycle de Assessment usa RPCs autenticadas que derivam o Student de `auth.uid()`; o browser não envia `user_id` como autoridade. Writes diretos de `assessment_attempts`, `assessment_responses` e `skill_scores` permanecem indisponíveis para `authenticated`.
+
+As policies existentes de Attempt/Response/SkillScore continuam usando `private.can_view_student`, preservando owner + staff autorizado. Para conteúdo de Assessment, `authenticated` recebe somente leitura por coluna dos campos necessários à execução. `assessment_versions.scoring_config`, `assessment_items.answer_key` e `assessment_items.rubric` não têm privilégio SELECT autenticado normal.
+
+O scorer executa server-side/database-side; RLS/UI não são usados como mecanismo para esconder gabarito.
