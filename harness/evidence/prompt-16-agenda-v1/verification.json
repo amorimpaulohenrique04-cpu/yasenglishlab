@@ -1,0 +1,41 @@
+{
+  "task": "prompt-16-agenda-v1",
+  "status": "passed",
+  "verified_at": "2026-09-30T22:47:00-03:00",
+  "pull_request": 20,
+  "implementation_head": "14b577729aeafcd7986d7da35903499e4ebb5adc",
+  "official_ci": {
+    "run_id": 36802148610,
+    "run_number": 253,
+    "conclusion": "success",
+    "jobs": ["Supply Chain", "Quality", "Database", "Guardrail Simulations", "Preview", "CI Gate"]
+  },
+  "preview": {
+    "merge_ref": "fb401e0a5743b944571714bfef2fbc83a2a5ab11",
+    "artifact_id": 11136452829,
+    "artifact_sha256": "004fa095fb733331982783076932f2b5f3042bba4df3b8432343d2a2642fde4d",
+    "critical_e2e_passed": 3,
+    "accessibility_passed": 10,
+    "golden_visual_passed": 3
+  },
+  "agenda_proofs": {
+    "real_concurrency": "two concurrent users against capacity=1; exactly one BOOKED",
+    "rls": "passed",
+    "booking_owner": "auth.uid()",
+    "direct_authenticated_insert": "denied",
+    "duplicate_retry": "same persisted booking, no second row",
+    "entitlement_denial": "passed",
+    "non_scheduled_denial": "passed",
+    "cross_user_leakage": "denied",
+    "refresh_preserves_booked": true,
+    "live_session_booked_exactly_once": true
+  },
+  "visual_evidence": [
+    "artifacts/canonical-slice/agenda-desktop.png",
+    "artifacts/canonical-slice/agenda-tablet.png",
+    "artifacts/canonical-slice/agenda-mobile.png"
+  ],
+  "visual_inspection": "passed",
+  "scope_audit": "passed",
+  "merged": false
+}
