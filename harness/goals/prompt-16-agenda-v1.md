@@ -103,7 +103,6 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 
 Done means every applicable acceptance criterion and mandatory gate is green, evidence is inspected, the final diff is in scope, the registry is updated to `done / verified:true`, and no open product/provider policy has been inferred.
 
-
 ## Closure evidence
 
 - PR #20 remains open and unmerged.
