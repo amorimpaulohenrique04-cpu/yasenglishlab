@@ -151,3 +151,15 @@ Roles, entitlements, subscriptions e bookings não aceitam mutação direta pelo
 ## Interfaces
 
 [AUTH_RBAC_RLS.md](./AUTH_RBAC_RLS.md) · [BILLING.md](./BILLING.md) · [CEFR_ASSESSMENT.md](./CEFR_ASSESSMENT.md) · [LIVE_CLASSES.md](./LIVE_CLASSES.md) · [PRACTICE_ENGINE.md](./PRACTICE_ENGINE.md) · [ADR 0002](./adr/0002-domain-contracts.md)
+
+
+## Teacher Operations V1
+
+Teacher Operations não cria novas entidades. Reutiliza:
+- `teachers` como vínculo entre `auth.uid()` e professor ativo;
+- `live_sessions.teacher_id` como autoridade de sessão;
+- `session_bookings` como roster operacional;
+- `attendance` como estado ATTENDED/NO_SHOW, com uma linha por booking;
+- `teacher_student_assignments` como autoridade separada para contexto pedagógico amplo.
+
+A migration Teacher V1 adiciona apenas read models/command RPC e audit trigger. Não adiciona grants de DML em `attendance`, não abre `profiles` globalmente e não altera a semântica de booking.
