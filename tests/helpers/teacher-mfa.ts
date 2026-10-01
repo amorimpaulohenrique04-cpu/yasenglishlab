@@ -6,10 +6,8 @@ import { join } from "node:path";
 import { expect, type Page } from "@playwright/test";
 
 export const canonicalTeacherEmail = "canonical.teacher@example.test";
-export const canonicalOtherTeacherSessionId =
-  "88200000-0000-4000-8000-000000000002";
-export const canonicalTeacherSessionId =
-  "88200000-0000-4000-8000-000000000001";
+export const canonicalOtherTeacherSessionId = "88200000-0000-4000-8000-000000000002";
+export const canonicalTeacherSessionId = "88200000-0000-4000-8000-000000000001";
 
 const secretPath = join(tmpdir(), "yas-canonical-teacher-totp.secret");
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
