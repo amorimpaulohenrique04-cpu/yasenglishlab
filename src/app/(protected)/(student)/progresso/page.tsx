@@ -289,11 +289,7 @@ function AssessmentSection({ section }: { section: ProgressSection<ProgressAsses
   );
 }
 
-function HistorySection({
-  section,
-}: {
-  section: ProgressSection<ProgressHistoryEvent[]>;
-}) {
+function HistorySection({ section }: { section: ProgressSection<ProgressHistoryEvent[]> }) {
   return (
     <section className="yas-progress-section" aria-labelledby="progress-history-title">
       <SectionHeader
