@@ -14,9 +14,7 @@ import { createSupabaseServerClient } from "@/server/supabase/server";
 
 import { SupabaseAssessmentRepository } from "./supabase-assessment-repository";
 
-export async function startCurrentStudentAssessment(
-  input: StartAssessmentInput,
-) {
+export async function startCurrentStudentAssessment(input: StartAssessmentInput) {
   await assertRole("STUDENT");
   const client = await createSupabaseServerClient();
 
@@ -27,21 +25,14 @@ export async function startCurrentStudentAssessment(
   );
 }
 
-export async function recordCurrentStudentAssessmentResponse(
-  input: RecordAssessmentResponseInput,
-) {
+export async function recordCurrentStudentAssessmentResponse(input: RecordAssessmentResponseInput) {
   await assertRole("STUDENT");
   const client = await createSupabaseServerClient();
 
-  return recordAssessmentResponse(
-    new SupabaseAssessmentRepository(client),
-    input,
-  );
+  return recordAssessmentResponse(new SupabaseAssessmentRepository(client), input);
 }
 
-export async function completeCurrentStudentAssessment(
-  input: CompleteAssessmentInput,
-) {
+export async function completeCurrentStudentAssessment(input: CompleteAssessmentInput) {
   await assertRole("STUDENT");
   const client = await createSupabaseServerClient();
 
