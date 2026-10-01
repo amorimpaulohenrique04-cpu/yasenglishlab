@@ -1,0 +1,43 @@
+name: P20 Formatter Helper
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format-p20:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format P20 files and emit canonical bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            "harness/agent-state/progress.md"
+            "harness/feature_list.json"
+            "scripts/setup-canonical-e2e.mjs"
+            "src/app/(protected)/(student)/progresso/page.tsx"
+            "src/modules/progress/domain/models.ts"
+            "src/modules/progress/domain/projection.ts"
+            "src/server/progress/supabase-progress-repository.ts"
+            "tests/a11y/critical-flows.spec.ts"
+            "tests/integration/progress-application.test.ts"
+            "tests/unit/progress.test.ts"
+          )
+          npx prettier --write "${files[@]}"
+          for file in "${files[@]}"; do
+            echo "P20_FORMAT_BEGIN:${file}"
+            base64 -w0 "${file}"
+            echo
+            echo "P20_FORMAT_END:${file}"
+          done
