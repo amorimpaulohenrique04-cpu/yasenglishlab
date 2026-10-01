@@ -312,3 +312,13 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Standard setting/cut scores, retake policy, Assessment Authoring and automatic Speaking/Pronunciation evaluation remain unresolved by design.
 - Durable evidence is stored under `harness/evidence/prompt-19-assessment-engine-v1/`; registry is now `done / verified:true`.
 - PR #23 remains open and unmerged. P18 remains independently `in_progress / verified:false`.
+
+## 2026-10-01 — prompt-20 Progresso V1 discovery
+
+- Started from `main@93666bf0478b9dabdc35c89dab72596026d7da9e` on `feat/p20-progress-v1`; main was not modified.
+- Confirmed P19 Assessment Engine V1 is incorporated in main and CEFR standard setting/cut scores remain explicitly open.
+- Read the Progress/product/data/architecture/Practice/Live/UI/accessibility/security/testing/performance/open-question/Harness contracts and inspected the canonical Learning, Practice, Schedule/Attendance, Teacher Operations and Assessment implementations.
+- Chosen architecture is a read-only Progress projection: server-authenticated Student identity, four independent domain reads, bounded bulk queries, `Promise.allSettled` partial-failure semantics, and no new source of truth.
+- Learning completion will reuse existing progress functions; Practice, Attendance and SkillScores remain semantically separate; CEFR will render unavailable rather than inferred.
+- No database migration is currently justified. Registry is `in_progress / verified:false`; all verification remains pending.
+
