@@ -396,6 +396,32 @@ begin
 end;
 $$;
 
+select set_config('request.jwt.claim.sub', '89000000-0000-0000-0000-000000000002', false);
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"89000000-0000-0000-0000-000000000002","aal":"aal2"}',
+  false
+);
+
+do $
+begin
+  begin
+    perform public.get_teacher_session_roster('89400000-0000-4000-8000-000000000001');
+    raise exception 'Teacher B must not read Teacher A roster';
+  exception when insufficient_privilege then null;
+  end;
+
+  begin
+    perform public.mark_teacher_attendance(
+      '89500000-0000-4000-8000-000000000001',
+      'ATTENDED'
+    );
+    raise exception 'Teacher B must not mark Teacher A booking';
+  exception when insufficient_privilege then null;
+  end;
+end;
+$;
+
 reset role;
 
 insert into public.user_roles (id, user_id, role)
