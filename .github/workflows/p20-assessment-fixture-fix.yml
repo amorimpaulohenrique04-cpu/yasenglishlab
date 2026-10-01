@@ -1,0 +1,113 @@
+name: P20 Assessment Fixture Lifecycle Fix
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-assessment-fixture:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Make Progress assessment fixture immutable-lifecycle safe
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = "scripts/setup-canonical-e2e.mjs";
+          const source = fs.readFileSync(path, "utf8");
+          if (source.includes("existingProgressVersion")) {
+            console.log("Assessment fixture lifecycle already corrected.");
+            process.exit(0);
+          }
+          const startMarker = "const { error: progressVersionError }";
+          const endMarker = "if (progressItemError) throw progressItemError;";
+          const start = source.indexOf(startMarker);
+          const endStart = source.indexOf(endMarker, start);
+          if (start < 0 || endStart < 0) {
+            throw new Error("Assessment fixture replacement markers were not found.");
+          }
+          const end = endStart + endMarker.length;
+          const replacement = `const { data: existingProgressVersion, error: existingProgressVersionError } = await admin
+            .from("assessment_versions")
+            .select("status")
+            .eq("id", progressAssessmentVersionId)
+            .maybeSingle();
+          if (existingProgressVersionError) throw existingProgressVersionError;
+
+          const { data: existingProgressItem, error: existingProgressItemError } = await admin
+            .from("assessment_items")
+            .select("id")
+            .eq("id", progressAssessmentItemId)
+            .maybeSingle();
+          if (existingProgressItemError) throw existingProgressItemError;
+
+          if (!existingProgressVersion) {
+            const { error: progressVersionCreateError } = await admin.from("assessment_versions").insert({
+              id: progressAssessmentVersionId,
+              assessment_id: progressAssessmentId,
+              version_number: 1,
+              status: "DRAFT",
+              specification: { fixture: "progress-v1" },
+              scoring_config: {},
+              published_at: null,
+            });
+            if (progressVersionCreateError) throw progressVersionCreateError;
+          }
+
+          if (!existingProgressItem) {
+            const { error: progressItemCreateError } = await admin.from("assessment_items").insert({
+              id: progressAssessmentItemId,
+              assessment_version_id: progressAssessmentVersionId,
+              position: 1,
+              skill: "GRAMMAR",
+              cefr_target: null,
+              item_type: "MULTIPLE_CHOICE",
+              prompt: {
+                prompt: "Choose the correct sentence.",
+                options: [
+                  { id: "a", label: "I work from home." },
+                  { id: "b", label: "I works from home." },
+                ],
+              },
+              answer_key: { optionId: "a" },
+              rubric: null,
+            });
+            if (progressItemCreateError) throw progressItemCreateError;
+          }
+
+          const { data: currentProgressVersion, error: currentProgressVersionError } = await admin
+            .from("assessment_versions")
+            .select("status")
+            .eq("id", progressAssessmentVersionId)
+            .single();
+          if (currentProgressVersionError) throw currentProgressVersionError;
+
+          if (currentProgressVersion.status === "DRAFT") {
+            const { error: progressVersionPublishError } = await admin
+              .from("assessment_versions")
+              .update({ status: "PUBLISHED", published_at: inDays(-10) })
+              .eq("id", progressAssessmentVersionId);
+            if (progressVersionPublishError) throw progressVersionPublishError;
+          } else if (currentProgressVersion.status !== "PUBLISHED") {
+            throw new Error("Canonical Progress assessment version must be DRAFT or PUBLISHED.");
+          }`;
+          fs.writeFileSync(path, source.slice(0, start) + replacement + source.slice(end));
+          NODE
+          npx prettier --write scripts/setup-canonical-e2e.mjs
+          git config user.name "yas-ci"
+          git config user.email "yas-ci@users.noreply.github.com"
+          git add scripts/setup-canonical-e2e.mjs
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "fix(p20): respect assessment fixture lifecycle"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
