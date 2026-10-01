@@ -222,6 +222,27 @@ begin
     '{"text":"A response that remains pending manual evaluation."}'::jsonb
   );
 
+  select count(*) into persisted_count
+  from public.assessment_responses
+  where assessment_attempt_id = first_attempt.id;
+  if persisted_count <> 2 then
+    raise exception 'Student A own Assessment responses must remain readable';
+  end if;
+
+  rejected := false;
+  begin
+    perform public.record_assessment_response(
+      first_attempt.id,
+      '86030000-0000-4000-8000-000000000001',
+      '{"optionId":"work","score":1}'::jsonb
+    );
+  exception when others then
+    rejected := true;
+  end;
+  if not rejected then
+    raise exception 'Assessment response accepted a forbidden extra field';
+  end if;
+
   rejected := false;
   begin
     perform public.record_assessment_response(
