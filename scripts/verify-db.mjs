@@ -52,6 +52,9 @@ const requiredInvariants = [
   "create or replace function public.record_lesson_progress",
   "create or replace function public.start_practice_attempt",
   "create or replace function public.submit_practice_attempt",
+  "create or replace function public.start_assessment_attempt",
+  "create or replace function public.record_assessment_response",
+  "create or replace function public.complete_assessment_attempt",
   "create or replace function public.get_agenda_sessions",
   "create or replace function public.book_live_session",
   "create or replace function public.get_teacher_sessions",
@@ -94,6 +97,10 @@ assert(
 assert(
   exists("supabase/tests/practice_persistence.sql"),
   "Practice V1 needs idempotency, ownership and scoring-boundary SQL evidence.",
+);
+assert(
+  exists("supabase/tests/assessment_engine.sql"),
+  "Assessment Engine V1 needs lifecycle, idempotency, scoring and RLS SQL evidence.",
 );
 assert(
   exists("supabase/tests/schedule_booking.sql"),
