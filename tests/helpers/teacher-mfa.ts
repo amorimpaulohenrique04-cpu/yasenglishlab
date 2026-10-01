@@ -46,7 +46,9 @@ function totp(secret: string, now = Date.now()): string {
 
 async function resolveTotpSecret(page: Page): Promise<string> {
   const codeInput = page.getByLabel("Código do autenticador");
-  const preparationError = page.getByText("Não foi possível preparar a verificação em duas etapas.");
+  const preparationError = page.getByText(
+    "Não foi possível preparar a verificação em duas etapas.",
+  );
 
   await Promise.race([
     codeInput.waitFor({ state: "visible", timeout: 15_000 }),
