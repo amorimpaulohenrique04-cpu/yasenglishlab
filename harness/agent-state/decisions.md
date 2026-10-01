@@ -51,3 +51,16 @@ Node verification scripts execute the npm JavaScript CLI with `process.execPath`
 ## H-013 — Git checkout policy owns canonical LF
 
 `.gitattributes` defines `text=auto eol=lf` for repository text and excludes known binary assets. Formatter policy and checkout behavior therefore agree without relying on each developer's global Git configuration.
+
+
+## 2026-09-30 — Teacher Operations V1
+
+- `/teacher` is the canonical Teacher entry point; `/teacher/sessoes/[sessionId]` is the operational detail route.
+- Teacher authorization is deliberately narrower than generic live-session RLS: every Teacher read/write derives the active teacher from `auth.uid()` and requires `private.has_role('TEACHER', true)`.
+- Roster name access is exposed only through a minimal SECURITY DEFINER read model for the authenticated Teacher's own session; global profile RLS is not widened.
+- Attendance writes remain unavailable as direct authenticated DML. `mark_teacher_attendance(uuid,text)` accepts only booking + ATTENDED/NO_SHOW and derives actor/teacher internally.
+- Attendance audit is a trigger in the same PostgreSQL transaction as the upsert so audit failure cannot yield a reported successful attendance mutation.
+- No temporal attendance window was invented. Only `session_bookings.status = 'BOOKED'` is enforced by V1.
+- NO_SHOW remains operational only; no credit, billing, penalty, cancellation or entitlement consequence is introduced.
+- Availability editing, cancellation/rescheduling, meeting provider, broad Teacher authoring and Admin CMS remain open/out of scope.
+- Teacher UI reuses the official Design System primitives/tokens but has a dedicated shell instead of treating Teacher as Student.
