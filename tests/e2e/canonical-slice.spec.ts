@@ -61,6 +61,19 @@ test.describe("canonical learning vertical slice", () => {
     ).toBeVisible();
     await captureEvidence(page, "pratica-resultado-desktop.png");
 
+    await page.goto("/agenda");
+    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sessões disponíveis" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Acesso não disponível" })).toBeDisabled();
+    await page.getByRole("button", { name: "Reservar" }).first().click();
+    await expect(page.getByText("Reserva confirmada")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await captureEvidence(page, "agenda-desktop.png");
+
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(page.getByText("Conversation Lab · Everyday English")).toBeVisible();
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -145,6 +158,11 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
     await captureEvidence(page, "pratica-tablet.png");
 
+    await page.goto("/agenda");
+    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await captureEvidence(page, "agenda-tablet.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -169,6 +187,11 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/pratica");
     await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
     await captureEvidence(page, "pratica-mobile.png");
+
+    await page.goto("/agenda");
+    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await captureEvidence(page, "agenda-mobile.png");
 
     await page.goto("/aulas");
 
