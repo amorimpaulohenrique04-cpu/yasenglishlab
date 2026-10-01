@@ -159,8 +159,8 @@ test("Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Participantes" })).toBeVisible();
 
-  const present = page.getByRole("button", { name: "Marcar Ana Souza como Presente" });
-  const absent = page.getByRole("button", { name: "Marcar Ana Souza como Ausente" });
+  const present = page.getByRole("button", { name: "Marcar Teacher Ops Student como Presente" });
+  const absent = page.getByRole("button", { name: "Marcar Teacher Ops Student como Ausente" });
 
   await present.focus();
   await expect(present).toBeFocused();
