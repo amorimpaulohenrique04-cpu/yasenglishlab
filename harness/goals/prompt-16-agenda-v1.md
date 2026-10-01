@@ -67,7 +67,7 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 - existing Playwright config/scripts only where Agenda must join the official verification system
 - `docs/LIVE_CLASSES.md`, `docs/DATA_MODEL.md`, `docs/ANALYTICS.md` only if executable contracts require synchronization
 - `harness/**` for goal/state/evidence/registry
-- `.github/workflows/foundation-verify.yml` — Preview wiring only: execute the already-defined real DB/RLS suites so P16 concurrency and authorization evidence are mandatory Official CI gates rather than unexecuted files.
+- `.github/workflows/foundation-verify.yml` — Preview wiring: execute the already-defined real DB/RLS suites so P16 concurrency and authorization evidence are mandatory Official CI gates rather than unexecuted files. A temporary non-final formatter diagnostic step may be used to print the canonical Prettier patch after a format-only CI failure; it must be removed before final verification and is never accepted as a passing-format evidence source.
 
 ## Forbidden areas
 
