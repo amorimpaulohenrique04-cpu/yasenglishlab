@@ -18,6 +18,13 @@ A taxonomia server-side vive em `src/server/audit/actions.ts`.
 | `teacher_assignment` | professor atribuído/removido de aluno |
 | `assessment_publication` | versão publicada/retirada por staff |
 | `admin_data_export` | export administrativo de dados |
+| `content_created` | criação DRAFT nas entidades educacionais existentes |
+| `content_updated` | edição de DRAFT, sem copiar conteúdo para audit |
+| `content_published` | transição validada DRAFT → PUBLISHED |
+| `content_unpublished` | transição PUBLISHED → DRAFT |
+| `content_reordered` | permutação atômica de positions no mesmo parent |
+
+Admin Content grava esses fatos na mesma transação das RPCs autenticadas; falha de audit desfaz a mutação. Ator vem de auth.uid(); correlação request_id/environment/version segue o contexto server-only existente. Payload contém somente campos alterados, estados ou IDs/posições; nunca body, gabarito, secrets, signed URL ou storage path.
 
 Hoje `role_change` já está conectado ao serviço de administração. Os demais nomes são contrato para as features futuras e não significam que essas telas/fluxos já existam.
 

@@ -9,6 +9,7 @@ const email = "canonical.student@example.test";
 const lessonId = "42000000-0000-4000-8000-000000000001";
 const agendaSessionId = "88100000-0000-4000-8000-000000000001";
 const teacherEmail = "canonical.teacher@example.test";
+const adminEmail = "canonical.admin@example.test";
 const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
 const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 
@@ -30,6 +31,76 @@ const user = listed.users.find((candidate) => candidate.email === email);
 if (!user) throw new Error("Canonical E2E user was not found.");
 const teacherUser = listed.users.find((candidate) => candidate.email === teacherEmail);
 if (!teacherUser) throw new Error("Canonical Teacher E2E user was not found.");
+const adminUser = listed.users.find((candidate) => candidate.email === adminEmail);
+if (!adminUser) throw new Error("Canonical Admin E2E user was not found.");
+
+const publishedFixtureChecks = [
+  ["courses", "40000000-0000-4000-8000-000000000001"],
+  ["modules", "41000000-0000-4000-8000-000000000001"],
+  ["lessons", lessonId],
+  ["lesson_assets", "43000000-0000-4000-8000-000000000001"],
+  ["materials", "81710000-0000-4000-8000-000000000001"],
+  ["practice_activities", "83000000-0000-4000-8000-000000000001"],
+];
+
+for (const [table, id] of publishedFixtureChecks) {
+  const { data, error } = await admin
+    .from(table)
+    .select("publication_status, published_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (data?.publication_status !== "PUBLISHED" || !data.published_at) {
+    throw new Error(`Canonical ${table} fixture ${id} must be explicitly published.`);
+  }
+}
+
+const { data: contentModule, error: contentModuleError } = await admin
+  .from("modules")
+  .select("id, course_id, position, publication_status, published_at")
+  .eq("course_id", "40000000-0000-4000-8000-000000000001")
+  .eq("title", "Canonical E2E Module")
+  .maybeSingle();
+if (contentModuleError) throw contentModuleError;
+if (
+  !contentModule ||
+  contentModule.publication_status !== "DRAFT" ||
+  contentModule.published_at !== null ||
+  contentModule.position !== 1
+) {
+  throw new Error(
+    "Admin Content E2E must leave its module unpublished at position 1 after reorder.",
+  );
+}
+
+const { data: contentAudits, error: contentAuditError } = await admin
+  .from("audit_logs")
+  .select("action, entity_id, actor_user_id, data")
+  .eq("entity_type", "modules")
+  .eq("actor_user_id", adminUser.id)
+  .in("entity_id", [contentModule.id, "40000000-0000-4000-8000-000000000001"])
+  .in("action", [
+    "content_created",
+    "content_published",
+    "content_unpublished",
+    "content_reordered",
+  ]);
+if (contentAuditError) throw contentAuditError;
+const contentAuditActions = new Set((contentAudits ?? []).map((row) => row.action));
+for (const action of ["content_created", "content_published", "content_unpublished"]) {
+  if (!contentAuditActions.has(action))
+    throw new Error(`Admin Content audit action ${action} is missing.`);
+}
+const reorderedContent = (contentAudits ?? []).some(
+  (row) =>
+    row.action === "content_reordered" &&
+    row.entity_id === "40000000-0000-4000-8000-000000000001" &&
+    Array.isArray(row.data?.new_order) &&
+    row.data.new_order.includes(contentModule.id),
+);
+if (!reorderedContent) {
+  throw new Error("Admin Content full-parent reorder audit must include the created module.");
+}
 
 const progressSql = `
 select jsonb_build_object(

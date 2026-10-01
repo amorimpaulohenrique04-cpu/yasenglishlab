@@ -44,6 +44,8 @@ async function prepareProtectedMaterialFixtures() {
     external_url: null,
     metadata: { pages: 3 },
     active: true,
+    publication_status: "PUBLISHED",
+    published_at: new Date().toISOString(),
     required_entitlement_key: "weekly_conversation_labs",
   });
   if (materialError) throw materialError;

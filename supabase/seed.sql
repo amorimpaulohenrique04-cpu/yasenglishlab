@@ -331,3 +331,18 @@ values
 on conflict (practice_activity_id) do update set
   answer_key = excluded.answer_key,
   feedback = excluded.feedback;
+
+-- P18: explicitly publish canonical seed content after sources/answer keys exist.
+do $$
+declare t text; r record;
+begin
+ foreach t in array array['courses','modules','lesson_assets','lessons','materials','practice_activities'] loop
+  for r in execute format('select id,to_jsonb(x) data from public.%I x where publication_status=''DRAFT''',t) loop
+   begin
+    perform private.validate_content(t,r.data);
+    execute format('update public.%I set publication_status=''PUBLISHED'',published_at=now() where id=$1',t) using r.id;
+   exception when check_violation then raise notice 'Seed % remains DRAFT: unsupported content',r.id;
+   end;
+  end loop;
+ end loop;
+end $$;

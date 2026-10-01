@@ -25,6 +25,7 @@ Implementação inicial:
 - **BillingEvent** → evento externo idempotente, identificado por `provider + event_id`.
 
 ### Learning
+- P18 adds `publication_status` (DRAFT/PUBLISHED) and `published_at` to courses, modules, lessons, lesson_assets, materials and practice_activities. `active` remains availability. New rows default DRAFT; valid pre-existing rows are backfilled PUBLISHED. Publication/visibility and unpublish-before-edit follow [ADMIN_CONTENT.md](./ADMIN_CONTENT.md), without parallel content tables or editorial versions.
 - **Course → Module → Lesson → LessonAsset**.
 - **Enrollment** liga User a Course.
 - **LessonProgress** liga User/Enrollment a Lesson e mede somente avanço curricular. Na canonical slice persiste `completion_percent`, `last_position_seconds`, `last_accessed_at` e `completed_at` para retomada.

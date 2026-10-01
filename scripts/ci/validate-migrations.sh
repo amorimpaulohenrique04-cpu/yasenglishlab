@@ -62,6 +62,25 @@ returns jsonb
 language sql
 stable
 as 'select coalesce(nullif(current_setting(''request.jwt.claims'', true), '''')::jsonb, ''{}''::jsonb);';
+
+-- Mirror the Supabase Auth schema contract used by anon/authenticated.
+grant usage on schema auth to anon, authenticated;
+
+-- Fail fast if the synthetic CI bootstrap drifts from the auth contract
+-- expected by RLS policies and database tests.
+begin;
+set local role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"00000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}',
+  true
+);
+select 1 / ((auth.uid() = '00000000-0000-4000-8000-000000000001'::uuid)::integer)
+  as auth_uid_contract;
+select 1 / (((auth.jwt() ->> 'role') = 'authenticated')::integer)
+  as auth_jwt_contract;
+rollback;
 SQL
 
 while IFS= read -r migration; do

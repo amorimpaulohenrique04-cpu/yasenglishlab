@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+const port = process.env.PLAYWRIGHT_PORT ?? "3000";
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./tests/visual",
   testMatch: "golden.spec.ts",
@@ -19,7 +22,7 @@ export default defineConfig({
     },
   },
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "retain-on-failure",
     reducedMotion: "reduce",
   },
@@ -29,9 +32,9 @@ export default defineConfig({
     { name: "mobile", use: { viewport: { width: 390, height: 844 } } },
   ],
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1",
-    url: "http://127.0.0.1:3000/login",
-    reuseExistingServer: !process.env.CI,
+    command: `"${process.execPath}" node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port ${port}`,
+    url: `${baseURL}/login`,
+    reuseExistingServer: !process.env.CI && process.env.YAS_ISOLATED_VERIFY !== "1",
     timeout: 120_000,
   },
 });

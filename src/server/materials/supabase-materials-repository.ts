@@ -36,6 +36,7 @@ export class SupabaseMaterialsRepository implements MaterialsRepository {
         .from("materials")
         .select("id, title, material_type, module_id, lesson_id, metadata")
         .eq("active", true)
+        .eq("publication_status", "PUBLISHED")
         .order("created_at")
         .order("id"),
       this.client

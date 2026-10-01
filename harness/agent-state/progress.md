@@ -2,6 +2,10 @@
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-10-01 — Admin Content V1 discovery
+
+Two read-only investigations and principal synthesis completed. Existing entities, Student consumers, ordering constraints, Admin+AAL2 and audit infrastructure mapped. Admin Content does not exist. Publication blocked by the open pedagogical-review decision and absent durable draft/publication contract. No runtime/migrations changed. Registry remains blocked and unverified; check results belong in P18 evidence.
+
 ## 2026-09-30 — prompt-15-practice-engine-v1
 
 - Started from clean `main` at `038f63ad3f36ee114ddf96e89c30d7f7ab637c10` after the verified PRE-P15 gate.
@@ -277,3 +281,11 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final scope audit found no billing editor, Practice/CEFR feature, cancellation/rescheduling, meeting provider, Admin CMS, availability CRUD, historical migration edit or global authorization widening.
 - Durable closure evidence is stored under `harness/evidence/prompt-17-teacher-operations-v1/`; registry is now `done / verified:true`.
 - PR #21 remains open and unmerged. No merge to `main` was performed.
+
+## 2026-10-01 — prompt-18 Admin Content V1 implementation
+
+- Product-owner decision recorded in ADR 0006: ADMIN+AAL2 can publish/unpublish directly in V1; no review workflow is inferred.
+- Added a separate DRAFT/PUBLISHED contract to the existing content entities, effective-publication RLS, narrow audited Admin RPCs, Student publication filters, server-side Admin Content routes and reusable UI forms. No parallel CMS table, service-role client use, binary upload service, assessment authoring, billing, role editor or analytics dashboard was added.
+- A clean local Supabase reset replayed nine migrations and canonical seed successfully. Focused real DB integration passed six SQL files plus the Agenda concurrency proof; focused RLS passed three SQL files. The new Admin SQL proof covers role/AAL2 denial, draft/direct-ID isolation, publication validation, parent visibility, atomic reorder, authenticated audit attribution/correlation and rollback on audit failure.
+- Admin Content E2E passed 1/1: real Admin MFA, draft creation/preview, Student draft invisibility, publication visibility, reorder, unpublish and persisted reload behavior. Focused a11y passed 2/2 at desktop and mobile with keyboard focus and WCAG A/AA checks. Desktop evidence was inspected under `artifacts/prompt-18-admin-content/`.
+- Operator requested that broad gates be listed rather than executed. P18 remains `in_progress` / unverified until those commands are run and their evidence is inspected.

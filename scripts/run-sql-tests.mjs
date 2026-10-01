@@ -8,8 +8,13 @@ const suites = {
     "supabase/tests/practice_persistence.sql",
     "supabase/tests/schedule_booking.sql",
     "supabase/tests/teacher_operations.sql",
+    "supabase/tests/admin_content.sql",
   ],
-  rls: ["supabase/tests/rls_permissions.sql", "supabase/tests/teacher_operations.sql"],
+  rls: [
+    "supabase/tests/rls_permissions.sql",
+    "supabase/tests/teacher_operations.sql",
+    "supabase/tests/admin_content.sql",
+  ],
 };
 
 const files = suites[suite];
