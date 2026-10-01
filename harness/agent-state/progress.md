@@ -257,3 +257,12 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Added canonical Teacher A/Teacher B fixtures and real MFA TOTP test helper with the secret stored only in the OS temporary directory.
 - Synchronized Live/Auth/Audit/Data Model/Open Questions contracts.
 - Current state: implementation complete enough for Official CI; feature remains `in_progress` / `verified: false` until all mandatory gates are inspected green.
+
+
+## 2026-10-01 — prompt-17 Teacher MFA verification correction
+
+- Official CI #282 / run `36810184169` passed Supply Chain, Quality, Database and Guardrail Simulations. Preview also passed the real database integration and RLS steps, proving the prior Teacher audit/DB assertion failure was corrected.
+- Critical E2E then failed only in the real Teacher MFA path: the MFA page rendered, but Supabase returned `mfa_totp_enroll_not_enabled`, so the authenticator-code field never became available.
+- Preview artifact `11139423780` and its Playwright trace confirmed the exact Auth response. The checked-in local Supabase config had both TOTP enrollment and verification disabled.
+- Corrective action is intentionally environment-scoped: enable TOTP enrollment/verification in `supabase/config.toml` for local/Preview verification. No production migration, RLS policy, role rule, attendance boundary or MFA assertion is weakened.
+- P17 remains `in_progress` / `verified: false` until a fresh full Official CI reaches persistence, a11y, visual evidence, artifact upload and CI Gate successfully.
