@@ -21,6 +21,7 @@ const authMigration = read("supabase/migrations/20260929043000_auth_rbac_rls.sql
 const rlsEvidence = read("supabase/tests/rls_permissions.sql");
 const threatModel = read("docs/THREAT_MODEL.md");
 const envExample = read(".env.example");
+const supabaseConfig = read("supabase/config.toml");
 
 assert(
   !/NEXT_PUBLIC_[A-Z0-9_]*SERVICE_ROLE/.test(browserClient),
@@ -53,6 +54,12 @@ assert(
     browserClient.includes("process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY") &&
     !browserClient.includes("process.env[name]"),
   "Browser public Supabase env must use statically analyzable NEXT_PUBLIC_* access for Next.js inlining.",
+);
+assert(
+  /\[auth\.mfa\.totp\][\s\S]*enroll_enabled\s*=\s*true[\s\S]*verify_enabled\s*=\s*true/.test(
+    supabaseConfig,
+  ),
+  "Local/Preview Supabase must enable TOTP enrollment and verification for the staff AAL2 contract.",
 );
 assert(proxy.includes("auth.getClaims()"), "Route protection must verify claims.");
 assert(
