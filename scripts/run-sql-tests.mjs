@@ -9,11 +9,13 @@ const suites = {
     "supabase/tests/schedule_booking.sql",
     "supabase/tests/teacher_operations.sql",
     "supabase/tests/admin_content.sql",
+    "supabase/tests/assessment_engine.sql",
   ],
   rls: [
     "supabase/tests/rls_permissions.sql",
     "supabase/tests/teacher_operations.sql",
     "supabase/tests/admin_content.sql",
+    "supabase/tests/assessment_engine.sql",
   ],
 };
 
