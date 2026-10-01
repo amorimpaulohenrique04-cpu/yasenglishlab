@@ -51,9 +51,9 @@ test.describe("Teacher Operations V1", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Teacher Ops · Conversation Practice" }),
     ).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Ana Souza" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Teacher Ops Student" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Marcar Ana Souza como Presente" }).click();
+    await page.getByRole("button", { name: "Marcar Teacher Ops Student como Presente" }).click();
     await expect(page.getByText("Presença atualizada")).toBeVisible();
     await expect(page.getByText("Presente", { exact: true })).toBeVisible();
 
