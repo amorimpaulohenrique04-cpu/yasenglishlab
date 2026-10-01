@@ -31,16 +31,35 @@ if (!user) throw new Error("Canonical E2E user was not found.");
 const teacherUser = listed.users.find((candidate) => candidate.email === teacherEmail);
 if (!teacherUser) throw new Error("Canonical Teacher E2E user was not found.");
 
-const { data: progress, error: progressError } = await admin
-  .from("lesson_progress")
-  .select("user_id, lesson_id, completion_percent, last_position_seconds, completed_at")
-  .eq("user_id", user.id)
-  .eq("lesson_id", lessonId)
-  .single();
+const progressSql = `
+select jsonb_build_object(
+  'completion_percent', completion_percent,
+  'completed_at', completed_at
+)::text
+from public.lesson_progress
+where user_id = '${user.id}'::uuid
+  and lesson_id = '${lessonId}'::uuid
+limit 1;
+`;
 
-if (progressError || !progress) {
-  throw progressError ?? new Error("Persisted lesson progress was not found.");
+const progressResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", progressSql],
+  { encoding: "utf8" },
+);
+
+if (progressResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for lesson progress verification.");
 }
+if (progressResult.status !== 0) {
+  throw new Error(progressResult.stderr.trim() || "Lesson progress verification failed.");
+}
+
+const progressRaw = progressResult.stdout.trim();
+if (!progressRaw) {
+  throw new Error("Persisted lesson progress was not found.");
+}
+const progress = JSON.parse(progressRaw);
 
 if (Number(progress.completion_percent) !== 100) {
   throw new Error(`Expected final completion 100, got ${progress.completion_percent}.`);
@@ -50,16 +69,36 @@ if (!progress.completed_at) {
   throw new Error("Completed lesson must persist completed_at.");
 }
 
-const { data: agendaBooking, error: agendaBookingError } = await admin
-  .from("session_bookings")
-  .select("id, live_session_id, user_id, status")
-  .eq("user_id", user.id)
-  .eq("live_session_id", agendaSessionId)
-  .single();
+const agendaBookingSql = `
+select jsonb_build_object(
+  'id', id,
+  'user_id', user_id,
+  'status', status
+)::text
+from public.session_bookings
+where user_id = '${user.id}'::uuid
+  and live_session_id = '${agendaSessionId}'::uuid
+limit 1;
+`;
 
-if (agendaBookingError || !agendaBooking) {
-  throw agendaBookingError ?? new Error("Persisted Agenda booking was not found.");
+const agendaBookingResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", agendaBookingSql],
+  { encoding: "utf8" },
+);
+
+if (agendaBookingResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for Agenda booking verification.");
 }
+if (agendaBookingResult.status !== 0) {
+  throw new Error(agendaBookingResult.stderr.trim() || "Agenda booking verification failed.");
+}
+
+const agendaBookingRaw = agendaBookingResult.stdout.trim();
+if (!agendaBookingRaw) {
+  throw new Error("Persisted Agenda booking was not found.");
+}
+const agendaBooking = JSON.parse(agendaBookingRaw);
 if (agendaBooking.status !== "BOOKED" || agendaBooking.user_id !== user.id) {
   throw new Error("Agenda booking did not persist as BOOKED for the authenticated student.");
 }
@@ -153,12 +192,35 @@ for (const forbidden of [
   }
 }
 
-const { data: events, error: eventError } = await admin
-  .from("product_analytics_events")
-  .select("event_name, idempotency_key, properties")
-  .eq("user_id", user.id);
+const eventsSql = `
+select coalesce(
+  jsonb_agg(
+    jsonb_build_object(
+      'event_name', event_name,
+      'idempotency_key', idempotency_key,
+      'properties', properties
+    )
+  ),
+  '[]'::jsonb
+)::text
+from public.product_analytics_events
+where user_id = '${user.id}'::uuid;
+`;
 
-if (eventError) throw eventError;
+const eventsResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", eventsSql],
+  { encoding: "utf8" },
+);
+
+if (eventsResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for analytics verification.");
+}
+if (eventsResult.status !== 0) {
+  throw new Error(eventsResult.stderr.trim() || "Analytics verification failed.");
+}
+
+const events = JSON.parse(eventsResult.stdout.trim() || "[]");
 
 const counts = new Map();
 for (const row of events ?? []) {
