@@ -329,4 +329,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Stable Progress desktop/tablet/mobile captures from Official CI were inspected before promotion to golden baselines; the golden tolerance was not changed.
 - Progress browser-boundary E2E now inspects browser-visible `/progresso` payloads for forbidden Assessment/service-role fields in addition to the existing Student isolation and RLS evidence.
 - P20 remains `in_progress / verified:false` until the clean-head Official CI, including golden visual checks and CI Gate, completes successfully.
-
