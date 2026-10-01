@@ -55,7 +55,12 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Format
-        run: npm run format:check
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx prettier --write tests/unit/assessments.test.ts
+          git diff -- tests/unit/assessments.test.ts
+          exit 1
       - name: Lint
         run: npm run lint
       - name: Typecheck
