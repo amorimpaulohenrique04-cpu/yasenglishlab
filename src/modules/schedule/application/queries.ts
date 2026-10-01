@@ -7,9 +7,7 @@ export interface ScheduleView {
 }
 
 export type SchedulePageState =
-  | { status: "unauthorized" }
-  | { status: "empty" }
-  | { status: "success"; data: ScheduleView };
+  { status: "unauthorized" } | { status: "empty" } | { status: "success"; data: ScheduleView };
 
 export async function getScheduleView(
   repository: ScheduleRepository,
@@ -25,9 +23,7 @@ export async function getScheduleView(
     status: "success",
     data: {
       sessions,
-      upcomingBookings: sessions
-        .filter((session) => session.availability === "BOOKED")
-        .slice(0, 4),
+      upcomingBookings: sessions.filter((session) => session.availability === "BOOKED").slice(0, 4),
     },
   };
 }
