@@ -52,7 +52,6 @@ Node verification scripts execute the npm JavaScript CLI with `process.execPath`
 
 `.gitattributes` defines `text=auto eol=lf` for repository text and excludes known binary assets. Formatter policy and checkout behavior therefore agree without relying on each developer's global Git configuration.
 
-
 ## 2026-09-30 — Teacher Operations V1
 
 - `/teacher` is the canonical Teacher entry point; `/teacher/sessoes/[sessionId]` is the operational detail route.
