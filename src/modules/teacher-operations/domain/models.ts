@@ -1,11 +1,7 @@
 export const TEACHER_ATTENDANCE_STATUSES = ["ATTENDED", "NO_SHOW"] as const;
 
 export type TeacherAttendanceStatus = (typeof TEACHER_ATTENDANCE_STATUSES)[number];
-export type TeacherSessionType =
-  | "CORE_CLASS"
-  | "CONVERSATION_LAB"
-  | "PRIVATE_SESSION"
-  | "WORKSHOP";
+export type TeacherSessionType = "CORE_CLASS" | "CONVERSATION_LAB" | "PRIVATE_SESSION" | "WORKSHOP";
 export type TeacherSessionStatus = "SCHEDULED" | "CANCELLED" | "COMPLETED";
 export type TeacherBookingStatus = "BOOKED" | "CANCELLED" | "TEACHER_CANCELLED";
 
