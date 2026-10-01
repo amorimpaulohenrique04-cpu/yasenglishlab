@@ -44,8 +44,7 @@
   border: var(--yas-border-subtle);
   border-radius: var(--yas-radius-xl);
   background:
-    linear-gradient(180deg, var(--yas-color-purple-50), transparent 11rem),
-    var(--yas-color-surface);
+    linear-gradient(180deg, var(--yas-color-purple-50), transparent 11rem), var(--yas-color-surface);
   padding: var(--yas-space-5);
   box-shadow: var(--yas-shadow-card);
 }
