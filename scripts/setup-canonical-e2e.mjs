@@ -92,7 +92,7 @@ const operations = [
     {
       id: subscriptionId,
       user_id: userId,
-      plan_id: "10000000-0000-0000-0000-000000000002",
+      plan_id: "10000000-0000-0000-0000-000000000001",
       provider: "test",
       provider_subscription_id: "canonical_e2e",
       status: "ACTIVE",
@@ -108,27 +108,46 @@ for (const operation of operations) {
   if (error) throw error;
 }
 
+const nonCanonicalAgendaSessionIds = [
+  "85400000-0000-0000-0000-000000000001",
+  "85400000-0000-0000-0000-000000000002",
+  "85400000-0000-0000-0000-000000000003",
+  "86400000-0000-0000-0000-000000000001",
+];
+
+const { error: testBookingCleanupError } = await admin
+  .from("session_bookings")
+  .delete()
+  .in("live_session_id", nonCanonicalAgendaSessionIds);
+if (testBookingCleanupError) throw testBookingCleanupError;
+
+const { error: testSessionCleanupError } = await admin
+  .from("live_sessions")
+  .delete()
+  .in("id", nonCanonicalAgendaSessionIds);
+if (testSessionCleanupError) throw testSessionCleanupError;
+
 const sessions = [
   {
     id: sessionIds[0],
     teacher_id: teacherId,
-    session_type: "CONVERSATION_LAB",
-    title: "Conversation Lab · Everyday English",
+    session_type: "CORE_CLASS",
+    title: "Core Class · Building confidence",
     starts_at: inDays(1),
     ends_at: inDays(1, 60),
-    capacity: 2,
-    required_entitlement_key: "weekly_conversation_labs",
+    capacity: 4,
+    required_entitlement_key: "weekly_core_classes",
     status: "SCHEDULED",
   },
   {
     id: sessionIds[1],
     teacher_id: teacherId,
-    session_type: "CORE_CLASS",
-    title: "Core Class · Building confidence",
+    session_type: "CONVERSATION_LAB",
+    title: "Conversation Lab · Everyday English",
     starts_at: inDays(2),
     ends_at: inDays(2, 60),
-    capacity: 4,
-    required_entitlement_key: "weekly_core_classes",
+    capacity: 2,
+    required_entitlement_key: "weekly_conversation_labs",
     status: "SCHEDULED",
   },
   {
