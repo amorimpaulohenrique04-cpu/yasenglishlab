@@ -26,12 +26,8 @@ export const completeAssessmentInputSchema = z
   .strict();
 
 export type StartAssessmentInput = z.infer<typeof startAssessmentInputSchema>;
-export type RecordAssessmentResponseInput = z.infer<
-  typeof recordAssessmentResponseInputSchema
->;
-export type CompleteAssessmentInput = z.infer<
-  typeof completeAssessmentInputSchema
->;
+export type RecordAssessmentResponseInput = z.infer<typeof recordAssessmentResponseInputSchema>;
+export type CompleteAssessmentInput = z.infer<typeof completeAssessmentInputSchema>;
 
 export async function startAssessment(
   repository: AssessmentRepository,
