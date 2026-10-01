@@ -247,7 +247,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final `main...feat/agenda-v1` scope audit found no Teacher/Admin portal, cancellation/rescheduling/no-show/attendance mutation, credit-window policy, meeting provider, CEFR logic or curricular-progress behavior.
 - Durable evidence is stored under `harness/evidence/prompt-16-agenda-v1/`; registry is `done / verified:true`. PR #20 remains open and unmerged.
 
-
 ## 2026-09-30 — prompt-17-teacher-operations-v1
 
 - Baseline confirmed at `main@a77386df147805f8ecd236f63657c90d251b3c63`; Agenda PR #20 is incorporated and P15/P16 are done/verified.
