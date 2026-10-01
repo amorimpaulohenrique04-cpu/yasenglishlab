@@ -18,12 +18,14 @@ Agenda V1 is implemented and verified on PR #20 without merging to `main`.
 Agenda remains a projection of the existing Live domain. No parallel availability table or client-owned capacity rule was introduced.
 
 The append-only P16 migration adds:
+
 - `public.get_agenda_sessions()`: authenticated Student-only aggregate read model with session metadata, aggregate booked count, spots remaining, the current user's own booking only and entitlement boolean.
 - `public.book_live_session(uuid)`: accepts only the Live session id, derives ownership from `auth.uid()`, requires the durable Student role and serializes retries/competing users on the session row before inserting.
 
 The existing `private.validate_booking()` trigger remains authoritative for SCHEDULED state, entitlement and capacity. Direct authenticated INSERT into `session_bookings` remains denied. The pre-P16 service-role booking helper now delegates to the single authenticated Agenda boundary instead of keeping a second mutation path.
 
 Executable SQL evidence proves:
+
 - missing entitlement is rejected;
 - non-scheduled booking is rejected;
 - capacity is enforced;
@@ -48,6 +50,7 @@ The integration SQL suite passed 4 files and the RLS suite passed separately. Ca
 The canonical E2E passed 3/3 and exercises Agenda in the real app flow.
 
 It proves:
+
 - Student loads `/agenda`;
 - only entitled scheduled session is reservable for the canonical START fixture;
 - successful booking persists;
@@ -91,6 +94,7 @@ The final artifact screenshots were opened and inspected directly:
 - `artifacts/canonical-slice/agenda-mobile.png`
 
 Observed result:
+
 - desktop keeps the approved purple/lilac/white visual language, Agenda heading, date navigation, primary schedule area and upcoming-reservations side rail;
 - tablet collapses the side rail below the schedule without overlap or clipped cards;
 - mobile becomes a single-column schedule with readable cards and a horizontal date strip; the scrollable strip is keyboard focusable and uses the Design System focus token;
