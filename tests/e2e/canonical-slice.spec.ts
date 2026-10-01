@@ -72,7 +72,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.reload();
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
-    await expect(page.getByText("Conversation Lab · Everyday English")).toBeVisible();
+    await expect(page.getByText("Conversation Lab · Everyday English").first()).toBeVisible();
 
     await page.goto("/aulas");
 
