@@ -64,7 +64,9 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Sessões disponíveis" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Acesso não disponível" })).toBeDisabled();
+    const blockedAgendaActions = page.getByRole("button", { name: "Acesso não disponível" });
+    await expect(blockedAgendaActions).toHaveCount(2);
+    await expect(blockedAgendaActions.first()).toBeDisabled();
     await page.getByRole("button", { name: "Reservar" }).first().click();
     await expect(page.getByText("Reserva confirmada")).toBeVisible();
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
@@ -72,7 +74,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.reload();
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
-    await expect(page.getByText("Conversation Lab · Everyday English").first()).toBeVisible();
+    await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
 
     await page.goto("/aulas");
 
