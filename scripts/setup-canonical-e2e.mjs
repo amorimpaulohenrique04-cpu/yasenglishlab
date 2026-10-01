@@ -87,25 +87,20 @@ const operations = [
     ),
   admin
     .from("teachers")
-    .upsert(
-      { id: teacherId, user_id: teacherUser.id, active: true },
-      { onConflict: "id" },
-    ),
-  admin
-    .from("subscriptions")
-    .upsert(
-      {
-        id: subscriptionId,
-        user_id: userId,
-        plan_id: "10000000-0000-0000-0000-000000000002",
-        provider: "test",
-        provider_subscription_id: "canonical_e2e",
-        status: "ACTIVE",
-        current_period_start: inDays(-1),
-        current_period_end: inDays(30),
-      },
-      { onConflict: "id" },
-    ),
+    .upsert({ id: teacherId, user_id: teacherUser.id, active: true }, { onConflict: "id" }),
+  admin.from("subscriptions").upsert(
+    {
+      id: subscriptionId,
+      user_id: userId,
+      plan_id: "10000000-0000-0000-0000-000000000002",
+      provider: "test",
+      provider_subscription_id: "canonical_e2e",
+      status: "ACTIVE",
+      current_period_start: inDays(-1),
+      current_period_end: inDays(30),
+    },
+    { onConflict: "id" },
+  ),
 ];
 
 for (const operation of operations) {
