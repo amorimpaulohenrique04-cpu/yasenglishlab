@@ -1,7 +1,10 @@
+import { spawnSync } from "node:child_process";
+
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const databaseUrl = process.env.DATABASE_URL;
 const email = "canonical.student@example.test";
 const lessonId = "42000000-0000-4000-8000-000000000001";
 const agendaSessionId = "88100000-0000-4000-8000-000000000001";
@@ -9,8 +12,8 @@ const teacherEmail = "canonical.teacher@example.test";
 const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
 const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 
-if (!url || !serviceRoleKey) {
-  throw new Error("Canonical E2E assertion requires local Supabase credentials.");
+if (!url || !serviceRoleKey || !databaseUrl) {
+  throw new Error("Canonical E2E assertion requires local Supabase and database credentials.");
 }
 
 const admin = createClient(url, serviceRoleKey, {
@@ -77,28 +80,38 @@ if (
   throw new Error("Teacher attendance did not persist as ATTENDED for the authenticated Teacher.");
 }
 
-const { data: attendanceAudit, error: attendanceAuditError } = await admin
-  .from("audit_logs")
-  .select("actor_user_id, action, entity_id, data, occurred_at")
-  .eq("action", "attendance_marked")
-  .eq("entity_id", teacherAttendance.id)
-  .order("occurred_at", { ascending: false })
-  .limit(1)
-  .single();
+const attendanceAuditSql = `
+select coalesce(jsonb_agg(data), '[]'::jsonb)::text
+from public.audit_logs
+where action = 'attendance_marked'
+  and entity_id = '${teacherAttendance.id}'::uuid
+  and actor_user_id = '${teacherUser.id}'::uuid
+  and data ->> 'live_session_id' = '${teacherOpsSessionId}'
+  and data ->> 'session_booking_id' = '${teacherOpsBookingId}'
+  and data ->> 'new_status' = 'ATTENDED';
+`;
 
-if (attendanceAuditError || !attendanceAudit) {
-  throw attendanceAuditError ?? new Error("Teacher attendance audit fact was not found.");
+const attendanceAuditResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", attendanceAuditSql],
+  { encoding: "utf8" },
+);
+
+if (attendanceAuditResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for canonical Teacher audit verification.");
 }
-if (
-  attendanceAudit.actor_user_id !== teacherUser.id ||
-  attendanceAudit.data?.live_session_id !== teacherOpsSessionId ||
-  attendanceAudit.data?.session_booking_id !== teacherOpsBookingId ||
-  attendanceAudit.data?.new_status !== "ATTENDED"
-) {
-  throw new Error("Teacher attendance audit lost actor/session/booking/final-state evidence.");
+if (attendanceAuditResult.status !== 0) {
+  throw new Error(
+    attendanceAuditResult.stderr.trim() || "Teacher attendance audit verification failed.",
+  );
 }
 
-const serializedAttendanceAudit = JSON.stringify(attendanceAudit.data ?? {}).toLowerCase();
+const attendanceAudits = JSON.parse(attendanceAuditResult.stdout.trim() || "[]");
+if (!Array.isArray(attendanceAudits) || attendanceAudits.length === 0) {
+  throw new Error("Teacher attendance audit fact was not found.");
+}
+
+const serializedAttendanceAudit = JSON.stringify(attendanceAudits).toLowerCase();
 for (const forbidden of [
   "email",
   "phone",
