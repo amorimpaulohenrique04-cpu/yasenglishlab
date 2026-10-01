@@ -33,4 +33,12 @@ test("login, home and aulas match golden baselines", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
   await stabilize(page);
   await expect(page).toHaveScreenshot("aulas.png", { fullPage: true });
+
+  await page.goto("/progresso");
+  await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+  await stabilize(page);
+  await page.addStyleTag({
+    content: ".yas-progress-timeline time { visibility: hidden !important; }",
+  });
+  await expect(page).toHaveScreenshot("progresso.png", { fullPage: true });
 });

@@ -76,6 +76,16 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
 
+    await page.getByRole("link", { name: "Progresso", exact: true }).first().click();
+    await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
+    await expect(page.getByText("Progress Fixture · Conversation Lab")).toBeVisible();
+    await expect(page.getByText("1/1")).toBeVisible();
+    await expect(page.getByText("Pendente de avaliação manual")).toHaveCount(0);
+    await expect(page.getByText("A1", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("A2", { exact: true })).toHaveCount(0);
+    await captureEvidence(page, "progresso-desktop.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -165,6 +175,10 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await captureEvidence(page, "agenda-tablet.png");
 
+    await page.goto("/progresso");
+    await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await captureEvidence(page, "progresso-tablet.png");
+
     await page.goto("/aulas");
 
     await page.getByRole("link", { name: "Abrir módulo →" }).click();
@@ -194,6 +208,12 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await captureEvidence(page, "agenda-mobile.png");
+
+    await page.getByRole("button", { name: "Abrir navegação" }).click();
+    const progressMobileNavigation = page.getByRole("navigation", { name: "Navegação mobile" });
+    await progressMobileNavigation.getByRole("link", { name: "Progresso", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await captureEvidence(page, "progresso-mobile.png");
 
     await page.goto("/aulas");
 

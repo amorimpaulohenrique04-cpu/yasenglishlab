@@ -4,6 +4,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const email = "canonical.student@example.test";
+const progressEmptyEmail = "canonical.progress-empty@example.test";
 const teacherEmail = "canonical.teacher@example.test";
 const teacherBEmail = "canonical.teacher-b@example.test";
 const teacherStudentEmail = "canonical.teacher-student@example.test";
@@ -15,6 +16,14 @@ const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
 const teacherOtherSessionId = "88200000-0000-4000-8000-000000000002";
 const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 const teacherOtherBookingId = "88300000-0000-4000-8000-000000000002";
+const progressSessionId = "88400000-0000-4000-8000-000000000001";
+const progressBookingId = "88500000-0000-4000-8000-000000000001";
+const progressAttendanceId = "88600000-0000-4000-8000-000000000001";
+const progressAssessmentId = "88700000-0000-4000-8000-000000000001";
+const progressAssessmentVersionId = "88800000-0000-4000-8000-000000000001";
+const progressAssessmentItemId = "88900000-0000-4000-8000-000000000001";
+const progressAssessmentAttemptId = "88a00000-0000-4000-8000-000000000001";
+const progressSkillScoreId = "88b00000-0000-4000-8000-000000000001";
 const subscriptionId = "88000000-0000-4000-8000-000000000002";
 const adminContentTestTitle = "Canonical E2E Module";
 const sessionIds = [
@@ -72,6 +81,7 @@ async function ensureUser(userEmail, displayName) {
 }
 
 const user = await ensureUser(email, "Ana Souza");
+const progressEmptyUser = await ensureUser(progressEmptyEmail, "Progress Empty");
 const teacherUser = await ensureUser(teacherEmail, "Yasmin");
 const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
 const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
@@ -79,6 +89,7 @@ const adminUser = await ensureUser(adminEmail, "Canonical Admin");
 const userId = user.id;
 const canonicalUserIds = [
   user.id,
+  progressEmptyUser.id,
   teacherUser.id,
   teacherBUser.id,
   teacherStudentUser.id,
@@ -90,6 +101,7 @@ const cleanup = [
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("material_favorites").delete().eq("user_id", userId),
   admin.from("practice_attempts").delete().eq("user_id", userId),
+  admin.from("assessment_attempts").delete().eq("user_id", userId),
   admin.from("session_bookings").delete().eq("user_id", userId),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
 ];
@@ -108,6 +120,12 @@ const operations = [
   admin
     .from("user_roles")
     .upsert({ user_id: userId, role: "STUDENT" }, { onConflict: "user_id,role" }),
+  admin
+    .from("user_roles")
+    .upsert(
+      { user_id: progressEmptyUser.id, role: "STUDENT" },
+      { onConflict: "user_id,role" },
+    ),
   admin
     .from("user_roles")
     .upsert({ user_id: teacherUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),
@@ -252,6 +270,17 @@ const sessions = [
     status: "SCHEDULED",
   },
   {
+    id: progressSessionId,
+    teacher_id: teacherId,
+    session_type: "CONVERSATION_LAB",
+    title: "Progress Fixture · Conversation Lab",
+    starts_at: inDays(-2),
+    ends_at: inDays(-2, 60),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "COMPLETED",
+  },
+  {
     id: teacherOpsSessionId,
     teacher_id: teacherId,
     session_type: "CONVERSATION_LAB",
@@ -300,5 +329,104 @@ const { error: teacherBookingError } = await admin.from("session_bookings").upse
   { onConflict: "id" },
 );
 if (teacherBookingError) throw teacherBookingError;
+
+const { error: progressBookingError } = await admin.from("session_bookings").insert({
+  id: progressBookingId,
+  live_session_id: progressSessionId,
+  user_id: userId,
+  status: "BOOKED",
+});
+if (progressBookingError) throw progressBookingError;
+
+const { error: progressAttendanceError } = await admin.from("attendance").insert({
+  id: progressAttendanceId,
+  session_booking_id: progressBookingId,
+  status: "ATTENDED",
+  marked_at: inDays(-2, 65),
+  marked_by_user_id: teacherUser.id,
+});
+if (progressAttendanceError) throw progressAttendanceError;
+
+const { error: progressAssessmentError } = await admin.from("assessments").upsert(
+  {
+    id: progressAssessmentId,
+    slug: "canonical-progress-assessment",
+    title: "Canonical Progress Assessment",
+    purpose: "E2E Progress projection only",
+    active: true,
+  },
+  { onConflict: "id", ignoreDuplicates: true },
+);
+if (progressAssessmentError) throw progressAssessmentError;
+
+const { error: progressVersionError } = await admin.from("assessment_versions").upsert(
+  {
+    id: progressAssessmentVersionId,
+    assessment_id: progressAssessmentId,
+    version_number: 1,
+    status: "PUBLISHED",
+    specification: { fixture: "progress-v1" },
+    scoring_config: {},
+    published_at: inDays(-10),
+  },
+  { onConflict: "id", ignoreDuplicates: true },
+);
+if (progressVersionError) throw progressVersionError;
+
+const { error: progressItemError } = await admin.from("assessment_items").upsert(
+  {
+    id: progressAssessmentItemId,
+    assessment_version_id: progressAssessmentVersionId,
+    position: 1,
+    skill: "GRAMMAR",
+    cefr_target: null,
+    item_type: "MULTIPLE_CHOICE",
+    prompt: {
+      prompt: "Choose the correct sentence.",
+      options: [
+        { id: "a", label: "I work from home." },
+        { id: "b", label: "I works from home." },
+      ],
+    },
+    answer_key: { optionId: "a" },
+    rubric: null,
+  },
+  { onConflict: "id", ignoreDuplicates: true },
+);
+if (progressItemError) throw progressItemError;
+
+const { error: progressAttemptError } = await admin.from("assessment_attempts").insert({
+  id: progressAssessmentAttemptId,
+  user_id: userId,
+  assessment_version_id: progressAssessmentVersionId,
+  status: "SCORED",
+  started_at: inDays(-5),
+  submitted_at: inDays(-5, 20),
+  scored_at: inDays(-5, 25),
+  raw_score: 1,
+  result_cefr: null,
+  result_metadata: {
+    engine: "assessment-engine-v1",
+    objective_score: 1,
+    objective_max_score: 1,
+    cefr_interpretation: null,
+  },
+});
+if (progressAttemptError) throw progressAttemptError;
+
+const { error: progressSkillError } = await admin.from("skill_scores").insert({
+  id: progressSkillScoreId,
+  assessment_attempt_id: progressAssessmentAttemptId,
+  skill: "GRAMMAR",
+  score: 1,
+  max_score: 1,
+  cefr_level: null,
+  provenance: {
+    engine: "assessment-engine-v1",
+    formula: "sum_binary_item_scores",
+    itemIds: [progressAssessmentItemId],
+  },
+});
+if (progressSkillError) throw progressSkillError;
 
 console.log("Canonical E2E fixture ready.");

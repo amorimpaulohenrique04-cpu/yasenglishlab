@@ -299,10 +299,6 @@ function AssessmentSection({
   );
 }
 
-function historyDetail(event: ProgressHistoryEvent): string {
-  return `${event.detail} · ${formatDate(event.occurredAt)}`;
-}
-
 function HistorySection({ history }: { history: ProgressHistoryEvent[] }) {
   return (
     <section className="yas-progress-section" aria-labelledby="progress-history-title">
@@ -326,7 +322,10 @@ function HistorySection({ history }: { history: ProgressHistoryEvent[] }) {
                 <span className="yas-progress-timeline-marker" aria-hidden="true" />
                 <div>
                   <strong>{event.title}</strong>
-                  <small>{historyDetail(event)}</small>
+                  <small>
+                    {event.detail} ·{" "}
+                    <time dateTime={event.occurredAt}>{formatDate(event.occurredAt)}</time>
+                  </small>
                 </div>
               </li>
             ))}
