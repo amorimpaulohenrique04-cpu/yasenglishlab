@@ -56,6 +56,39 @@ jobs:
         run: npm ci
       - name: Format
         run: npm run format:check
+      - name: Print canonical P17 formatting patch
+        if: failure()
+        run: |
+          npx prettier --write \
+            harness/agent-state/decisions.md \
+            harness/agent-state/progress.md \
+            harness/evidence/prompt-17-teacher-operations-v1/README.md \
+            harness/feature_list.json \
+            harness/goals/prompt-17-teacher-operations-v1.md \
+            scripts/assert-canonical-e2e.mjs \
+            src/app/\(protected\)/\(teacher\)/teacher/page.tsx \
+            src/app/\(protected\)/\(teacher\)/teacher/sessoes/\[sessionId\]/page.tsx \
+            src/modules/teacher-operations/application/queries.ts \
+            src/modules/teacher-operations/domain/models.ts \
+            src/modules/teacher-operations/ui/teacher-shell.tsx \
+            tests/a11y/critical-flows.spec.ts \
+            tests/helpers/teacher-mfa.ts \
+            tests/integration/teacher-operations-application.test.ts
+          git diff --no-ext-diff -- \
+            harness/agent-state/decisions.md \
+            harness/agent-state/progress.md \
+            harness/evidence/prompt-17-teacher-operations-v1/README.md \
+            harness/feature_list.json \
+            harness/goals/prompt-17-teacher-operations-v1.md \
+            scripts/assert-canonical-e2e.mjs \
+            src/app/\(protected\)/\(teacher\)/teacher/page.tsx \
+            src/app/\(protected\)/\(teacher\)/teacher/sessoes/\[sessionId\]/page.tsx \
+            src/modules/teacher-operations/application/queries.ts \
+            src/modules/teacher-operations/domain/models.ts \
+            src/modules/teacher-operations/ui/teacher-shell.tsx \
+            tests/a11y/critical-flows.spec.ts \
+            tests/helpers/teacher-mfa.ts \
+            tests/integration/teacher-operations-application.test.ts
       - name: Lint
         run: npm run lint
       - name: Typecheck
