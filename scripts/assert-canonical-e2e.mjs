@@ -64,49 +64,57 @@ if (agendaBooking.status !== "BOOKED" || agendaBooking.user_id !== user.id) {
   throw new Error("Agenda booking did not persist as BOOKED for the authenticated student.");
 }
 
-const { data: teacherAttendance, error: teacherAttendanceError } = await admin
-  .from("attendance")
-  .select("id, session_booking_id, status, marked_by_user_id, marked_at")
-  .eq("session_booking_id", teacherOpsBookingId)
-  .single();
+const teacherEvidenceSql = `
+select jsonb_build_object(
+  'id', a.id,
+  'status', a.status,
+  'marked_by_user_id', a.marked_by_user_id,
+  'marked_at', a.marked_at,
+  'audits', coalesce((
+    select jsonb_agg(l.data)
+    from public.audit_logs l
+    where l.action = 'attendance_marked'
+      and l.entity_id = a.id
+      and l.actor_user_id = '${teacherUser.id}'::uuid
+      and l.data ->> 'live_session_id' = '${teacherOpsSessionId}'
+      and l.data ->> 'session_booking_id' = '${teacherOpsBookingId}'
+      and l.data ->> 'new_status' = 'ATTENDED'
+  ), '[]'::jsonb)
+)::text
+from public.attendance a
+where a.session_booking_id = '${teacherOpsBookingId}'::uuid
+limit 1;
+`;
 
-if (teacherAttendanceError || !teacherAttendance) {
-  throw teacherAttendanceError ?? new Error("Persisted Teacher attendance was not found.");
+const teacherEvidenceResult = spawnSync(
+  "psql",
+  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", teacherEvidenceSql],
+  { encoding: "utf8" },
+);
+
+if (teacherEvidenceResult.error?.code === "ENOENT") {
+  throw new Error("psql is required for canonical Teacher persistence verification.");
 }
+if (teacherEvidenceResult.status !== 0) {
+  throw new Error(
+    teacherEvidenceResult.stderr.trim() || "Teacher persistence verification failed.",
+  );
+}
+
+const teacherEvidenceRaw = teacherEvidenceResult.stdout.trim();
+if (!teacherEvidenceRaw) {
+  throw new Error("Persisted Teacher attendance was not found.");
+}
+
+const teacherEvidence = JSON.parse(teacherEvidenceRaw);
 if (
-  teacherAttendance.status !== "ATTENDED" ||
-  teacherAttendance.marked_by_user_id !== teacherUser.id
+  teacherEvidence.status !== "ATTENDED" ||
+  teacherEvidence.marked_by_user_id !== teacherUser.id
 ) {
   throw new Error("Teacher attendance did not persist as ATTENDED for the authenticated Teacher.");
 }
 
-const attendanceAuditSql = `
-select coalesce(jsonb_agg(data), '[]'::jsonb)::text
-from public.audit_logs
-where action = 'attendance_marked'
-  and entity_id = '${teacherAttendance.id}'::uuid
-  and actor_user_id = '${teacherUser.id}'::uuid
-  and data ->> 'live_session_id' = '${teacherOpsSessionId}'
-  and data ->> 'session_booking_id' = '${teacherOpsBookingId}'
-  and data ->> 'new_status' = 'ATTENDED';
-`;
-
-const attendanceAuditResult = spawnSync(
-  "psql",
-  [`--dbname=${databaseUrl}`, "-v", "ON_ERROR_STOP=1", "-At", "-c", attendanceAuditSql],
-  { encoding: "utf8" },
-);
-
-if (attendanceAuditResult.error?.code === "ENOENT") {
-  throw new Error("psql is required for canonical Teacher audit verification.");
-}
-if (attendanceAuditResult.status !== 0) {
-  throw new Error(
-    attendanceAuditResult.stderr.trim() || "Teacher attendance audit verification failed.",
-  );
-}
-
-const attendanceAudits = JSON.parse(attendanceAuditResult.stdout.trim() || "[]");
+const attendanceAudits = teacherEvidence.audits;
 if (!Array.isArray(attendanceAudits) || attendanceAudits.length === 0) {
   throw new Error("Teacher attendance audit fact was not found.");
 }
