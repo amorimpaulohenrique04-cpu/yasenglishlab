@@ -169,6 +169,8 @@ begin
 end;
 $$;
 
+revoke all on function private.audit_attendance_change() from public, anon, authenticated;
+
 create trigger attendance_audit
 after insert or update on public.attendance
 for each row execute function private.audit_attendance_change();
@@ -252,9 +254,9 @@ begin
 end;
 $$;
 
-revoke all on function public.get_teacher_sessions() from public, anon;
-revoke all on function public.get_teacher_session_roster(uuid) from public, anon;
-revoke all on function public.mark_teacher_attendance(uuid, text) from public, anon;
+revoke all on function public.get_teacher_sessions() from public, anon, authenticated;
+revoke all on function public.get_teacher_session_roster(uuid) from public, anon, authenticated;
+revoke all on function public.mark_teacher_attendance(uuid, text) from public, anon, authenticated;
 
 grant execute on function public.get_teacher_sessions() to authenticated;
 grant execute on function public.get_teacher_session_roster(uuid) to authenticated;
