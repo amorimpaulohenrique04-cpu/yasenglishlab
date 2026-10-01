@@ -8,6 +8,8 @@ const adminClient = read("src/server/supabase/admin.ts");
 const authContext = read("src/server/auth/context.ts");
 const signedUrlService = read("src/server/assets/signed-url.ts");
 const bookingService = read("src/server/live/book-session.ts");
+const scheduleBookingService = read("src/server/schedule/schedule.ts");
+const agendaMigration = read("supabase/migrations/20261001005500_agenda_v1_booking.sql");
 const observabilityPrivacy = read("src/server/observability/privacy.ts");
 const observabilityMigration = read(
   "supabase/migrations/20260929233000_observability_analytics_audit.sql",
@@ -49,8 +51,14 @@ assert(
   "Roles must resolve server-side from durable user_roles.",
 );
 assert(
-  bookingService.includes("student.userId") && !bookingService.includes("userId: string"),
-  "Booking identity must come from verified server auth context.",
+  bookingService.includes("bookCurrentStudentSession({ liveSessionId })") &&
+    !bookingService.includes("createSupabaseAdminClient") &&
+    scheduleBookingService.includes('assertRole("STUDENT")') &&
+    !scheduleBookingService.includes("userId: string") &&
+    agendaMigration.includes("current_user_id uuid := auth.uid()") &&
+    agendaMigration.includes("private.has_role('STUDENT', false)") &&
+    !agendaMigration.includes("book_live_session(p_live_session_id uuid, p_user_id"),
+  "Booking identity must come from verified server auth plus PostgreSQL auth.uid(), never client input or service role.",
 );
 assert(
   signedUrlService.includes('.select("id")') &&
