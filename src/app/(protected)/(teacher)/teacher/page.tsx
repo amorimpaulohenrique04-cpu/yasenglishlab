@@ -59,7 +59,9 @@ export default async function TeacherHomePage() {
                   <Badge tone={statusTone(session.status)}>
                     {teacherSessionStatusLabel(session.status)}
                   </Badge>
-                  <span className={styles.muted}>{teacherSessionTypeLabel(session.sessionType)}</span>
+                  <span className={styles.muted}>
+                    {teacherSessionTypeLabel(session.sessionType)}
+                  </span>
                 </div>
 
                 <div>
@@ -84,7 +86,8 @@ export default async function TeacherHomePage() {
                     {session.participantCount === 1 ? "participante" : "participantes"}
                   </span>
                   <span>
-                    {session.attendanceMarkedCount} de {session.participantCount} com presença marcada
+                    {session.attendanceMarkedCount} de {session.participantCount} com presença
+                    marcada
                   </span>
                 </div>
 
