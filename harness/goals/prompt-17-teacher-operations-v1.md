@@ -70,6 +70,7 @@ When necessary:
 - `src/modules/domain/contracts.ts` — Teacher contracts only if required
 - `supabase/migrations/**` — one append-only Teacher Operations V1 migration
 - `supabase/seed.sql` — deterministic Teacher fixtures only if required
+- `supabase/config.toml` — P17 real-MFA E2E exposed that the local/Preview TOTP provider was disabled despite the existing staff AAL2 contract; enable only TOTP enrollment/verification so Preview can exercise the real contract
 - `supabase/tests/**`
 - `tests/unit/**`
 - `tests/integration/**`
