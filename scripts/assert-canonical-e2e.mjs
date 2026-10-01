@@ -4,6 +4,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = "canonical.student@example.test";
 const lessonId = "42000000-0000-4000-8000-000000000001";
+const agendaSessionId = "88100000-0000-4000-8000-000000000001";
 
 if (!url || !serviceRoleKey) {
   throw new Error("Canonical E2E assertion requires local Supabase credentials.");
@@ -41,6 +42,20 @@ if (!progress.completed_at) {
   throw new Error("Completed lesson must persist completed_at.");
 }
 
+const { data: agendaBooking, error: agendaBookingError } = await admin
+  .from("session_bookings")
+  .select("id, live_session_id, user_id, status")
+  .eq("user_id", user.id)
+  .eq("live_session_id", agendaSessionId)
+  .single();
+
+if (agendaBookingError || !agendaBooking) {
+  throw agendaBookingError ?? new Error("Persisted Agenda booking was not found.");
+}
+if (agendaBooking.status !== "BOOKED" || agendaBooking.user_id !== user.id) {
+  throw new Error("Agenda booking did not persist as BOOKED for the authenticated student.");
+}
+
 const { data: events, error: eventError } = await admin
   .from("product_analytics_events")
   .select("event_name, idempotency_key, properties")
@@ -63,6 +78,7 @@ for (const [event, minimum] of [
   ["material_favorited", 1],
   ["practice_started", 1],
   ["practice_completed", 1],
+  ["live_session_booked", 1],
 ]) {
   if ((counts.get(event) ?? 0) < minimum) {
     throw new Error(`Expected at least ${minimum} ${event} event(s).`);
@@ -75,10 +91,22 @@ for (const [event, exact] of [
   ["module_completed", 1],
   ["practice_started", 1],
   ["practice_completed", 1],
+  ["live_session_booked", 1],
 ]) {
   if ((counts.get(event) ?? 0) !== exact) {
     throw new Error(`Expected exactly ${exact} retry-safe ${event} event(s).`);
   }
+}
+
+const bookingEvents = (events ?? []).filter((row) => row.event_name === "live_session_booked");
+if (bookingEvents.length !== 1) {
+  throw new Error("Agenda booking analytics must be persisted exactly once.");
+}
+if (bookingEvents[0].idempotency_key !== `live_session_booked:${agendaBooking.id}`) {
+  throw new Error("Agenda booking analytics must use the persisted booking id as idempotency key.");
+}
+if (bookingEvents[0].properties?.live_session_id !== agendaSessionId) {
+  throw new Error("Agenda booking analytics must contain only the persisted live_session_id contract.");
 }
 
 const criticalKeys = (events ?? [])
