@@ -57,11 +57,13 @@ A TEACHER at AAL2 can open `/teacher`, see only their own sessions, open a sessi
 ## Allowed files / domains
 
 Primary:
+
 - `src/app/(protected)/(teacher)/**`
 - `src/modules/teacher-operations/**`
 - `src/server/teacher-operations/**`
 
 When necessary:
+
 - `src/server/auth/**` — reuse/refine only when justified
 - `src/server/audit/**` — attendance audit action/integration only
 - `src/modules/domain/contracts.ts` — Teacher contracts only if required
@@ -80,7 +82,6 @@ When necessary:
 - `docs/DATA_MODEL.md`
 - `docs/OPEN_QUESTIONS.md`
 - `harness/**`
-- `.github/workflows/foundation-verify.yml` — temporary format-only diagnostic: print the canonical pinned-Prettier patch after the observed `format:check` failure; remove it before final verification and never treat it as passing evidence.
 
 Any file outside this list requires a justification recorded in this GOAL before modification.
 
