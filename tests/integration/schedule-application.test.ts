@@ -50,7 +50,7 @@ describe("schedule application", () => {
       {
         ...session,
         ownBookingId: bookingId,
-        ownBookingStatus: "BOOKED",
+        ownBookingStatus: "BOOKED" as const,
         bookedCount: 2,
         spotsRemaining: 2,
       },
@@ -67,12 +67,12 @@ describe("schedule application", () => {
     const repo = repository();
     const events = analytics();
 
-    await expect(
-      bookScheduleSession(repo, events, { liveSessionId: session.id }),
-    ).resolves.toEqual({
-      bookingId,
-      liveSessionId: session.id,
-    });
+    await expect(bookScheduleSession(repo, events, { liveSessionId: session.id })).resolves.toEqual(
+      {
+        bookingId,
+        liveSessionId: session.id,
+      },
+    );
 
     expect(events.track).toHaveBeenCalledWith({
       event: "live_session_booked",
@@ -102,11 +102,17 @@ describe("schedule application", () => {
     await bookScheduleSession(repo, events, { liveSessionId: session.id });
 
     expect(repo.bookSession).toHaveBeenCalledTimes(2);
-    expect(events.track).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      idempotencyKey: `live_session_booked:${bookingId}`,
-    }));
-    expect(events.track).toHaveBeenNthCalledWith(2, expect.objectContaining({
-      idempotencyKey: `live_session_booked:${bookingId}`,
-    }));
+    expect(events.track).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        idempotencyKey: `live_session_booked:${bookingId}`,
+      }),
+    );
+    expect(events.track).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        idempotencyKey: `live_session_booked:${bookingId}`,
+      }),
+    );
   });
 });
