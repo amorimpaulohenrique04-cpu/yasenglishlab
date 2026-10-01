@@ -158,8 +158,8 @@ describe("Progress application", () => {
   it("starts all independent reads before waiting for any one domain", async () => {
     const calls: string[] = [];
     const releases: Array<() => void> = [];
-    const wait = (name: string, value: unknown) =>
-      new Promise<any>((resolve) => {
+    const wait = <T>(name: string, value: T): Promise<T> =>
+      new Promise<T>((resolve) => {
         calls.push(name);
         releases.push(() => resolve(value));
       });

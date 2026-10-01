@@ -172,8 +172,8 @@ export function buildHistory(input: {
   const events: ProgressHistoryEvent[] = [];
 
   for (const course of input.courses) {
-    for (const module of course.modules) {
-      for (const lesson of module.lessons) {
+    for (const learningModule of course.modules) {
+      for (const lesson of learningModule.lessons) {
         const completedAt = lesson.progress?.completedAt;
         if (!completedAt) continue;
         events.push({
