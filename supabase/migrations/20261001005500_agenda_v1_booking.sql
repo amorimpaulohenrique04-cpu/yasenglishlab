@@ -58,6 +58,7 @@ as $$
     limit 1
   ) own_booking on true
   where current_user_context.user_id is not null
+    and private.has_role('STUDENT', false)
     and s.starts_at >= now()
     and (
       s.status = 'SCHEDULED'
