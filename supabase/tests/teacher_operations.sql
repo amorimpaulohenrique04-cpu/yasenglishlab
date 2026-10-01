@@ -33,16 +33,6 @@ where id in (
   '89200000-0000-4000-8000-000000000002'
 );
 
-delete from public.audit_logs
-where action = 'attendance_marked'
-  and (
-    data ->> 'session_booking_id'
-  ) in (
-    '89500000-0000-4000-8000-000000000001',
-    '89500000-0000-4000-8000-000000000002',
-    '89500000-0000-4000-8000-000000000003'
-  );
-
 insert into auth.users (id, email, raw_user_meta_data)
 values
   ('89000000-0000-0000-0000-000000000001', 'teacher-a@example.test', '{"display_name":"Teacher A"}'),
