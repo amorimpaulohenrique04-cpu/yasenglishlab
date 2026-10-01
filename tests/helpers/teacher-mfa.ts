@@ -75,7 +75,10 @@ async function resolveTotpSecret(page: Page): Promise<string> {
   return readFileSync(secretPath, "utf8").trim();
 }
 
-export async function loginCanonicalTeacher(page: Page, password: string): Promise<void> {
+export async function loginCanonicalTeacher(
+  page: Page,
+  password: string,
+): Promise<void> {
   await page.goto("/login?next=%2Fteacher");
   await page.getByLabel("E-mail").fill(canonicalTeacherEmail);
   await page.getByLabel("Senha").fill(password);
