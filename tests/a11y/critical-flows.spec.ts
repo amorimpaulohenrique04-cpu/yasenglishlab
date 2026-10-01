@@ -125,7 +125,6 @@ test("Prática exposes skill availability, keyboard controls and WCAG A/AA compl
   await assertAxe(page);
 });
 
-
 test("Agenda exposes booking states, disabled eligibility and WCAG A/AA compliance", async ({
   page,
 }) => {
