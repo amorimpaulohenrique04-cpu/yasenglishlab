@@ -65,6 +65,7 @@ Primary:
 When necessary:
 
 - `src/server/auth/**` — reuse/refine only when justified
+- `src/lib/supabase/browser.ts` — P17 MFA exposed the pre-existing dynamic `process.env[name]` browser lookup; static `NEXT_PUBLIC_*` access is required so Next.js can inline the existing public Supabase configuration without changing auth semantics
 - `src/server/audit/**` — attendance audit action/integration only
 - `src/modules/domain/contracts.ts` — Teacher contracts only if required
 - `supabase/migrations/**` — one append-only Teacher Operations V1 migration
