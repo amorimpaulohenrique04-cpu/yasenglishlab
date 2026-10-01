@@ -53,7 +53,9 @@ async function resolveTotpSecret(page: Page): Promise<string> {
   await Promise.race([
     codeInput.waitFor({ state: "visible", timeout: 15_000 }),
     preparationError.waitFor({ state: "visible", timeout: 15_000 }).then(() => {
-      throw new Error("Canonical Teacher MFA preparation failed in the real browser flow.");
+      throw new Error(
+        "Canonical Teacher MFA preparation failed in the real browser flow.",
+      );
     }),
   ]);
 
