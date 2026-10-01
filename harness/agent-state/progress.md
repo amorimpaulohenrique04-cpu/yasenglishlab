@@ -343,4 +343,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Official CI #359 / run `36941525748` passed all mandatory jobs, including Preview and CI Gate.
 - Durable evidence is stored under `harness/evidence/prompt-20-progress-v1/`.
 - Registry is `done / verified:true`. PR #24 remains open and unmerged.
-
