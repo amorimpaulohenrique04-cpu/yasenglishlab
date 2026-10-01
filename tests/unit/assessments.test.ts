@@ -36,7 +36,9 @@ describe("assessment domain", () => {
       maxScore: 1,
     });
 
-    expect(evaluateAssessmentItem(item(), { optionId: "works" })).toMatchObject({
+    expect(
+      evaluateAssessmentItem(item(), { optionId: "works" }),
+    ).toMatchObject({
       status: "SCORED",
       score: 0,
       maxScore: 1,
