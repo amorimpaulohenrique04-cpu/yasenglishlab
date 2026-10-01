@@ -66,7 +66,7 @@ test.describe("Progress browser boundary", () => {
       "service_role",
       "service-role",
       "supabase_service_role_key",
-      "\"rubric\"",
+      '"rubric"',
     ]) {
       expect(browserVisiblePayload).not.toContain(forbidden);
     }
