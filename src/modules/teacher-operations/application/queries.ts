@@ -2,8 +2,7 @@ import type { TeacherRosterRecord, TeacherSessionRecord } from "../domain/models
 import type { TeacherOperationsRepository } from "./ports";
 
 export type TeacherSessionsPageState =
-  | { status: "empty" }
-  | { status: "success"; sessions: TeacherSessionRecord[] };
+  { status: "empty" } | { status: "success"; sessions: TeacherSessionRecord[] };
 
 export type TeacherSessionPageState =
   | { status: "unavailable" }
