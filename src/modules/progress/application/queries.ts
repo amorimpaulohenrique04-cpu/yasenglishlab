@@ -69,6 +69,11 @@ export async function getProgressView(
   const attendanceView = buildAttendanceView(attendance);
   const assessmentView = buildAssessmentView(assessments);
   const history = buildHistory({ courses, practice, attendance, assessments });
+  const consistencyInputsAvailable =
+    settled[0].status === "fulfilled" &&
+    settled[1].status === "fulfilled" &&
+    settled[2].status === "fulfilled";
+  const historyInputsAvailable = settled.every((result) => result.status === "fulfilled");
 
   const data: ProgressViewData = {
     curriculum:
@@ -88,8 +93,12 @@ export async function getProgressView(
         ? section(assessmentView, assessments.length === 0)
         : sectionError("as avaliações"),
     cefr: CEFR_UNAVAILABLE,
-    consistency: buildConsistency(history, attendance, now),
-    history,
+    consistency: consistencyInputsAvailable
+      ? section(buildConsistency(history, attendance, now), false)
+      : sectionError("a consistência"),
+    history: historyInputsAvailable
+      ? section(history, history.length === 0)
+      : sectionError("o histórico"),
   };
 
   if (unavailableDomains.length > 0) {

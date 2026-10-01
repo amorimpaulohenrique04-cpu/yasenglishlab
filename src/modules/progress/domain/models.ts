@@ -139,8 +139,8 @@ export interface ProgressViewData {
   attendance: ProgressSection<ProgressAttendanceView>;
   assessment: ProgressSection<ProgressAssessmentView>;
   cefr: ProgressCefrView;
-  consistency: ProgressConsistencyView;
-  history: ProgressHistoryEvent[];
+  consistency: ProgressSection<ProgressConsistencyView>;
+  history: ProgressSection<ProgressHistoryEvent[]>;
 }
 
 export type ProgressPageState =

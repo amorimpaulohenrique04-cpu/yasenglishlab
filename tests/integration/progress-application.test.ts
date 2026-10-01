@@ -93,6 +93,8 @@ describe("Progress application", () => {
     expect(state.data.practice.status).toBe("success");
     expect(state.data.attendance.status).toBe("success");
     expect(state.data.assessment.status).toBe("success");
+    expect(state.data.consistency.status).toBe("success");
+    expect(state.data.history.status).toBe("success");
     expect(state.data.cefr).toMatchObject({ status: "unavailable", level: null });
   });
 
@@ -128,6 +130,8 @@ describe("Progress application", () => {
     expect(state.data.curriculum.status).toBe("success");
     expect(state.data.attendance.status).toBe("error");
     expect(state.data.practice.status).toBe("success");
+    expect(state.data.consistency.status).toBe("error");
+    expect(state.data.history.status).toBe("error");
   });
 
   it("returns error when no reliable domain projection can be produced", async () => {

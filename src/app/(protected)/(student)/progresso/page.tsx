@@ -103,7 +103,7 @@ function CurriculumSection({ section }: { section: ProgressSection<ProgressCurri
                     Atividade curricular mais recente: {formatDate(course.lastActivityAt)}
                   </small>
                 )}
-                <Link className="yas-progress-link yas-focusable" href={`/aulas/${course.slug}`}>
+                <Link className="yas-progress-link yas-focusable" href="/aulas">
                   Ver curso →
                 </Link>
               </div>
@@ -289,7 +289,11 @@ function AssessmentSection({ section }: { section: ProgressSection<ProgressAsses
   );
 }
 
-function HistorySection({ history }: { history: ProgressHistoryEvent[] }) {
+function HistorySection({
+  section,
+}: {
+  section: ProgressSection<ProgressHistoryEvent[]>;
+}) {
   return (
     <section className="yas-progress-section" aria-labelledby="progress-history-title">
       <SectionHeader
@@ -299,29 +303,33 @@ function HistorySection({ history }: { history: ProgressHistoryEvent[] }) {
       <span id="progress-history-title" className="sr-only">
         Histórico
       </span>
-      <Card>
-        {history.length === 0 ? (
-          <EmptyState
-            title="Ainda sem histórico"
-            description="Conclusões, práticas, chamadas e avaliações aparecerão aqui quando ocorrerem."
-          />
-        ) : (
-          <ol className="yas-progress-timeline">
-            {history.map((event) => (
-              <li key={event.id}>
-                <span className="yas-progress-timeline-marker" aria-hidden="true" />
-                <div>
-                  <strong>{event.title}</strong>
-                  <small>
-                    {event.detail} ·{" "}
-                    <time dateTime={event.occurredAt}>{formatDate(event.occurredAt)}</time>
-                  </small>
-                </div>
-              </li>
-            ))}
-          </ol>
-        )}
-      </Card>
+      {section.status === "error" ? (
+        <Alert tone="error" title="Histórico indisponível" description={section.message} />
+      ) : (
+        <Card>
+          {section.status === "empty" ? (
+            <EmptyState
+              title="Ainda sem histórico"
+              description="Conclusões, práticas, chamadas e avaliações aparecerão aqui quando ocorrerem."
+            />
+          ) : (
+            <ol className="yas-progress-timeline">
+              {section.data.map((event) => (
+                <li key={event.id}>
+                  <span className="yas-progress-timeline-marker" aria-hidden="true" />
+                  <div>
+                    <strong>{event.title}</strong>
+                    <small>
+                      {event.detail} ·{" "}
+                      <time dateTime={event.occurredAt}>{formatDate(event.occurredAt)}</time>
+                    </small>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Card>
+      )}
     </section>
   );
 }
@@ -398,24 +406,36 @@ export default async function ProgressPage() {
         <Card>
           <div className="yas-progress-card-stack">
             <span className="yas-progress-eyebrow">Consistência · últimos 7 dias</span>
-            <strong className="yas-progress-highlight">
-              {data.consistency.activeDaysLast7Days} dias ativos
-            </strong>
-            <dl className="yas-progress-stats yas-progress-stats--compact">
-              <div>
-                <dt>Aulas</dt>
-                <dd>{data.consistency.lessonsCompletedLast7Days}</dd>
-              </div>
-              <div>
-                <dt>Práticas</dt>
-                <dd>{data.consistency.practicesCompletedLast7Days}</dd>
-              </div>
-              <div>
-                <dt>Presenças</dt>
-                <dd>{data.consistency.attendedLast7Days}</dd>
-              </div>
-            </dl>
-            <small>Dias ativos derivam somente de fatos reais; não existe streak persistido.</small>
+            {data.consistency.status === "error" ? (
+              <Alert
+                tone="error"
+                title="Consistência indisponível"
+                description={data.consistency.message}
+              />
+            ) : (
+              <>
+                <strong className="yas-progress-highlight">
+                  {data.consistency.data.activeDaysLast7Days} dias ativos
+                </strong>
+                <dl className="yas-progress-stats yas-progress-stats--compact">
+                  <div>
+                    <dt>Aulas</dt>
+                    <dd>{data.consistency.data.lessonsCompletedLast7Days}</dd>
+                  </div>
+                  <div>
+                    <dt>Práticas</dt>
+                    <dd>{data.consistency.data.practicesCompletedLast7Days}</dd>
+                  </div>
+                  <div>
+                    <dt>Presenças</dt>
+                    <dd>{data.consistency.data.attendedLast7Days}</dd>
+                  </div>
+                </dl>
+                <small>
+                  Dias ativos derivam somente de fatos reais; não existe streak persistido.
+                </small>
+              </>
+            )}
           </div>
         </Card>
       </div>
@@ -446,7 +466,7 @@ export default async function ProgressPage() {
         </section>
       </div>
 
-      <HistorySection history={data.history} />
+      <HistorySection section={data.history} />
     </div>
   );
 }
