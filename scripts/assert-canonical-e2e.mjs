@@ -5,6 +5,9 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = "canonical.student@example.test";
 const lessonId = "42000000-0000-4000-8000-000000000001";
 const agendaSessionId = "88100000-0000-4000-8000-000000000001";
+const teacherEmail = "canonical.teacher@example.test";
+const teacherOpsSessionId = "88200000-0000-4000-8000-000000000001";
+const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 
 if (!url || !serviceRoleKey) {
   throw new Error("Canonical E2E assertion requires local Supabase credentials.");
@@ -22,6 +25,8 @@ if (listError) throw listError;
 
 const user = listed.users.find((candidate) => candidate.email === email);
 if (!user) throw new Error("Canonical E2E user was not found.");
+const teacherUser = listed.users.find((candidate) => candidate.email === teacherEmail);
+if (!teacherUser) throw new Error("Canonical Teacher E2E user was not found.");
 
 const { data: progress, error: progressError } = await admin
   .from("lesson_progress")
@@ -54,6 +59,58 @@ if (agendaBookingError || !agendaBooking) {
 }
 if (agendaBooking.status !== "BOOKED" || agendaBooking.user_id !== user.id) {
   throw new Error("Agenda booking did not persist as BOOKED for the authenticated student.");
+}
+
+const { data: teacherAttendance, error: teacherAttendanceError } = await admin
+  .from("attendance")
+  .select("id, session_booking_id, status, marked_by_user_id, marked_at")
+  .eq("session_booking_id", teacherOpsBookingId)
+  .single();
+
+if (teacherAttendanceError || !teacherAttendance) {
+  throw teacherAttendanceError ?? new Error("Persisted Teacher attendance was not found.");
+}
+if (teacherAttendance.status !== "ATTENDED" || teacherAttendance.marked_by_user_id !== teacherUser.id) {
+  throw new Error("Teacher attendance did not persist as ATTENDED for the authenticated Teacher.");
+}
+
+const { data: attendanceAudit, error: attendanceAuditError } = await admin
+  .from("audit_logs")
+  .select("actor_user_id, action, entity_id, data, occurred_at")
+  .eq("action", "attendance_marked")
+  .eq("entity_id", teacherAttendance.id)
+  .order("occurred_at", { ascending: false })
+  .limit(1)
+  .single();
+
+if (attendanceAuditError || !attendanceAudit) {
+  throw attendanceAuditError ?? new Error("Teacher attendance audit fact was not found.");
+}
+if (
+  attendanceAudit.actor_user_id !== teacherUser.id ||
+  attendanceAudit.data?.live_session_id !== teacherOpsSessionId ||
+  attendanceAudit.data?.session_booking_id !== teacherOpsBookingId ||
+  attendanceAudit.data?.new_status !== "ATTENDED"
+) {
+  throw new Error("Teacher attendance audit lost actor/session/booking/final-state evidence.");
+}
+
+const serializedAttendanceAudit = JSON.stringify(attendanceAudit.data ?? {}).toLowerCase();
+for (const forbidden of [
+  "email",
+  "phone",
+  "password",
+  "jwt",
+  "token",
+  "cookie",
+  "secret",
+  "meeting",
+  "billing",
+  "assessment",
+]) {
+  if (serializedAttendanceAudit.includes(forbidden)) {
+    throw new Error("Teacher attendance audit leaked forbidden category: " + forbidden + ".");
+  }
 }
 
 const { data: events, error: eventError } = await admin
