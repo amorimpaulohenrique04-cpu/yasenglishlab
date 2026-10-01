@@ -53,8 +53,8 @@ values (
   '91000000-0000-0000-0000-000000000001',
   'PRIVATE_SESSION',
   'Capacity invariant',
-  now() + interval '1 day',
-  now() + interval '1 day 45 minutes',
+  now() - interval '2 hours',
+  now() - interval '75 minutes',
   1,
   'monthly_private_sessions'
 )
