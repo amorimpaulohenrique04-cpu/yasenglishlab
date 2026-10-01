@@ -9,14 +9,7 @@
     "run_id": 36796533133,
     "run_number": 223,
     "conclusion": "success",
-    "jobs": [
-      "Supply Chain",
-      "Quality",
-      "Database",
-      "Guardrail Simulations",
-      "Preview",
-      "CI Gate"
-    ]
+    "jobs": ["Supply Chain", "Quality", "Database", "Guardrail Simulations", "Preview", "CI Gate"]
   },
   "note": "Reconciled from observed GitHub PR/merge/CI state; no unobserved local command is claimed."
 }
