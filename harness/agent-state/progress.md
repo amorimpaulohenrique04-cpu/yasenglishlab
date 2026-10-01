@@ -321,3 +321,12 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Chosen architecture is a read-only Progress projection: server-authenticated Student identity, four independent domain reads, bounded bulk queries, `Promise.allSettled` partial-failure semantics, and no new source of truth.
 - Learning completion will reuse existing progress functions; Practice, Attendance and SkillScores remain semantically separate; CEFR will render unavailable rather than inferred.
 - No database migration is currently justified. Registry is `in_progress / verified:false`; all verification remains pending.
+
+## 2026-10-01 — prompt-20 verification hardening
+
+- Official CI exposed and preserved three concrete fixture/evidence failures without weakening runtime contracts: a booking created after session completion, an Assessment item inserted after version publication, and visual captures taken while the Progress loading state was still visible.
+- The fixture now follows the existing Live lifecycle (SCHEDULED → booking/attendance → COMPLETED) and Assessment immutability lifecycle (DRAFT → item → PUBLISHED), while remaining re-runnable for E2E, accessibility and golden resets.
+- Stable Progress desktop/tablet/mobile captures from Official CI were inspected before promotion to golden baselines; the golden tolerance was not changed.
+- Progress browser-boundary E2E now inspects browser-visible `/progresso` payloads for forbidden Assessment/service-role fields in addition to the existing Student isolation and RLS evidence.
+- P20 remains `in_progress / verified:false` until the clean-head Official CI, including golden visual checks and CI Gate, completes successfully.
+
