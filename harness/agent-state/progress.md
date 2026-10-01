@@ -246,3 +246,15 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Final implementation head `14b577729aeafcd7986d7da35903499e4ebb5adc` passed Official CI #253 / run `36802148610`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
 - Final `main...feat/agenda-v1` scope audit found no Teacher/Admin portal, cancellation/rescheduling/no-show/attendance mutation, credit-window policy, meeting provider, CEFR logic or curricular-progress behavior.
 - Durable evidence is stored under `harness/evidence/prompt-16-agenda-v1/`; registry is `done / verified:true`. PR #20 remains open and unmerged.
+
+
+## 2026-09-30 — prompt-17-teacher-operations-v1
+
+- Baseline confirmed at `main@a77386df147805f8ecd236f63657c90d251b3c63`; Agenda PR #20 is incorporated and P15/P16 are done/verified.
+- Created `feat/teacher-operations-v1` without writing to main.
+- Added Teacher-only + AAL2 read models for own sessions and own-session roster.
+- Added atomic attendance upsert + attendance audit trigger; no direct authenticated attendance DML was granted.
+- Added dedicated Teacher shell/routes, unit/application/real-PostgreSQL/E2E/a11y coverage and responsive screenshot capture.
+- Added canonical Teacher A/Teacher B fixtures and real MFA TOTP test helper with the secret stored only in the OS temporary directory.
+- Synchronized Live/Auth/Audit/Data Model/Open Questions contracts.
+- Current state: implementation complete enough for Official CI; feature remains `in_progress` / `verified: false` until all mandatory gates are inspected green.
