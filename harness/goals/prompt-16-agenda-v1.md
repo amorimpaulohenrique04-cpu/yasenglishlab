@@ -1,6 +1,6 @@
 # GOAL — prompt-16-agenda-v1: Agenda V1 / Live Session Booking
 
-Status: in_progress  
+Status: done  
 Owner: agent  
 Created: 2026-09-30  
 Updated: 2026-09-30
@@ -37,20 +37,20 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 
 ## Acceptance criteria
 
-- [ ] `/agenda` exists, uses the StudentShell and approved visual language, and handles loading/empty/error/success.
-- [ ] UI/application/domain/server adapter separation follows the canonical vertical slice.
-- [ ] Session availability is derived as CLOSED → BOOKED → FULL → AVAILABLE; eligibility is separate.
-- [ ] Availability aggregates never expose another student's booking identity.
-- [ ] Booking accepts only `live_session_id`; ownership is derived from `auth.uid()`.
-- [ ] Direct INSERT into `session_bookings` remains denied to authenticated users.
-- [ ] Existing `private.validate_booking()` remains authoritative for SCHEDULED, entitlement and capacity and still serializes via row lock.
-- [ ] Duplicate booking is retry-safe and never creates a second row.
-- [ ] Negative entitlement, non-scheduled session, full capacity and cross-user attempts are rejected.
-- [ ] Real PostgreSQL concurrency with capacity=1 yields exactly one BOOKED row.
-- [ ] Successful persisted booking emits `live_session_booked` once with a booking-scoped idempotency key; failed booking emits no false success.
-- [ ] Refresh preserves BOOKED.
-- [ ] No plan-name authorization, credit-window policy, cancellation/remarcar/no-show, meeting provider, Teacher/Admin portal or unrelated feature is added.
-- [ ] Unit, integration, DB/RLS, E2E, a11y and visual evidence pass; no required gate is weakened.
+- [x] `/agenda` exists, uses the StudentShell and approved visual language, and handles loading/empty/error/success.
+- [x] UI/application/domain/server adapter separation follows the canonical vertical slice.
+- [x] Session availability is derived as CLOSED → BOOKED → FULL → AVAILABLE; eligibility is separate.
+- [x] Availability aggregates never expose another student's booking identity.
+- [x] Booking accepts only `live_session_id`; ownership is derived from `auth.uid()`.
+- [x] Direct INSERT into `session_bookings` remains denied to authenticated users.
+- [x] Existing `private.validate_booking()` remains authoritative for SCHEDULED, entitlement and capacity and still serializes via row lock.
+- [x] Duplicate booking is retry-safe and never creates a second row.
+- [x] Negative entitlement, non-scheduled session, full capacity and cross-user attempts are rejected.
+- [x] Real PostgreSQL concurrency with capacity=1 yields exactly one BOOKED row.
+- [x] Successful persisted booking emits `live_session_booked` once with a booking-scoped idempotency key; failed booking emits no false success.
+- [x] Refresh preserves BOOKED.
+- [x] No plan-name authorization, credit-window policy, cancellation/remarcar/no-show, meeting provider, Teacher/Admin portal or unrelated feature is added.
+- [x] Unit, integration, DB/RLS, E2E, a11y and visual evidence pass; no required gate is weakened.
 
 ## Allowed files / domains
 
@@ -68,6 +68,7 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 - `docs/LIVE_CLASSES.md`, `docs/DATA_MODEL.md`, `docs/ANALYTICS.md` only if executable contracts require synchronization
 - `harness/**` for goal/state/evidence/registry
 - `.github/workflows/foundation-verify.yml` — Preview wiring: execute the already-defined real DB/RLS suites so P16 concurrency and authorization evidence are mandatory Official CI gates rather than unexecuted files. A temporary non-final formatter diagnostic step may be used to print the canonical Prettier patch after a format-only CI failure; it must be removed before final verification and is never accepted as a passing-format evidence source.
+- `scripts/verify-security.mjs` — explicit P16 exception previously required by the security gate: verify the single booking boundary uses server-side Student auth plus PostgreSQL `auth.uid()`, with no client-supplied user id or service-role booking path.
 
 ## Forbidden areas
 
@@ -101,3 +102,14 @@ Deliver Agenda V1 for Student as a projection of the existing Live domain: list 
 ## Definition of done
 
 Done means every applicable acceptance criterion and mandatory gate is green, evidence is inspected, the final diff is in scope, the registry is updated to `done / verified:true`, and no open product/provider policy has been inferred.
+
+
+## Closure evidence
+
+- PR #20 remains open and unmerged.
+- Official CI #253 / run `36802148610` passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate.
+- Real PostgreSQL concurrency proved exactly one BOOKED row for two simultaneous users at capacity=1.
+- Canonical E2E passed 3/3; persistence/analytics assertion passed; accessibility passed 10/10; product golden checks passed 3/3.
+- Preview artifact `11136452829`, SHA-256 `004fa095fb733331982783076932f2b5f3042bba4df3b8432343d2a2642fde4d`, was downloaded and inspected.
+- Desktop/tablet/mobile Agenda screenshots were inspected directly against the approved reference.
+- Durable evidence: `harness/evidence/prompt-16-agenda-v1/README.md` and `verification.json`.
