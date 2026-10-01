@@ -3,10 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import {
-  ScheduleBookingError,
-  bookScheduleSessionInputSchema,
-} from "@/modules/schedule";
+import { ScheduleBookingError, bookScheduleSessionInputSchema } from "@/modules/schedule";
 import { bookCurrentStudentSession } from "@/server/schedule/schedule";
 
 function bookingResultCode(error: ScheduleBookingError): string {
