@@ -22,7 +22,6 @@ test.describe("Progress empty state", () => {
   });
 });
 
-
 test.describe("Progress browser boundary", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
 
