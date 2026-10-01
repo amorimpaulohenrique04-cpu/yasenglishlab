@@ -212,7 +212,6 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - PRE-P15 is done and verified. P15 has not started.
 - The closure head must pass Official CI before merge.
 
-
 ## 2026-09-30 — prompt-15-practice-engine-v1 reconciliation
 
 - Revalidated the stale P15 Harness state before P16.
