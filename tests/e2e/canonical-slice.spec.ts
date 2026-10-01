@@ -177,6 +177,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/progresso");
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
     await captureEvidence(page, "progresso-tablet.png");
 
     await page.goto("/aulas");
@@ -213,6 +214,7 @@ test.describe("canonical learning vertical slice", () => {
     const progressMobileNavigation = page.getByRole("navigation", { name: "Navegação mobile" });
     await progressMobileNavigation.getByRole("link", { name: "Progresso", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
     await captureEvidence(page, "progresso-mobile.png");
 
     await page.goto("/aulas");
