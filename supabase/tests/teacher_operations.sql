@@ -1,6 +1,9 @@
 -- P17 real PostgreSQL authorization, roster, attendance and audit evidence.
 -- The feature is intentionally scoped to TEACHER + AAL2 and the teacher linked to auth.uid().
 
+delete from public.user_roles
+where id = '89100000-0000-0000-0000-000000000007';
+
 delete from public.attendance
 where session_booking_id in (
   '89500000-0000-4000-8000-000000000001',
@@ -334,8 +337,12 @@ begin
     raise exception 'Attendance retry must reuse the unique persisted row';
   end if;
 
-  select count(*), max(status), max(marked_by_user_id)
-    into attendance_count, persisted_status, persisted_actor
+  select count(*) into attendance_count
+  from public.attendance
+  where session_booking_id = '89500000-0000-4000-8000-000000000001';
+
+  select status, marked_by_user_id
+    into persisted_status, persisted_actor
   from public.attendance
   where session_booking_id = '89500000-0000-4000-8000-000000000001';
 
