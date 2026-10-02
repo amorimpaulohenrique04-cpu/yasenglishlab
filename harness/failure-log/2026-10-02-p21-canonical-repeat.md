@@ -1,7 +1,7 @@
 # Failure — Canonical Admin reorder left the next run with a position conflict
 
 Classification: state  
-Status: open  
+Status: resolved
 Repeatable: yes  
 Date: 2026-10-02  
 PR/commit related: current change — feat/p21-p0-foundation-closure
@@ -42,4 +42,4 @@ Run Admin E2E, prepare the canonical fixture again and repeat Admin E2E.
 
 Before: position 2 conflict and the unavailable browser response were observed on repeat.
 
-After: the final verify-ui.log and verify-full.log must confirm repeatability before task closure. No completion claim is made while those gates are pending.
+After: repeated final UI/full browser runs passed all 14 E2E, including Admin reorder and subsequent fixture reset. Literal verify:ui is green; see verify-ui.log.

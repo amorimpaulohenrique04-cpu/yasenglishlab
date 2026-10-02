@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-02T06:43:47.563Z",
+  "branch": "feat/p21-p0-foundation-closure",
+  "base_main": "94b574b40b8b05ed798f996294d2297ba92b5e31",
+  "verified_code_commit": "LOCAL_FINAL_COMMIT_PENDING_RECORD",
+  "checks": {
+    "verify:agent": {
+      "status": "passed",
+      "log": "verify-agent.log"
+    },
+    "verify:security": {
+      "status": "passed",
+      "log": "verify-security.log"
+    },
+    "verify:db": {
+      "status": "passed",
+      "log": "verify-db.log"
+    },
+    "verify:ui": {
+      "status": "passed",
+      "log": "verify-ui.log"
+    },
+    "verify:full": {
+      "status": "passed",
+      "log": "verify-full.log"
+    }
+  },
+  "unit": 86,
+  "integration": 54,
+  "conditional_existing_skip": 1,
+  "sql_integration_files": 9,
+  "sql_rls_files": 5,
+  "e2e": 14,
+  "a11y": 16,
+  "design_system": 6,
+  "golden_projects": 3,
+  "platform_images": 24,
+  "clean_replays": "replay-final-2.log and final full clean reset, plus earlier replay",
+  "upgrade": "upgrade-base.log and upgrade-result.log",
+  "pr": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/30",
+  "ci": {
+    "previous_verified_sha": "775845a12263de62e408a59ad7d38f112ab815e3",
+    "previous_status": "success",
+    "run": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36969883692",
+    "wait_for_final_green": "waived explicitly by user",
+    "final_status": "will be reported after final push; not awaited"
+  },
+  "merge": false,
+  "remote_migrations": false
+}

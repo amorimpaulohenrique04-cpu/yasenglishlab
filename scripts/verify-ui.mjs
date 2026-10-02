@@ -28,7 +28,7 @@ assert(exists("playwright.golden.config.ts"), "Missing golden Playwright config.
 
 for (const platform of ["linux", "win32"]) {
   for (const viewport of ["desktop", "tablet", "mobile"]) {
-    for (const screen of ["login", "home", "aulas"]) {
+    for (const screen of ["login", "home", "aulas", "progresso"]) {
       assert(
         exists(`tests/visual/goldens/${viewport}/${screen}-${platform}.png`),
         `Missing golden baseline: ${viewport}/${screen}-${platform}.png`,
@@ -47,5 +47,5 @@ if (canonicalE2e) prepareCanonicalFixture();
 runNpm(["run", "test:visual:golden"]);
 
 success(
-  `UI verification passed with ${screens.length} approved references, 18 platform-specific product goldens, E2E, accessibility, Storybook and visual regression checks.`,
+  `UI verification passed with ${screens.length} approved references, 24 platform-specific product goldens, E2E, accessibility, Storybook and visual regression checks.`,
 );

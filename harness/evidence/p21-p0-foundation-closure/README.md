@@ -15,15 +15,15 @@ Branch: `feat/p21-p0-foundation-closure`. Base main: `94b574b40b8b05ed798f996294
 - `upgrade-base.log` and `upgrade-result.log`: real main migration chain and legacy upgrade; old over-quota facts preserved, missing-cancellation ambiguity blocks preflight, unresolved provenance explicit, original UUID RPC retained.
 - `replay-final-2.log`: clean migration/seed replay. The final full gate and Official CI provide further clean replays.
 - `verify-agent.log`, `verify-security.log`, `verify-db.log`: literal official aliases. Existing live-observability test is conditionally skipped in the core local suite; full/CI execute their configured integration checks.
-- `verify-ui.log`, `verify-full.log`: final aliases must finish successfully before completion. Failed attempts are recorded through failure logs; a pending gate is never treated as a pass.
+- `verify-ui.log`, `verify-full.log`: both literal aliases passed. Failures and permanent protection are recorded through failure logs.
 - `agent-eval.json`: diff-based scope/security/Harness evaluation.
 
 ## Visual inspection
 
-Workspace desktop, cohort Agenda desktop/tablet/mobile and Admin cohort desktop screenshots are included. Existing UI primitives are reused. Mobile Agenda and desktop Admin screens were inspected for layout and readability; responsive/a11y tests retain strict assertions. Goldens for login/Home/Aulas are unchanged. Updated screenshots are copied after the final browser run.
+Workspace desktop, cohort Agenda desktop/tablet/mobile and Admin cohort desktop screenshots are included. Existing UI primitives are reused. Mobile Agenda and desktop Admin screens were inspected for layout and readability; responsive/a11y tests retain strict assertions. Login/Aulas baselines and visual thresholds are unchanged. Three stale Windows Home images were synchronized to the already approved P21 main UI: Windows last changed in f086e31, Linux promotion in a4def7c; Home implementation and styles have no diff against main 94b574b. This corrects platform evidence without changing product visuals. Main had only Linux Progress references; three inspected first Windows images complete the 24-image platform matrix now required by verify-ui. Updated screenshots are copied after the final browser run.
 
 ## Risks and limitations
 
 Production legacy CANCELLED rows without timestamps require evidence-based reconciliation before migration. Privileged corrections must follow the documented lock protocol. Agenda eligibility may become stale, so commands revalidate. P21.4–P21.7 and P22/provider choices remain outside scope. No remote production migration or merge is performed.
 
-Status remains in_progress / verified:false until all required local gates pass and the PR is opened. The user explicitly waived waiting for green CI; its current status will be reported. Final SHA/PR/CI evidence is recorded in verification.json at closure.
+Status: done / verified:true. All required local gates passed. PR #30 is prepared for review. CI on 775845a passed; the user waived waiting for final CI. See verification.json for verified source commit, exact checks and CI evidence.

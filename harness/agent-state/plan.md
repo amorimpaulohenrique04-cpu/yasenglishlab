@@ -14,7 +14,7 @@ O registro histórico de P21 abaixo foi preservado.
 
 **p21-p0-foundation-closure**
 
-State: in_progress / verified:false. Branch: `feat/p21-p0-foundation-closure`.
+State: done / verified:true. Branch: `feat/p21-p0-foundation-closure`. All local gates passed; user waived waiting for final CI. PR #30, no merge.
 
 1. P21.1 resolver, Student boundary and focused Auth tests.
 2. P21.2 snapshots, transactional quota/cancellation/rebooking and focused real DB tests.

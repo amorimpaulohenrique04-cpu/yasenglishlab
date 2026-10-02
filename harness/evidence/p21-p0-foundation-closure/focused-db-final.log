@@ -24,24 +24,24 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 2
 SET
-              set_config              
+              set_config
 --------------------------------------
  83000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"83000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  83000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"83000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
@@ -54,23 +54,23 @@ DO
 INSERT 0 2
 INSERT 0 2
 SET
-              set_config              
+              set_config
 --------------------------------------
  84000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"84000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  84000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"84000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
@@ -87,45 +87,45 @@ INSERT 0 3
 INSERT 0 3
 DELETE 0
 SET
-              set_config              
+              set_config
 --------------------------------------
  85000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"85000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  85000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"85000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  85000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"85000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  85000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"85000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
@@ -143,235 +143,235 @@ INSERT 0 1
 INSERT 0 2
 INSERT 0 6
 SET
-              set_config              
+              set_config
 --------------------------------------
  9b000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9b000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  7f103ef6-350f-471d-b7dc-bb4fd658f31e
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  dd38e2dc-999c-4f74-8ca1-5c19c7057c77
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  52320b05-2dec-40aa-8b98-edb93a08a6e7
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  e881f6d8-591d-44a9-b002-14f6c83ced67
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  7f103ef6-350f-471d-b7dc-bb4fd658f31e
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  7f103ef6-350f-471d-b7dc-bb4fd658f31e
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  0686e9f3-f70a-4ce4-ad79-4f7391145b0c
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  0686e9f3-f70a-4ce4-ad79-4f7391145b0c
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  7f103ef6-350f-471d-b7dc-bb4fd658f31e
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 SET
 DO
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9b000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9b000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
 SET
-                            mark_teacher_attendance                             
+                            mark_teacher_attendance
 --------------------------------------------------------------------------------
  (085ba027-cf6c-4b4e-9726-0bfff344090e,NO_SHOW,"2026-10-02 05:26:43.124897+00")
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 SET
- cancel_teacher_live_session 
+ cancel_teacher_live_session
 -----------------------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9b000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9b000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 SET
-          book_live_session           
+          book_live_session
 --------------------------------------
  0686e9f3-f70a-4ce4-ad79-4f7391145b0c
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- set_config 
+ set_config
 ------------
- 
+
 (1 row)
 
- set_config 
+ set_config
 ------------
  {}
 (1 row)
 
 INSERT 0 1
 INSERT 0 1
-              set_config              
+              set_config
 --------------------------------------
  9b000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9b000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
 
 SET
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  f0b744df-b070-4a35-98bc-f780e1b58b70
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 DO
 UPDATE 1
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 ROLLBACK
@@ -389,261 +389,261 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 3
 SET
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  cbb56197-3dbe-4e04-a6f3-f67d8388a965
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  cbb56197-3dbe-4e04-a6f3-f67d8388a965
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
 INSERT 0 1
 SET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 SET
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  462896b2-bd8a-41cb-bef2-5b73e578c81b
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 ROLLBACK
@@ -663,63 +663,63 @@ INSERT 0 2
 INSERT 0 3
 DO
 SET
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000006
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000006","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
 (1 row)
 
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000002","aal":"aal2"}
 (1 row)
@@ -728,12 +728,12 @@ DO
 RESET
 INSERT 0 1
 SET
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
 (1 row)
@@ -751,32 +751,32 @@ GRANT
 CREATE FUNCTION
 CREATE FUNCTION
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
@@ -790,489 +790,489 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-          admin_content_save          
+          admin_content_save
 --------------------------------------
  43f7862a-199a-4f26-859b-792b2d794473
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
 INSERT 0 1
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000003
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000004
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-                                                                                                                           record_lesson_progress                                                                                                                           
+                                                                                                                           record_lesson_progress
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (690c428d-9ba8-4a42-9260-09837c0ecf68,23aafa4d-05c2-4dd9-ae3b-be0f72a46851,379b18bd-70c6-4a9f-a751-0feada8098f7,IN_PROGRESS,25.00,"2026-10-02 05:26:50.597644+00",,"2026-10-02 05:26:50.597644+00",98000000-0000-4000-8000-000000000002,0,"2026-10-02 05:26:50.597644+00")
 (1 row)
 
-                                                                                                             start_practice_attempt                                                                                                             
+                                                                                                             start_practice_attempt
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (dd9e1899-4a96-4ae1-af74-2932b436e34e,98000000-0000-4000-8000-000000000002,dbf684af-55dd-4d42-b505-f6b611e42b14,IN_PROGRESS,"2026-10-02 05:26:50.597644+00",,"{""evaluation_mode"": ""MANUAL_PENDING""}",fecd9e74-fd4c-4412-87aa-39821f89339a)
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 RESET
 CREATE FUNCTION
 CREATE TRIGGER
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
 DROP TRIGGER
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 INSERT 0 1
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 ROLLBACK
@@ -1286,12 +1286,12 @@ INSERT 0 4
 INSERT 0 5
 UPDATE 3
 SET
-              set_config              
+              set_config
 --------------------------------------
  86000000-0000-4000-8000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"86000000-0000-4000-8000-000000000001","aal":"aal1"}
 (1 row)
@@ -1299,12 +1299,12 @@ SET
 DO
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  86000000-0000-4000-8000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"86000000-0000-4000-8000-000000000002","aal":"aal1"}
 (1 row)
@@ -1338,261 +1338,261 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 3
 SET
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  8c3051d9-50a2-407e-b755-0c483a0e1669
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  8c3051d9-50a2-407e-b755-0c483a0e1669
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
 INSERT 0 1
 SET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 SET
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  60c3da56-b30d-4371-80a3-be1eb79e8d84
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 ROLLBACK
@@ -1614,80 +1614,80 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 SET
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000004
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000004","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  81000000-0000-0000-0000-000000000006
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000006","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"81000000-0000-0000-0000-000000000006","aal":"aal2"}
 (1 row)
@@ -1712,63 +1712,63 @@ INSERT 0 2
 INSERT 0 3
 DO
 SET
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000006
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000006","aal":"aal2"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
 (1 row)
 
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000002","aal":"aal2"}
 (1 row)
@@ -1777,12 +1777,12 @@ DO
 RESET
 INSERT 0 1
 SET
-              set_config              
+              set_config
 --------------------------------------
  89000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
 (1 row)
@@ -1800,32 +1800,32 @@ GRANT
 CREATE FUNCTION
 CREATE FUNCTION
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
@@ -1839,489 +1839,489 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-          admin_content_save          
+          admin_content_save
 --------------------------------------
  59986b2c-9c8c-41bf-aece-96de857f5d29
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
 INSERT 0 1
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000003
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000004
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- admin_content_reorder 
+ admin_content_reorder
 -----------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-                                                                                                                           record_lesson_progress                                                                                                                           
+                                                                                                                           record_lesson_progress
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (a7762d61-570d-447d-ab10-ddb05913e400,a194b65f-5100-4535-ba67-ed4bb1d8c1c6,c665ef7b-76f0-4d0f-9fc5-02c9218ce986,IN_PROGRESS,25.00,"2026-10-02 05:27:06.152456+00",,"2026-10-02 05:27:06.152456+00",98000000-0000-4000-8000-000000000002,0,"2026-10-02 05:27:06.152456+00")
 (1 row)
 
-                                                                                                             start_practice_attempt                                                                                                             
+                                                                                                             start_practice_attempt
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (728e34f3-150f-48a0-9ae2-d78177adc3a2,98000000-0000-4000-8000-000000000002,0f134808-7e88-4fa3-8c11-ccede1c376dc,IN_PROGRESS,"2026-10-02 05:27:06.152456+00",,"{""evaluation_mode"": ""MANUAL_PENDING""}",9f7cef46-937b-42b9-9363-ab818fc91dc7)
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000002
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 RESET
 CREATE FUNCTION
 CREATE TRIGGER
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
 DROP TRIGGER
 SET
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 INSERT 0 1
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 INSERT 0 1
- admin_content_transition 
+ admin_content_transition
 --------------------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  98000000-0000-4000-8000-000000000001
 (1 row)
 
-                                     set_config                                     
+                                     set_config
 ------------------------------------------------------------------------------------
  {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
- denied 
+ denied
 --------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 ROLLBACK
@@ -2335,12 +2335,12 @@ INSERT 0 4
 INSERT 0 5
 UPDATE 3
 SET
-              set_config              
+              set_config
 --------------------------------------
  86000000-0000-4000-8000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"86000000-0000-4000-8000-000000000001","aal":"aal1"}
 (1 row)
@@ -2348,12 +2348,12 @@ SET
 DO
 DO
 DO
-              set_config              
+              set_config
 --------------------------------------
  86000000-0000-4000-8000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"86000000-0000-4000-8000-000000000002","aal":"aal1"}
 (1 row)

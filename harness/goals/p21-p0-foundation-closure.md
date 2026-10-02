@@ -1,6 +1,6 @@
 # GOAL — p21-p0-foundation-closure: Role routing, quota and cohorts V1
 
-Status: in_progress  
+Status: done
 Owner: agent/human  
 Created: 2026-10-02  
 Updated: 2026-10-02
@@ -71,6 +71,7 @@ Authorized workspace after login/MFA, transactional weekly/monthly booking quota
 - `scripts/test-schedule-concurrency.mjs`
 - `scripts/setup-canonical-e2e.mjs`
 - `scripts/assert-canonical-e2e.mjs`
+- `scripts/verify-ui.mjs` only require existing Progress platform golden coverage (missing Windows main baselines discovered by final gate).
 - `scripts/verify-db.mjs`
 - `scripts/verify-security.mjs`
 - `eslint.config.mjs`, `.prettierignore` only exclude generated isolated Next outputs already defined by next.config.ts; lint/format continue scanning all source/tests/scripts.

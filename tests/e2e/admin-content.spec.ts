@@ -60,6 +60,9 @@ test.describe("Admin Content publication", () => {
     await expect(page.getByRole("status")).toContainText("Conteúdo salvo");
     const previewLink = page.getByRole("link", { name: `Pré-visualizar ${moduleTitle}` });
     await expect(previewLink).toBeVisible();
+    const previewHref = await previewLink.getAttribute("href");
+    if (!previewHref) throw new Error("Admin preview has no destination.");
+    expect((await page.request.get(previewHref)).status()).toBe(200);
     await previewLink.click();
     await expect(page).toHaveURL(/\/admin\/content\/[0-9a-f-]+\/preview\?kind=modules$/i);
     await expect(

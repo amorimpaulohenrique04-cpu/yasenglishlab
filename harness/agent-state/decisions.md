@@ -67,3 +67,7 @@ Node verification scripts execute the npm JavaScript CLI with `process.execPath`
 ## 2026-10-02 — Approved P21 foundation
 
 ADRs 0007–0009 record role-aware workspaces, session-start Recife quotas and additive cohorts. Preserve historical migrations and original UUID booking RPC; the application uses the result RPC for durable quota denial audit. Preserve null-cohort sessions and direct Teacher assignments. Extend goal scope only for exact generated Next lint/format ignores after observed gate failure; no source checks removed. No provider decisions or P21.4/P22 work.
+
+P21 final gate: Windows Home goldens predate P21 (f086e31); approved Linux Home was promoted in a4def7c. Home implementation/style has no diff against origin/main. Synchronize only the three inspected Windows Home images to the existing approved main UI; retain thresholds and all other baselines. This repairs stale platform evidence, without changing product visuals.
+
+P21 Windows verification also revealed missing Progresso win32 references: main contains only three Linux images from aff4784. Golden test generated first Windows images, which were inspected against the Linux reference and unchanged main Progress code. Add these missing platform baselines without replacing existing images or changing thresholds.

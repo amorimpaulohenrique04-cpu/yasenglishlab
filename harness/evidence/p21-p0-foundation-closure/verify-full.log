@@ -1,0 +1,4203 @@
+
+> yasenglishlab@0.1.0 verify:full
+> node scripts/verify-full.mjs
+
+
+=== Yas full verification ===
+2.118.0
+A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+psql (PostgreSQL) 18.6
+Starting database...
+Initialising schema...
+Seeding globals from roles.sql...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Applying migration 20260929035100_create_domain_contracts.sql...
+Applying migration 20260929043000_auth_rbac_rls.sql...
+Applying migration 20260929102000_canonical_vertical_slice.sql...
+Applying migration 20260929233000_observability_analytics_audit.sql...
+Applying migration 20260930172100_harden_learning_progress_analytics.sql...
+Applying migration 20260930224323_practice_engine_v1.sql...
+Applying migration 20261001005500_agenda_v1_booking.sql...
+Applying migration 20261001030000_teacher_operations_v1.sql...
+Applying migration 20261001155659_admin_content_v1.sql...
+Applying migration 20261001190000_assessment_engine_v1.sql...
+Applying migration 20261002042103_live_booking_usage_snapshot.sql...
+Applying migration 20261002042106_live_booking_quota_commands.sql...
+Applying migration 20261002042108_cohorts_v1_model.sql...
+Applying migration 20261002042112_cohorts_v1_authorization_commands.sql...
+Seeding data from supabase/seed.sql...
+[Local runtime credential status redacted]
+A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+Resetting local database...
+Recreating database...
+Initialising schema...
+Seeding globals from roles.sql...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Applying migration 20260929035100_create_domain_contracts.sql...
+Applying migration 20260929043000_auth_rbac_rls.sql...
+Applying migration 20260929102000_canonical_vertical_slice.sql...
+Applying migration 20260929233000_observability_analytics_audit.sql...
+Applying migration 20260930172100_harden_learning_progress_analytics.sql...
+Applying migration 20260930224323_practice_engine_v1.sql...
+Applying migration 20261001005500_agenda_v1_booking.sql...
+Applying migration 20261001030000_teacher_operations_v1.sql...
+Applying migration 20261001155659_admin_content_v1.sql...
+Applying migration 20261001190000_assessment_engine_v1.sql...
+Applying migration 20261002042103_live_booking_usage_snapshot.sql...
+Applying migration 20261002042106_live_booking_quota_commands.sql...
+Applying migration 20261002042108_cohorts_v1_model.sql...
+Applying migration 20261002042112_cohorts_v1_authorization_commands.sql...
+Seeding data from supabase/seed.sql...
+Restarting containers...
+Finished supabase db reset on branch feat/p21-p0-foundation-closure.
+{"target":"local","version":"","message":"Reset local database."}
+A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+
+> yasenglishlab@0.1.0 verify
+> node scripts/verify.mjs
+
+
+▶ npm run verify:core
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit
+
+
+▶ npm run test:unit
+
+> yasenglishlab@0.1.0 test:unit
+> vitest run tests/unit
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  16 passed (16)
+      Tests  86 passed (86)
+   Start at  03:33:48
+   Duration  4.14s (import 61%, transform 30%, tests 6%, worker 3%)
+
+  Transform  transforming modules took 3.68s · 30% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+▶ npm run test:integration
+
+> yasenglishlab@0.1.0 test:integration
+> vitest run tests/integration
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  12 passed | 1 skipped (13)
+      Tests  54 passed | 1 skipped (55)
+   Start at  03:33:53
+   Duration  4.69s (import 54%, transform 37%, tests 6%, worker 2%)
+
+  Transform  transforming modules took 6.01s · 37% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+▶ npm run verify:db
+
+> yasenglishlab@0.1.0 verify:db
+> node scripts/verify-db.mjs
+
+✓ DB contracts valid: 14 migration(s), canonical seed, 11 SQL invariant test(s).
+
+▶ npm run build
+
+> yasenglishlab@0.1.0 build
+> next build
+
+▲ Next.js 16.3.6 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 99ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.7s
+  Running TypeScript ...
+  Finished TypeScript in 12.1s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/22) ...
+  Generating static pages using 7 workers (5/22)
+  Generating static pages using 7 workers (10/22)
+  Generating static pages using 7 workers (16/22)
+✓ Generating static pages using 7 workers (22/22) in 1939ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/cohorts
+├ ƒ /admin/content
+├ ƒ /admin/content/[id]
+├ ƒ /admin/content/[id]/preview
+├ ƒ /admin/content/new
+├ ƒ /agenda
+├ ƒ /aulas
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]/aulas/[lessonSlug]
+├ ƒ /auth/callback
+├ ƒ /auth/continue
+├ ƒ /forgot-password
+├ ƒ /home
+├ ƒ /login
+├ ƒ /materiais
+├ ƒ /materiais/[materialId]/abrir
+├ ƒ /mfa
+├ ƒ /pratica
+├ ƒ /profile
+├ ƒ /progresso
+├ ƒ /reset-password
+├ ƒ /teacher
+├ ƒ /teacher/sessoes/[sessionId]
+└ ƒ /workspace
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+✓ Core verification passed.
+
+▶ npm run test:integration:db
+
+> yasenglishlab@0.1.0 test:integration:db
+> node scripts/run-sql-tests.mjs integration
+
+
+▶ psql supabase/tests/domain_invariants.sql
+INSERT 0 3
+INSERT 0 0
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+DO
+INSERT 0 1
+DO
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+DO
+
+▶ psql supabase/tests/vertical_slice_persistence.sql
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+SET
+              set_config
+--------------------------------------
+ 83000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"83000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+DO
+              set_config
+--------------------------------------
+ 83000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"83000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+RESET
+DO
+
+▶ psql supabase/tests/practice_persistence.sql
+INSERT 0 2
+INSERT 0 2
+SET
+              set_config
+--------------------------------------
+ 84000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"84000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 84000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"84000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+RESET
+DO
+
+▶ psql supabase/tests/schedule_booking.sql
+INSERT 0 4
+INSERT 0 4
+INSERT 0 1
+INSERT 0 3
+INSERT 0 3
+DELETE 0
+SET
+              set_config
+--------------------------------------
+ 85000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"85000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 85000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"85000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 85000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"85000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 85000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"85000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+RESET
+DO
+
+▶ psql supabase/tests/booking_quota.sql
+BEGIN
+CREATE FUNCTION
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 2
+INSERT 0 6
+SET
+              set_config
+--------------------------------------
+ 9b000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9b000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+          book_live_session
+--------------------------------------
+ 9c55c2f3-22f8-46ec-b652-f84e319ef128
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+          book_live_session
+--------------------------------------
+ dff6814f-9608-4c76-b718-1105ace8882c
+(1 row)
+
+          book_live_session
+--------------------------------------
+ 9da0439b-78fa-4a1e-a748-ea50320afcec
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+          book_live_session
+--------------------------------------
+ 0eb774fc-8745-4780-865c-c92f885121a5
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+         cancel_live_booking
+--------------------------------------
+ 9c55c2f3-22f8-46ec-b652-f84e319ef128
+(1 row)
+
+         cancel_live_booking
+--------------------------------------
+ 9c55c2f3-22f8-46ec-b652-f84e319ef128
+(1 row)
+
+          book_live_session
+--------------------------------------
+ 397f3e55-7370-44b3-b7ab-f9a3c73ef666
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+         cancel_live_booking
+--------------------------------------
+ 397f3e55-7370-44b3-b7ab-f9a3c73ef666
+(1 row)
+
+          book_live_session
+--------------------------------------
+ 9c55c2f3-22f8-46ec-b652-f84e319ef128
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+SET
+DO
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 9b000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9b000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+SET
+                            mark_teacher_attendance
+--------------------------------------------------------------------------------
+ (b70753ab-2776-4fa7-a42b-e0773c10f87f,NO_SHOW,"2026-10-02 06:34:30.788248+00")
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+SET
+ cancel_teacher_live_session
+-----------------------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 9b000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9b000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+SET
+          book_live_session
+--------------------------------------
+ 397f3e55-7370-44b3-b7ab-f9a3c73ef666
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ set_config
+------------
+
+(1 row)
+
+ set_config
+------------
+ {}
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+              set_config
+--------------------------------------
+ 9b000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9b000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+SET
+         cancel_live_booking
+--------------------------------------
+ dc0f7b7e-3a0d-4927-8d72-8de162a8f523
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+DO
+UPDATE 1
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+UPDATE 1
+ assert_true
+-------------
+
+(1 row)
+
+UPDATE 1
+DO
+ROLLBACK
+
+▶ psql supabase/tests/cohorts.sql
+BEGIN
+CREATE FUNCTION
+INSERT 0 5
+INSERT 0 5
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+SET
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+          book_live_session
+--------------------------------------
+ a81dc76d-fdef-4d34-b08e-b1ac595982d2
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 9c200000-0000-0000-0000-000000000001
+(1 row)
+
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+         cancel_live_booking
+--------------------------------------
+ a81dc76d-fdef-4d34-b08e-b1ac595982d2
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+SET
+ check_cohort
+--------------
+
+(1 row)
+
+RESET
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+SET
+            manage_cohort
+--------------------------------------
+ 9c200000-0000-0000-0000-000000000001
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+DO
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 96e2b253-5670-41db-8705-f578525512f2
+(1 row)
+
+RESET
+ check_cohort
+--------------
+
+(1 row)
+
+ROLLBACK
+
+▶ psql supabase/tests/teacher_operations.sql
+DELETE 0
+DELETE 0
+DELETE 0
+DELETE 0
+DELETE 0
+DELETE 0
+INSERT 0 6
+INSERT 0 6
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+DO
+SET
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000006
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000006","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
+(1 row)
+
+DO
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000002","aal":"aal2"}
+(1 row)
+
+DO
+RESET
+INSERT 0 1
+SET
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
+(1 row)
+
+DO
+RESET
+DO
+
+▶ psql supabase/tests/admin_content.sql
+BEGIN
+INSERT 0 4
+INSERT 0 4
+CREATE TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+          admin_content_save
+--------------------------------------
+ c99e6d88-1430-484b-94a3-8b4cffec6ef4
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000003
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000004
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+                                                                                                                           record_lesson_progress
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (bf330819-8448-41c0-a5cb-46b8bad15348,1caaddba-1d26-4971-80bf-b677b40e1598,d95e6787-cde9-4ede-9f67-448c27b7fd50,IN_PROGRESS,25.00,"2026-10-02 06:34:33.046244+00",,"2026-10-02 06:34:33.046244+00",98000000-0000-4000-8000-000000000002,0,"2026-10-02 06:34:33.046244+00")
+(1 row)
+
+                                                                                                             start_practice_attempt
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (1990d5f1-124e-4494-866a-97edbec72920,98000000-0000-4000-8000-000000000002,5baec89e-8748-4fb7-805a-a0228c621c06,IN_PROGRESS,"2026-10-02 06:34:33.046244+00",,"{""evaluation_mode"": ""MANUAL_PENDING""}",a8ec963e-cb37-4c6b-a3d8-dfc810be9a10)
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+RESET
+CREATE FUNCTION
+CREATE TRIGGER
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+DROP TRIGGER
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+INSERT 0 1
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ROLLBACK
+
+▶ psql supabase/tests/assessment_engine.sql
+BEGIN
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 4
+INSERT 0 5
+UPDATE 3
+SET
+              set_config
+--------------------------------------
+ 86000000-0000-4000-8000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"86000000-0000-4000-8000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+DO
+DO
+              set_config
+--------------------------------------
+ 86000000-0000-4000-8000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"86000000-0000-4000-8000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+RESET
+DO
+ROLLBACK
+
+▶ real Agenda concurrency
+✓ Agenda real concurrency passed: two concurrent users, exactly one BOOKED.
+✓ Quota real concurrency passed: one Student, two distinct sessions, limit=1, exactly one BOOKED.
+✓ Real retry/cancellation concurrency passed: stable UUID and at most one consumed unit.
+✓ Teacher cancellation versus attendance/booking races passed: unique attendance, cancelled sessions and zero active consumption.
+
+✓ integration SQL suite passed (9 file(s)).
+
+▶ npm run test:rls
+
+> yasenglishlab@0.1.0 test:rls
+> node scripts/run-sql-tests.mjs rls
+
+
+▶ psql supabase/tests/cohorts.sql
+BEGIN
+CREATE FUNCTION
+INSERT 0 5
+INSERT 0 5
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+SET
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+          book_live_session
+--------------------------------------
+ b5c6bad8-a683-46be-a39c-7eaf4f991382
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 9c200000-0000-0000-0000-000000000001
+(1 row)
+
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+         cancel_live_booking
+--------------------------------------
+ b5c6bad8-a683-46be-a39c-7eaf4f991382
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+SET
+ check_cohort
+--------------
+
+(1 row)
+
+RESET
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 9c000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+SET
+            manage_cohort
+--------------------------------------
+ 9c200000-0000-0000-0000-000000000001
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+DO
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+ check_cohort
+--------------
+
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+            manage_cohort
+--------------------------------------
+ 6894bb58-7117-4a53-9d33-b95b4a47d877
+(1 row)
+
+RESET
+ check_cohort
+--------------
+
+(1 row)
+
+ROLLBACK
+
+▶ psql supabase/tests/rls_permissions.sql
+INSERT 0 6
+INSERT 0 6
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 3
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+DO
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000003","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000004
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000004","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 81000000-0000-0000-0000-000000000006
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000006","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"81000000-0000-0000-0000-000000000006","aal":"aal2"}
+(1 row)
+
+DO
+RESET
+DO
+DO
+
+▶ psql supabase/tests/teacher_operations.sql
+DELETE 1
+DELETE 1
+DELETE 3
+DELETE 2
+DELETE 1
+DELETE 2
+INSERT 0 0
+INSERT 0 0
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+DO
+SET
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000003
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000003","aal":"aal1"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000005
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000005","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000006
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000006","aal":"aal2"}
+(1 row)
+
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
+(1 row)
+
+DO
+DO
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000002","aal":"aal2"}
+(1 row)
+
+DO
+RESET
+INSERT 0 1
+SET
+              set_config
+--------------------------------------
+ 89000000-0000-0000-0000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"89000000-0000-0000-0000-000000000001","aal":"aal2"}
+(1 row)
+
+DO
+RESET
+DO
+
+▶ psql supabase/tests/admin_content.sql
+BEGIN
+INSERT 0 4
+INSERT 0 4
+CREATE TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+          admin_content_save
+--------------------------------------
+ 3cdae07f-d3fa-4cde-9f67-2c289bfd6300
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000003
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000003","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000004
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000004","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ admin_content_reorder
+-----------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+                                                                                                                           record_lesson_progress
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (e420eaab-e186-40db-875d-607f1723c9bb,17f1f970-1d94-49b4-ab9d-0e8487c139a4,3f59e61e-b2fc-4175-b843-49bdb56ed13b,IN_PROGRESS,25.00,"2026-10-02 06:34:41.420422+00",,"2026-10-02 06:34:41.420422+00",98000000-0000-4000-8000-000000000002,0,"2026-10-02 06:34:41.420422+00")
+(1 row)
+
+                                                                                                             start_practice_attempt
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (a0f34970-3fe3-4936-921c-981cc82d46f0,98000000-0000-4000-8000-000000000002,8e746c50-92a7-43e0-8d18-872209071c7a,IN_PROGRESS,"2026-10-02 06:34:41.420422+00",,"{""evaluation_mode"": ""MANUAL_PENDING""}",8ea0ec96-2dfd-42dd-9847-3db8e375ca5b)
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000002
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+RESET
+CREATE FUNCTION
+CREATE TRIGGER
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+DROP TRIGGER
+SET
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal2","role":"authenticated"}
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+INSERT 0 1
+ denied
+--------
+
+(1 row)
+
+INSERT 0 1
+ admin_content_transition
+--------------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+              set_config
+--------------------------------------
+ 98000000-0000-4000-8000-000000000001
+(1 row)
+
+                                     set_config
+------------------------------------------------------------------------------------
+ {"sub":"98000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+ denied
+--------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ROLLBACK
+
+▶ psql supabase/tests/assessment_engine.sql
+BEGIN
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 4
+INSERT 0 5
+UPDATE 3
+SET
+              set_config
+--------------------------------------
+ 86000000-0000-4000-8000-000000000001
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"86000000-0000-4000-8000-000000000001","aal":"aal1"}
+(1 row)
+
+DO
+DO
+DO
+              set_config
+--------------------------------------
+ 86000000-0000-4000-8000-000000000002
+(1 row)
+
+                         set_config
+-------------------------------------------------------------
+ {"sub":"86000000-0000-4000-8000-000000000002","aal":"aal1"}
+(1 row)
+
+DO
+RESET
+DO
+ROLLBACK
+
+✓ rls SQL suite passed (5 file(s)).
+
+✓ Non-UI verification passed, including real database integration and RLS.
+
+> yasenglishlab@0.1.0 verify:harness
+> node scripts/verify-harness.mjs
+
+✓ Ratchet contract valid: controlled red fixture rejected, green fixture accepted, 20 durable failure record(s) verified.
+✓ Engineering System 1.0 contract valid: docs, Harness state, registry, UI gates, RLS, CI/CD, observability and Ratchet surfaces are internally consistent.
+✓ Platform contract valid: red fixture rejected, shell-free Windows fixture accepted, 20 scripts audited, LF enforced.
+✓ Harness contract valid: 25 required paths, 24 registry entries.
+
+> yasenglishlab@0.1.0 verify:security
+> node scripts/verify-security.mjs
+
+✓ Security boundary valid across 183 source files; RLS evidence and Yas threat model are present.
+
+> yasenglishlab@0.1.0 eval:agent
+> node scripts/eval-agent.mjs
+
+✓ required documentation declared: docs/TESTING.md, docs/DEFINITION_OF_DONE.md, docs/SECURITY.md, docs/AUTH_RBAC_RLS.md
+✓ changed files stay in declared scope: 100 changed file(s) covered
+✓ no unreviewed duplicate UI primitive: no new UI primitive files
+✓ no newly ignored failing checks: no new skip/fixme/failure suppression
+✓ UI changes carry screenshot evidence: visual test/evidence changed
+✓ database schema changes include migration: no schema-side change detected
+✓ RLS changes include executable authorization test: RLS test changed
+✓ no high-confidence secret in changed files: clean
+✓ task exists in feature registry: in_progress
+✓ no premature success claim: status=in_progress, verified=false
+
+✓ Agent behavioral eval passed (10 automated/proxy rules).
+Canonical E2E fixture ready.
+
+> yasenglishlab@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:24080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:23640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:23056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:18644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\e2e\admin-content.spec.ts:35:7 › Admin Content publication › Admin publishes, reorders and unpublishes a module; Student visibility follows publication (31.6s)
+  ok  2 [chromium] › tests\e2e\canonical-slice.spec.ts:32:7 › canonical learning vertical slice › a Student without curriculum or booking projects the real Practice fallback (3.9s)
+  ok  3 [chromium] › tests\e2e\canonical-slice.spec.ts:56:7 › canonical learning vertical slice › a booked session happening now outranks Practice and navigates to Agenda (3.2s)
+  ok  4 [chromium] › tests\e2e\canonical-slice.spec.ts:86:7 › canonical learning vertical slice › browser-visible Progress responses do not expose internal Assessment or service-role data (4.3s)
+  ok  5 [chromium] › tests\e2e\canonical-slice.spec.ts:133:7 › canonical learning vertical slice › browser-visible Home responses keep the projection DTO minimal (4.0s)
+[WebServer] (node:19484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:17716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="6a56ea97-6a31-4215-a50c-3b98aae23bac"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="862a5923-d5e6-4336-bff8-cbfdafbc15a0"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="67ae8db3-6166-4b28-8ee6-314ac07eaf14"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="af4dbd0e-4a2c-4089-b439-9995653fa9c7"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="f2218b1c-ed9e-4bd1-b482-a9e5cbc19388"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+[WebServer] (node:2920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:14144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:23780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:5552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="1e8edb54-4880-4459-a3ff-c98da4e858b7"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="802d0254-2ea3-4700-aa08-9523387f2cf2"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="617fd100-b2aa-4423-8b9b-4bf2bba1fdb2"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="51d63f54-fa5e-4c64-aa6a-6b421d446931"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="e6ff37b7-b845-4195-8954-03bd7bb8c302"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/agenda" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <AgendaPage>
+[WebServer]                   <div className="schedule-m...">
+[WebServer]                     <header>
+[WebServer]                     <div>
+[WebServer]                     <div className="schedule-m...">
+[WebServer]                       <section className="schedule-m..." aria-labelledby="agenda-ses...">
+[WebServer]                         <div>
+[WebServer]                         <div className="schedule-m...">
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                                 <form action={function cancelLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+[WebServer] (node:21236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="adfb4c88-35e6-45b4-bb2f-87b50fadadfd"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="bfada4eb-56cd-4c68-b028-15936e9cd76b"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="a2aae9f1-a92d-4915-92aa-499208225ff0"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="f2d82dda-5ad4-444d-8b15-8d7a5a5e6d3b"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="1c16e10c-2da5-4ac1-8a2e-e4e72c107ae2"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/agenda" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <AgendaPage>
+[WebServer]                   <div className="schedule-m...">
+[WebServer]                     <header>
+[WebServer]                     <div>
+[WebServer]                     <div className="schedule-m...">
+[WebServer]                       <section className="schedule-m..." aria-labelledby="agenda-ses...">
+[WebServer]                         <div>
+[WebServer]                         <div className="schedule-m...">
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                                 <form action={function cancelLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+[WebServer] (node:12924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [chromium] › tests\e2e\canonical-slice.spec.ts:177:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume (1.2m)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2607946034'
+[WebServer] }
+[WebServer] (node:10560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [chromium] › tests\e2e\cohorts-booking.spec.ts:8:5 › Student cohort booking, quota, cancellation and rebooking persist (14.7s)
+  ok  8 [chromium] › tests\e2e\cohorts-booking.spec.ts:46:5 › Admin default entry after MFA administers cohort metadata (11.5s)
+  ok  9 [chromium] › tests\e2e\foundation.spec.ts:3:5 › boots the public authentication surface (1.2s)
+[WebServer] (node:11052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] › tests\e2e\materials.spec.ts:84:5 › authorized materials can be searched, favorited and opened while unauthorized access is denied (11.1s)
+[WebServer] (node:22768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 11 [chromium] › tests\e2e\teacher-operations.spec.ts:24:7 › Teacher Operations V1 › Student cannot enter the Teacher area (4.6s)
+[WebServer] (node:19720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer]
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer]
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer]
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer]
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="88200000-0..." loading={null}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/teacher/s..." tree={[...]} params={{...}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <TeacherSessionPage>
+[WebServer]                   <div className="teacher-op...">
+[WebServer]                     <LinkComponent>
+[WebServer]                     <header>
+[WebServer]                     <div>
+[WebServer]                     <section>
+[WebServer]                     <section aria-labelledby="teacher-ro...">
+[WebServer]                       <div>
+[WebServer]                       <ol className="teacher-op...">
+[WebServer]                         <li>
+[WebServer]                           <Card>
+[WebServer]                             <section aria-labelledby="participan..." className="yas-card t...">
+[WebServer]                               <div>
+[WebServer]                               <div className="teacher-op..." aria-label="Presença d...">
+[WebServer]                                 <form action={function markAttendanceAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="sessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="sessionBookingId"
+[WebServer]                                     value="88300000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="status"
+[WebServer]                                     value="ATTENDED"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                                 <form action={function markAttendanceAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="sessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="sessionBookingId"
+[WebServer]                                     value="88300000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="status"
+[WebServer]                                     value="NO_SHOW"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]
+  ok 12 [chromium] › tests\e2e\teacher-operations.spec.ts:38:7 › Teacher Operations V1 › AAL1 → MFA → own session → attendance persists; foreign session stays unavailable (11.7s)
+[WebServer] (node:17744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 [chromium] › tests\e2e\workspace-entry.spec.ts:8:5 › multi-role requires a selector and allows only authorized choices (5.7s)
+  ok 14 [chromium] › tests\e2e\workspace-entry.spec.ts:23:5 › Teacher cannot refresh Student routes without STUDENT role (9.1s)
+
+  14 passed (3.5m)
+Canonical E2E persistence and analytics evidence passed.
+Canonical E2E fixture ready.
+
+> yasenglishlab@0.1.0 test:a11y
+> playwright test -c playwright.a11y.config.ts
+
+[WebServer] (node:23896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 1 worker
+
+(node:24792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:29:5 › login exposes landmarks, labels, keyboard focus and WCAG A/AA compliance (2.3s)
+[WebServer] (node:20152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:12996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:44:5 › Home and Aulas preserve landmarks, focusable navigation and axe compliance (14.9s)
+  ok  3 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:101:5 › Materiais preserves search labels, keyboard focus and WCAG A/AA compliance (4.7s)
+  ok  4 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:118:5 › Prática exposes skill availability, keyboard controls and WCAG A/AA compliance (8.5s)
+  ok  5 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:140:5 › Progresso preserves semantic indicators, navigation and WCAG A/AA compliance (5.1s)
+  ok  6 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:167:5 › Agenda exposes booking states, disabled eligibility and WCAG A/AA compliance (5.2s)
+[WebServer] (node:19952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:188:5 › Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A/AA compliance (13.0s)
+  ok  8 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:210:5 › Admin Content exposes keyboard navigation and WCAG A/AA compliance (6.7s)
+(node:15168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  9 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:29:5 › login exposes landmarks, labels, keyboard focus and WCAG A/AA compliance (2.1s)
+[WebServer] (node:18616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:44:5 › Home and Aulas preserve landmarks, focusable navigation and axe compliance (9.7s)
+  ok 11 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:101:5 › Materiais preserves search labels, keyboard focus and WCAG A/AA compliance (3.6s)
+  ok 12 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:118:5 › Prática exposes skill availability, keyboard controls and WCAG A/AA compliance (6.7s)
+  ok 13 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:140:5 › Progresso preserves semantic indicators, navigation and WCAG A/AA compliance (4.9s)
+  ok 14 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:167:5 › Agenda exposes booking states, disabled eligibility and WCAG A/AA compliance (5.6s)
+[WebServer] (node:24484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 15 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:188:5 › Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A/AA compliance (5.2s)
+  ok 16 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:210:5 › Admin Content exposes keyboard navigation and WCAG A/AA compliance (5.1s)
+
+  16 passed (2.0m)
+
+> yasenglishlab@0.1.0 storybook:build
+> storybook build
+
+
+T  Building storybook v10.6.0
+|
+o  Cleaning outputDir: storybook-static
+|
+o  Loading presets
+|
+o  Building manager..
+|
+•  Building open services..
+|
+•  Building preview..
+|  Vite vite v8.3.1 building client environment for production...
+transforming...
+✓ 189 modules transformed.
+rendering chunks...
+computing gzip size...
+|  Vite storybook-static/iframe.html
+|  18.71 kB │ gzip:   5.28 kB
+|  storybook-static/assets/iframe-CgV9y2Mp.css                   54.38 kB
+|  │ gzip:   9.62 kB
+|  storybook-static/assets/iframe-BB5bGdHo.js                     0.04 kB
+|  │ gzip:   0.06 kB
+|  storybook-static/assets/foundation.stories-ByhHUBeW.js         0.44 kB
+|  │ gzip:   0.31 kB
+|  storybook-static/assets/rolldown-runtime-CsOFd3vK.js           1.25 kB
+|  │ gzip:   0.69 kB
+|  storybook-static/assets/preload-helper-BC2WaYri.js             1.33 kB
+|  │ gzip:   0.75 kB
+|  storybook-static/assets/layout.stories-d_dywVQV.js             5.36 kB
+|  │ gzip:   1.86 kB
+|  storybook-static/assets/design-system.stories-MuRs9Akd.js      7.34 kB
+|  │ gzip:   2.67 kB
+|  storybook-static/assets/ui-_1mO-Dvx.js                        21.40 kB
+|  │ gzip:   4.47 kB
+|  storybook-static/vite-inject-mocker-entry.js                  27.84 kB
+|  │ gzip:   9.66 kB
+|  storybook-static/assets/matchers-JIUQ3HVY-D2RxGVML.js         28.79 kB
+|  │ gzip:   9.68 kB
+|  storybook-static/assets/react-18-DSc4qVPu.js                 205.30 kB
+|  │ gzip:  64.48 kB
+|  storybook-static/assets/axe-UAt6k_aC.js                      586.90 kB
+|  │ gzip: 160.19 kB
+|  storybook-static/assets/iframe-_FNgIa4Q.js                 1,322.30 kB
+|  │ gzip: 368.86 kB
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/hooks-client-context.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/hooks-client-context.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [plugin builtin:vite-reporter]
+|  (!) Some chunks are larger than 500 kB after minification. Consider:
+|  - Using dynamic import() to code-split the application
+|  - Use build.rolldownOptions.output.codeSplitting to improve chunking:
+|  ]8;;https://rolldown.rs/reference/OutputOptions.codeSplittinghttps://rolldown.rs/reference/OutputOptions.codeSplitting]8;;
+|  - Adjust chunk size limit for this warning via
+|  build.chunkSizeWarningLimit.
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/client/components/redirect-boundary.js" may
+|  not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/next/dist/client/components/redirect-boundary.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/app-router-context.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/app-router-context.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "src/components/ui/overlays.tsx" may not be
+|  preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/ui/overlays.tsx:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m "use client";
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "src/components/ui/navigation.tsx" may not
+|  be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/ui/navigation.tsx:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m "use client";
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "node_modules/next/dist/client/script.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/next/dist/client/script.js:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|  Vite ✓ built in 3.16s
+|
+!  Vite [33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 2.3s of this 3.0s
+|  build (77%).
+|  The slowest callbacks, timed inside each callback (the wait before a
+|  callback starts is excluded, the time it awaits is included):
+|  - plugin vite:css transform (50%, 1.5s, 2 calls)
+|  Additional callback time came from the callbacks below and from
+|  callbacks under 1s.
+|  1 callback is listed without a time. Its calls overlapped, so the time
+|  inside one call includes work from other calls. To find its cost,
+|  profile the build with `node --cpu-prof`:
+|  - plugin vite-plugin-storybook-nextjs-swc transform (189 calls)
+|  See ]8;;https://rolldown.rs/reference/InputOptions.checks#bundlertimingshttps://rolldown.rs/reference/InputOptions.checks#bundlertimings]8;;
+|  for more details.
+
+|
+o  Output directory: C:/Users/PAULO
+|  HENRIQUE/Documents/Projetos/yasenglishlab/storybook-static
+|
+—  Storybook build completed successfully
+
+
+> yasenglishlab@0.1.0 test:visual:storybook
+> playwright test -c playwright.visual.config.ts
+
+[WebServer] (node:24680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:17064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium-design-system] › tests\visual\design-system.spec.ts:41:7 › core-states has no automated WCAG A/AA violations and produces evidence (3.7s)
+  ok 2 [chromium-design-system] › tests\visual\design-system.spec.ts:41:7 › form-controls has no automated WCAG A/AA violations and produces evidence (2.5s)
+  ok 3 [chromium-design-system] › tests\visual\design-system.spec.ts:41:7 › desktop-shell has no automated WCAG A/AA violations and produces evidence (2.4s)
+  ok 4 [chromium-design-system] › tests\visual\design-system.spec.ts:41:7 › mobile-shell has no automated WCAG A/AA violations and produces evidence (2.6s)
+  ok 5 [chromium-design-system] › tests\visual\design-system.spec.ts:51:5 › tabs support keyboard navigation and visible selection (1.6s)
+  ok 6 [chromium-design-system] › tests\visual\design-system.spec.ts:63:5 › dialog closes with Escape (1.5s)
+
+  6 passed (17.6s)
+Canonical E2E fixture ready.
+
+> yasenglishlab@0.1.0 test:visual:golden
+> playwright test -c playwright.golden.config.ts
+
+[WebServer] (node:22180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:11288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop] › tests\visual\golden.spec.ts:19:5 › login, home, aulas and progresso match golden baselines (7.7s)
+(node:24664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [tablet] › tests\visual\golden.spec.ts:19:5 › login, home, aulas and progresso match golden baselines (6.2s)
+(node:728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [mobile] › tests\visual\golden.spec.ts:19:5 › login, home, aulas and progresso match golden baselines (7.5s)
+
+  3 passed (31.2s)
+
+✓ Full verification passed: core + DB integration + RLS + E2E + a11y + visual.
+{"project_id_filter":"yasenglishlab","backup":false,"message":"Stopped supabase local development setup."}
+A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli

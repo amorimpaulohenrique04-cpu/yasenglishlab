@@ -19,17 +19,17 @@ Running 5 tests using 1 worker
 [WebServer] (node:25296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
 [WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
@@ -187,19 +187,19 @@ Running 5 tests using 1 worker
 [WebServer]                                     ...
 [WebServer]                 ...
 [WebServer]               ...
-[WebServer]  
+[WebServer]
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
 [WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
@@ -332,7 +332,7 @@ Running 5 tests using 1 worker
 [WebServer]                       ...
 [WebServer]               ...
 [WebServer]             ...
-[WebServer]  
+[WebServer]
 [WebServer] (node:18124) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 [WebServer] (node:24404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
@@ -346,17 +346,17 @@ Running 5 tests using 1 worker
 [WebServer] (node:9080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
 [WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
@@ -514,19 +514,19 @@ Running 5 tests using 1 worker
 [WebServer]                                     ...
 [WebServer]                 ...
 [WebServer]               ...
-[WebServer]  
+[WebServer]
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
 [WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
@@ -659,19 +659,19 @@ Running 5 tests using 1 worker
 [WebServer]                       ...
 [WebServer]               ...
 [WebServer]             ...
-[WebServer]  
+[WebServer]
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
 [WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
@@ -797,23 +797,23 @@ Running 5 tests using 1 worker
 [WebServer]                       ...
 [WebServer]               ...
 [WebServer]             ...
-[WebServer]  
+[WebServer]
 [WebServer] (node:18740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 [WebServer] (node:23516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
 [WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
@@ -971,19 +971,19 @@ Running 5 tests using 1 worker
 [WebServer]                                     ...
 [WebServer]                 ...
 [WebServer]               ...
-[WebServer]  
+[WebServer]
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
 [WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
@@ -1116,19 +1116,19 @@ Running 5 tests using 1 worker
 [WebServer]                       ...
 [WebServer]               ...
 [WebServer]             ...
-[WebServer]  
+[WebServer]
 [WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
-[WebServer] 
+[WebServer]
 [WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
 [WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
 [WebServer] - Date formatting in a user's locale which doesn't match the server.
 [WebServer] - External changing data without sending a snapshot of it along with the HTML.
 [WebServer] - Invalid HTML tag nesting.
-[WebServer] 
+[WebServer]
 [WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-[WebServer] 
+[WebServer]
 [WebServer] https://react.dev/link/hydration-mismatch
-[WebServer] 
+[WebServer]
 [WebServer]   ...
 [WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
 [WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
@@ -1254,7 +1254,7 @@ Running 5 tests using 1 worker
 [WebServer]                       ...
 [WebServer]               ...
 [WebServer]             ...
-[WebServer]  
+[WebServer]
 [WebServer] (node:12924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
   ok 5 [chromium] › tests\e2e\canonical-slice.spec.ts:169:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume (1.5m)
