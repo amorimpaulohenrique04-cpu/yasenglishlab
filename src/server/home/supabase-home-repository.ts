@@ -32,7 +32,7 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
     return { activities, history, recentLessonId };
   }
 
-  loadSchedule(userId: string) {
-    return this.schedule.listOwnBookedSessions(userId);
+  loadSchedule(userId: string, now: Date) {
+    return this.schedule.listOwnBookedSessions(userId, now);
   }
 }
