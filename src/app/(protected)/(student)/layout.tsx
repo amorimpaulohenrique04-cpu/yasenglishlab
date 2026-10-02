@@ -1,12 +1,10 @@
 import type { ReactNode } from "react";
 
 import { StudentShell } from "@/modules/learning/ui/student-shell";
-import { requirePageAuth } from "@/server/auth/guards";
-import { createSupabaseServerClient } from "@/server/supabase/server";
+import { getStudentRequestContext } from "@/server/student/request-context";
 
 export default async function StudentLayout({ children }: { children: ReactNode }) {
-  const auth = await requirePageAuth();
-  const supabase = await createSupabaseServerClient();
+  const { auth, supabase } = await getStudentRequestContext();
   const { data: profile } = await supabase
     .from("profiles")
     .select("display_name")
