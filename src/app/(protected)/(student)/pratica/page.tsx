@@ -73,7 +73,7 @@ function StartPracticeForm({
   activity,
   label = "Praticar",
 }: {
-  activity: PracticeActivityItem;
+  activity: Pick<PracticeActivityItem, "id">;
   label?: string;
 }) {
   return (
