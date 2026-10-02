@@ -57,6 +57,7 @@ P21.4 extends V1 without turning Teacher into Admin. See [ADR 0012](./adr/0012-p
 - `MANUAL_EXTERNAL` is the provider-neutral V1 meeting mode. Meeting references are server-only.
 - Join is authorized at request time. Student requires own BOOKED booking; Teacher requires session ownership + AAL2.
 - The initial Join window is 15 minutes before start through 15 minutes after end.
+- Agenda keeps an own `BOOKED` session visible through that same Join window after `starts_at`; a session that already started does not become newly bookable.
 - Domain notifications are transactional/idempotent state records; no external delivery channel is implied.
 
 ## O que não fazer
