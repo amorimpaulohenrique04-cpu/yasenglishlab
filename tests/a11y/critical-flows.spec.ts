@@ -263,7 +263,7 @@ test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({
   ).toBeVisible();
   await assertAxe(page);
 
-  await page.goto("/logout");
+  await page.context().clearCookies();
   await login(page, "canonical.cohort-student@example.test");
   await page.goto("/pratica?skill=SPEAKING");
   const activity = page.locator(".yas-practice-activity-card").filter({
