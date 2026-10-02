@@ -701,8 +701,8 @@ values
     '42000000-0000-4000-8000-000000000001',
     'VIDEO',
     90,
-    'PUBLISHED',
-    now()
+    'DRAFT',
+    null
   ),
   (
     '82700000-0000-0000-0000-000000000002',
@@ -723,6 +723,11 @@ set processing_status = 'READY',
     caption_status = 'READY',
     ready_at = coalesce(ready_at, now())
 where lesson_asset_id = '82700000-0000-0000-0000-000000000001';
+
+update public.lesson_assets
+set publication_status = 'PUBLISHED',
+    published_at = now()
+where id = '82700000-0000-0000-0000-000000000001';
 
 update public.lesson_video_assets
 set processing_status = 'PROCESSING',
