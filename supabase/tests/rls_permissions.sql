@@ -599,6 +599,12 @@ end $$;
 -- P21.4-P21.6 executable authorization matrix.
 -- This belongs in the canonical RLS suite because the migrations above add policies,
 -- privileged RPCs and intentionally hidden provider/meeting/media metadata.
+
+-- Previous cases intentionally leave JWT claims set. Fixture inserts below are privileged
+-- setup, so clear request identity before triggers evaluate private.can_book_session().
+select set_config('request.jwt.claim.sub', '', false);
+select set_config('request.jwt.claims', '{}', false);
+
 insert into auth.users (id, email, raw_user_meta_data)
 values ('81000000-0000-0000-0000-000000000007', 'student-c-no-enrollment@example.test', '{"display_name":"Student C"}')
 on conflict (id) do nothing;
