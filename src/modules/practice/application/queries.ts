@@ -2,6 +2,7 @@ import {
   buildPracticeCatalog,
   normalizePracticeSkill,
   recommendPractice,
+  toPracticeRecommendationActivity,
   type PracticeActivityItem,
   type PracticeAttemptView,
   type PracticeHistoryItem,
@@ -63,7 +64,11 @@ export async function getPracticeView(
     data: {
       catalog: buildPracticeCatalog(activities),
       activities: visibleActivities,
-      recommendation: recommendPractice({ activities, history, recentLessonId }),
+      recommendation: recommendPractice({
+        activities: activities.map(toPracticeRecommendationActivity),
+        history,
+        recentLessonId,
+      }),
       history: history.slice(0, 6),
       selectedAttempt,
       selectedSkill,
