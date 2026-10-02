@@ -851,8 +851,7 @@ select
   storage_path,
   '{"mimetype":"audio/webm","size":1024}'
 from public.practice_response_media
-where id = current_setting('p21.rls_media')::uuid
-on conflict (bucket_id, name) do update set metadata = excluded.metadata;
+where id = current_setting('p21.rls_media')::uuid;
 
 set role authenticated;
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000001', false);
