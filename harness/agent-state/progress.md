@@ -343,3 +343,23 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Official CI #359 / run `36941525748` passed all mandatory jobs, including Preview and CI Gate.
 - Durable evidence is stored under `harness/evidence/prompt-20-progress-v1/`.
 - Registry is `done / verified:true`. PR #24 remains open and unmerged.
+
+## 2026-10-01 — prompt-21 Home Projection V1 closure
+
+- Replaced the former Learning-only Home with a read-only transversal Student projection over Learning, Practice and Schedule; curricular Progress is derived from the same Learning facts through the existing P20 curriculum projection.
+- Added one request-scoped authenticated server context shared by Student layout and Home, eliminating duplicate auth/client creation within the Home request path.
+- Primary-action policy is deterministic and singular: own BOOKED session happening now → most recently accessed incomplete lesson → canonical first incomplete lesson → existing Practice recommendation → future own booking.
+- Practice recommendation remains owned by `recommendPractice`; Home consumes a narrow candidate projection that excludes full activity content and answer payloads.
+- Schedule owns the Home booking read boundary and scopes it to the authenticated Student; Home does not reproduce capacity, entitlement, cancellation or booking mutation policy.
+- Multiple courses remain separate and never become a global completion average.
+- Empty, partial, error and unauthorized states are distinct; failures are not silently converted to empty data.
+- Dedicated Home loading/error states and responsive desktop/tablet/mobile composition were added without converting the page to a Client Component.
+- Verification history remains preserved: initial formatting failure, architecture corrections for auth/Schedule/Practice/Progress ownership, stateful E2E retry contamination and expected golden mismatch were fixed at their root causes without weakening assertions, timeouts, RLS or visual tolerance.
+- Actual Home desktop/tablet/mobile screenshots were inspected before promotion of only the three Home Linux golden baselines.
+- Verified implementation head `a4def7c55943961face164cf411247f11f4dca1a` passed Official CI #394 / run `36952067156`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
+- Preview passed real DB integration/concurrency, RLS, observability, Critical E2E, persistence/analytics, accessibility, Storybook/design-system visuals and product golden visuals.
+- Preview artifact `11204268174` has digest `sha256:8f39c44f6ad471cbab4a3300cf073532254188001d5725d9963d64a0f9839b59`.
+- Final scope audit found no P21 migration, Home write path, runtime service-role path, CEFR/streak/goal/commercial policy, Assessment/Teacher/Admin expansion or parallel recommendation engine.
+- Durable evidence is stored under `harness/evidence/prompt-21-home-projection-v1/`; registry is `done / verified:true`.
+- PR #25 remains open against `main` and intentionally unmerged.
+
