@@ -224,7 +224,6 @@ test("Admin Content exposes keyboard navigation and WCAG A/AA compliance", async
   await assertAxe(page);
 });
 
-
 test("Teacher P21 operations pages preserve form semantics and WCAG A/AA compliance", async ({
   page,
 }) => {
