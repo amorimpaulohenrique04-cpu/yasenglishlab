@@ -152,10 +152,11 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
       buffer: Buffer.from("canonical fake provider payload"),
     });
 
-    await expect(page.getByRole("status")).toContainText(
-      "Upload recebido. Aguarde o processamento e atualize esta página.",
-      { timeout: 30_000 },
-    );
+    await expect(
+      page
+        .getByRole("status")
+        .filter({ hasText: "Upload recebido. Aguarde o processamento e atualize esta página." }),
+    ).toBeVisible({ timeout: 30_000 });
     expect(uploadHostname).toBe("127.0.0.1");
 
     await expect
