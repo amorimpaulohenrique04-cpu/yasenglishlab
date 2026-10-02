@@ -2,7 +2,7 @@
 
 ## Live operations
 
-Teacher commands derive the active Teacher from `auth.uid()` and require TEACHER+AAL2. Extra staff roles never expand command scope. Core Class maps to `weekly_core_classes`, Conversation Lab to `weekly_conversation_labs`, and Private Session to `monthly_private_sessions`.
+See [Provider-neutral Live Operations and Meeting Access](adr/0012-provider-neutral-live-operations.md). Teacher commands derive the active Teacher from `auth.uid()` and require TEACHER+AAL2. Extra staff roles never expand command scope. Core Class maps to `weekly_core_classes`, Conversation Lab to `weekly_conversation_labs`, and Private Session to `monthly_private_sessions`.
 
 Groups require an active authorized cohort and capacity 1–6. Private requires an authorized target Student, no cohort and capacity 1. Legacy Private sessions without a target cannot accept new bookings. Operators must reconcile these individually from documented evidence; no migration infers a recipient. Booking UUIDs, quota snapshots and existing cancellation commands remain authoritative.
 
