@@ -362,4 +362,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Final scope audit found no P21 migration, Home write path, runtime service-role path, CEFR/streak/goal/commercial policy, Assessment/Teacher/Admin expansion or parallel recommendation engine.
 - Durable evidence is stored under `harness/evidence/prompt-21-home-projection-v1/`; registry is `done / verified:true`.
 - PR #25 remains open against `main` and intentionally unmerged.
-
