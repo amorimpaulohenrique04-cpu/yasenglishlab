@@ -19,16 +19,25 @@ export function sanitizeNextPath(value: string | null | undefined, fallback = "/
   if (!value) return fallback;
 
   const normalized = value.trim();
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(normalized);
+  } catch {
+    return fallback;
+  }
   if (
     !normalized.startsWith("/") ||
     normalized.startsWith("//") ||
     normalized.includes("\\") ||
-    normalized.includes("\0")
+    /[\\\x00-\x20\x7f]/.test(decoded) ||
+    decoded.startsWith("//") ||
+    /%[0-9a-f]{2}/i.test(decoded)
   ) {
     return fallback;
   }
 
-  return normalized;
+  const url = new URL(normalized, "https://yas.invalid");
+  return `${url.pathname}${url.search}${url.hash}`;
 }
 
 export function normalizeSignedUrlTtl(seconds: number | undefined): number {

@@ -99,3 +99,8 @@ Teacher Operations V1 registra `attendance_marked` como fato de auditoria explí
 O actor é `auth.uid()`; o payload contém somente `live_session_id`, `session_booking_id`, `previous_status` quando aplicável e `new_status`. Nome, e-mail, telefone, JWT/cookie/token, meeting data, billing e respostas de assessment não são copiados para o audit.
 
 Esse caminho transacional usa os defaults existentes de correlação quando não há request context disponível no PostgreSQL e não cria um segundo sistema de logs.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

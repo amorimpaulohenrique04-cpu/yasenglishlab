@@ -1,0 +1,209 @@
+
+> yasenglishlab@0.1.0 verify:ui
+> node scripts/verify-ui.mjs
+
+
+> yasenglishlab@0.1.0 storybook:build
+> storybook build
+
+
+T  Building storybook v10.6.0
+|
+o  Cleaning outputDir: storybook-static
+|
+o  Loading presets
+|
+o  Building manager..
+|
+•  Building open services..
+|
+•  Building preview..
+|  Vite vite v8.3.1 building client environment for production...
+transforming...
+✓ 189 modules transformed.
+rendering chunks...
+computing gzip size...
+|  Vite storybook-static/iframe.html
+|  18.71 kB │ gzip:   5.28 kB
+|  storybook-static/assets/iframe-CgV9y2Mp.css                   54.38 kB
+|  │ gzip:   9.62 kB
+|  storybook-static/assets/iframe-BB5bGdHo.js                     0.04 kB
+|  │ gzip:   0.06 kB
+|  storybook-static/assets/foundation.stories-ByhHUBeW.js         0.44 kB
+|  │ gzip:   0.31 kB
+|  storybook-static/assets/rolldown-runtime-CsOFd3vK.js           1.25 kB
+|  │ gzip:   0.69 kB
+|  storybook-static/assets/preload-helper-BC2WaYri.js             1.33 kB
+|  │ gzip:   0.75 kB
+|  storybook-static/assets/layout.stories-d_dywVQV.js             5.36 kB
+|  │ gzip:   1.86 kB
+|  storybook-static/assets/design-system.stories-MuRs9Akd.js      7.34 kB
+|  │ gzip:   2.67 kB
+|  storybook-static/assets/ui-_1mO-Dvx.js                        21.40 kB
+|  │ gzip:   4.47 kB
+|  storybook-static/vite-inject-mocker-entry.js                  27.84 kB
+|  │ gzip:   9.66 kB
+|  storybook-static/assets/matchers-JIUQ3HVY-D2RxGVML.js         28.79 kB
+|  │ gzip:   9.68 kB
+|  storybook-static/assets/react-18-DSc4qVPu.js                 205.30 kB
+|  │ gzip:  64.48 kB
+|  storybook-static/assets/axe-UAt6k_aC.js                      586.90 kB
+|  │ gzip: 160.19 kB
+|  storybook-static/assets/iframe-_FNgIa4Q.js                 1,322.30 kB
+|  │ gzip: 368.86 kB
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/hooks-client-context.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/hooks-client-context.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [plugin builtin:vite-reporter]
+|  (!) Some chunks are larger than 500 kB after minification. Consider:
+|  - Using dynamic import() to code-split the application
+|  - Use build.rolldownOptions.output.codeSplitting to improve chunking:
+|  ]8;;https://rolldown.rs/reference/OutputOptions.codeSplittinghttps://rolldown.rs/reference/OutputOptions.codeSplitting]8;;
+|  - Adjust chunk size limit for this warning via
+|  build.chunkSizeWarningLimit.
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/app-router-context.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/app-router-context.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/client/components/redirect-boundary.js" may
+|  not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/next/dist/client/components/redirect-boundary.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "src/components/ui/overlays.tsx" may not be
+|  preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/ui/overlays.tsx:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m "use client";
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "src/components/ui/navigation.tsx" may not
+|  be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/ui/navigation.tsx:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m "use client";
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in
+|  "node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m
+|  node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.js:1:1
+|  [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|
+!  Vite [33m[MODULE_LEVEL_DIRECTIVE] [0mThe semantics of the module level
+|  directive "use client" in "node_modules/next/dist/client/script.js"
+|  may not be preserved when bundling.
+|  [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m node_modules/next/dist/client/script.js:1:1 [38;5;246m][0m
+|  [38;5;246m│[0m
+|  [38;5;246m1 │[0m 'use client';
+|  [38;5;240m│[0m ──────┬──────
+|  [38;5;240m│[0m       ╰──────── module level directive may not be preserved
+|  [38;5;240m│[0m
+|  [38;5;240m│[0m [38;5;115mHelp[0m: For more information, see ]8;;https://rolldown.rs/in-depth/directives#other-directiveshttps://rolldown.rs/in-depth/d...]8;;
+|  [38;5;246m───╯[0m
+
+|  Vite ✓ built in 4.47s
+|
+!  Vite [33m[PLUGIN_TIMINGS] [0mJavaScript callbacks ran for 3.2s of this 4.4s
+|  build (73%).
+|  The slowest callbacks, timed inside each callback (the wait before a
+|  callback starts is excluded, the time it awaits is included):
+|  - plugin vite:css transform (48%, 2.1s, 2 calls)
+|  - plugin storybook:react-docgen-plugin transform (25%, 1.1s, 189
+|  calls)
+|  2 callbacks are listed without a time. Their calls overlapped, so the
+|  time inside one call includes work from other calls. To find their
+|  cost, profile the build with `node --cpu-prof`:
+|  - plugin vite-plugin-storybook-nextjs-swc transform (189 calls)
+|  - plugin storybook:project-annotations-plugin load (188 calls)
+|  See ]8;;https://rolldown.rs/reference/InputOptions.checks#bundlertimingshttps://rolldown.rs/reference/InputOptions.checks#bundlertimings]8;;
+|  for more details.
+
+|
+•  Storybook collects completely anonymous usage telemetry. We use it to
+|  shape Storybook's roadmap and prioritize features. You can learn more,
+|  including how to opt out, at ]8;;https://storybook.js.org/telemetryhttps://storybook.js.org/telemetry]8;;
+|
+o  Output directory: C:/Users/PAULO
+|  HENRIQUE/Documents/Projetos/yasenglishlab/storybook-static
+|
+—  Storybook build completed successfully
+
+Canonical E2E fixture ready.
+
+> yasenglishlab@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:22492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:20524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:4228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:21752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:14496) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)

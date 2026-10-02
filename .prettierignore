@@ -1,4 +1,6 @@
 .next
+.next-p18
+.next-p18-build
 node_modules
 coverage
 storybook-static

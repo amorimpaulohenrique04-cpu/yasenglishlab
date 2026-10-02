@@ -196,6 +196,30 @@ for (const threat of [
 }
 
 const sourceFiles = walk("src", (path) => /\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(path));
+const studentContext = read("src/server/student/request-context.ts");
+assert(
+  studentContext.includes('roles.includes("STUDENT")'),
+  "Student request boundary must explicitly authorize STUDENT.",
+);
+const cohortCommands = read("src/server/cohorts/cohorts.ts");
+assert(
+  cohortCommands.includes('assertRole("ADMIN")') &&
+    !cohortCommands.includes("createSupabaseAdminClient"),
+  "Cohort commands must use authenticated ADMIN+AAL2 authority.",
+);
+const quotaMigration = read("supabase/migrations/20261002042106_live_booking_quota_commands.sql");
+assert(
+  quotaMigration.includes("actor uuid := auth.uid()") &&
+    quotaMigration.includes("private.lock_booking_user(actor)") &&
+    quotaMigration.includes("'quota_denied'") &&
+    quotaMigration.includes("set search_path = ''"),
+  "Quota commands must derive the actor, serialize commercial usage and persist minimal denial audit.",
+);
+assert(
+  read("scripts/run-sql-tests.mjs").includes("supabase/tests/cohorts.sql") &&
+    read("scripts/run-sql-tests.mjs").includes("supabase/tests/booking_quota.sql"),
+  "Quota and cohort SQL security evidence must run in official regression suites.",
+);
 for (const path of sourceFiles) {
   const content = read(path);
   if (/NEXT_PUBLIC_[A-Z0-9_]*SERVICE_ROLE/.test(content)) {

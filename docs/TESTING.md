@@ -205,3 +205,8 @@ A infraestrutura deve manter evidência de ao menos uma regressão deliberada de
 - `verify:full` acrescenta E2E, a11y e visual.
 - Golden baselines existem para Login/Home/Aulas em desktop/tablet/mobile.
 - CI bloqueia regressão em qualquer gate obrigatório.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

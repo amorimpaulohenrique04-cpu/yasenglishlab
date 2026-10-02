@@ -40,27 +40,32 @@ function totp(secret: string, now = Date.now()): string {
   return String(binary % 1_000_000).padStart(6, "0");
 }
 
-async function resolveTotpSecret(page: Page): Promise<string> {
+async function resolveTotpSecret(page: Page, path = secretPath): Promise<string> {
   await page.getByLabel("Código do autenticador").waitFor({ timeout: 15_000 });
   const manualSecret = page.locator(".yas-mfa-secret");
 
   if (await manualSecret.isVisible()) {
     const secret = (await manualSecret.textContent())?.trim();
     if (!secret) throw new Error("MFA enrollment did not expose a canonical TOTP secret.");
-    writeFileSync(secretPath, secret, { encoding: "utf8", mode: 0o600 });
+    writeFileSync(path, secret, { encoding: "utf8", mode: 0o600 });
     return secret;
   }
 
-  if (!existsSync(secretPath)) {
+  if (!existsSync(path)) {
     throw new Error("Verified canonical Admin MFA exists but its temporary test secret is absent.");
   }
 
-  return readFileSync(secretPath, "utf8").trim();
+  return readFileSync(path, "utf8").trim();
 }
 
-export async function loginCanonicalAdmin(page: Page, password: string): Promise<void> {
-  await page.goto("/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules");
-  await page.getByLabel("E-mail").fill(canonicalAdminEmail);
+export async function loginCanonicalAdmin(
+  page: Page,
+  password: string,
+  options: { email?: string; next?: string; destination?: RegExp; multi?: boolean } = {},
+): Promise<void> {
+  const next = options.next ?? "/admin/content?kind=modules";
+  await page.goto(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
+  await page.getByLabel("E-mail").fill(options.email ?? canonicalAdminEmail);
   await page.getByLabel("Senha").fill(password);
   await page.getByRole("button", { name: "Entrar" }).click();
 
@@ -69,8 +74,13 @@ export async function loginCanonicalAdmin(page: Page, password: string): Promise
     page.getByRole("heading", { name: "Verificação em duas etapas obrigatória" }),
   ).toBeVisible();
 
-  const secret = await resolveTotpSecret(page);
+  const secret = await resolveTotpSecret(
+    page,
+    options.multi ? join(tmpdir(), "yas-canonical-multi-totp.secret") : secretPath,
+  );
   await page.getByLabel("Código do autenticador").fill(totp(secret));
   await page.getByRole("button", { name: "Verificar código" }).click();
-  await expect(page).toHaveURL(/\/admin\/content\?kind=modules$/, { timeout: 15_000 });
+  await expect(page).toHaveURL(options.destination ?? /\/admin\/content\?kind=modules$/, {
+    timeout: 15_000,
+  });
 }

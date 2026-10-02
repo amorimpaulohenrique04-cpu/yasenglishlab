@@ -406,3 +406,7 @@ Two read-only investigations and principal synthesis completed. Existing entitie
   commercial policy.
 - Registry/evidence now move to `done / verified:true`. PR #25 remains open
   against `main` and no merge was performed.
+
+## P21.1–P21.3 implementation checkpoint — 2026-10-02
+
+Branch feat/p21-p0-foundation-closure; base main 94b574b40b8b05ed798f996294d2297ba92b5e31. Role-aware routing, STUDENT guard, transactional quota/cancel/rebook, immutable snapshot, cohort administration/RLS and additive Teacher scope implemented. Four focused browser scenarios passed with real MFA and axe. Full SQL integration/RLS passed before the final lifecycle/race additions; final rerun in progress. Main-to-feature legacy upgrade passed including ambiguity blocker and original UUID compatibility. Final aliases and Official CI remain pending; verified:false.

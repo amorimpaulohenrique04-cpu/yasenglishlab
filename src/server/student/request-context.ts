@@ -25,5 +25,9 @@ export const getStudentRequestContext = cache(async (): Promise<StudentRequestCo
     redirect("/mfa");
   }
 
+  if (!auth.roles.includes("STUDENT")) {
+    redirect("/profile?auth=forbidden");
+  }
+
   return { auth, supabase };
 });

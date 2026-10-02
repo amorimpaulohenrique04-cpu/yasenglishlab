@@ -1,0 +1,5 @@
+
+> yasenglishlab@0.1.0 verify:db
+> node scripts/verify-db.mjs
+
+✓ DB contracts valid: 14 migration(s), canonical seed, 11 SQL invariant test(s).

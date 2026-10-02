@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { sanitizeNextPath, staffMfaRequired } from "@/modules/auth";
+import { resolveAuthDestination } from "@/modules/auth";
 import { SupabaseProductAnalytics } from "@/server/analytics/supabase-product-analytics";
 import { resolveAuthContextFromClient } from "@/server/auth/context";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -43,10 +43,5 @@ export async function loginAction(formData: FormData): Promise<never> {
 
   await new SupabaseProductAnalytics(supabase).track({ event: "login_completed" });
 
-  const nextPath = sanitizeNextPath(parsed.data.next, "/home");
-  if (staffMfaRequired(context.roles, context.aal)) {
-    redirect(`/mfa?next=${encodeURIComponent(nextPath)}`);
-  }
-
-  redirect(nextPath);
+  redirect(resolveAuthDestination(context, parsed.data.next));
 }

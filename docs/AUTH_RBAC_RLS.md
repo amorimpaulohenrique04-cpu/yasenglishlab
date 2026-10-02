@@ -116,3 +116,8 @@ O lifecycle de Assessment usa RPCs autenticadas que derivam o Student de `auth.u
 As policies existentes de Attempt/Response/SkillScore continuam usando `private.can_view_student`, preservando owner + staff autorizado. Para conteúdo de Assessment, `authenticated` recebe somente leitura por coluna dos campos necessários à execução. `assessment_versions.scoring_config`, `assessment_items.answer_key` e `assessment_items.rubric` não têm privilégio SELECT autenticado normal.
 
 O scorer executa server-side/database-side; RLS/UI não são usados como mecanismo para esconder gabarito.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

@@ -1,8 +1,29 @@
 # Agent Plan
 
+## Planejamento P21 P0 — 2026-10-02
+
+Pedido atual limitado a plano, sem implementação. Base local/remota confirmada:
+`94b574b40b8b05ed798f996294d2297ba92b5e31`.
+
+GOAL: `harness/goals/p21-p0-foundation-closure-plan.md`.
+Plano detalhado: `harness/plans/p21-p0-foundation-closure.md`.
+P21.1/P21.2/P21.3 permanecem planned / verified:false; gates não executados.
+O registro histórico de P21 abaixo foi preservado.
+
 ## Active task
 
-**prompt-21-home-projection-v1**
+**p21-p0-foundation-closure**
+
+State: in_progress / verified:false. Branch: `feat/p21-p0-foundation-closure`.
+
+1. P21.1 resolver, Student boundary and focused Auth tests.
+2. P21.2 snapshots, transactional quota/cancellation/rebooking and focused real DB tests.
+3. P21.3 cohorts, commands/RLS and focused tests.
+4. Integration pass, docs/ADRs, final aliases, commit/push/PR and Official CI.
+
+Approved plan: `harness/plans/p21-p0-foundation-closure.md`.
+
+## Previous P21 closure
 
 State: done / verified:true.
 

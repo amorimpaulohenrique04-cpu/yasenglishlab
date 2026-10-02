@@ -82,7 +82,7 @@ describe("schedule domain", () => {
     ).toBe("BOOKED");
   });
 
-  it("treats a previous non-active own booking as CLOSED instead of inventing rebooking policy", () => {
+  it("allows a cancelled booking to be rebooked when the session has capacity", () => {
     expect(
       deriveScheduleAvailability({
         sessionStatus: "SCHEDULED",
@@ -90,7 +90,7 @@ describe("schedule domain", () => {
         bookedCount: 0,
         capacity: 2,
       }),
-    ).toBe("CLOSED");
+    ).toBe("AVAILABLE");
   });
 
   it("keeps commercial eligibility separate from session availability", () => {

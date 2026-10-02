@@ -1,0 +1,30 @@
+BEGIN
+DELETE 1
+DELETE 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 4
+INSERT 0 4
+RED main: two bookings consumed limit=1 without recurring enforcement
+COMMIT
+PASS preflight: ambiguous cancellation blocks migration and transaction rolls back.
+DELETE 1
+Connecting to local database...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Applying migration 20261002042103_live_booking_usage_snapshot.sql...
+Applying migration 20261002042106_live_booking_quota_commands.sql...
+Applying migration 20261002042108_cohorts_v1_model.sql...
+Applying migration 20261002042112_cohorts_v1_authorization_commands.sql...
+{"applied":["C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\supabase\\migrations\\20261002042103_live_booking_usage_snapshot.sql","C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\supabase\\migrations\\20261002042106_live_booking_quota_commands.sql","C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\supabase\\migrations\\20261002042108_cohorts_v1_model.sql","C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\supabase\\migrations\\20261002042112_cohorts_v1_authorization_commands.sql"],"message":"Migrations applied"}
+A new version of Supabase CLI is available: v2.119.0 (currently installed v2.118.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
+DO
+SET
+9e000000-0000-0000-0000-000000000001
+{"sub":"9e000000-0000-0000-0000-000000000001","aal":"aal1"}
+DO
+PASS upgrade: legacy UUID/status retained, unresolved provenance explicit, quota enforced, cohorts nullable

@@ -63,3 +63,7 @@ Node verification scripts execute the npm JavaScript CLI with `process.execPath`
 - NO_SHOW remains operational only; no credit, billing, penalty, cancellation or entitlement consequence is introduced.
 - Availability editing, cancellation/rescheduling, meeting provider, broad Teacher authoring and Admin CMS remain open/out of scope.
 - Teacher UI reuses the official Design System primitives/tokens but has a dedicated shell instead of treating Teacher as Student.
+
+## 2026-10-02 — Approved P21 foundation
+
+ADRs 0007–0009 record role-aware workspaces, session-start Recife quotas and additive cohorts. Preserve historical migrations and original UUID booking RPC; the application uses the result RPC for durable quota denial audit. Preserve null-cohort sessions and direct Teacher assignments. Extend goal scope only for exact generated Next lint/format ignores after observed gate failure; no source checks removed. No provider decisions or P21.4/P22 work.

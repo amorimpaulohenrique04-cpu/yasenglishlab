@@ -28,6 +28,12 @@ export function AdminShell({
     .toUpperCase();
   const items = [
     {
+      id: "cohorts",
+      label: "Turmas",
+      href: "/admin/cohorts",
+      active: pathname.startsWith("/admin/cohorts"),
+    },
+    {
       id: "content",
       label: "Conteúdos",
       href: contentHref,
@@ -82,6 +88,9 @@ export function AdminShell({
         description="Acesse a administração de conteúdo."
       >
         <nav className={styles.drawerNav} aria-label="Navegação administrativa no celular">
+          <Link href="/admin/cohorts" onClick={() => setDrawerOpen(false)}>
+            Turmas
+          </Link>
           <Link href={contentHref} onClick={() => setDrawerOpen(false)}>
             Conteúdos
           </Link>

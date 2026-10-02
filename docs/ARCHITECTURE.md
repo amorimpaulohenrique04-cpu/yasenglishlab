@@ -131,3 +131,8 @@ Uma nova vertical slice deve criar o menor domínio/port necessário, implementa
 - Operação privilegiada ocorre no servidor.
 - Domínio não depende de detalhes visuais.
 - Decisão arquitetural ampla é registrada antes de virar padrão.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

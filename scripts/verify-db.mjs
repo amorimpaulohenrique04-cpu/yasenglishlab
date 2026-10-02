@@ -62,6 +62,14 @@ const requiredInvariants = [
   "create or replace function public.mark_teacher_attendance",
   "create or replace function private.audit_attendance_change",
   "auth.uid()",
+  "create table public.cohorts",
+  "create table public.cohort_memberships",
+  "create table public.cohort_teachers",
+  "create or replace function private.lock_booking_user",
+  "create or replace function public.book_live_session_result",
+  "create or replace function public.cancel_live_booking",
+  "usage_session_starts_at",
+  "LEGACY_UNRESOLVED",
 ];
 
 for (const invariant of requiredInvariants) {

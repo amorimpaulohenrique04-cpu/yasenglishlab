@@ -48,3 +48,9 @@ export async function bookCurrentStudentSession(input: BookScheduleSessionInput)
       ),
   );
 }
+
+export async function cancelCurrentStudentSession(input: BookScheduleSessionInput) {
+  await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  await new SupabaseScheduleRepository(client).cancelSession(input.liveSessionId);
+}

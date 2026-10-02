@@ -14,8 +14,8 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Qual a política final de reaplicação do Teste de Proficiência: por tempo, módulos concluídos ou ambos?
 - Qual metodologia de standard setting/cut scores será adotada após pilotagem CEFR?
 - Como Speaking e Pronunciation serão avaliados no primeiro release: humano, híbrido ou outro modelo validado?
-- Quais regras exatas de cancelamento/remarcação/no-show para Core, Lab e Private?
-- Créditos de encontros expiram por semana/mês? Há reposição em casos específicos?
+- P21.2 fechou o consumo WEEK/MONTH por início da sessão em America/Recife, cancelamento Student antecipado libera uso, tardio mantém, NO_SHOW mantém e Teacher cancellation libera (ADR 0008). Quais regras futuras de remarcação/reposição excepcional serão adotadas?
+- Há carry-over ou reposição excepcional de créditos além das janelas semanais/mensais aprovadas no P21.2? Essas extensões continuam fora do escopo.
 - O Yas aceitará menores de idade no MVP? Se sim, qual modelo de guardian/consentimento?
 - Quais recursos exatos diferenciam suporte/prioridade do Talk e Boost sem conflitar com os entitlements já definidos?
 

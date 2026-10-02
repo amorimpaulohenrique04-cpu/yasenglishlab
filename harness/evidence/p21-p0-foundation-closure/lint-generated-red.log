@@ -1,0 +1,51 @@
+Observed verify:agent failure after isolated E2E (excerpt; full local output in artifacts/p21-foundation/lint-generated-red.log).
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.next-p18\dev\build\chunks\[root-of-the-server]__05i36w1._.js
+    2:85   warning  'exports' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+    4:53   error    A `require()` style import is forbidden                                                                              @typescript-eslint/no-require-imports
+    8:91   warning  'exports' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   10:56   error    A `require()` style import is forbidden                                                                              @typescript-eslint/no-require-imports
+   57:9    error    Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable              @next/next/no-assign-module-variable
+  128:71   warning  '__turbopack_context__' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+  128:94   warning  'module' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  128:102  warning  'exports' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+  130:1    error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  299:5    error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  301:5    error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  303:5    error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.next-p18\dev\build\chunks\[root-of-the-server]__1kki86f._.js
+   2:73  warning  'exports' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   4:47  error    A `require()` style import is forbidden                                                                              @typescript-eslint/no-require-imports
+   8:77  warning  'exports' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+  10:49  error    A `require()` style import is forbidden                                                                              @typescript-eslint/no-require-imports
+  329:3    error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  330:8    warning  '__Unused' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+
+✖ 8674 problems (998 errors, 7676 warnings)
+  7 errors and 59 warnings potentially fixable with the `--fix` option.
+
+
+Verification failed at: lint

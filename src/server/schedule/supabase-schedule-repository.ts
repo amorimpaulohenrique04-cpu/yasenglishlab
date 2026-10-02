@@ -54,6 +54,18 @@ function sessionFromRow(row: Row): ScheduleSessionRecord {
     ownBookingId: typeof row.own_booking_id === "string" ? row.own_booking_id : null,
     ownBookingStatus: parseBookingStatus(row.own_booking_status),
     hasRequiredEntitlement: row.has_required_entitlement === true,
+    cohortAllowed: row.cohort_allowed !== false,
+    quota:
+      row.quota && typeof row.quota === "object"
+        ? {
+            total: (row.quota as Row).total == null ? null : Number((row.quota as Row).total),
+            used: Number((row.quota as Row).used ?? 0),
+            remaining:
+              (row.quota as Row).remaining == null ? null : Number((row.quota as Row).remaining),
+            cadence: ((row.quota as Row).cadence ?? "NONE") as "WEEK" | "MONTH" | "NONE",
+            reason: (row.quota as Row).reason === "QUOTA_EXCEEDED" ? "QUOTA_EXCEEDED" : null,
+          }
+        : { total: null, used: 0, remaining: null, cadence: "NONE", reason: null },
   };
 }
 
@@ -85,6 +97,7 @@ function bookingError(error: { code?: string; message?: string }): ScheduleBooki
   if (message.includes("required entitlement")) {
     return new ScheduleBookingError("ENTITLEMENT_REQUIRED");
   }
+  if (message.includes("quota")) return new ScheduleBookingError("QUOTA_EXCEEDED");
   if (message.includes("capacity")) {
     return new ScheduleBookingError("FULL");
   }
@@ -92,7 +105,8 @@ function bookingError(error: { code?: string; message?: string }): ScheduleBooki
     error.code === "23503" ||
     message.includes("non-scheduled") ||
     message.includes("not active") ||
-    message.includes("not found")
+    message.includes("not found") ||
+    message.includes("already started")
   ) {
     return new ScheduleBookingError("CLOSED");
   }
@@ -103,7 +117,7 @@ export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleH
   constructor(private readonly client: SupabaseClient) {}
 
   async listAgendaSessions(): Promise<ScheduleSessionRecord[]> {
-    const { data, error } = await this.client.rpc("get_agenda_sessions");
+    const { data, error } = await this.client.rpc("get_agenda_sessions_v2");
 
     if (error) throw new Error("Unable to load Agenda sessions.");
     return ((data ?? []) as Row[]).map(sessionFromRow);
@@ -125,12 +139,20 @@ export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleH
   }
 
   async bookSession(liveSessionId: string): Promise<string> {
-    const { data, error } = await this.client.rpc("book_live_session", {
+    const { data, error } = await this.client.rpc("book_live_session_result", {
       p_live_session_id: liveSessionId,
     });
 
     if (error) throw bookingError(error);
-    if (typeof data !== "string") throw new ScheduleBookingError("UNAVAILABLE");
-    return data;
+    if (data?.reason === "QUOTA_EXCEEDED") throw new ScheduleBookingError("QUOTA_EXCEEDED");
+    if (typeof data?.booking_id !== "string") throw new ScheduleBookingError("UNAVAILABLE");
+    return data.booking_id;
+  }
+
+  async cancelSession(liveSessionId: string): Promise<void> {
+    const { error } = await this.client.rpc("cancel_live_booking", {
+      p_live_session_id: liveSessionId,
+    });
+    if (error) throw bookingError(error);
   }
 }

@@ -8,7 +8,8 @@ export type ScheduleBookingStatus = "BOOKED" | "CANCELLED" | "TEACHER_CANCELLED"
 
 export type ScheduleAvailability = "AVAILABLE" | "FULL" | "BOOKED" | "CLOSED";
 
-export type ScheduleEligibilityReason = "ENTITLEMENT_REQUIRED" | null;
+export type ScheduleEligibilityReason =
+  "ENTITLEMENT_REQUIRED" | "QUOTA_EXCEEDED" | "COHORT_REQUIRED" | null;
 
 export interface ScheduleSessionRecord {
   id: string;
@@ -24,6 +25,14 @@ export interface ScheduleSessionRecord {
   ownBookingId: string | null;
   ownBookingStatus: ScheduleBookingStatus | null;
   hasRequiredEntitlement: boolean;
+  cohortAllowed?: boolean;
+  quota?: {
+    total: number | null;
+    used: number;
+    remaining: number | null;
+    cadence: "WEEK" | "MONTH" | "NONE";
+    reason: ScheduleEligibilityReason;
+  };
 }
 
 export interface ScheduleOwnBookingFact {
@@ -43,7 +52,8 @@ export interface ScheduleSessionView extends ScheduleSessionRecord {
   };
 }
 
-export type ScheduleBookingErrorCode = "ENTITLEMENT_REQUIRED" | "FULL" | "CLOSED" | "UNAVAILABLE";
+export type ScheduleBookingErrorCode =
+  "ENTITLEMENT_REQUIRED" | "QUOTA_EXCEEDED" | "FULL" | "CLOSED" | "UNAVAILABLE";
 
 export class ScheduleBookingError extends Error {
   constructor(readonly code: ScheduleBookingErrorCode) {
@@ -60,7 +70,7 @@ export function deriveScheduleAvailability(input: {
 }): ScheduleAvailability {
   if (input.sessionStatus !== "SCHEDULED") return "CLOSED";
   if (input.ownBookingStatus === "BOOKED") return "BOOKED";
-  if (input.ownBookingStatus !== null) return "CLOSED";
+  if (input.ownBookingStatus === "TEACHER_CANCELLED") return "CLOSED";
   if (input.bookedCount >= input.capacity) return "FULL";
   return "AVAILABLE";
 }
@@ -88,6 +98,12 @@ export function toScheduleSessionView(record: ScheduleSessionRecord): ScheduleSe
       requiredEntitlementKey: record.requiredEntitlementKey,
       hasRequiredEntitlement: record.hasRequiredEntitlement,
     }),
+    ...(record.quota?.reason === "QUOTA_EXCEEDED" && record.ownBookingStatus !== "BOOKED"
+      ? { eligibility: { canBook: false, reason: "QUOTA_EXCEEDED" as const } }
+      : {}),
+    ...(record.cohortAllowed === false && record.ownBookingStatus !== "BOOKED"
+      ? { eligibility: { canBook: false, reason: "COHORT_REQUIRED" as const } }
+      : {}),
   };
 }
 
