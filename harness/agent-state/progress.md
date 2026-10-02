@@ -406,4 +406,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
   commercial policy.
 - Registry/evidence now move to `done / verified:true`. PR #25 remains open
   against `main` and no merge was performed.
-
