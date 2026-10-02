@@ -4,6 +4,8 @@ import type {
   PracticeActivityItem,
   PracticeAttemptView,
   PracticeHistoryItem,
+  PracticeRecommendationActivity,
+  PracticeRecommendationHistoryItem,
   PracticeResultView,
 } from "../domain/models";
 
@@ -17,6 +19,12 @@ export interface PracticeRepository {
     attemptId: string;
     response: Record<string, unknown>;
   }): Promise<PracticeResultView>;
+}
+
+export interface PracticeRecommendationRepository {
+  listRecommendationActivities(): Promise<PracticeRecommendationActivity[]>;
+  listRecommendationHistory(userId: string): Promise<PracticeRecommendationHistoryItem[]>;
+  getRecentLessonId(userId: string): Promise<string | null>;
 }
 
 export type PracticeAnalyticsPort = ProductAnalyticsPort;
