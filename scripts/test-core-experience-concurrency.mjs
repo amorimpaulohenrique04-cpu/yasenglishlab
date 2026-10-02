@@ -13,6 +13,15 @@ function asTeacher(sql) {
 function asStudent(sql) {
   return `set role authenticated; select set_config('request.jwt.claim.sub','${student}',false); select set_config('request.jwt.claims','{"sub":"${student}","aal":"aal1"}',false); ${sql};`;
 }
+function scalarAdmin(sql) {
+  const rows = runAdmin(sql)
+    .split(/\r?\n/)
+    .map((row) => row.trim())
+    .filter(Boolean);
+  const value = rows.at(-1);
+  if (!value) throw new Error("Expected one scalar value from PostgreSQL.");
+  return value;
+}
 runAdmin(`
  insert into auth.users(id) values('${student}'),('${teacherUser}');
  insert into public.user_roles(user_id,role) values('${student}','STUDENT'),('${teacherUser}','TEACHER'),('${teacherUser}','ADMIN');
@@ -64,7 +73,7 @@ runAdmin(
     )`,
   ),
 );
-const editSession = runAdmin(
+const editSession = scalarAdmin(
   asTeacher(
     `select public.manage_teacher_session(
       null,
@@ -114,7 +123,7 @@ console.log(
 
 // Availability delete × session creation: Teacher-row serialization allows exactly one
 // structural outcome and never leaves a scheduled session outside valid availability.
-const raceAvailability = runAdmin(
+const raceAvailability = scalarAdmin(
   asTeacher(
     `select public.manage_teacher_availability(
       'CREATE',
