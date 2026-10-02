@@ -6,9 +6,9 @@ import {
   getHomeView,
   type HomePracticeInputs,
   type HomeReadRepository,
+  type HomeScheduleFact,
 } from "@/modules/home";
 import type { LearningCourse } from "@/modules/learning";
-import type { ScheduleSessionRecord } from "@/modules/schedule";
 
 const userId = "81000000-0000-4000-8000-000000000001";
 
@@ -26,7 +26,7 @@ const practice: HomePracticeInputs = {
   recentLessonId: null,
 };
 
-const schedule: ScheduleSessionRecord[] = [];
+const schedule: HomeScheduleFact[] = [];
 
 function repository(overrides: Partial<HomeReadRepository> = {}): HomeReadRepository {
   return {
@@ -74,14 +74,7 @@ describe("Home application architecture", () => {
       title: `Session ${index}`,
       startsAt: "2026-10-02T12:00:00Z",
       endsAt: "2026-10-02T13:00:00Z",
-      capacity: 6,
-      status: "SCHEDULED" as const,
-      requiredEntitlementKey: null,
-      bookedCount: 0,
-      spotsRemaining: 6,
-      ownBookingId: null,
-      ownBookingStatus: null,
-      hasRequiredEntitlement: true,
+      bookingStatus: "BOOKED" as const,
     }));
 
     const repo = repository({
@@ -103,7 +96,7 @@ describe("Home application architecture", () => {
 
     expect(repo.loadLearning).toHaveBeenCalledWith(userId);
     expect(repo.loadPractice).toHaveBeenCalledWith(userId);
-    expect(repo.loadSchedule).toHaveBeenCalledWith();
+    expect(repo.loadSchedule).toHaveBeenCalledWith(userId);
   });
 
   it("exposes only read methods through the Home repository contract", () => {
