@@ -21,7 +21,15 @@ import {
 } from "@/modules/practice";
 import { loadPracticePage } from "@/server/practice/practice";
 
-import { startPracticeAction, submitPracticeAction } from "./actions";
+import {
+  startPracticeAction,
+  submitPracticeAction,
+  uploadPracticeAudioAction,
+  completePracticeAudioAction,
+} from "./actions";
+import { AudioResponse } from "@/modules/practice/ui/audio-response";
+import { loadCurrentStudentManualFeedback } from "@/server/practice/manual-feedback";
+import { RUBRIC_LABELS } from "@/modules/practice/domain/rubric";
 
 interface PracticePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -87,10 +95,14 @@ function StartPracticeForm({
   );
 }
 
-function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
+async function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
   const { activity } = attempt;
 
   if (attempt.status === "SUBMITTED" && attempt.result) {
+    const review =
+      attempt.result.evaluationStatus === "MANUAL_REVIEWED"
+        ? await loadCurrentStudentManualFeedback(attempt.id)
+        : null;
     const tone =
       attempt.result.evaluationStatus === "CORRECT"
         ? "success"
@@ -120,6 +132,23 @@ function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
           </Link>
         </div>
         <p className="yas-practice-feedback">{attempt.result.feedback}</p>
+        {review && (
+          <div>
+            <p>
+              Rubric {review.rubric_version} · Revisado em{" "}
+              {new Date(review.reviewed_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}
+            </p>
+            <ul>
+              {Object.entries(review.ratings as Record<string, string>).map(
+                ([dimension, level]) => (
+                  <li key={dimension}>
+                    {RUBRIC_LABELS[dimension]}: {RUBRIC_LABELS[level]}
+                  </li>
+                ),
+              )}
+            </ul>
+          </div>
+        )}
         <p className="yas-practice-boundary-note">
           Este resultado pertence somente à prática. Ele não altera seu progresso no curso nem
           define proficiência CEFR.
@@ -160,6 +189,15 @@ function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
               />
             ))}
           </fieldset>
+        ) : activity.content.kind === "MANUAL_AUDIO" ? (
+          <>
+            <p>{activity.content.instructions}</p>
+            <AudioResponse
+              attemptId={attempt.id}
+              upload={uploadPracticeAudioAction}
+              complete={completePracticeAudioAction}
+            />
+          </>
         ) : (
           <>
             <p className="yas-practice-manual-note">{activity.content.instructions}</p>
@@ -172,9 +210,11 @@ function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
             />
           </>
         )}
-        <Button type="submit" variant="primary">
-          Concluir prática
-        </Button>
+        {activity.content.kind !== "MANUAL_AUDIO" && (
+          <Button type="submit" variant="primary">
+            Concluir prática
+          </Button>
+        )}
       </form>
     </Card>
   );
@@ -228,6 +268,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     selectedSkill,
   } = state.data;
   const requestedAttempt = firstValue(params.attempt);
+  const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
 
   return (
     <div className="yas-practice-page">
@@ -244,6 +285,13 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
       ) : selectedAttempt ? (
         <AttemptPanel attempt={selectedAttempt} />
       ) : null}
+      {requestedActivity && !selectedAttempt && (
+        <Card>
+          <h2>{requestedActivity.title}</h2>
+          <p>{requestedActivity.content.prompt}</p>
+          <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
+        </Card>
+      )}
 
       <div className="yas-practice-top-grid">
         <Card className="yas-practice-hero" variant="accent">

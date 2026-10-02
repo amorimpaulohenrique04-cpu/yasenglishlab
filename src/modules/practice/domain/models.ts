@@ -30,6 +30,7 @@ const manualContentSchema = z
 export const practiceContentSchema = z.discriminatedUnion("kind", [
   deterministicContentSchema,
   manualContentSchema,
+  manualContentSchema.extend({ kind: z.literal("MANUAL_AUDIO") }),
 ]);
 
 export type PracticeContent = z.infer<typeof practiceContentSchema>;
@@ -81,7 +82,7 @@ export interface PracticeResultView {
   score: number | null;
   maxScore: number | null;
   feedback: string | null;
-  evaluationStatus: "CORRECT" | "INCORRECT" | "PENDING_MANUAL" | "NOT_SCORED";
+  evaluationStatus: "CORRECT" | "INCORRECT" | "PENDING_MANUAL" | "NOT_SCORED" | "MANUAL_REVIEWED";
   createdAt: string;
 }
 
@@ -281,6 +282,7 @@ export function practiceHistoryStatus(item: PracticeHistoryItem): string {
   if (item.evaluationStatus === "CORRECT") return "Resposta correta";
   if (item.evaluationStatus === "INCORRECT") return "Revisão recomendada";
   if (item.evaluationStatus === "PENDING_MANUAL") return "Registro pendente/manual";
+  if (item.evaluationStatus === "MANUAL_REVIEWED") return "Feedback disponível";
   return "Concluída";
 }
 

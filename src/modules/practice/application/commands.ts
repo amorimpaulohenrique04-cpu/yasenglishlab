@@ -14,9 +14,10 @@ export const submitPracticeInputSchema = z
     attemptId: z.string().uuid(),
     optionId: z.string().trim().min(1).max(80).optional(),
     text: z.string().trim().min(1).max(2000).optional(),
+    mediaId: z.uuid().optional(),
   })
   .strict()
-  .refine((input) => Boolean(input.optionId) !== Boolean(input.text), {
+  .refine((input) => [input.optionId, input.text, input.mediaId].filter(Boolean).length === 1, {
     message: "Provide exactly one practice response.",
   });
 
@@ -47,7 +48,11 @@ export async function submitPractice(
   rawInput: SubmitPracticeInput,
 ) {
   const input = submitPracticeInputSchema.parse(rawInput);
-  const response = input.optionId ? { optionId: input.optionId } : { text: input.text };
+  const response = input.optionId
+    ? { optionId: input.optionId }
+    : input.mediaId
+      ? { mediaId: input.mediaId }
+      : { text: input.text };
   const result = await repository.submitAttempt({ attemptId: input.attemptId, response });
   const attempt = await repository.getAttempt(userId, input.attemptId);
 
