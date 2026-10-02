@@ -126,9 +126,7 @@ export class SupabasePracticeRepository
     return ((data ?? []) as Row[]).map(recommendationActivityFromRow);
   }
 
-  async listRecommendationHistory(
-    userId: string,
-  ): Promise<PracticeRecommendationHistoryItem[]> {
+  async listRecommendationHistory(userId: string): Promise<PracticeRecommendationHistoryItem[]> {
     const { data, error } = await this.client
       .from("practice_attempts")
       .select("practice_activity_id")
