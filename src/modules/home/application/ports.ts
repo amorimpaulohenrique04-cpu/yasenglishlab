@@ -1,24 +1,18 @@
 import type { LearningCourse } from "@/modules/learning";
-import type { PracticeActivityItem, PracticeHistoryItem } from "@/modules/practice";
-import type { ScheduleSessionType } from "@/modules/schedule";
+import type {
+  PracticeRecommendationActivity,
+  PracticeRecommendationHistoryItem,
+} from "@/modules/practice";
+import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 export interface HomePracticeInputs {
-  activities: PracticeActivityItem[];
-  history: PracticeHistoryItem[];
+  activities: PracticeRecommendationActivity[];
+  history: PracticeRecommendationHistoryItem[];
   recentLessonId: string | null;
-}
-
-export interface HomeScheduleFact {
-  id: string;
-  title: string;
-  sessionType: ScheduleSessionType;
-  startsAt: string;
-  endsAt: string;
-  bookingStatus: "BOOKED";
 }
 
 export interface HomeReadRepository {
   loadLearning(userId: string): Promise<LearningCourse[]>;
   loadPractice(userId: string): Promise<HomePracticeInputs>;
-  loadSchedule(userId: string): Promise<HomeScheduleFact[]>;
+  loadSchedule(userId: string): Promise<ScheduleOwnBookingFact[]>;
 }
