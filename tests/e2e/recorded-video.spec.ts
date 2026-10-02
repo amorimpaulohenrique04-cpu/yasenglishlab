@@ -134,11 +134,11 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
     await expect(page.getByRole("heading", { name: "Vídeo gravado" })).toBeVisible();
     await expect(page.getByText(/Estado: AWAITING_UPLOAD/)).toBeVisible();
 
-    let uploadTarget: URL | null = null;
+    let uploadHostname: string | null = null;
     page.on("request", (request) => {
       const target = new URL(request.url());
       if (request.method() === "PUT" && target.pathname.startsWith("/upload/")) {
-        uploadTarget = target;
+        uploadHostname = target.hostname;
       }
     });
 
@@ -156,8 +156,7 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
       "Upload recebido. Aguarde o processamento e atualize esta página.",
       { timeout: 30_000 },
     );
-    expect(uploadTarget).not.toBeNull();
-    expect(uploadTarget?.hostname).toBe("127.0.0.1");
+    expect(uploadHostname).toBe("127.0.0.1");
 
     await expect
       .poll(
