@@ -90,5 +90,5 @@ export async function loginCanonicalTeacher(
   await page.getByRole("button", { name: "Verificar código" }).click();
 
   await expect(page).toHaveURL(/\/teacher$/);
-  await expect(page.getByRole("heading", { name: "Suas sessões" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible();
 }

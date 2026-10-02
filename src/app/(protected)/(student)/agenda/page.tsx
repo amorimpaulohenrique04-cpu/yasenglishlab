@@ -8,7 +8,9 @@ import {
 } from "@/modules/schedule";
 import { loadSchedulePage } from "@/server/schedule/schedule";
 
-import { bookLiveSessionAction, cancelLiveSessionAction } from "./actions";
+import { bookLiveSessionAction, cancelLiveSessionAction, joinLiveSessionAction } from "./actions";
+import { JoinMeeting } from "@/modules/schedule/ui/join-meeting";
+import Link from "next/link";
 import styles from "@/modules/schedule/ui/schedule.module.css";
 
 interface AgendaPageProps {
@@ -211,6 +213,12 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
         </Button>
       </form>
       {session.availability === "BOOKED" && (
+        <JoinMeeting sessionId={session.id} action={joinLiveSessionAction} />
+      )}
+      {session.ownBookingStatus === "BOOKED" && (
+        <Link href={`/agenda/${session.id}`}>Recursos e tarefas</Link>
+      )}
+      {session.availability === "BOOKED" && (
         <form action={cancelLiveSessionAction}>
           <input type="hidden" name="liveSessionId" value={session.id} />
           <Button type="submit" variant="secondary" size="sm">
@@ -318,11 +326,11 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <aside className={styles.sideColumn} aria-label="Resumo de reservas">
           <UpcomingBookings sessions={upcomingBookings} />
           <Card className={styles.contractCard} variant="soft">
-            <strong>Agenda V1</strong>
+            <strong>Sua agenda</strong>
             <p>
               Reservas respeitam capacidade e quota. Cancelar antes do início libera crédito;
-              presença e ausência não geram novo consumo. Acesso à reunião ainda não faz parte deste
-              fluxo.
+              presença e ausência não geram novo consumo. O acesso à reunião abre 15 minutos antes
+              do encontro para reservas confirmadas.
             </p>
           </Card>
         </aside>

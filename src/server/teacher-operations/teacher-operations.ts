@@ -28,3 +28,11 @@ export async function markCurrentTeacherAttendance(input: MarkTeacherAttendanceI
   const client = await createSupabaseServerClient();
   return markTeacherAttendance(new SupabaseTeacherOperationsRepository(client), input);
 }
+
+export async function loadTeacherUpcomingSessions() {
+  const state = await loadTeacherSessionsPage();
+  const now = Date.now();
+  return (state.status === "empty" ? [] : state.sessions)
+    .filter((session) => session.status === "SCHEDULED" && new Date(session.endsAt).getTime() > now)
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}

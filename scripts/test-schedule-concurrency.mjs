@@ -125,7 +125,7 @@ runAdmin(`
     required_entitlement_key, status
   )
   values (
-    '${sessionId}', '${teacherId}', 'PRIVATE_SESSION', 'Real concurrency capacity one',
+    '${sessionId}', '${teacherId}', 'WORKSHOP', 'Real concurrency capacity one',
     now() + interval '4 days', now() + interval '4 days 45 minutes',
     1, 'monthly_private_sessions', 'SCHEDULED'
   )
@@ -188,8 +188,8 @@ runAdmin(`
   delete from public.session_bookings where user_id='${studentA}' and live_session_id in ('${quotaSessions.join("','")}');
   insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key)
   select id::uuid,'${teacherId}','CORE_CLASS','Quota concurrency',
-    date_trunc('week',now())+interval '14 days 12 hours',date_trunc('week',now())+interval '14 days 13 hours',6,'weekly_core_classes'
-  from unnest(array['${quotaSessions.join("','")}']) id
+    date_trunc('week',now())+interval '14 days 12 hours'+ordinality*interval '2 hours',date_trunc('week',now())+interval '14 days 13 hours'+ordinality*interval '2 hours',6,'weekly_core_classes'
+  from unnest(array['${quotaSessions.join("','")}']) with ordinality as sessions(id,ordinality)
   on conflict(id) do update set starts_at=excluded.starts_at,ends_at=excluded.ends_at,status='SCHEDULED';
 `);
 function quotaBookingSql(id) {

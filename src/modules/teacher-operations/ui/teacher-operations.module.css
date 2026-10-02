@@ -64,6 +64,26 @@
   gap: var(--yas-space-6);
 }
 
+.operationForm {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.operationForm label {
+  display: grid;
+  gap: var(--yas-space-2);
+}
+
+.operationForm input,
+.operationForm select,
+.operationForm textarea {
+  padding: var(--yas-space-3);
+  border: 1px solid var(--yas-color-purple-200);
+  border-radius: var(--yas-radius-md);
+  max-width: 100%;
+  min-width: 0;
+}
+
 .sessionGrid,
 .rosterList {
   display: grid;

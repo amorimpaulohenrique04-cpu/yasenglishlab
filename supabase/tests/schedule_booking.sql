@@ -80,7 +80,7 @@ values
   (
     '85400000-0000-0000-0000-000000000002',
     '85200000-0000-0000-0000-000000000001',
-    'PRIVATE_SESSION',
+    'WORKSHOP',
     'Agenda capacity one',
     now() + interval '2 days',
     now() + interval '2 days 45 minutes',

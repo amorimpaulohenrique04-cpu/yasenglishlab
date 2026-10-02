@@ -7,7 +7,7 @@ import {
   type TeacherSessionStatus,
 } from "@/modules/teacher-operations";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
-import { loadTeacherUpcomingSessions } from "@/server/teacher-operations/teacher-operations";
+import { loadTeacherSessionsPage } from "@/server/teacher-operations/teacher-operations";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Recife",
@@ -30,24 +30,24 @@ function statusTone(status: TeacherSessionStatus): "success" | "warning" | "neut
 }
 
 export default async function TeacherHomePage() {
-  const upcoming = await loadTeacherUpcomingSessions();
+  const state = await loadTeacherSessionsPage();
 
   return (
     <div className={styles.page}>
       <PageHeader
-        title="Próxima atividade"
-        description="Prepare seu próximo encontro e acompanhe as revisões pendentes."
+        title="Suas sessões"
+        description="Consulte seus encontros e registre a presença dos participantes."
         actions={<Link href="/teacher/sessoes/nova">Criar encontro</Link>}
       />
 
-      {upcoming.length === 0 ? (
+      {state.status === "empty" ? (
         <EmptyState
-          title="Nenhum encontro futuro"
+          title="Nenhuma sessão atribuída"
           description="Quando uma sessão estiver associada ao seu perfil de professor, ela aparecerá aqui."
         />
       ) : (
         <div className={styles.sessionGrid}>
-          {upcoming.slice(0, 3).map((session) => {
+          {state.sessions.map((session) => {
             const start = new Date(session.startsAt);
             const end = new Date(session.endsAt);
             return (

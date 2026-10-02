@@ -29,7 +29,7 @@ insert into public.cohort_teachers(cohort_id,teacher_id,is_primary) values
 insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,cohort_id)
 select ('9c400000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid,
  case when n=2 then '9c100000-0000-0000-0000-000000000002' else '9c100000-0000-0000-0000-000000000001' end::uuid,
- 'CORE_CLASS','Cohort session '||n,now()+interval '14 days',now()+interval '14 days 1 hour',6,'weekly_core_classes',
+ 'CORE_CLASS','Cohort session '||n,now()+interval '14 days'+n*interval '2 hours',now()+interval '14 days 1 hour'+n*interval '2 hours',6,'weekly_core_classes',
  case when n=3 then null else ('9c200000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid end
  from generate_series(1,3) n;
 set local role authenticated;

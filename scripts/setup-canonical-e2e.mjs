@@ -402,6 +402,7 @@ const sessions = [
     id: sessionIds[2],
     teacher_id: teacherId,
     session_type: "PRIVATE_SESSION",
+    target_student_user_id: userId,
     title: "Sessão particular",
     starts_at: inDays(3),
     ends_at: inDays(3, 45),
