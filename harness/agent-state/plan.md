@@ -2,35 +2,31 @@
 
 ## Active task
 
-**prompt-20-progress-v1**
+**prompt-21-home-projection-v1**
 
-State: done / verified.
+State: in_progress / verified:false.
 
-Baseline: `main@93666bf0478b9dabdc35c89dab72596026d7da9e`.  
-Branch: `feat/p20-progress-v1`.  
-Verified implementation head: `5f4ea8ccdad9cb394ba17d55b39fc60bc464d024`.
+Branch: `feat/p21-home-projection-v1`.
 
-### Completed
+### Discovery findings
 
-1. Composed Progress from Learning, Practice, Attendance and Assessment facts
-   without a new source of truth.
-2. Implemented authenticated server-side bounded reads with partial-failure
-   semantics.
-3. Delivered `/progresso`, Student navigation and responsive states using the
-   existing Design System.
-4. Added unit, integration, browser-boundary, E2E, accessibility and golden
-   coverage.
-5. Corrected fixture, formatting and visual-evidence failures at the root cause.
-6. Passed `verify:agent`, `verify:security`, `verify:ui`,
-   `verify:full` and Official CI #359.
+1. P20 is present in `main` as `done / verified:true`.
+2. Current Home depends only on `loadLearningHome()` and implicitly selects `courses[0]`.
+3. Learning already owns curricular ordering/completion and persisted `lastAccessedAt`.
+4. Practice already owns deterministic `recommendPractice`.
+5. Schedule already exposes own booking state; Home must not reproduce booking/entitlement rules.
+6. Progress V1 is intentionally broader than the Home; Home can derive its short curricular summary from Learning facts without loading `/progresso`.
+7. Approved Home screenshot supplies visual hierarchy only; unsupported CEFR, streak and meeting-entry affordances must not be implemented.
 
-### Scope guard preserved
+### Minimum implementation plan
 
-No Progress migration/table, persisted streak/goal, CEFR mapping, new analytics
-event/provider, runtime service-role bypass or unrelated write-path change was
-introduced.
+1. Add a Home application/domain read model with explicit section states and deterministic primary-action policy.
+2. Add one server-only Home boundary: authenticate once, create one Supabase client, adapt the existing Learning/Practice/Schedule sources, then compose reads concurrently with partial-failure semantics.
+3. Refactor `/home` to render the projection as a Server Component and add Home-only responsive styles.
+4. Add focused unit/integration coverage for selection, priority, partial/error, non-duplication, bounded reads and no page-loader dependency.
+5. Extend canonical E2E/a11y/golden expectations for the new Home semantics; change fixture only if a missing fact is required.
+6. Review full diff, confirm no migration/write/RLS/service-role/plan/CEFR additions, open PR, inspect CI and correct only observed root causes.
 
-## Repository state
+### Verification state
 
-P20 is `done / verified:true`. PR #24 remains open against `main` and no
-merge was performed. P18 remains independently `in_progress / verified:false`.
+All gates are pending until observed. No success claim has been made.
