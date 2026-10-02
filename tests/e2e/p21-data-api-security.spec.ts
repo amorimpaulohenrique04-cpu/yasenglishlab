@@ -77,7 +77,10 @@ test.describe("P21 Data API security", () => {
       ).error,
     ).toBeNull();
 
-    const own = await studentA.from("live_sessions").select("id,title").eq("id", ownPrivateSessionId);
+    const own = await studentA
+      .from("live_sessions")
+      .select("id,title")
+      .eq("id", ownPrivateSessionId);
     expect(own.error).toBeNull();
     expect(own.data).toHaveLength(1);
 
