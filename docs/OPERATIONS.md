@@ -49,3 +49,8 @@ Runbooks mínimos futuros:
 - Runbooks críticos existem antes do lançamento correspondente.
 - Backup/restore e incident response possuem owners quando a equipe for definida.
 - Branch protection e environments do GitHub refletem os gates descritos em CI_CD.md.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

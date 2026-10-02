@@ -177,3 +177,8 @@ A cadeia existente `Assessment → AssessmentVersion → AssessmentItem → Asse
 - `SUBMITTED` representa tentativa encerrada pelo Student com avaliação manual ainda pendente;
 - `SCORED` só é usado quando todos os itens da versão têm métrica suportada;
 - CEFR permanece separado: `result_cefr` e `cefr_level` ficam `NULL` no V1.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

@@ -8,7 +8,7 @@ import {
 } from "@/modules/schedule";
 import { loadSchedulePage } from "@/server/schedule/schedule";
 
-import { bookLiveSessionAction } from "./actions";
+import { bookLiveSessionAction, cancelLiveSessionAction } from "./actions";
 import styles from "@/modules/schedule/ui/schedule.module.css";
 
 interface AgendaPageProps {
@@ -47,6 +47,22 @@ function statusTone(status: ScheduleAvailability): "success" | "warning" | "info
 }
 
 function bookingAlert(code: string | undefined) {
+  if (code === "quota")
+    return (
+      <Alert
+        tone="warning"
+        title="Limite de reservas atingido"
+        description="Você já utilizou a quota deste período para este tipo de encontro."
+      />
+    );
+  if (code === "cancelled")
+    return (
+      <Alert
+        tone="success"
+        title="Reserva cancelada"
+        description="O crédito é liberado quando o cancelamento acontece antes do início da sessão."
+      />
+    );
   if (code === "success") {
     return (
       <Alert
@@ -79,7 +95,7 @@ function bookingAlert(code: string | undefined) {
       <Alert
         tone="warning"
         title="Esta sessão não aceita novas reservas"
-        description="O estado da sessão mudou ou já existe uma reserva anterior que a Agenda V1 não pode remarcar."
+        description="O estado da sessão mudou ou ela já começou."
       />
     );
   }
@@ -157,6 +173,18 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
             Seu entitlement atual não autoriza esta sessão.
           </span>
         )}
+        {session.quota?.total != null && (
+          <span>
+            Quota {session.quota.cadence === "WEEK" ? "semanal" : "mensal"}: {session.quota.used}/
+            {session.quota.total} utilizadas · {session.quota.remaining} disponíveis
+          </span>
+        )}
+        {session.eligibility.reason === "QUOTA_EXCEEDED" && (
+          <span>Limite deste período atingido.</span>
+        )}
+        {session.eligibility.reason === "COHORT_REQUIRED" && (
+          <span>Seu vínculo com esta turma não permite novas reservas.</span>
+        )}
       </div>
 
       <form action={bookLiveSessionAction}>
@@ -175,9 +203,21 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
                 ? "Encerrado"
                 : entitlementBlocked
                   ? "Acesso não disponível"
-                  : "Reservar"}
+                  : session.eligibility.reason === "QUOTA_EXCEEDED"
+                    ? "Quota esgotada"
+                    : session.ownBookingStatus === "CANCELLED"
+                      ? "Reservar novamente"
+                      : "Reservar"}
         </Button>
       </form>
+      {session.availability === "BOOKED" && (
+        <form action={cancelLiveSessionAction}>
+          <input type="hidden" name="liveSessionId" value={session.id} />
+          <Button type="submit" variant="secondary" size="sm">
+            Cancelar reserva
+          </Button>
+        </form>
+      )}
     </Card>
   );
 }
@@ -280,8 +320,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           <Card className={styles.contractCard} variant="soft">
             <strong>Agenda V1</strong>
             <p>
-              Reservas usam a capacidade e os entitlements do domínio Live. Cancelamento, remarcação
-              e acesso à reunião ainda não fazem parte deste fluxo.
+              Reservas respeitam capacidade e quota. Cancelar antes do início libera crédito;
+              presença e ausência não geram novo consumo. Acesso à reunião ainda não faz parte deste
+              fluxo.
             </p>
           </Card>
         </aside>

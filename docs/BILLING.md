@@ -46,3 +46,8 @@ O provider definitivo permanece em [OPEN_QUESTIONS.md](./OPEN_QUESTIONS.md).
 - Benefício comercial possui entitlement ou regra central equivalente.
 - Upgrade/downgrade/cancelamento dependem de estado confirmado.
 - Booking consulta entitlement durável.
+
+## P21 foundation closure
+
+The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+

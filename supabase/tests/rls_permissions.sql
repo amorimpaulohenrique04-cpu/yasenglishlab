@@ -582,3 +582,15 @@ begin
   end if;
 end;
 $$;
+
+-- P21 added projection/relationship boundary, independent of row filtering.
+do $$ begin
+  if has_table_privilege('anon','public.cohorts','SELECT')
+    or has_table_privilege('authenticated','public.cohort_memberships','INSERT')
+    or has_table_privilege('authenticated','public.cohort_teachers','UPDATE') then
+    raise exception 'Cohort RLS boundary must deny anonymous reads and direct relationship DML';
+  end if;
+  if has_column_privilege('authenticated','public.session_bookings','usage_limit','SELECT') then
+    raise exception 'Commercial snapshot must remain outside authenticated Data API projection';
+  end if;
+end $$;

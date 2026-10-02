@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { sanitizeNextPath } from "@/modules/auth";
+import { authContinuePath } from "@/modules/auth";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const next = sanitizeNextPath(request.nextUrl.searchParams.get("next"));
+  const next = authContinuePath(request.nextUrl.searchParams.get("next"));
 
   if (!code) {
     return NextResponse.redirect(new URL("/login?error=callback", request.url));

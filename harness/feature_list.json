@@ -351,6 +351,19 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36956118087/artifacts/11206068526"
       ],
       "updated_at": "2026-10-01T23:55:00-03:00"
+    },
+    {
+      "id": "p21-p0-foundation-closure",
+      "title": "P21.1 role routing, P21.2 booking quota, P21.3 cohorts",
+      "status": "done",
+      "verified": true,
+      "dependencies": ["prompt-21-home-projection-v1"],
+      "evidence": [
+        "harness/evidence/p21-p0-foundation-closure/README.md",
+        "harness/evidence/p21-p0-foundation-closure/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/30"
+      ],
+      "updated_at": "2026-10-02T06:43:47.557Z"
     }
   ]
 }

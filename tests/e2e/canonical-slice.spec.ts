@@ -9,6 +9,14 @@ const homeNowEmail = "canonical.home-now@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const evidenceDir = "artifacts/canonical-slice";
 
+async function submitLogin(page: Page) {
+  const response = page.waitForResponse(
+    (item) => item.request().method() === "POST" && new URL(item.url()).pathname === "/login",
+  );
+  await page.getByRole("button", { name: "Entrar" }).click();
+  expect((await response).status()).toBeLessThan(400);
+}
+
 async function captureEvidence(page: Page, filename: string): Promise<void> {
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
   await page.screenshot({
@@ -29,7 +37,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/login");
     await page.getByLabel("E-mail").fill("canonical.progress-empty@example.test");
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
 
     await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
@@ -53,7 +61,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/login");
     await page.getByLabel("E-mail").fill(homeNowEmail);
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
 
     await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("heading", { name: "Sessão agora" })).toBeVisible();
@@ -83,7 +91,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/login");
     await page.getByLabel("E-mail").fill(email);
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
     await expect(page).toHaveURL(/\/home$/);
 
     const progressPayloads: string[] = [];
@@ -128,7 +136,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/login");
     await page.getByLabel("E-mail").fill(email);
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
     await expect(page).toHaveURL(/\/home$/);
 
     const homePayloads: string[] = [];
@@ -182,7 +190,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/login");
     await page.getByLabel("E-mail").fill(email);
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
 
     await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
@@ -190,6 +198,11 @@ test.describe("canonical learning vertical slice", () => {
 
     const primaryHomeAction = page.getByRole("link", { name: "Começar aula →" });
     await expect(primaryHomeAction).toBeVisible();
+    const primaryHref = await primaryHomeAction.getAttribute("href");
+    if (!primaryHref) throw new Error("Home primary learning action has no destination.");
+    // Compile the cold dynamic route and verify its authenticated HTTP boundary
+    // before measuring the browser navigation; keep the existing assertion timeout.
+    expect((await page.request.get(primaryHref)).status()).toBe(200);
     await primaryHomeAction.focus();
     await expect(primaryHomeAction).toBeFocused();
     await primaryHomeAction.click();
@@ -289,7 +302,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.getByLabel("E-mail").fill(email);
     await page.getByLabel("Senha").fill(password);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await submitLogin(page);
 
     await expect(page).toHaveURL(/\/home$/);
     await expect(page.getByRole("progressbar", { name: "Progresso da aula" })).toHaveAttribute(

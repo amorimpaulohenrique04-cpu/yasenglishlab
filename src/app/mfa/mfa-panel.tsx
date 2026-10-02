@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 
 import { Alert, Button, Input } from "@/components/ui";
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -11,7 +10,6 @@ interface MfaPanelProps {
 }
 
 export function MfaPanel({ nextPath }: MfaPanelProps) {
-  const router = useRouter();
   const [factorId, setFactorId] = useState<string | null>(null);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
@@ -29,7 +27,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
       if (!active) return;
 
       if (aal.data.currentLevel === "aal2") {
-        router.replace(nextPath);
+        window.location.replace(nextPath);
         return;
       }
 
@@ -77,7 +75,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
     return () => {
       active = false;
     };
-  }, [nextPath, router]);
+  }, [nextPath]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,8 +101,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
       return;
     }
 
-    router.replace(nextPath);
-    router.refresh();
+    window.location.replace(nextPath);
   }
 
   if (status === "loading") {

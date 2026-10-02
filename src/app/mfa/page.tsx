@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Card } from "@/components/ui";
-import { sanitizeNextPath, staffMfaRequired } from "@/modules/auth";
+import { authContinuePath, staffMfaRequired } from "@/modules/auth";
 import { requirePageAuth } from "@/server/auth/guards";
 
 import { MfaPanel } from "./mfa-panel";
@@ -13,7 +13,7 @@ interface MfaPageProps {
 export default async function MfaPage({ searchParams }: MfaPageProps) {
   const auth = await requirePageAuth({ enforceStaffMfa: false });
   const params = await searchParams;
-  const nextPath = sanitizeNextPath(typeof params.next === "string" ? params.next : null);
+  const nextPath = authContinuePath(typeof params.next === "string" ? params.next : null);
   const required = staffMfaRequired(auth.roles, auth.aal);
 
   if (auth.aal === "aal2") {

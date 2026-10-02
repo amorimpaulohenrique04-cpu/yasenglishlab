@@ -59,6 +59,18 @@ if (priorAdminContent) {
   if (error) throw error;
 }
 
+// Admin reorder legitimately moves Getting Started to position 2. Restore the
+// isolated canonical baseline before another run, using publication transitions.
+const canonicalModuleId = "41000000-0000-4000-8000-000000000001";
+for (const values of [
+  { publication_status: "DRAFT", published_at: null },
+  { position: 1 },
+  { publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" },
+]) {
+  const { error } = await admin.from("modules").update(values).eq("id", canonicalModuleId);
+  if (error) throw error;
+}
+
 const { data: listed, error: listError } = await admin.auth.admin.listUsers({
   page: 1,
   perPage: 1000,
@@ -94,6 +106,12 @@ const teacherUser = await ensureUser(teacherEmail, "Yasmin");
 const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
 const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
 const adminUser = await ensureUser(adminEmail, "Canonical Admin");
+const cohortStudent = await ensureUser("canonical.cohort-student@example.test", "Cohort Student A");
+const cohortStudentB = await ensureUser(
+  "canonical.cohort-student-b@example.test",
+  "Cohort Student B",
+);
+const multiUser = await ensureUser("canonical.multi@example.test", "Multi Workspace");
 const userId = user.id;
 const canonicalUserIds = [
   user.id,
@@ -103,9 +121,16 @@ const canonicalUserIds = [
   teacherBUser.id,
   teacherStudentUser.id,
   adminUser.id,
+  cohortStudent.id,
+  cohortStudentB.id,
+  multiUser.id,
 ];
 
 const cleanup = [
+  admin
+    .from("session_bookings")
+    .delete()
+    .in("user_id", [teacherStudentUser.id, cohortStudent.id, cohortStudentB.id]),
   admin.from("user_roles").delete().in("user_id", canonicalUserIds),
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("material_favorites").delete().eq("user_id", userId),
@@ -221,6 +246,111 @@ const operations = [
 
 for (const operation of operations) {
   const { error } = await operation;
+  if (error) throw error;
+}
+
+for (const cohortUser of [cohortStudent, cohortStudentB, multiUser]) {
+  const { error } = await admin
+    .from("user_roles")
+    .insert({ user_id: cohortUser.id, role: "STUDENT" });
+  if (error) throw error;
+}
+const { error: multiRoleError } = await admin
+  .from("user_roles")
+  .insert({ user_id: multiUser.id, role: "ADMIN" });
+if (multiRoleError) throw multiRoleError;
+const cohortIds = ["9d200000-0000-4000-8000-000000000001", "9d200000-0000-4000-8000-000000000002"];
+for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
+  const { data: enrollment, error: enrollmentError } = await admin
+    .from("enrollments")
+    .upsert(
+      { user_id: cohortUser.id, course_id: courseId, status: "ACTIVE" },
+      { onConflict: "user_id,course_id" },
+    )
+    .select("id")
+    .single();
+  if (enrollmentError) throw enrollmentError;
+  const { error: subscriptionError } = await admin.from("subscriptions").upsert(
+    {
+      user_id: cohortUser.id,
+      plan_id: "10000000-0000-0000-0000-000000000001",
+      provider: "test",
+      provider_subscription_id: `cohort_e2e_${index}`,
+      status: "ACTIVE",
+    },
+    { onConflict: "provider,provider_subscription_id" },
+  );
+  if (subscriptionError) throw subscriptionError;
+  const { error: cohortError } = await admin.from("cohorts").upsert(
+    {
+      id: cohortIds[index],
+      course_id: courseId,
+      name: index === 0 ? "Cohort Basic" : "Cohort Intermediate",
+      code: index === 0 ? "canonical-basic" : "canonical-intermediate",
+      status: "ACTIVE",
+      timezone: "America/Recife",
+      starts_at: "2026-01-01T00:00:00-03:00",
+    },
+    { onConflict: "id" },
+  );
+  if (cohortError) throw cohortError;
+  const { data: membership, error: membershipError } = await admin
+    .from("cohort_memberships")
+    .select("id")
+    .eq("cohort_id", cohortIds[index])
+    .eq("user_id", cohortUser.id)
+    .eq("status", "ACTIVE")
+    .maybeSingle();
+  if (membershipError) throw membershipError;
+  if (!membership) {
+    const { error } = await admin.from("cohort_memberships").insert({
+      cohort_id: cohortIds[index],
+      user_id: cohortUser.id,
+      enrollment_id: enrollment.id,
+    });
+    if (error) throw error;
+  }
+  const linkedTeacher = index === 0 ? teacherId : teacherBId;
+  const { data: assignment, error: assignmentError } = await admin
+    .from("cohort_teachers")
+    .select("id")
+    .eq("cohort_id", cohortIds[index])
+    .eq("teacher_id", linkedTeacher)
+    .is("ends_at", null)
+    .maybeSingle();
+  if (assignmentError) throw assignmentError;
+  if (!assignment) {
+    const { error } = await admin
+      .from("cohort_teachers")
+      .insert({ cohort_id: cohortIds[index], teacher_id: linkedTeacher, is_primary: true });
+    if (error) throw error;
+  }
+}
+const quotaWeek = new Date(now + 14 * 86400000);
+quotaWeek.setUTCHours(15, 0, 0, 0);
+quotaWeek.setUTCDate(quotaWeek.getUTCDate() - ((quotaWeek.getUTCDay() + 6) % 7));
+for (let index = 0; index < 4; index++) {
+  const starts = new Date(quotaWeek.getTime() + (index === 2 ? 7 : index === 1 ? 1 : 0) * 86400000);
+  const { error } = await admin.from("live_sessions").upsert(
+    {
+      id: `9d400000-0000-4000-8000-00000000000${index + 1}`,
+      teacher_id: index === 3 ? teacherBId : teacherId,
+      session_type: "CORE_CLASS",
+      title: [
+        "Cohort Basic · Primeira sessão",
+        "Cohort Basic · Segunda sessão",
+        "Cohort Basic · Próxima semana",
+        "Cohort Intermediate · Sessão restrita",
+      ][index],
+      starts_at: starts.toISOString(),
+      ends_at: new Date(starts.getTime() + 3600000).toISOString(),
+      capacity: 6,
+      required_entitlement_key: "weekly_core_classes",
+      status: "SCHEDULED",
+      cohort_id: cohortIds[index === 3 ? 1 : 0],
+    },
+    { onConflict: "id" },
+  );
   if (error) throw error;
 }
 
