@@ -17,9 +17,14 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Print canonical Prettier diff
-        shell: bash
-        run: |
-          set -euo pipefail
-          npx prettier --write             harness/agent-state/progress.md             harness/feature_list.json             src/server/schedule/supabase-schedule-repository.ts
-          git diff --             harness/agent-state/progress.md             harness/feature_list.json             src/server/schedule/supabase-schedule-repository.ts
+      - name: Format target files
+        run: npx prettier --write harness/agent-state/progress.md harness/feature_list.json src/server/schedule/supabase-schedule-repository.ts
+      - name: Upload canonical formatted files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: p21-canonical-format
+          path: |
+            harness/agent-state/progress.md
+            harness/feature_list.json
+            src/server/schedule/supabase-schedule-repository.ts
+          retention-days: 1
