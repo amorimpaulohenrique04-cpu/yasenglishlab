@@ -1,5 +1,4 @@
 import {
-  courseCompletion,
   isLessonComplete,
   orderedCourseLessons,
   type LearningCourse,
@@ -7,7 +6,13 @@ import {
   type LearningModule,
 } from "@/modules/learning";
 import { recommendPractice } from "@/modules/practice";
-import type { HomePracticeInputs, HomeReadRepository, HomeScheduleFact } from "./ports";
+import {
+  buildCurriculumView,
+  type ProgressCurriculumCourse,
+} from "@/modules/progress";
+import type { ScheduleOwnBookingFact } from "@/modules/schedule";
+
+import type { HomePracticeInputs, HomeReadRepository } from "./ports";
 import type {
   HomeLearningView,
   HomePageState,
@@ -22,20 +27,35 @@ interface LearningSelection {
   course: LearningCourse;
   module: LearningModule;
   lesson: LearningLesson;
+  ordinal: number;
 }
 
-function timestamp(value: string): number {
+interface FocusCourse {
+  course: LearningCourse;
+  summary: ProgressCurriculumCourse;
+}
+
+function timestamp(value: string | null): number {
+  if (!value) return Number.NEGATIVE_INFINITY;
   const parsed = Date.parse(value);
-  return Number.isFinite(parsed) ? parsed : 0;
+  return Number.isFinite(parsed) ? parsed : Number.NEGATIVE_INFINITY;
 }
 
 function orderedSelections(courses: readonly LearningCourse[]): LearningSelection[] {
-  return courses.flatMap((course) =>
-    orderedCourseLessons(course).flatMap((lesson) => {
+  let ordinal = 0;
+  const selections: LearningSelection[] = [];
+
+  for (const course of courses) {
+    for (const lesson of orderedCourseLessons(course)) {
       const courseModule = course.modules.find((module) => module.id === lesson.moduleId);
-      return courseModule ? [{ course, module: courseModule, lesson }] : [];
-    }),
-  );
+      if (!courseModule) continue;
+
+      selections.push({ course, module: courseModule, lesson, ordinal });
+      ordinal += 1;
+    }
+  }
+
+  return selections;
 }
 
 export function selectLearningAction(
@@ -45,70 +65,77 @@ export function selectLearningAction(
     ({ lesson }) => !isLessonComplete(lesson),
   );
 
-  const resumed = incomplete
-    .filter(({ lesson }) => lesson.progress !== null)
-    .sort((left, right) => {
-      const accessed =
-        timestamp(right.lesson.progress!.lastAccessedAt) -
-        timestamp(left.lesson.progress!.lastAccessedAt);
-      if (accessed !== 0) return accessed;
-      return incomplete.indexOf(left) - incomplete.indexOf(right);
-    });
+  let resumed: LearningSelection | null = null;
+  for (const candidate of incomplete) {
+    const lastAccessedAt = candidate.lesson.progress?.lastAccessedAt;
+    if (!lastAccessedAt) continue;
 
-  return resumed.at(0) ?? incomplete.at(0) ?? null;
-}
+    if (!resumed) {
+      resumed = candidate;
+      continue;
+    }
 
-function latestCourseActivity(course: LearningCourse): number {
-  return orderedCourseLessons(course).reduce(
-    (latest, lesson) =>
-      Math.max(latest, lesson.progress ? timestamp(lesson.progress.lastAccessedAt) : 0),
-    0,
-  );
+    const candidateTime = timestamp(lastAccessedAt);
+    const resumedTime = timestamp(resumed.lesson.progress?.lastAccessedAt ?? null);
+    if (
+      candidateTime > resumedTime ||
+      (candidateTime === resumedTime && candidate.ordinal < resumed.ordinal)
+    ) {
+      resumed = candidate;
+    }
+  }
+
+  return resumed ?? incomplete[0] ?? null;
 }
 
 function selectFocusCourse(
   courses: readonly LearningCourse[],
   selection: LearningSelection | null,
-): LearningCourse | null {
-  if (selection) return selection.course;
-  if (courses.length === 0) return null;
+): FocusCourse | null {
+  const curriculum = buildCurriculumView(courses).courses;
+  if (curriculum.length === 0) return null;
 
-  const withActivity = courses
-    .map((course, index) => ({ course, index, activity: latestCourseActivity(course) }))
-    .filter(({ activity }) => activity > 0)
-    .sort((left, right) => right.activity - left.activity || left.index - right.index);
+  if (selection) {
+    const summary = curriculum.find((item) => item.id === selection.course.id);
+    return summary ? { course: selection.course, summary } : null;
+  }
 
-  return withActivity.at(0)?.course ?? courses.at(0) ?? null;
-}
+  let focusIndex = 0;
+  let latestActivity = Number.NEGATIVE_INFINITY;
 
-function courseCounts(course: LearningCourse) {
-  const lessons = orderedCourseLessons(course);
-  return {
-    totalLessons: lessons.length,
-    lessonsCompleted: lessons.filter(isLessonComplete).length,
-  };
+  curriculum.forEach((summary, index) => {
+    const activity = timestamp(summary.lastActivityAt);
+    if (activity > latestActivity) {
+      latestActivity = activity;
+      focusIndex = index;
+    }
+  });
+
+  const summary = curriculum[focusIndex];
+  if (!summary) return null;
+
+  const course = courses.find((candidate) => candidate.id === summary.id);
+  return course ? { course, summary } : null;
 }
 
 function learningSection(
-  courses: readonly LearningCourse[],
+  focus: FocusCourse | null,
   selection: LearningSelection | null,
 ): HomeSection<HomeLearningView> {
-  const focusCourse = selectFocusCourse(courses, selection);
-  if (!focusCourse) return { status: "empty" };
+  if (!focus) return { status: "empty" };
 
-  const counts = courseCounts(focusCourse);
   return {
     status: "success",
     data: {
-      courseId: focusCourse.id,
-      courseSlug: focusCourse.slug,
-      courseTitle: focusCourse.title,
-      courseDescription: focusCourse.description,
-      completionPercent: courseCompletion(focusCourse),
-      lessonsCompleted: counts.lessonsCompleted,
-      totalLessons: counts.totalLessons,
+      courseId: focus.course.id,
+      courseSlug: focus.course.slug,
+      courseTitle: focus.course.title,
+      courseDescription: focus.course.description,
+      completionPercent: focus.summary.completionPercent,
+      lessonsCompleted: focus.summary.lessonsCompleted,
+      totalLessons: focus.summary.totalLessons,
       lesson:
-        selection && selection.course.id === focusCourse.id
+        selection && selection.course.id === focus.course.id
           ? {
               id: selection.lesson.id,
               title: selection.lesson.title,
@@ -123,35 +150,26 @@ function learningSection(
   };
 }
 
-function progressSection(
-  courses: readonly LearningCourse[],
-  selection: LearningSelection | null,
-): HomeSection<HomeProgressSummary> {
-  const focusCourse = selectFocusCourse(courses, selection);
-  if (!focusCourse) return { status: "empty" };
+function progressSection(focus: FocusCourse | null): HomeSection<HomeProgressSummary> {
+  if (!focus) return { status: "empty" };
 
-  const counts = courseCounts(focusCourse);
   return {
     status: "success",
     data: {
-      courseId: focusCourse.id,
-      courseTitle: focusCourse.title,
-      completionPercent: courseCompletion(focusCourse),
-      lessonsCompleted: counts.lessonsCompleted,
-      totalLessons: counts.totalLessons,
+      courseId: focus.summary.id,
+      courseTitle: focus.summary.title,
+      completionPercent: focus.summary.completionPercent,
+      lessonsCompleted: focus.summary.lessonsCompleted,
+      totalLessons: focus.summary.totalLessons,
     },
   };
 }
 
-function sortedBookings(records: readonly HomeScheduleFact[]) {
-  return records
-    .filter((session) => session.bookingStatus === "BOOKED")
-    .sort((left, right) => timestamp(left.startsAt) - timestamp(right.startsAt));
-}
-
-function scheduleFacts(records: readonly HomeScheduleFact[], now: Date) {
+function scheduleFacts(records: readonly ScheduleOwnBookingFact[], now: Date) {
   const nowMs = now.getTime();
-  const bookings = sortedBookings(records);
+  const bookings = [...records].sort(
+    (left, right) => timestamp(left.startsAt) - timestamp(right.startsAt),
+  );
   const current =
     bookings.find(
       (session) => timestamp(session.startsAt) <= nowMs && timestamp(session.endsAt) > nowMs,
@@ -161,7 +179,7 @@ function scheduleFacts(records: readonly HomeScheduleFact[], now: Date) {
 }
 
 function sessionView(
-  session: HomeScheduleFact,
+  session: ScheduleOwnBookingFact,
   happeningNow: boolean,
 ): HomeSessionView {
   return {
@@ -174,10 +192,10 @@ function sessionView(
   };
 }
 
-function practiceSection(inputs: HomePracticeInputs) {
+function practiceSection(inputs: HomePracticeInputs): HomeView["practice"] {
   const recommendation = recommendPractice(inputs);
   return recommendation
-    ? ({
+    ? {
         status: "success",
         data: {
           activityId: recommendation.activity.id,
@@ -186,13 +204,11 @@ function practiceSection(inputs: HomePracticeInputs) {
           estimatedMinutes: recommendation.activity.estimatedMinutes,
           explanation: recommendation.explanation,
         },
-      } as const)
-    : ({ status: "empty" } as const);
+      }
+    : { status: "empty" };
 }
 
-function learningPrimaryAction(
-  selection: LearningSelection,
-): HomePrimaryAction {
+function learningPrimaryAction(selection: LearningSelection): HomePrimaryAction {
   const hasProgress = selection.lesson.progress !== null;
   return {
     kind: "learning",
@@ -200,12 +216,14 @@ function learningPrimaryAction(
     href: `/aulas/${selection.course.slug}/modulos/${selection.module.id}/aulas/${selection.lesson.slug}`,
     eyebrow: hasProgress ? "Continue de onde parou" : "Sua próxima aula",
     title: selection.lesson.title,
-    description: `${selection.module.title}${selection.lesson.estimatedMinutes ? ` · ${selection.lesson.estimatedMinutes} min` : ""}`,
+    description: `${selection.module.title}${
+      selection.lesson.estimatedMinutes ? ` · ${selection.lesson.estimatedMinutes} min` : ""
+    }`,
   };
 }
 
 function schedulePrimaryAction(
-  session: HomeScheduleFact,
+  session: ScheduleOwnBookingFact,
   happeningNow: boolean,
 ): HomePrimaryAction {
   return {
@@ -248,12 +266,19 @@ export async function getHomeView(
   const scheduleRecords = settled[2].status === "fulfilled" ? settled[2].value : [];
 
   const selection = settled[0].status === "fulfilled" ? selectLearningAction(courses) : null;
+  const focus =
+    settled[0].status === "fulfilled" ? selectFocusCourse(courses, selection) : null;
   const practice =
     practiceInputs === null
-      ? ({ status: "error", message: "Não foi possível carregar a recomendação de prática agora." } as const)
+      ? {
+          status: "error" as const,
+          message: "Não foi possível carregar a recomendação de prática agora.",
+        }
       : practiceSection(practiceInputs);
   const schedule =
-    settled[2].status === "fulfilled" ? scheduleFacts(scheduleRecords, now) : { current: null, future: null };
+    settled[2].status === "fulfilled"
+      ? scheduleFacts(scheduleRecords, now)
+      : { current: null, future: null };
 
   const nextSession: HomeView["nextSession"] =
     settled[2].status === "rejected"
@@ -267,12 +292,15 @@ export async function getHomeView(
   const learning: HomeView["learning"] =
     settled[0].status === "rejected"
       ? { status: "error", message: "Não foi possível carregar sua trilha agora." }
-      : learningSection(courses, selection);
+      : learningSection(focus, selection);
 
   const progressSummary: HomeView["progressSummary"] =
     settled[0].status === "rejected"
-      ? { status: "error", message: "Não foi possível carregar o progresso curricular agora." }
-      : progressSection(courses, selection);
+      ? {
+          status: "error",
+          message: "Não foi possível carregar o progresso curricular agora.",
+        }
+      : progressSection(focus);
 
   let primaryAction: HomePrimaryAction | null = null;
   if (schedule.current) {
@@ -286,7 +314,7 @@ export async function getHomeView(
       href: "/pratica",
       eyebrow: "Prática recomendada",
       title: practice.data.title,
-      description: `${practice.data.estimatedMinutes} min · recomendação do Practice Engine`,
+      description: `${practice.data.estimatedMinutes} min · ${practice.data.explanation}`,
     };
   } else if (schedule.future) {
     primaryAction = schedulePrimaryAction(schedule.future, false);
