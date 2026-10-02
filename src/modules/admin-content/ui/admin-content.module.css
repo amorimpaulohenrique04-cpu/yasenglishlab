@@ -136,6 +136,22 @@
   font-weight: var(--yas-weight-semibold);
   text-decoration: none;
 }
+.statusRefreshLink {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: var(--yas-control-height-sm);
+  padding-inline: var(--yas-space-2);
+  border-radius: var(--yas-radius-md);
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-semibold);
+  text-decoration: none;
+}
+.statusRefreshLink:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+  box-shadow: var(--yas-shadow-focus);
+}
 .group {
   display: grid;
   gap: var(--yas-space-3);

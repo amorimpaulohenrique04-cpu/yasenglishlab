@@ -114,7 +114,9 @@ export default async function ContentItemPage({ params, searchParams }: ContentI
             <VideoUpload id={id} action={createVideoUploadAction} />
           )}
           {video.last_provider_error && <p>O provider não conseguiu processar este vídeo.</p>}
-          <Link href={`/admin/content/${id}?kind=${kind}`}>Atualizar estado</Link>
+          <Link className={styles.statusRefreshLink} href={`/admin/content/${id}?kind=${kind}`}>
+            Atualizar estado
+          </Link>
         </Card>
       )}
     </>
