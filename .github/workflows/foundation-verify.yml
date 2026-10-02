@@ -55,9 +55,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Format
-        run: |
-          npm run format
-          git diff --exit-code
+        run: npm run format:check
       - name: Lint
         run: npm run lint
       - name: Typecheck
