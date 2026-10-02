@@ -52,7 +52,9 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   const primaryAction = page.getByRole("link", { name: "Começar aula →" });
   await primaryAction.focus();
   await expect(primaryAction).toBeFocused();
-  await expect(page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" })).toBeVisible();
+  await expect(
+    page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
+  ).toBeVisible();
   await assertAxe(page);
 
   if ((page.viewportSize()?.width ?? 1440) < 1024) {
