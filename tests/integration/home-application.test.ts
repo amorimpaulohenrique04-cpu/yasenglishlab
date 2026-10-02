@@ -6,9 +6,9 @@ import {
   getHomeView,
   type HomePracticeInputs,
   type HomeReadRepository,
-  type HomeScheduleFact,
 } from "@/modules/home";
 import type { LearningCourse } from "@/modules/learning";
+import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 const userId = "81000000-0000-4000-8000-000000000001";
 
@@ -26,7 +26,7 @@ const practice: HomePracticeInputs = {
   recentLessonId: null,
 };
 
-const schedule: HomeScheduleFact[] = [];
+const schedule: ScheduleOwnBookingFact[] = [];
 
 function repository(overrides: Partial<HomeReadRepository> = {}): HomeReadRepository {
   return {
@@ -99,6 +99,17 @@ describe("Home application architecture", () => {
     expect(repo.loadSchedule).toHaveBeenCalledWith(userId);
   });
 
+  it("fails closed before domain reads for a non-Student", async () => {
+    const repo = repository();
+
+    await expect(getHomeView(repo, userId, false)).resolves.toEqual({
+      status: "unauthorized",
+    });
+    expect(repo.loadLearning).not.toHaveBeenCalled();
+    expect(repo.loadPractice).not.toHaveBeenCalled();
+    expect(repo.loadSchedule).not.toHaveBeenCalled();
+  });
+
   it("exposes only read methods through the Home repository contract", () => {
     expect(Object.keys(repository()).sort()).toEqual([
       "loadLearning",
@@ -107,7 +118,7 @@ describe("Home application architecture", () => {
     ]);
   });
 
-  it("uses one Home server boundary instead of chaining feature page loaders or writes", () => {
+  it("keeps SQL and page-loader ownership outside Home", () => {
     const boundary = readFileSync("src/server/home/home.ts", "utf8");
     const adapter = readFileSync("src/server/home/supabase-home-repository.ts", "utf8");
     const page = readFileSync("src/app/(protected)/(student)/home/page.tsx", "utf8");
@@ -127,11 +138,59 @@ describe("Home application architecture", () => {
       ".delete(",
       "SUPABASE_SERVICE_ROLE_KEY",
       '"use client"',
+      '.from("session_bookings")',
+      '.from("practice_activities")',
     ]) {
       expect(combined).not.toContain(forbidden);
     }
 
-    expect(boundary.match(/requirePageAuth\(/g)).toHaveLength(1);
-    expect(boundary.match(/createSupabaseServerClient\(/g)).toHaveLength(1);
+    expect(adapter).toContain("SupabaseLearningRepository");
+    expect(adapter).toContain("SupabasePracticeRepository");
+    expect(adapter).toContain("SupabaseScheduleRepository");
+    expect(adapter).toContain("listRecommendationActivities");
+    expect(adapter).toContain("listRecommendationHistory");
+    expect(adapter).toContain("listOwnBookedSessions");
+  });
+
+  it("shares one cached auth/client boundary between Student layout and Home", () => {
+    const requestContext = readFileSync("src/server/student/request-context.ts", "utf8");
+    const layout = readFileSync("src/app/(protected)/(student)/layout.tsx", "utf8");
+    const homeBoundary = readFileSync("src/server/home/home.ts", "utf8");
+
+    expect(requestContext).toContain("cache(async");
+    expect(requestContext.match(/createSupabaseServerClient\(/g)).toHaveLength(1);
+    expect(requestContext.match(/resolveAuthContextFromClient\(/g)).toHaveLength(1);
+    expect(layout).toContain("getStudentRequestContext()");
+    expect(homeBoundary).toContain("getStudentRequestContext()");
+    expect(layout).not.toContain("createSupabaseServerClient");
+    expect(homeBoundary).not.toContain("createSupabaseServerClient");
+    expect(layout).not.toContain("requirePageAuth");
+    expect(homeBoundary).not.toContain("requirePageAuth");
+  });
+
+  it("keeps Practice recommendation reads minimal and owned by Practice", () => {
+    const practiceAdapter = readFileSync(
+      "src/server/practice/supabase-practice-repository.ts",
+      "utf8",
+    );
+    const recommendationBlock = practiceAdapter.slice(
+      practiceAdapter.indexOf("async listRecommendationActivities"),
+      practiceAdapter.indexOf("async listRecommendationHistory"),
+    );
+
+    expect(recommendationBlock).toContain("evaluation_mode:content->>evaluationMode");
+    expect(recommendationBlock).not.toContain("cefr_target");
+    expect(recommendationBlock).not.toContain("difficulty");
+    expect(recommendationBlock).not.toContain("related_module_id");
+    expect(recommendationBlock).not.toContain(", content");
+  });
+
+  it("derives Home progress from the existing Progress curriculum projection", () => {
+    const homeQuery = readFileSync("src/modules/home/application/queries.ts", "utf8");
+
+    expect(homeQuery).toContain("buildCurriculumView");
+    expect(homeQuery).not.toContain("loadProgressPage");
+    expect(homeQuery).not.toContain("loadAssessments");
+    expect(homeQuery).not.toContain("loadAttendance");
   });
 });
