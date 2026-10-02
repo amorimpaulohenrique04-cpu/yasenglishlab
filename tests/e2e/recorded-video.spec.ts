@@ -83,11 +83,7 @@ async function resetVideo(): Promise<void> {
     .delete()
     .eq("user_id", student)
     .eq("lesson_id", lessonId)
-    .in("event_name", [
-      "lesson_video_started",
-      "lesson_video_resumed",
-      "lesson_video_completed",
-    ]);
+    .in("event_name", ["lesson_video_started", "lesson_video_resumed", "lesson_video_completed"]);
   if (analyticsError) throw analyticsError;
 }
 
@@ -191,9 +187,12 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
         exact: true,
       }),
     });
-    const videoCard = lessonGroup.locator("article,section,div").filter({
-      has: page.getByRole("heading", { name: "VIDEO", exact: true }),
-    }).last();
+    const videoCard = lessonGroup
+      .locator("article,section,div")
+      .filter({
+        has: page.getByRole("heading", { name: "VIDEO", exact: true }),
+      })
+      .last();
     await expect(page.getByRole("heading", { name: "VIDEO", exact: true })).toBeVisible();
     await videoCard.getByRole("button", { name: "Publicar VIDEO" }).click();
     await expect(page.getByText("Conteúdo publicado", { exact: true })).toBeVisible();
@@ -204,8 +203,9 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
       await loginStudent(studentPage);
       await studentPage.goto(lessonUrl);
 
-      await expect(studentPage.getByRole("heading", { name: "Build your first conversation" }))
-        .toBeVisible();
+      await expect(
+        studentPage.getByRole("heading", { name: "Build your first conversation" }),
+      ).toBeVisible();
       await expect(studentPage.getByText("Legendas disponíveis (en) no player.")).toBeVisible();
       await expect(studentPage.locator("mux-player")).toBeVisible();
       await expect(studentPage.locator("mux-player")).toHaveAttribute(
