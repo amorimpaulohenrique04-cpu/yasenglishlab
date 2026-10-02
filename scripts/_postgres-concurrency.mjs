@@ -44,11 +44,34 @@ export async function withBarrier(lockSql, operations) {
   const barrier = spawn("psql", [...connectionArgs, "-X", "-v", "ON_ERROR_STOP=1", "-At"], {
     stdio: ["pipe", "pipe", "pipe"],
   });
+  let barrierStderr = "";
+  barrier.stderr.on("data", (chunk) => {
+    barrierStderr += chunk;
+  });
   const ready = new Promise((resolve, reject) => {
+    let settled = false;
     barrier.stdout.on("data", (chunk) => {
-      if (chunk.toString().includes("BARRIER_READY")) resolve();
+      if (!settled && chunk.toString().includes("BARRIER_READY")) {
+        settled = true;
+        resolve();
+      }
     });
-    barrier.on("error", reject);
+    barrier.on("error", (error) => {
+      if (!settled) {
+        settled = true;
+        reject(error);
+      }
+    });
+    barrier.on("close", (code) => {
+      if (!settled) {
+        settled = true;
+        reject(
+          new Error(
+            barrierStderr.trim() || `Concurrency barrier exited before ready (code ${code}).`,
+          ),
+        );
+      }
+    });
   });
   barrier.stdin.write(`begin; ${lockSql}; select 'BARRIER_READY';\n`);
   await ready;
