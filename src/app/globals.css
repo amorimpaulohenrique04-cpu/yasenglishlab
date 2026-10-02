@@ -3,6 +3,7 @@
 @import "../styles/design-system.css";
 @import "../components/layout/layout.css";
 @import "../modules/learning/ui/learning.css";
+@import "../modules/home/ui/home.css";
 @import "../modules/materials/ui/materials.css";
 @import "../modules/practice/ui/practice.css";
 @import "../modules/progress/ui/progress.css";
