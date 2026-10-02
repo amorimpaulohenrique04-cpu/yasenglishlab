@@ -605,6 +605,12 @@ end $$;
 select set_config('request.jwt.claim.sub', '', false);
 select set_config('request.jwt.claims', '{}', false);
 
+-- Student A is TALK in the legacy RLS fixture. Private Session coverage needs the
+-- BOOST entitlement only for this P21 block; restore TALK after the assertions.
+update public.subscriptions
+set plan_id = '10000000-0000-0000-0000-000000000003'
+where id = '81600000-0000-0000-0000-000000000001';
+
 insert into auth.users (id, email, raw_user_meta_data)
 values ('81000000-0000-0000-0000-000000000007', 'student-c-no-enrollment@example.test', '{"display_name":"Student C"}')
 on conflict (id) do nothing;
@@ -978,4 +984,8 @@ begin
     raise exception 'P21 provider lifecycle tables must stay server-only';
   end if;
 end;
-$$;
+$;
+
+update public.subscriptions
+set plan_id = '10000000-0000-0000-0000-000000000002'
+where id = '81600000-0000-0000-0000-000000000001';
