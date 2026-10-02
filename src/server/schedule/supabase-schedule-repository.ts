@@ -109,12 +109,19 @@ export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleH
     return ((data ?? []) as Row[]).map(sessionFromRow);
   }
 
-  async listOwnBookedSessions(userId: string): Promise<ScheduleOwnBookingFact[]> {
+  async listOwnBookedSessions(
+    userId: string,
+    now: Date,
+  ): Promise<ScheduleOwnBookingFact[]> {
     const { data, error } = await this.client
       .from("session_bookings")
       .select("status, live_sessions!inner(id, session_type, title, starts_at, ends_at)")
       .eq("user_id", userId)
-      .eq("status", "BOOKED");
+      .eq("status", "BOOKED")
+      .eq("live_sessions.status", "SCHEDULED")
+      .gt("live_sessions.ends_at", now.toISOString())
+      .order("starts_at", { referencedTable: "live_sessions", ascending: true })
+      .limit(1);
 
     if (error) throw new Error("Unable to load Student Agenda bookings.");
     return ((data ?? []) as Row[]).map(ownBookingFromRow);
