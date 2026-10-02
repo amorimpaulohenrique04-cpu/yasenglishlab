@@ -5,6 +5,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   ScheduleBookingError,
   type ScheduleBookingStatus,
+  type ScheduleHomeReadRepository,
+  type ScheduleOwnBookingFact,
   type ScheduleRepository,
   type ScheduleSessionRecord,
   type ScheduleSessionStatus,
@@ -55,6 +57,28 @@ function sessionFromRow(row: Row): ScheduleSessionRecord {
   };
 }
 
+function ownBookingFromRow(row: Row): ScheduleOwnBookingFact {
+  const relation = Array.isArray(row.live_sessions) ? row.live_sessions[0] : row.live_sessions;
+  if (!relation || typeof relation !== "object") {
+    throw new Error("Agenda booking is missing its live session.");
+  }
+
+  const bookingStatus = parseBookingStatus(row.status);
+  if (bookingStatus !== "BOOKED") {
+    throw new Error("Agenda own-booking read received a non-booked row.");
+  }
+
+  const session = relation as Row;
+  return {
+    id: String(session.id),
+    sessionType: parseSessionType(session.session_type),
+    title: String(session.title),
+    startsAt: String(session.starts_at),
+    endsAt: String(session.ends_at),
+    bookingStatus,
+  };
+}
+
 function bookingError(error: { code?: string; message?: string }): ScheduleBookingError {
   const message = error.message?.toLowerCase() ?? "";
 
@@ -75,7 +99,7 @@ function bookingError(error: { code?: string; message?: string }): ScheduleBooki
   return new ScheduleBookingError("UNAVAILABLE");
 }
 
-export class SupabaseScheduleRepository implements ScheduleRepository {
+export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleHomeReadRepository {
   constructor(private readonly client: SupabaseClient) {}
 
   async listAgendaSessions(): Promise<ScheduleSessionRecord[]> {
@@ -83,6 +107,21 @@ export class SupabaseScheduleRepository implements ScheduleRepository {
 
     if (error) throw new Error("Unable to load Agenda sessions.");
     return ((data ?? []) as Row[]).map(sessionFromRow);
+  }
+
+  async listOwnBookedSessions(userId: string, now: Date): Promise<ScheduleOwnBookingFact[]> {
+    const { data, error } = await this.client
+      .from("session_bookings")
+      .select("status, live_sessions!inner(id, session_type, title, starts_at, ends_at)")
+      .eq("user_id", userId)
+      .eq("status", "BOOKED")
+      .eq("live_sessions.status", "SCHEDULED")
+      .gt("live_sessions.ends_at", now.toISOString())
+      .order("starts_at", { referencedTable: "live_sessions", ascending: true })
+      .limit(1);
+
+    if (error) throw new Error("Unable to load Student Agenda bookings.");
+    return ((data ?? []) as Row[]).map(ownBookingFromRow);
   }
 
   async bookSession(liveSessionId: string): Promise<string> {

@@ -343,3 +343,66 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Official CI #359 / run `36941525748` passed all mandatory jobs, including Preview and CI Gate.
 - Durable evidence is stored under `harness/evidence/prompt-20-progress-v1/`.
 - Registry is `done / verified:true`. PR #24 remains open and unmerged.
+
+## 2026-10-01 — prompt-21 Home Projection V1 closure
+
+- Replaced the former Learning-only Home with a read-only transversal Student projection over Learning, Practice and Schedule; curricular Progress is derived from the same Learning facts through the existing P20 curriculum projection.
+- Added one request-scoped authenticated server context shared by Student layout and Home, eliminating duplicate auth/client creation within the Home request path.
+- Primary-action policy is deterministic and singular: own BOOKED session happening now → most recently accessed incomplete lesson → canonical first incomplete lesson → existing Practice recommendation → future own booking.
+- Practice recommendation remains owned by `recommendPractice`; Home consumes a narrow candidate projection that excludes full activity content and answer payloads.
+- Schedule owns the Home booking read boundary and scopes it to the authenticated Student; Home does not reproduce capacity, entitlement, cancellation or booking mutation policy.
+- Multiple courses remain separate and never become a global completion average.
+- Empty, partial, error and unauthorized states are distinct; failures are not silently converted to empty data.
+- Dedicated Home loading/error states and responsive desktop/tablet/mobile composition were added without converting the page to a Client Component.
+- Verification history remains preserved: initial formatting failure, architecture corrections for auth/Schedule/Practice/Progress ownership, stateful E2E retry contamination and expected golden mismatch were fixed at their root causes without weakening assertions, timeouts, RLS or visual tolerance.
+- Actual Home desktop/tablet/mobile screenshots were inspected before promotion of only the three Home Linux golden baselines.
+- Verified implementation head `a4def7c55943961face164cf411247f11f4dca1a` passed Official CI #394 / run `36952067156`: Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all concluded `success`.
+- Preview passed real DB integration/concurrency, RLS, observability, Critical E2E, persistence/analytics, accessibility, Storybook/design-system visuals and product golden visuals.
+- Preview artifact `11204268174` has digest `sha256:8f39c44f6ad471cbab4a3300cf073532254188001d5725d9963d64a0f9839b59`.
+- Final scope audit found no P21 migration, Home write path, runtime service-role path, CEFR/streak/goal/commercial policy, Assessment/Teacher/Admin expansion or parallel recommendation engine.
+- Durable evidence is stored under `harness/evidence/prompt-21-home-projection-v1/`; registry is `done / verified:true`.
+- PR #25 remains open against `main` and intentionally unmerged.
+
+## 2026-10-01 — P21 recovery reopened
+
+- P21 was reopened after an integrity audit found that the previous closure
+  referenced an older implementation SHA while the branch had moved and carried
+  temporary Official CI workflow edits.
+- `.github/workflows/foundation-verify.yml` was restored exactly to `main`;
+  the current `main...branch` diff contains no workflow or migration changes.
+- Harness was returned to `in_progress / verified:false`; historical green
+  runs remain evidence only for the exact SHAs they tested.
+- Schedule Home reads now receive the same explicit `now` used by Home,
+  require own BOOKED booking + SCHEDULED live session + `ends_at > now`,
+  order by referenced `starts_at`, and limit the database result to one.
+- Canonical E2E fixture now includes BOOKED rows linked to CANCELLED and
+  COMPLETED sessions for the Home-now Student. The Home flow must prove those
+  readable-but-invalid sessions never surface while the valid SCHEDULED current
+  session remains the primary action.
+- Final verification is still pending. No success claim is valid until a clean
+  implementation head passes the unmodified Official CI.
+
+## 2026-10-01 — P21 recovery verified closure
+
+- Recovery implementation head `0b80af3945c21ebcbc6f208c6625fae97e3df9ff` passed the unmodified
+  Official CI #422 / run `36956118087`: Supply Chain, Quality, Database,
+  Guardrail Simulations, Preview and CI Gate all succeeded.
+- Quality proved canonical format, lint, typecheck, unit, integration, Harness,
+  security and production build.
+- Preview proved real DB integration/concurrency, RLS, observability, the
+  canonical E2E regression, persistence/analytics, accessibility, Storybook,
+  design-system visuals and product goldens.
+- The regression fixture contains own BOOKED rows linked to CANCELLED and
+  COMPLETED sessions; neither surfaced in Home, while the valid SCHEDULED
+  current session remained the primary action.
+- Literal `verify:agent`, `verify:security`, `verify:ui` and
+  `verify:full` all passed in isolated jobs that checked out the same
+  implementation SHA (run `36956848003`).
+- Preview artifact `11206068526` was downloaded and Home desktop/tablet/mobile
+  were manually inspected with no visible clipping or overflow.
+- Artifact digest: `sha256:097dd0ba65389ddb757c76acec318985e529b2d0ddf51b8ee42cf8208fd2ac81`.
+- Final implementation scope contains no workflow or migration diff, no Home
+  write path, no runtime service-role access and no new CEFR/streak/goal or
+  commercial policy.
+- Registry/evidence now move to `done / verified:true`. PR #25 remains open
+  against `main` and no merge was performed.

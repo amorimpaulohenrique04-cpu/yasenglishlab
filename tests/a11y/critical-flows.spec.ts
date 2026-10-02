@@ -47,6 +47,15 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await login(page);
 
   await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
+
+  const primaryAction = page.getByRole("link", { name: "Começar aula →" });
+  await primaryAction.focus();
+  await expect(primaryAction).toBeFocused();
+  await expect(
+    page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
+  ).toBeVisible();
+  await assertAxe(page);
 
   if ((page.viewportSize()?.width ?? 1440) < 1024) {
     const menuButton = page.getByRole("button", { name: "Abrir navegação" });

@@ -5,6 +5,7 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const email = "canonical.student@example.test";
 const progressEmptyEmail = "canonical.progress-empty@example.test";
+const homeNowEmail = "canonical.home-now@example.test";
 const teacherEmail = "canonical.teacher@example.test";
 const teacherBEmail = "canonical.teacher-b@example.test";
 const teacherStudentEmail = "canonical.teacher-student@example.test";
@@ -17,6 +18,12 @@ const teacherOtherSessionId = "88200000-0000-4000-8000-000000000002";
 const teacherOpsBookingId = "88300000-0000-4000-8000-000000000001";
 const teacherOtherBookingId = "88300000-0000-4000-8000-000000000002";
 const progressSessionId = "88400000-0000-4000-8000-000000000001";
+const homeNowSessionId = "88400000-0000-4000-8000-000000000002";
+const homeCancelledSessionId = "88400000-0000-4000-8000-000000000003";
+const homeCompletedSessionId = "88400000-0000-4000-8000-000000000004";
+const homeNowBookingId = "88500000-0000-4000-8000-000000000002";
+const homeCancelledBookingId = "88500000-0000-4000-8000-000000000003";
+const homeCompletedBookingId = "88500000-0000-4000-8000-000000000004";
 const progressBookingId = "88500000-0000-4000-8000-000000000001";
 const progressAttendanceId = "88600000-0000-4000-8000-000000000001";
 const progressAssessmentId = "88700000-0000-4000-8000-000000000001";
@@ -82,6 +89,7 @@ async function ensureUser(userEmail, displayName) {
 
 const user = await ensureUser(email, "Ana Souza");
 const progressEmptyUser = await ensureUser(progressEmptyEmail, "Progress Empty");
+const homeNowUser = await ensureUser(homeNowEmail, "Home Now");
 const teacherUser = await ensureUser(teacherEmail, "Yasmin");
 const teacherBUser = await ensureUser(teacherBEmail, "Teacher B");
 const teacherStudentUser = await ensureUser(teacherStudentEmail, "Teacher Ops Student");
@@ -90,6 +98,7 @@ const userId = user.id;
 const canonicalUserIds = [
   user.id,
   progressEmptyUser.id,
+  homeNowUser.id,
   teacherUser.id,
   teacherBUser.id,
   teacherStudentUser.id,
@@ -103,6 +112,7 @@ const cleanup = [
   admin.from("practice_attempts").delete().eq("user_id", userId),
   admin.from("assessment_attempts").delete().eq("user_id", userId),
   admin.from("session_bookings").delete().eq("user_id", userId),
+  admin.from("session_bookings").delete().eq("user_id", homeNowUser.id),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
 ];
 
@@ -123,6 +133,9 @@ const operations = [
   admin
     .from("user_roles")
     .upsert({ user_id: progressEmptyUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
+  admin
+    .from("user_roles")
+    .upsert({ user_id: homeNowUser.id, role: "STUDENT" }, { onConflict: "user_id,role" }),
   admin
     .from("user_roles")
     .upsert({ user_id: teacherUser.id, role: "TEACHER" }, { onConflict: "user_id,role" }),
@@ -278,6 +291,39 @@ const sessions = [
     status: "SCHEDULED",
   },
   {
+    id: homeNowSessionId,
+    teacher_id: teacherId,
+    session_type: "CORE_CLASS",
+    title: "Home Fixture · Session happening now",
+    starts_at: inDays(0, -15),
+    ends_at: inDays(0, 45),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  },
+  {
+    id: homeCancelledSessionId,
+    teacher_id: teacherId,
+    session_type: "CORE_CLASS",
+    title: "Home Fixture · Cancelled session should not surface",
+    starts_at: inDays(0, -10),
+    ends_at: inDays(0, 50),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  },
+  {
+    id: homeCompletedSessionId,
+    teacher_id: teacherId,
+    session_type: "WORKSHOP",
+    title: "Home Fixture · Completed session should not surface",
+    starts_at: inDays(0, 5),
+    ends_at: inDays(0, 65),
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  },
+  {
     id: teacherOpsSessionId,
     teacher_id: teacherId,
     session_type: "CONVERSATION_LAB",
@@ -326,6 +372,46 @@ const { error: teacherBookingError } = await admin.from("session_bookings").upse
   { onConflict: "id" },
 );
 if (teacherBookingError) throw teacherBookingError;
+
+const { error: homeNowBookingError } = await admin.from("session_bookings").upsert(
+  [
+    {
+      id: homeNowBookingId,
+      live_session_id: homeNowSessionId,
+      user_id: homeNowUser.id,
+      status: "BOOKED",
+      cancelled_at: null,
+    },
+    {
+      id: homeCancelledBookingId,
+      live_session_id: homeCancelledSessionId,
+      user_id: homeNowUser.id,
+      status: "BOOKED",
+      cancelled_at: null,
+    },
+    {
+      id: homeCompletedBookingId,
+      live_session_id: homeCompletedSessionId,
+      user_id: homeNowUser.id,
+      status: "BOOKED",
+      cancelled_at: null,
+    },
+  ],
+  { onConflict: "id" },
+);
+if (homeNowBookingError) throw homeNowBookingError;
+
+const { error: homeInvalidSessionStatusError } = await admin
+  .from("live_sessions")
+  .update({ status: "CANCELLED" })
+  .eq("id", homeCancelledSessionId);
+if (homeInvalidSessionStatusError) throw homeInvalidSessionStatusError;
+
+const { error: homeCompletedSessionStatusError } = await admin
+  .from("live_sessions")
+  .update({ status: "COMPLETED" })
+  .eq("id", homeCompletedSessionId);
+if (homeCompletedSessionStatusError) throw homeCompletedSessionStatusError;
 
 const { error: progressBookingError } = await admin.from("session_bookings").insert({
   id: progressBookingId,

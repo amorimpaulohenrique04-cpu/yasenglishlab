@@ -49,6 +49,34 @@ export interface PracticeActivityItem {
   content: PracticeContent;
 }
 
+export interface PracticeRecommendationActivity {
+  id: string;
+  slug: string;
+  title: string;
+  skill: PracticeSkill;
+  estimatedMinutes: number;
+  relatedLessonId: string | null;
+  evaluationMode: EvaluationMode;
+}
+
+export interface PracticeRecommendationHistoryItem {
+  activityId: string;
+}
+
+export function toPracticeRecommendationActivity(
+  activity: PracticeActivityItem,
+): PracticeRecommendationActivity {
+  return {
+    id: activity.id,
+    slug: activity.slug,
+    title: activity.title,
+    skill: activity.skill,
+    estimatedMinutes: activity.estimatedMinutes,
+    relatedLessonId: activity.relatedLessonId,
+    evaluationMode: activity.content.evaluationMode,
+  };
+}
+
 export interface PracticeResultView {
   score: number | null;
   maxScore: number | null;
@@ -87,13 +115,21 @@ export interface PracticeSkillCatalogItem {
 
 export interface PracticeEvaluationPolicyPort {
   availabilityFor(content: PracticeContent): PracticeAvailability;
+  availabilityForEvaluationMode(mode: EvaluationMode): PracticeAvailability;
+}
+
+export function practiceAvailabilityForEvaluationMode(mode: EvaluationMode): PracticeAvailability {
+  if (mode === "DETERMINISTIC") return "DETERMINISTIC";
+  if (mode === "MANUAL_PENDING") return "MANUAL_PENDING";
+  return "UNSUPPORTED";
 }
 
 export const CONTRACT_EVALUATION_POLICY: PracticeEvaluationPolicyPort = {
   availabilityFor(content) {
-    if (content.evaluationMode === "DETERMINISTIC") return "DETERMINISTIC";
-    if (content.evaluationMode === "MANUAL_PENDING") return "MANUAL_PENDING";
-    return "UNSUPPORTED";
+    return practiceAvailabilityForEvaluationMode(content.evaluationMode);
+  },
+  availabilityForEvaluationMode(mode) {
+    return practiceAvailabilityForEvaluationMode(mode);
   },
 };
 
@@ -153,7 +189,7 @@ export type RecommendationReason =
   "RECENT_LESSON" | "LESS_PRACTICED" | "QUICK_DETERMINISTIC_START" | "MANUAL_PRACTICE";
 
 export interface PracticeRecommendation {
-  activity: PracticeActivityItem;
+  activity: PracticeRecommendationActivity;
   reason: RecommendationReason;
   explanation: string;
 }
@@ -163,14 +199,14 @@ function compareText(left: string, right: string): number {
 }
 
 export function recommendPractice(input: {
-  activities: readonly PracticeActivityItem[];
-  history: readonly PracticeHistoryItem[];
+  activities: readonly PracticeRecommendationActivity[];
+  history: readonly PracticeRecommendationHistoryItem[];
   recentLessonId: string | null;
   policy?: PracticeEvaluationPolicyPort;
 }): PracticeRecommendation | null {
   const policy = input.policy ?? CONTRACT_EVALUATION_POLICY;
   const supported = input.activities.filter(
-    (activity) => policy.availabilityFor(activity.content) !== "UNSUPPORTED",
+    (activity) => policy.availabilityForEvaluationMode(activity.evaluationMode) !== "UNSUPPORTED",
   );
   if (supported.length === 0) return null;
 
@@ -180,8 +216,10 @@ export function recommendPractice(input: {
   }
 
   const ranked = [...supported].sort((left, right) => {
-    const leftMode = policy.availabilityFor(left.content) === "DETERMINISTIC" ? 0 : 1;
-    const rightMode = policy.availabilityFor(right.content) === "DETERMINISTIC" ? 0 : 1;
+    const leftMode =
+      policy.availabilityForEvaluationMode(left.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
+    const rightMode =
+      policy.availabilityForEvaluationMode(right.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
     if (leftMode !== rightMode) return leftMode - rightMode;
 
     const leftLesson = left.relatedLessonId === input.recentLessonId ? 0 : 1;
@@ -199,7 +237,7 @@ export function recommendPractice(input: {
   });
 
   const activity = ranked[0]!;
-  const mode = policy.availabilityFor(activity.content);
+  const mode = policy.availabilityForEvaluationMode(activity.evaluationMode);
   const isRecentLesson = Boolean(
     input.recentLessonId && activity.relatedLessonId === input.recentLessonId,
   );

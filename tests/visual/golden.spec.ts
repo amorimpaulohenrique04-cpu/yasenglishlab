@@ -25,7 +25,7 @@ test("login, home, aulas and progresso match golden baselines", async ({ page })
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password!);
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
   await stabilize(page);
   await expect(page).toHaveScreenshot("home.png", { fullPage: true });
 

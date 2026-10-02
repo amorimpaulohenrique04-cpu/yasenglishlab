@@ -5,9 +5,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   normalizePracticeSkill,
   parsePracticeContent,
+  practiceAvailabilityForEvaluationMode,
   type PracticeActivityItem,
   type PracticeAttemptView,
   type PracticeHistoryItem,
+  type PracticeRecommendationActivity,
+  type PracticeRecommendationHistoryItem,
+  type PracticeRecommendationRepository,
   type PracticeRepository,
   type PracticeResultView,
 } from "@/modules/practice";
@@ -29,6 +33,28 @@ function activityFromRow(row: Row): PracticeActivityItem {
     relatedModuleId: typeof row.related_module_id === "string" ? row.related_module_id : null,
     relatedLessonId: typeof row.related_lesson_id === "string" ? row.related_lesson_id : null,
     content: parsePracticeContent(row.content),
+  };
+}
+
+function recommendationActivityFromRow(row: Row): PracticeRecommendationActivity {
+  const skill = normalizePracticeSkill(row.skill);
+  if (!skill) throw new Error("Practice recommendation skill is invalid.");
+
+  const evaluationMode = row.evaluation_mode;
+  if (evaluationMode !== "DETERMINISTIC" && evaluationMode !== "MANUAL_PENDING") {
+    throw new Error("Practice recommendation evaluation mode is invalid.");
+  }
+
+  practiceAvailabilityForEvaluationMode(evaluationMode);
+
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    title: String(row.title),
+    skill,
+    estimatedMinutes: Number(row.estimated_minutes),
+    relatedLessonId: typeof row.related_lesson_id === "string" ? row.related_lesson_id : null,
+    evaluationMode,
   };
 }
 
@@ -65,7 +91,9 @@ function attemptStatus(value: unknown): PracticeAttemptView["status"] {
   throw new Error("Practice attempt status is invalid.");
 }
 
-export class SupabasePracticeRepository implements PracticeRepository {
+export class SupabasePracticeRepository
+  implements PracticeRepository, PracticeRecommendationRepository
+{
   constructor(private readonly client: SupabaseClient) {}
 
   async listActivities(): Promise<PracticeActivityItem[]> {
@@ -81,6 +109,35 @@ export class SupabasePracticeRepository implements PracticeRepository {
 
     if (error) throw new Error("Unable to load practice activities.");
     return (data ?? []).map((row) => activityFromRow(row as Row));
+  }
+
+  async listRecommendationActivities(): Promise<PracticeRecommendationActivity[]> {
+    const { data, error } = await this.client
+      .from("practice_activities")
+      .select(
+        "id, slug, title, skill, estimated_minutes, related_lesson_id, evaluation_mode:content->>evaluationMode",
+      )
+      .eq("active", true)
+      .eq("publication_status", "PUBLISHED")
+      .order("estimated_minutes")
+      .order("slug");
+
+    if (error) throw new Error("Unable to load Practice recommendation activities.");
+    return ((data ?? []) as Row[]).map(recommendationActivityFromRow);
+  }
+
+  async listRecommendationHistory(userId: string): Promise<PracticeRecommendationHistoryItem[]> {
+    const { data, error } = await this.client
+      .from("practice_attempts")
+      .select("practice_activity_id")
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false })
+      .limit(30);
+
+    if (error) throw new Error("Unable to load Practice recommendation history.");
+    return ((data ?? []) as Row[]).map((row) => ({
+      activityId: String(row.practice_activity_id),
+    }));
   }
 
   async listHistory(userId: string): Promise<PracticeHistoryItem[]> {

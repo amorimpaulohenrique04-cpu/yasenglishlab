@@ -4,6 +4,7 @@ import {
   buildPracticeCatalog,
   parsePracticeContent,
   recommendPractice,
+  toPracticeRecommendationActivity,
   type PracticeActivityItem,
   type PracticeHistoryItem,
 } from "@/modules/practice";
@@ -79,7 +80,7 @@ describe("practice domain", () => {
     };
 
     const recent = recommendPractice({
-      activities: [grammar, vocabulary],
+      activities: [grammar, vocabulary].map(toPracticeRecommendationActivity),
       history: [history(vocabulary.id)],
       recentLessonId: lessonId,
     });
@@ -87,7 +88,7 @@ describe("practice domain", () => {
     expect(recent?.reason).toBe("RECENT_LESSON");
 
     const leastPracticed = recommendPractice({
-      activities: [vocabulary, grammar],
+      activities: [vocabulary, grammar].map(toPracticeRecommendationActivity),
       history: [history(vocabulary.id)],
       recentLessonId: null,
     });
@@ -104,8 +105,11 @@ describe("practice domain", () => {
     const deterministic = activity("83000000-0000-4000-8000-000000000004", "GRAMMAR");
 
     expect(
-      recommendPractice({ activities: [manual, deterministic], history: [], recentLessonId: null })
-        ?.activity.id,
+      recommendPractice({
+        activities: [manual, deterministic].map(toPracticeRecommendationActivity),
+        history: [],
+        recentLessonId: null,
+      })?.activity.id,
     ).toBe(deterministic.id);
   });
 

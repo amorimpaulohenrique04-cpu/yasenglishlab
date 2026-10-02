@@ -1,9 +1,11 @@
+import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 
 import { expect, test, type Page } from "@playwright/test";
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
+const homeNowEmail = "canonical.home-now@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const evidenceDir = "artifacts/canonical-slice";
 
@@ -19,7 +21,9 @@ test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
-  test("a Student without progress facts receives a real empty state", async ({ page }) => {
+  test("a Student without curriculum or booking projects the real Practice fallback", async ({
+    page,
+  }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
     await page.goto("/login");
@@ -28,10 +32,47 @@ test.describe("canonical learning vertical slice", () => {
     await page.getByRole("button", { name: "Entrar" }).click();
 
     await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Praticar agora →" })).toBeVisible();
+    await expect(page.getByText("Welcome to Yas", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("progressbar", { name: /Conclusão de/ })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
+    await expect(page.getByText("Nenhuma reserva futura.")).toBeVisible();
+
     await page.goto("/progresso");
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Seu progresso começa aqui" })).toBeVisible();
     await expect(page.getByText("Nível CEFR ainda não disponível")).toHaveCount(0);
+  });
+
+  test("a booked session happening now outranks Practice and navigates to Agenda", async ({
+    page,
+  }) => {
+    if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+    await page.goto("/login");
+    await page.getByLabel("E-mail").fill(homeNowEmail);
+    await page.getByLabel("Senha").fill(password);
+    await page.getByRole("button", { name: "Entrar" }).click();
+
+    await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { name: "Sessão agora" })).toBeVisible();
+    await expect(
+      page.getByText("Home Fixture · Session happening now", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Home Fixture · Cancelled session should not surface", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Home Fixture · Completed session should not surface", { exact: true }),
+    ).toHaveCount(0);
+
+    const primaryAction = page.getByRole("link", { name: "Ver sessão na Agenda →" });
+    await expect(primaryAction).toBeVisible();
+    await primaryAction.click();
+
+    await expect(page).toHaveURL(/\/agenda$/);
+    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
   });
 
   test("browser-visible Progress responses do not expose internal Assessment or service-role data", async ({
@@ -81,8 +122,59 @@ test.describe("canonical learning vertical slice", () => {
     }
   });
 
+  test("browser-visible Home responses keep the projection DTO minimal", async ({ page }) => {
+    if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+    await page.goto("/login");
+    await page.getByLabel("E-mail").fill(email);
+    await page.getByLabel("Senha").fill(password);
+    await page.getByRole("button", { name: "Entrar" }).click();
+    await expect(page).toHaveURL(/\/home$/);
+
+    const homePayloads: string[] = [];
+    page.on("response", async (response) => {
+      const url = new URL(response.url());
+      if (url.pathname !== "/home") return;
+
+      const contentType = response.headers()["content-type"] ?? "";
+      if (!/(html|json|x-component|text)/i.test(contentType)) return;
+
+      try {
+        homePayloads.push(await response.text());
+      } catch {
+        // A cancelled streaming response is not evidence of leaked data.
+      }
+    });
+
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+
+    expect(homePayloads.length).toBeGreaterThan(0);
+    const browserVisiblePayload = homePayloads.join("\n").toLowerCase();
+    for (const forbidden of [
+      "answer_key",
+      "answerkey",
+      "scoring_config",
+      "service_role",
+      "service-role",
+      "supabase_service_role_key",
+      '"rubric"',
+      "required_entitlement_key",
+    ]) {
+      expect(browserVisiblePayload).not.toContain(forbidden);
+    }
+  });
+
   test("login → progress → logout → login → persisted resume", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+    if (test.info().retry > 0) {
+      execFileSync(process.execPath, ["scripts/setup-canonical-e2e.mjs"], {
+        env: process.env,
+        stdio: "inherit",
+      });
+    }
 
     mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -93,8 +185,19 @@ test.describe("canonical learning vertical slice", () => {
     await page.getByRole("button", { name: "Entrar" }).click();
 
     await expect(page).toHaveURL(/\/home$/);
-    await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
     await captureEvidence(page, "home-desktop.png");
+
+    const primaryHomeAction = page.getByRole("link", { name: "Começar aula →" });
+    await expect(primaryHomeAction).toBeVisible();
+    await primaryHomeAction.focus();
+    await expect(primaryHomeAction).toBeFocused();
+    await primaryHomeAction.click();
+    await expect(page).toHaveURL(
+      /\/aulas\/yas-foundations\/modulos\/[^/]+\/aulas\/welcome-to-yas$/,
+    );
+    await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
+    await page.goto("/home");
 
     await page.getByRole("link", { name: "Aulas", exact: true }).first().click();
     await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
@@ -129,14 +232,29 @@ test.describe("canonical learning vertical slice", () => {
     const blockedAgendaActions = page.getByRole("button", { name: "Acesso não disponível" });
     await expect(blockedAgendaActions).toHaveCount(2);
     await expect(blockedAgendaActions.first()).toBeDisabled();
-    await page.getByRole("button", { name: "Reservar" }).first().click();
+    const coreSession = page.getByRole("region", {
+      name: "Core Class · Building confidence",
+    });
+    await coreSession.getByRole("button", { name: "Reservar" }).click();
     await expect(page.getByText("Reserva confirmada")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await captureEvidence(page, "agenda-desktop.png");
 
     await page.reload();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
+
+    await page.goto("/home");
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
+    await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
+    await expect(
+      page.getByText("Present simple em contexto", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
+    ).toBeVisible();
 
     await page.getByRole("link", { name: "Progresso", exact: true }).first().click();
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
@@ -216,7 +334,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.setViewportSize({ width: 834, height: 1112 });
     await page.goto("/home");
-    await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
     await captureEvidence(page, "home-tablet.png");
 
     await page.goto("/aulas");
@@ -234,7 +352,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(
+      page
+        .getByRole("region", { name: "Core Class · Building confidence" })
+        .getByRole("button", { name: "Reservado" }),
+    ).toBeDisabled();
     await captureEvidence(page, "agenda-tablet.png");
 
     await page.goto("/progresso");
@@ -251,7 +373,7 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/home");
-    await expect(page.getByRole("heading", { name: "Seu inglês continua daqui" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
     await captureEvidence(page, "home-mobile.png");
 
     await page.goto("/aulas");
@@ -269,7 +391,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(
+      page
+        .getByRole("region", { name: "Core Class · Building confidence" })
+        .getByRole("button", { name: "Reservado" }),
+    ).toBeDisabled();
     await captureEvidence(page, "agenda-mobile.png");
 
     await page.getByRole("button", { name: "Abrir navegação" }).click();
