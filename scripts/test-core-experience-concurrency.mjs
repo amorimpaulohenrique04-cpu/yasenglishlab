@@ -95,10 +95,7 @@ const editBookingRace = await withBarrier(
 );
 if (editBookingRace[1]?.code !== 0)
   throw new Error("Concurrent booking lost the session edit race unexpectedly");
-if (
-  editBookingRace[0]?.code !== 0 &&
-  !editBookingRace[0]?.stderr.includes("immutable")
-)
+if (editBookingRace[0]?.code !== 0 && !editBookingRace[0]?.stderr.includes("immutable"))
   throw new Error("Concurrent session edit failed for an unexpected reason");
 if (
   runAdmin(
