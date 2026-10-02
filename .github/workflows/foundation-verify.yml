@@ -54,13 +54,6 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
-      - name: Emit canonical Prettier diff
-        shell: bash
-        run: |
-          set -euo pipefail
-          npx prettier --write .github/workflows/foundation-verify.yml harness/agent-state/progress.md
-          git diff -- .github/workflows/foundation-verify.yml harness/agent-state/progress.md
-          exit 1
       - name: Format
         run: npm run format:check
       - name: Lint
@@ -404,6 +397,8 @@ jobs:
         run: npm run verify:ui
       - name: Stop Supabase before full verifier
         run: supabase stop --no-backup
+      - name: Clean generated UI artifacts before full verifier
+        run: rm -rf artifacts test-results playwright-report storybook-static
       - name: P21 verify full
         run: npm run verify:full
       - name: Cleanup local Supabase
