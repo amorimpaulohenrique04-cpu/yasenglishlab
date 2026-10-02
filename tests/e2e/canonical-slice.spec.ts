@@ -60,6 +60,12 @@ test.describe("canonical learning vertical slice", () => {
     await expect(
       page.getByText("Home Fixture · Session happening now", { exact: true }).first(),
     ).toBeVisible();
+    await expect(
+      page.getByText("Home Fixture · Cancelled session should not surface", { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText("Home Fixture · Completed session should not surface", { exact: true }),
+    ).toHaveCount(0);
 
     const primaryAction = page.getByRole("link", { name: "Ver sessão na Agenda →" });
     await expect(primaryAction).toBeVisible();
