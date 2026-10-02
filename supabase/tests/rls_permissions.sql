@@ -774,7 +774,7 @@ select set_config(
   false
 );
 
-do $
+do $$
 declare
   visible_count integer;
 begin
