@@ -1,5 +1,11 @@
 # Agent Plan
 
+## Active P21 P1 — 2026-10-02
+
+Goal: `harness/goals/p21-p1-core-experience.md`. Base `78c4c689b6fbabde56083b417e7bbbfc9e302ccb` verified.
+Implement operations/Agenda first, then private audio/human review/notes/resources, then Mux ingest/playback and LessonProgress. Verify replays/upgrade, DB/Auth/Storage, concurrency, E2E/a11y/visual and all gates; push/PR and inspect Official CI without merging.
+Defaults: one video per Lesson; manual external meeting; human rubric v1; Mux recorded video; Join -15/+15 minutes; audio 25 MiB and 5-minute playback; checkpoints 15 seconds.
+
 ## Planejamento P21 P0 — 2026-10-02
 
 Pedido atual limitado a plano, sem implementação. Base local/remota confirmada:
@@ -12,7 +18,7 @@ O registro histórico de P21 abaixo foi preservado.
 
 ## Active task
 
-**p21-p0-foundation-closure**
+**p21-p1-core-experience**
 
 State: done / verified:true. Branch: `feat/p21-p0-foundation-closure`. All local gates passed; user waived waiting for final CI. PR #30, no merge.
 

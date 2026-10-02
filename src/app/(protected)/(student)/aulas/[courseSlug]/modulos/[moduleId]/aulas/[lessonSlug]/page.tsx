@@ -6,6 +6,7 @@ import {
   LessonStartAnalytics,
 } from "@/modules/learning/ui/lesson-progress-controls";
 import { loadLearningLesson } from "@/server/learning/canonical-slice";
+import { LessonAssets } from "@/modules/learning/ui/lesson-assets";
 
 interface LessonPageProps {
   params: Promise<{ courseSlug: string; moduleId: string; lessonSlug: string }>;
@@ -55,7 +56,15 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </Link>
       </nav>
 
-      {content ? (
+      {state.data.assets.length > 0 ? (
+        <LessonAssets
+          assets={state.data.assets}
+          lessonId={lesson.id}
+          moduleTitle={module.title}
+          position={lesson.progress?.lastPositionSeconds ?? null}
+          completionPercent={currentPercent}
+        />
+      ) : content ? (
         <Card>
           <article className="yas-learning-lesson-content">
             <div>
@@ -92,6 +101,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
             lessonId={lesson.id}
             currentPercent={currentPercent}
             estimatedMinutes={lesson.estimatedMinutes}
+            hasVideo={state.data.assets.some((asset) => asset.type === "VIDEO")}
           />
           {lesson.progress?.lastPositionSeconds != null && (
             <p className="yas-learning-card-copy">

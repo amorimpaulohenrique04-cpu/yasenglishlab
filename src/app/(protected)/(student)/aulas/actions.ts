@@ -8,12 +8,11 @@ import {
   recordCurrentStudentLessonProgress,
   trackCurrentStudentLessonStarted,
 } from "@/server/learning/canonical-slice";
-
 export async function updateLessonProgressAction(formData: FormData): Promise<void> {
   const input = lessonProgressInputSchema.parse({
     lessonId: formData.get("lessonId"),
     completionPercent: formData.get("completionPercent"),
-    lastPositionSeconds: formData.get("lastPositionSeconds"),
+    lastPositionSeconds: formData.get("lastPositionSeconds") || null,
   });
 
   await recordCurrentStudentLessonProgress(input);

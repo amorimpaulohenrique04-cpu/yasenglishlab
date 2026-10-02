@@ -10,6 +10,7 @@ import type {
   LessonProgressInput,
   LessonProgressSnapshot,
   LessonTextContent,
+  LessonContentAsset,
 } from "@/modules/learning";
 
 function progressFromRow(row: Record<string, unknown>): LessonProgressSnapshot {
@@ -48,6 +49,36 @@ function parseLessonContent(value: unknown): LessonTextContent | null {
 
 export class SupabaseLearningRepository implements LearningRepository {
   constructor(private readonly client: SupabaseClient) {}
+
+  async getLessonAssetsForStudent(
+    _userId: string,
+    lessonId: string,
+  ): Promise<LessonContentAsset[]> {
+    const { data, error } = await this.client
+      .from("lesson_assets")
+      .select("id,asset_type,position,content")
+      .eq("lesson_id", lessonId)
+      .eq("publication_status", "PUBLISHED")
+      .order("position")
+      .order("id");
+    if (error) throw new Error("Unable to load lesson assets.");
+    const assets: LessonContentAsset[] = [];
+    for (const row of data ?? []) {
+      const base = { id: String(row.id), position: Number(row.position) };
+      if (row.asset_type === "TEXT") {
+        const content = parseLessonContent(row.content);
+        if (content) assets.push({ ...base, type: "TEXT", content });
+      } else if (row.asset_type === "VIDEO") assets.push({ ...base, type: "VIDEO" });
+      else if (
+        row.asset_type === "PDF" ||
+        row.asset_type === "AUDIO" ||
+        row.asset_type === "LINK" ||
+        row.asset_type === "EXERCISE"
+      )
+        assets.push({ ...base, type: row.asset_type });
+    }
+    return assets;
+  }
 
   async getActiveCoursesForStudent(userId: string): Promise<LearningCourse[]> {
     const { data: enrollmentRows, error: enrollmentError } = await this.client

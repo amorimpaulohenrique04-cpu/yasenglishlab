@@ -13,6 +13,9 @@ import { loadAdminContent, loadAdminContentItem } from "@/server/admin-content/a
 
 import { saveContentAction, transitionContentAction } from "../actions";
 import styles from "@/modules/admin-content/ui/admin-content.module.css";
+import { VideoUpload } from "@/modules/admin-content/ui/video-upload";
+import { createVideoUploadAction } from "../video-actions";
+import { getAdminVideoStatus } from "@/server/admin-content/video-status";
 
 interface ContentItemPageProps {
   params: Promise<{ id: string }>;
@@ -30,6 +33,10 @@ export default async function ContentItemPage({ params, searchParams }: ContentI
   const kind: AdminContentKind = requestedKind;
   const record = await loadAdminContentItem(kind, id);
   if (!record) notFound();
+  const video =
+    kind === "lesson_assets" && record.asset_type === "VIDEO"
+      ? await getAdminVideoStatus(id)
+      : null;
 
   if (record.publication_status === "PUBLISHED") {
     return (
@@ -96,6 +103,20 @@ export default async function ContentItemPage({ params, searchParams }: ContentI
         />
       )}
       <ContentEditor kind={kind} record={record} choices={choices} action={saveContentAction} />
+      {video && (
+        <Card>
+          <h2>Vídeo gravado</h2>
+          <p>
+            Estado: {video.processing_status} · Legendas: {video.caption_status}
+          </p>
+          {(video.processing_status === "AWAITING_UPLOAD" ||
+            video.processing_status === "ERRORED") && (
+            <VideoUpload id={id} action={createVideoUploadAction} />
+          )}
+          {video.last_provider_error && <p>O provider não conseguiu processar este vídeo.</p>}
+          <Link href={`/admin/content/${id}?kind=${kind}`}>Atualizar estado</Link>
+        </Card>
+      )}
     </>
   );
 }

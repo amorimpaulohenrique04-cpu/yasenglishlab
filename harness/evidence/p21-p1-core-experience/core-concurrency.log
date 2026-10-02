@@ -1,0 +1,3 @@
+✓ Concurrent session creation: one winner, overlapping request rejected, extra ADMIN role does not expand scope.
+✓ Real review concurrency: identical requests share one review; conflicting feedback has one winner.
+✓ Real webhook concurrency: one durable processed event and READY projection.

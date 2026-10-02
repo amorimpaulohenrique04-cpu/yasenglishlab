@@ -12,6 +12,7 @@ const suites = {
     "supabase/tests/teacher_operations.sql",
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
+    "supabase/tests/p21_core_experience.sql",
   ],
   rls: [
     "supabase/tests/cohorts.sql",
@@ -19,6 +20,7 @@ const suites = {
     "supabase/tests/teacher_operations.sql",
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
+    "supabase/tests/p21_core_experience.sql",
   ],
 };
 
@@ -53,4 +55,11 @@ if (suite === "integration") {
   if (concurrency.status !== 0) process.exit(concurrency.status ?? 1);
 }
 
+if (suite === "integration") {
+  const core = spawnSync(process.execPath, ["scripts/test-core-experience-concurrency.mjs"], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (core.status !== 0) process.exit(core.status ?? 1);
+}
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);

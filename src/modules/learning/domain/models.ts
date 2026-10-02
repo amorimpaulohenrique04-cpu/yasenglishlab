@@ -51,9 +51,15 @@ export interface LessonDetail {
   module: LearningModule;
   lesson: LearningLesson;
   content: LessonTextContent | null;
+  assets: LessonContentAsset[];
   previousLesson: LearningLesson | null;
   nextLesson: LearningLesson | null;
 }
+
+export type LessonContentAsset =
+  | { id: string; type: "TEXT"; position: number; content: LessonTextContent }
+  | { id: string; type: "VIDEO"; position: number }
+  | { id: string; type: "PDF" | "AUDIO" | "LINK" | "EXERCISE"; position: number };
 
 export type LearningState<T> =
   { status: "success"; data: T } | { status: "empty" } | { status: "unauthorized" };

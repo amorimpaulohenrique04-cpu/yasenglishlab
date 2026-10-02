@@ -21,10 +21,12 @@ export function LessonProgressControls({
   lessonId,
   currentPercent,
   estimatedMinutes,
+  hasVideo = false,
 }: {
   lessonId: string;
   currentPercent: number;
   estimatedMinutes: number | null;
+  hasVideo?: boolean;
 }) {
   const checkpoints = [25, 50, 75, 100] as const;
   const durationSeconds = Math.max((estimatedMinutes ?? 10) * 60, 1);
@@ -38,7 +40,7 @@ export function LessonProgressControls({
           <input
             type="hidden"
             name="lastPositionSeconds"
-            value={Math.round((durationSeconds * percent) / 100)}
+            value={hasVideo ? "" : Math.round((durationSeconds * percent) / 100)}
           />
           <Button
             type="submit"

@@ -1,0 +1,175 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit
+
+
+▶ npm run test:unit
+
+> yasenglishlab@0.1.0 test:unit
+> vitest run tests/unit
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  17 passed (17)
+      Tests  90 passed (90)
+   Start at  12:28:34
+   Duration  5.62s (import 52%, transform 40%, tests 5%, worker 3%)
+
+  Transform  transforming modules took 6.05s · 40% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+▶ npm run test:integration
+
+> yasenglishlab@0.1.0 test:integration
+> vitest run tests/integration
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  13 passed | 1 skipped (14)
+      Tests  57 passed | 1 skipped (58)
+   Start at  12:28:42
+   Duration  5.58s (import 53%, transform 36%, tests 8%, worker 2%)
+
+  Transform  transforming modules took 5.87s · 36% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+▶ npm run verify:db
+
+> yasenglishlab@0.1.0 verify:db
+> node scripts/verify-db.mjs
+
+✓ DB contracts valid: 17 migration(s), canonical seed, 12 SQL invariant test(s).
+
+▶ npm run build
+
+> yasenglishlab@0.1.0 build
+> next build
+
+▲ Next.js 16.3.6 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 317ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 25.3s
+  Running TypeScript ...
+  Finished TypeScript in 22.5s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/29) ...
+  Generating static pages using 7 workers (7/29) 
+  Generating static pages using 7 workers (14/29) 
+  Generating static pages using 7 workers (21/29) 
+✓ Generating static pages using 7 workers (29/29) in 2.0s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/cohorts
+├ ƒ /admin/content
+├ ƒ /admin/content/[id]
+├ ƒ /admin/content/[id]/preview
+├ ƒ /admin/content/new
+├ ƒ /agenda
+├ ƒ /agenda/[sessionId]
+├ ƒ /api/webhooks/mux
+├ ƒ /aulas
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]/aulas/[lessonSlug]
+├ ƒ /auth/callback
+├ ƒ /auth/continue
+├ ƒ /forgot-password
+├ ƒ /home
+├ ƒ /login
+├ ƒ /materiais
+├ ƒ /materiais/[materialId]/abrir
+├ ƒ /mfa
+├ ƒ /pratica
+├ ƒ /profile
+├ ƒ /progresso
+├ ƒ /reset-password
+├ ƒ /teacher
+├ ƒ /teacher/alunos
+├ ƒ /teacher/alunos/[studentId]
+├ ƒ /teacher/disponibilidade
+├ ƒ /teacher/revisoes
+├ ƒ /teacher/revisoes/[attemptId]
+├ ƒ /teacher/sessoes
+├ ƒ /teacher/sessoes/[sessionId]
+├ ƒ /teacher/sessoes/nova
+├ ƒ /teacher/turmas
+└ ƒ /workspace
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+✓ Core verification passed.
+
+> yasenglishlab@0.1.0 verify:harness
+> node scripts/verify-harness.mjs
+
+✓ Ratchet contract valid: controlled red fixture rejected, green fixture accepted, 20 durable failure record(s) verified.
+✓ Engineering System 1.0 contract valid: docs, Harness state, registry, UI gates, RLS, CI/CD, observability and Ratchet surfaces are internally consistent.
+✓ Platform contract valid: red fixture rejected, shell-free Windows fixture accepted, 20 scripts audited, LF enforced.
+✓ Harness contract valid: 25 required paths, 25 registry entries.
+
+> yasenglishlab@0.1.0 verify:security
+> node scripts/verify-security.mjs
+
+✓ Security boundary valid across 225 source files; RLS evidence and Yas threat model are present.
+
+> yasenglishlab@0.1.0 eval:agent
+> node scripts/eval-agent.mjs
+
+✗ required documentation declared: missing: docs/TESTING.md, docs/DEFINITION_OF_DONE.md
+✓ changed files stay in declared scope: 0 changed file(s) covered
+✓ no unreviewed duplicate UI primitive: no new UI primitive files
+✓ no newly ignored failing checks: no new skip/fixme/failure suppression
+✓ UI changes carry screenshot evidence: no product UI change
+✓ database schema changes include migration: no schema-side change detected
+✓ RLS changes include executable authorization test: no RLS change
+✓ no high-confidence secret in changed files: clean
+✓ task exists in feature registry: in_progress
+✓ no premature success claim: status=in_progress, verified=false
+
+Agent behavioral eval failed: 1 rule(s).

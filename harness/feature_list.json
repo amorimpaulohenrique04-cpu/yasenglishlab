@@ -12,6 +12,15 @@
   },
   "features": [
     {
+      "id": "p21-p1-core-experience",
+      "title": "P21.4 Teacher operations, P21.5 pedagogy, P21.6 recorded video",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["p21-p0-foundation-closure"],
+      "evidence": ["harness/evidence/p21-p1-core-experience/README.md"],
+      "updated_at": "2026-10-02T12:00:00-03:00"
+    },
+    {
       "id": "prompt-02-engineering-foundation",
       "title": "Repository engineering foundation",
       "status": "done",

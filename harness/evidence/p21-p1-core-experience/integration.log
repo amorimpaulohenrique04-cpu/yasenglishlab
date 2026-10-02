@@ -1,0 +1,20 @@
+
+> yasenglishlab@0.1.0 test:integration
+> vitest run tests/integration
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  13 passed | 1 skipped (14)
+      Tests  57 passed | 1 skipped (58)
+   Start at  12:22:10
+   Duration  5.88s (import 51%, transform 38%, tests 9%, worker 1%)
+
+  Transform  transforming modules took 6.76s · 38% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
