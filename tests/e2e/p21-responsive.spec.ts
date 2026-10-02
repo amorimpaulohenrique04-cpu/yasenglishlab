@@ -87,8 +87,7 @@ test.describe("P21 responsive evidence", () => {
       const admin = await adminContext.newPage();
       await loginCanonicalAdmin(admin, password, {
         next: "/admin/content/8c100000-0000-4000-8000-000000000001?kind=lesson_assets",
-        destination:
-          /\/admin\/content\/8c100000-0000-4000-8000-000000000001\?kind=lesson_assets$/,
+        destination: /\/admin\/content\/8c100000-0000-4000-8000-000000000001\?kind=lesson_assets$/,
       });
       for (const viewport of viewports) {
         await admin.setViewportSize({ width: viewport.width, height: viewport.height });
