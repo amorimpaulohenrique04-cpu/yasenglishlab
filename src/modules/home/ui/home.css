@@ -155,7 +155,7 @@
 }
 
 .yas-home-local-error {
-  color: var(--yas-color-danger);
+  color: var(--yas-color-error);
   font-size: var(--yas-font-size-sm);
 }
 
