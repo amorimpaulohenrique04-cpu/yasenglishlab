@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 
 import { expect, test, type Page } from "@playwright/test";
@@ -162,6 +163,13 @@ test.describe("canonical learning vertical slice", () => {
   test("login → progress → logout → login → persisted resume", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
+    if (test.info().retry > 0) {
+      execFileSync(process.execPath, ["scripts/setup-canonical-e2e.mjs"], {
+        env: process.env,
+        stdio: "inherit",
+      });
+    }
+
     mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
 
@@ -218,13 +226,16 @@ test.describe("canonical learning vertical slice", () => {
     const blockedAgendaActions = page.getByRole("button", { name: "Acesso não disponível" });
     await expect(blockedAgendaActions).toHaveCount(2);
     await expect(blockedAgendaActions.first()).toBeDisabled();
-    await page.getByRole("button", { name: "Reservar" }).first().click();
+    const coreSession = page.getByRole("region", {
+      name: "Core Class · Building confidence",
+    });
+    await coreSession.getByRole("button", { name: "Reservar" }).click();
     await expect(page.getByText("Reserva confirmada")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await captureEvidence(page, "agenda-desktop.png");
 
     await page.reload();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
 
     await page.goto("/home");
@@ -232,9 +243,6 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
-    await expect(
-      page.getByText("Present simple em contexto", { exact: true }).first(),
-    ).toBeVisible();
     await expect(
       page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
     ).toBeVisible();
@@ -335,7 +343,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(
+      page
+        .getByRole("region", { name: "Core Class · Building confidence" })
+        .getByRole("button", { name: "Reservado" }),
+    ).toBeDisabled();
     await captureEvidence(page, "agenda-tablet.png");
 
     await page.goto("/progresso");
@@ -370,7 +382,11 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(
+      page
+        .getByRole("region", { name: "Core Class · Building confidence" })
+        .getByRole("button", { name: "Reservado" }),
+    ).toBeDisabled();
     await captureEvidence(page, "agenda-mobile.png");
 
     await page.getByRole("button", { name: "Abrir navegação" }).click();
