@@ -20,7 +20,9 @@ test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
-  test("a Student without curriculum or booking projects the real Practice fallback", async ({ page }) => {
+  test("a Student without curriculum or booking projects the real Practice fallback", async ({
+    page,
+  }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
     await page.goto("/login");
@@ -228,8 +230,12 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
-    await expect(page.getByText("Vocabulário para apresentações", { exact: true }).first()).toBeVisible();
-    await expect(page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" })).toBeVisible();
+    await expect(
+      page.getByText("Vocabulário para apresentações", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
+    ).toBeVisible();
 
     await page.getByRole("link", { name: "Progresso", exact: true }).first().click();
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
