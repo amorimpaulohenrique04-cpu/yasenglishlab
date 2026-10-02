@@ -29,3 +29,6 @@ Start new records from [TEMPLATE.md](./TEMPLATE.md). The required decision field
 - [0007 — Role-aware workspaces](./0007-role-aware-workspaces.md)
 - [0008 — Transactional live usage](./0008-transactional-live-usage.md)
 - [0009 — Cohort compatibility](./0009-cohorts-compatible-scope.md)
+- [0010 — Human Practice Review V1](./0010-human-practice-review-v1.md)
+- [0011 — Mux recorded course video](./0011-mux-recorded-course-video.md)
+- [0012 — Provider-neutral Live Operations and Meeting Access](./0012-provider-neutral-live-operations.md)
