@@ -92,7 +92,9 @@ test.describe("P21 Data API security", () => {
       })
       .select("id")
       .single();
-    if (hiddenNoteError) throw hiddenNoteError;
+    if (hiddenNoteError || !hiddenNote) {
+      throw hiddenNoteError ?? new Error("Hidden Teacher note fixture was not created.");
+    }
 
     try {
       const own = await studentA
