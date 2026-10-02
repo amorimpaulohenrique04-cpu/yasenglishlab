@@ -381,3 +381,29 @@ Two read-only investigations and principal synthesis completed. Existing entitie
   session remains the primary action.
 - Final verification is still pending. No success claim is valid until a clean
   implementation head passes the unmodified Official CI.
+
+## 2026-10-01 — P21 recovery verified closure
+
+- Recovery implementation head `0b80af3945c21ebcbc6f208c6625fae97e3df9ff` passed the unmodified
+  Official CI #422 / run `36956118087`: Supply Chain, Quality, Database,
+  Guardrail Simulations, Preview and CI Gate all succeeded.
+- Quality proved canonical format, lint, typecheck, unit, integration, Harness,
+  security and production build.
+- Preview proved real DB integration/concurrency, RLS, observability, the
+  canonical E2E regression, persistence/analytics, accessibility, Storybook,
+  design-system visuals and product goldens.
+- The regression fixture contains own BOOKED rows linked to CANCELLED and
+  COMPLETED sessions; neither surfaced in Home, while the valid SCHEDULED
+  current session remained the primary action.
+- Literal `verify:agent`, `verify:security`, `verify:ui` and
+  `verify:full` all passed in isolated jobs that checked out the same
+  implementation SHA (run `36956848003`).
+- Preview artifact `11206068526` was downloaded and Home desktop/tablet/mobile
+  were manually inspected with no visible clipping or overflow.
+- Artifact digest: `sha256:097dd0ba65389ddb757c76acec318985e529b2d0ddf51b8ee42cf8208fd2ac81`.
+- Final implementation scope contains no workflow or migration diff, no Home
+  write path, no runtime service-role access and no new CEFR/streak/goal or
+  commercial policy.
+- Registry/evidence now move to `done / verified:true`. PR #25 remains open
+  against `main` and no merge was performed.
+
