@@ -1,6 +1,6 @@
 # GOAL — prompt-21-home-projection-v1: Home definitiva / Student Home Projection V1
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-10-01  
 Updated: 2026-10-01
@@ -35,18 +35,18 @@ Um Student autenticado abre `/home` e entende rapidamente o que fazer agora. A H
 
 ## Acceptance criteria
 
-- [ ] `/home` é uma projection transversal e não chama page loaders de outras features.
-- [ ] Existe no máximo uma `primaryAction`, seguindo exatamente Schedule-now → Learning → Practice → future Schedule.
-- [ ] Resume de Learning usa o `lastAccessedAt` mais recente entre aulas incompletas; fallback sem progresso usa ordem canônica.
-- [ ] Múltiplos cursos não usam média global nem `courses[0]` como política implícita.
-- [ ] Practice reutiliza `recommendPractice`; Agenda usa booking real do Student.
-- [ ] Progress summary é curricular, curto e derivado dos mesmos fatos de Learning.
-- [ ] Auth e Supabase client são criados uma vez no boundary Home; reads independentes iniciam concorrentemente.
-- [ ] Empty, partial e error são distintos; erro de domínio não vira vazio.
-- [ ] Home não escreve em Learning, Practice, Schedule, Progress ou outro domínio.
-- [ ] Nenhuma migration, nova RLS, service-role path, plan conditional, CEFR, streak, goal ou analytics novo.
-- [ ] Desktop/tablet/mobile, a11y, E2E e golden da Home são atualizados sem regressão das demais páginas.
-- [ ] PR aberta contra `main`, sem merge.
+- [x] `/home` é uma projection transversal e não chama page loaders de outras features.
+- [x] Existe no máximo uma `primaryAction`, seguindo exatamente Schedule-now → Learning → Practice → future Schedule.
+- [x] Resume de Learning usa o `lastAccessedAt` mais recente entre aulas incompletas; fallback sem progresso usa ordem canônica.
+- [x] Múltiplos cursos não usam média global nem `courses[0]` como política implícita.
+- [x] Practice reutiliza `recommendPractice`; Agenda usa booking real do Student.
+- [x] Progress summary é curricular, curto e derivado dos mesmos fatos de Learning.
+- [x] Auth e Supabase client são criados uma vez no boundary Home; reads independentes iniciam concorrentemente.
+- [x] Empty, partial e error são distintos; erro de domínio não vira vazio.
+- [x] Home não escreve em Learning, Practice, Schedule, Progress ou outro domínio.
+- [x] Nenhuma migration, nova RLS, service-role path, plan conditional, CEFR, streak, goal ou analytics novo.
+- [x] Desktop/tablet/mobile, a11y, E2E e golden da Home são atualizados sem regressão das demais páginas.
+- [x] PR aberta contra `main`, sem merge.
 
 ## Allowed files / domains
 
