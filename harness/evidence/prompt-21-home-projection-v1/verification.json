@@ -1,0 +1,72 @@
+{
+  "feature": "prompt-21-home-projection-v1",
+  "status": "passed",
+  "verified": true,
+  "branch": "feat/p21-home-projection-v1",
+  "baseline_sha": "556bf0f21566e6af47b03b2026b5cfbbba4e0d59",
+  "implementation_head_sha": "a4def7c55943961face164cf411247f11f4dca1a",
+  "pull_request": 25,
+  "mandatory_commands": {
+    "npm run verify:agent": {
+      "conclusion": "success",
+      "evidence": "final aggregate validation green; Official CI #394 independently passed core, harness and security constituent gates"
+    },
+    "npm run verify:security": {
+      "conclusion": "success",
+      "run_id": 36952067156,
+      "evidence": "Quality / Security invariants"
+    },
+    "npm run verify:ui": {
+      "conclusion": "success",
+      "run_id": 36952067156,
+      "evidence": "Preview / Critical E2E + accessibility + Storybook + design-system visuals + product golden visuals"
+    },
+    "npm run verify:full": {
+      "conclusion": "success",
+      "evidence": "final aggregate validation green; Official CI #394 independently passed all constituent DB/RLS/core/UI/security gates"
+    }
+  },
+  "official_ci": {
+    "run_id": 36952067156,
+    "run_number": 394,
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    }
+  },
+  "preview_artifact": {
+    "id": 11204268174,
+    "name": "preview-evidence-64ee06aadd0da4d1eb279dfa8085ab8a52bdf73f",
+    "digest": "sha256:8f39c44f6ad471cbab4a3300cf073532254188001d5725d9963d64a0f9839b59"
+  },
+  "assertions": {
+    "read_only_projection": true,
+    "one_primary_action": true,
+    "deterministic_priority": true,
+    "resume_uses_last_accessed_at": true,
+    "no_global_course_average": true,
+    "existing_practice_recommendation_reused": true,
+    "schedule_owned_booking_read_reused": true,
+    "progress_curriculum_projection_reused": true,
+    "one_request_scoped_auth_client": true,
+    "concurrent_domain_reads": true,
+    "bounded_domain_reads": true,
+    "no_page_loader_chaining": true,
+    "no_runtime_service_role": true,
+    "no_migration": true,
+    "no_home_write_path": true,
+    "no_cefr_streak_goal_commercial_policy": true,
+    "empty_partial_error_distinct": true,
+    "browser_boundary_minimal": true,
+    "accessibility": true,
+    "e2e": true,
+    "desktop_tablet_mobile_golden": true
+  },
+  "merge_performed": false,
+  "verified_at": "2026-10-01T22:47:00-03:00"
+}
