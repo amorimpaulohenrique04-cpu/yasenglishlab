@@ -2,6 +2,7 @@
 
 Classification: state  
 Status: resolved
+
 Repeatable: yes  
 Date: 2026-10-02  
 PR/commit related: current change — feat/p21-p0-foundation-closure

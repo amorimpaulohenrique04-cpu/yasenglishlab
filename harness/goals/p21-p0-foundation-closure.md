@@ -1,6 +1,7 @@
 # GOAL — p21-p0-foundation-closure: Role routing, quota and cohorts V1
 
 Status: done
+
 Owner: agent/human  
 Created: 2026-10-02  
 Updated: 2026-10-02

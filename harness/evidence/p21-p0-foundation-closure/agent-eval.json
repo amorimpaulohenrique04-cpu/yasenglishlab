@@ -18,10 +18,15 @@
     "docs/adr/0007-role-aware-workspaces.md",
     "docs/adr/0008-transactional-live-usage.md",
     "docs/adr/0009-cohorts-compatible-scope.md",
+    "docs/adr/README.md",
     "eslint.config.mjs",
     "harness/agent-state/decisions.md",
     "harness/agent-state/plan.md",
     "harness/agent-state/progress.md",
+    "harness/evidence/p21-p0-foundation-closure/PR-description.md",
+    "harness/evidence/p21-p0-foundation-closure/README.md",
+    "harness/evidence/p21-p0-foundation-closure/agent-eval.json",
+    "harness/evidence/p21-p0-foundation-closure/canonical-regression.log",
     "harness/evidence/p21-p0-foundation-closure/cohort-admin-desktop.png",
     "harness/evidence/p21-p0-foundation-closure/cohort-agenda-desktop.png",
     "harness/evidence/p21-p0-foundation-closure/cohort-agenda-mobile.png",
@@ -36,14 +41,20 @@
     "harness/evidence/p21-p0-foundation-closure/upgrade-base.log",
     "harness/evidence/p21-p0-foundation-closure/upgrade-check.mjs",
     "harness/evidence/p21-p0-foundation-closure/upgrade-result.log",
+    "harness/evidence/p21-p0-foundation-closure/verification.json",
     "harness/evidence/p21-p0-foundation-closure/verify-agent.log",
     "harness/evidence/p21-p0-foundation-closure/verify-db.log",
+    "harness/evidence/p21-p0-foundation-closure/verify-full.log",
     "harness/evidence/p21-p0-foundation-closure/verify-security.log",
     "harness/evidence/p21-p0-foundation-closure/verify-ui.log",
     "harness/evidence/p21-p0-foundation-closure/workspace-desktop.png",
+    "harness/failure-log/2026-10-02-p21-canonical-repeat.md",
+    "harness/failure-log/2026-10-02-p21-cold-navigation.md",
     "harness/failure-log/2026-10-02-p21-isolated-generated-lint.md",
+    "harness/failure-log/2026-10-02-p21-local-provisioning.md",
     "harness/failure-log/2026-10-02-p21-mfa-origin.md",
     "harness/failure-log/2026-10-02-p21-recurring-usage.md",
+    "harness/failure-log/2026-10-02-p21-stale-windows-home-goldens.md",
     "harness/feature_list.json",
     "harness/goals/p21-p0-foundation-closure-plan.md",
     "harness/goals/p21-p0-foundation-closure.md",
@@ -53,6 +64,7 @@
     "scripts/test-schedule-concurrency.mjs",
     "scripts/verify-db.mjs",
     "scripts/verify-security.mjs",
+    "scripts/verify-ui.mjs",
     "src/app/(auth)/login/actions.ts",
     "src/app/(auth)/login/page.tsx",
     "src/app/(protected)/(admin)/admin/cohorts/actions.ts",
@@ -86,14 +98,24 @@
     "supabase/tests/booking_quota.sql",
     "supabase/tests/cohorts.sql",
     "supabase/tests/rls_permissions.sql",
+    "tests/e2e/admin-content.spec.ts",
+    "tests/e2e/canonical-slice.spec.ts",
     "tests/e2e/cohorts-booking.spec.ts",
+    "tests/e2e/teacher-operations.spec.ts",
     "tests/e2e/workspace-entry.spec.ts",
     "tests/helpers/admin-mfa.ts",
+    "tests/helpers/teacher-mfa.ts",
     "tests/integration/auth-routing.test.ts",
     "tests/integration/cohorts-application.test.ts",
     "tests/unit/auth-routing.test.ts",
     "tests/unit/cohorts.test.ts",
-    "tests/unit/schedule.test.ts"
+    "tests/unit/schedule.test.ts",
+    "tests/visual/goldens/desktop/home-win32.png",
+    "tests/visual/goldens/desktop/progresso-win32.png",
+    "tests/visual/goldens/mobile/home-win32.png",
+    "tests/visual/goldens/mobile/progresso-win32.png",
+    "tests/visual/goldens/tablet/home-win32.png",
+    "tests/visual/goldens/tablet/progresso-win32.png"
   ],
   "results": [
     {
@@ -105,7 +127,7 @@
     {
       "name": "changed files stay in declared scope",
       "pass": true,
-      "detail": "91 changed file(s) covered",
+      "detail": "113 changed file(s) covered",
       "automated": true
     },
     {
@@ -147,13 +169,19 @@
     {
       "name": "task exists in feature registry",
       "pass": true,
-      "detail": "in_progress",
+      "detail": "done",
       "automated": true
     },
     {
-      "name": "no premature success claim",
+      "name": "success claim has passing verification evidence",
       "pass": true,
-      "detail": "status=in_progress, verified=false",
+      "detail": "harness/evidence/p21-p0-foundation-closure/verification.json",
+      "automated": true
+    },
+    {
+      "name": "Git state agrees with completion report",
+      "pass": true,
+      "detail": "done requires verified=true and resolvable evidence",
       "automated": true
     }
   ],
