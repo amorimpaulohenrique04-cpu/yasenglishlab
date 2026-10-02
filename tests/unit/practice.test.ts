@@ -109,8 +109,7 @@ describe("practice domain", () => {
         activities: [manual, deterministic].map(toPracticeRecommendationActivity),
         history: [],
         recentLessonId: null,
-      })
-        ?.activity.id,
+      })?.activity.id,
     ).toBe(deterministic.id);
   });
 
