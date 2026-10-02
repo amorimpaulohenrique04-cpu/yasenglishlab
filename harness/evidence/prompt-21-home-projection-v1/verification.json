@@ -68,11 +68,7 @@
     "id": 11206068526,
     "digest": "sha256:097dd0ba65389ddb757c76acec318985e529b2d0ddf51b8ee42cf8208fd2ac81",
     "inspected": true,
-    "viewports": [
-      "desktop",
-      "tablet",
-      "mobile"
-    ]
+    "viewports": ["desktop", "tablet", "mobile"]
   },
   "assertions": {
     "official_ci_workflow_matches_main": true,
