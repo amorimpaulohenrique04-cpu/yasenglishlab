@@ -362,3 +362,23 @@ Two read-only investigations and principal synthesis completed. Existing entitie
 - Final scope audit found no P21 migration, Home write path, runtime service-role path, CEFR/streak/goal/commercial policy, Assessment/Teacher/Admin expansion or parallel recommendation engine.
 - Durable evidence is stored under `harness/evidence/prompt-21-home-projection-v1/`; registry is `done / verified:true`.
 - PR #25 remains open against `main` and intentionally unmerged.
+
+## 2026-10-01 — P21 recovery reopened
+
+- P21 was reopened after an integrity audit found that the previous closure
+  referenced an older implementation SHA while the branch had moved and carried
+  temporary Official CI workflow edits.
+- `.github/workflows/foundation-verify.yml` was restored exactly to `main`;
+  the current `main...branch` diff contains no workflow or migration changes.
+- Harness was returned to `in_progress / verified:false`; historical green
+  runs remain evidence only for the exact SHAs they tested.
+- Schedule Home reads now receive the same explicit `now` used by Home,
+  require own BOOKED booking + SCHEDULED live session + `ends_at > now`,
+  order by referenced `starts_at`, and limit the database result to one.
+- Canonical E2E fixture now includes BOOKED rows linked to CANCELLED and
+  COMPLETED sessions for the Home-now Student. The Home flow must prove those
+  readable-but-invalid sessions never surface while the valid SCHEDULED current
+  session remains the primary action.
+- Final verification is still pending. No success claim is valid until a clean
+  implementation head passes the unmodified Official CI.
+
