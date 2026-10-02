@@ -6,10 +6,7 @@ import {
   type LearningModule,
 } from "@/modules/learning";
 import { recommendPractice } from "@/modules/practice";
-import {
-  buildCurriculumView,
-  type ProgressCurriculumCourse,
-} from "@/modules/progress";
+import { buildCurriculumView, type ProgressCurriculumCourse } from "@/modules/progress";
 import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 import type { HomePracticeInputs, HomeReadRepository } from "./ports";
@@ -58,9 +55,7 @@ function orderedSelections(courses: readonly LearningCourse[]): LearningSelectio
   return selections;
 }
 
-export function selectLearningAction(
-  courses: readonly LearningCourse[],
-): LearningSelection | null {
+export function selectLearningAction(courses: readonly LearningCourse[]): LearningSelection | null {
   const incomplete = orderedSelections(courses).filter(
     ({ lesson }) => !isLessonComplete(lesson),
   );
@@ -178,10 +173,7 @@ function scheduleFacts(records: readonly ScheduleOwnBookingFact[], now: Date) {
   return { current, future };
 }
 
-function sessionView(
-  session: ScheduleOwnBookingFact,
-  happeningNow: boolean,
-): HomeSessionView {
+function sessionView(session: ScheduleOwnBookingFact, happeningNow: boolean): HomeSessionView {
   return {
     id: session.id,
     title: session.title,
@@ -329,9 +321,7 @@ export async function getHomeView(
   };
 
   const hasFacts =
-    courses.length > 0 ||
-    practice.status === "success" ||
-    nextSession.status === "success";
+    courses.length > 0 || practice.status === "success" || nextSession.status === "success";
 
   if (unavailableDomains.length === 0 && !hasFacts) {
     return { status: "empty" };
