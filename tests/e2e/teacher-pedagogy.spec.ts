@@ -129,12 +129,6 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       await loginCanonicalTeacher(teacher, password);
       await teacher.goto("/teacher/revisoes");
 
-      const reviewCard = teacher.locator("article,section,div").filter({
-        has: teacher.getByRole("heading", {
-          name: `Cohort Student A · ${activityTitle}`,
-          exact: true,
-        }),
-      }).last();
       await expect(
         teacher.getByRole("heading", {
           name: `Cohort Student A · ${activityTitle}`,
