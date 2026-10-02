@@ -10,6 +10,7 @@ function required(name: string) {
 }
 export function muxClient() {
   return new Mux({
+    baseURL: process.env.MUX_BASE_URL,
     tokenId: required("MUX_TOKEN_ID"),
     tokenSecret: required("MUX_TOKEN_SECRET"),
     timeout: 15000,
