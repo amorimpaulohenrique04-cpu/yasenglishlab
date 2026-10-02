@@ -4,55 +4,49 @@
 
 **prompt-21-home-projection-v1**
 
-State: done / verified:true.
+State: in_progress / verified:false.
 
 Branch: `feat/p21-home-projection-v1`.
 
-### Discovery findings
+### Recovery audit
 
-1. P20 is present in `main` as `done / verified:true`.
-2. The former Home depended only on Learning and implicitly selected
-   `courses[0]`.
-3. Learning owns curricular ordering/completion and persisted
-   `lastAccessedAt`.
-4. Practice owns deterministic `recommendPractice`.
-5. Schedule owns Student booking facts; Home must not reproduce booking or
-   entitlement rules.
-6. Progress owns the curricular projection; Home reuses it from already-loaded
-   Learning facts instead of loading the full Progress page.
-7. The approved Home screenshot is visual hierarchy only; unsupported CEFR,
-   streak and meeting-entry affordances remain absent.
+1. The previous closure was invalid because Harness/evidence said `done / verified:true`
+   while the branch head had moved beyond the documented implementation SHA.
+2. P21-specific edits to `.github/workflows/foundation-verify.yml` polluted the
+   feature scope and could make `eval:agent` observe a different tree from the
+   one reported as verified.
+3. The Home Schedule read currently filters only booking status. A BOOKED row
+   whose `live_sessions.status` is CANCELLED/COMPLETED can still become
+   Home's current/future session.
+4. The Schedule read is not bounded by time/row count at the database boundary;
+   the previous "bounded reads" test proved call count only.
+5. The request-scoped auth/client, Learning resume policy, existing Practice
+   recommendation and Progress curriculum projection are otherwise kept.
 
-### Delivered architecture
+### Correction plan
 
-1. Home has its own read-only application/domain projection with explicit
-   success/empty/partial/error states and one deterministic `primaryAction`.
-2. Student layout and Home share one cached request-scoped authenticated
-   Supabase context.
-3. Learning, Practice and Schedule reads begin concurrently.
-4. Practice exposes a narrow recommendation input projection without full
-   activity content; the existing `recommendPractice` policy remains
-   authoritative.
-5. Schedule exposes a narrow own-BOOKED-session read boundary, including
-   sessions already in progress.
-6. Home curricular summary reuses P20 `buildCurriculumView` over the same
-   Learning facts.
-7. Home has responsive server-rendered UI plus dedicated loading/error states.
-8. Canonical unit/integration/E2E/a11y/golden coverage verifies priority,
-   resume semantics, bounded reads, DTO minimization, responsive behavior and
-   navigation to owning domains.
+1. Restore Official CI workflow exactly to `main` and keep P21 Harness
+   `in_progress / verified:false` until the final clean head passes.
+2. Bound Schedule's Home read at the Schedule repository: own BOOKED booking,
+   referenced live session SCHEDULED, `ends_at > now`, order by referenced
+   `starts_at`, limit 1.
+3. Pass the same explicit `now` from Home application to the Schedule read so
+   current/future classification remains deterministic.
+4. Add regression coverage for cancelled/completed/ended sessions and for the
+   actual bounded repository query, not only repository call count.
+5. Extend canonical fixture/E2E so cancelled/completed booked sessions are
+   readable but never surface as Home primary/next session.
+6. Review `main...branch` for migrations, writes, service-role runtime,
+   workflow drift and files outside P21 scope.
+7. Run focused tests first, then one final full Official CI on a clean candidate
+   head. Only after the implementation head is green may Harness return to
+   `done / verified:true`.
 
 ### Verification state
 
-Verified implementation head:
-`a4def7c55943961face164cf411247f11f4dca1a`.
+Current status: NOT VERIFIED.
 
-Official CI #394 / run `36952067156` passed Supply Chain, Quality, Database,
-Guardrail Simulations, Preview and CI Gate. Preview passed Critical E2E,
-persistence/analytics, accessibility, Storybook/design-system visuals and
-product golden visuals.
+Historical green runs remain evidence for their exact historical SHAs only and
+must not be used as proof of the eventual final head.
 
-Durable evidence:
-`harness/evidence/prompt-21-home-projection-v1/`.
-
-PR #25 targets `main`, remains open and unmerged.
+PR #25 must remain open against `main`; no merge is part of P21.
