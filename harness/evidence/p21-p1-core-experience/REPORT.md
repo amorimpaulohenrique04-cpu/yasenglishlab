@@ -51,3 +51,7 @@ Os replays/SQL precedem o último endurecimento do tamanho ausente na metadata d
 9. Realizar/documentar smoke Mux real com credenciais não produtivas. Ausência dessa prova deve continuar explícita.
 
 Não há autorização de merge automático. O material deve ser tratado como draft até a conclusão dessas etapas.
+
+## Entrega Git
+
+Commits por bloco: a75f041 (operações), af504e6 (pedagogia), e20be47 (vídeo/documentação). Push da branch realizado. Autenticação gh confirmada com acesso de rede; a falha inicial de autenticação no sandbox não impediu o push. PR em preparação como draft, sem merge.
