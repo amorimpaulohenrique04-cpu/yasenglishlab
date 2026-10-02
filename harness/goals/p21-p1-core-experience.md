@@ -31,6 +31,7 @@ Teacher operates sessions and reviews; Student books/cancels/rebooks/joins, subm
 - `src/app/**` corresponding protected routes and Mux webhook.
 - `supabase/**` new migrations, tests and fixtures.
 - `tests/**`, `scripts/**` task verification and fixtures.
+- `playwright.config.ts` test-server wiring for the P21 critical E2E provider boundary.
 - `docs/**`, `harness/**`, `.env.example`, `package.json`, `package-lock.json`.
 
 The ignored `.env.local` had a BOM preventing Supabase CLI parsing; only UTF-8 encoding was normalized, with values preserved.
