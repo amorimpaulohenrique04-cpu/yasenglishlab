@@ -7,6 +7,7 @@ import type { LearningCourse } from "@/modules/learning";
 import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 const userId = "81000000-0000-4000-8000-000000000001";
+const now = new Date("2026-10-01T12:00:00Z");
 
 const learning: LearningCourse = {
   id: "course-1",
@@ -49,7 +50,7 @@ describe("Home application architecture", () => {
       loadSchedule: vi.fn(() => wait("schedule", schedule)),
     });
 
-    const pending = getHomeView(repo, userId, true);
+    const pending = getHomeView(repo, userId, true, now);
     await Promise.resolve();
 
     expect(calls).toEqual(["learning", "practice", "schedule"]);
@@ -57,48 +58,38 @@ describe("Home application architecture", () => {
     await expect(pending).resolves.toMatchObject({ status: "success" });
   });
 
-  it("keeps Home repository calls bounded when returned row counts grow", async () => {
+  it("keeps one Home read per independent domain", async () => {
     const manyCourses = Array.from({ length: 300 }, (_, index) => ({
       ...learning,
       id: `course-${index}`,
       slug: `course-${index}`,
       title: `Course ${index}`,
     }));
-    const manySessions = Array.from({ length: 500 }, (_, index) => ({
-      id: `session-${index}`,
-      sessionType: "CORE_CLASS" as const,
-      title: `Session ${index}`,
-      startsAt: "2026-10-02T12:00:00Z",
-      endsAt: "2026-10-02T13:00:00Z",
-      bookingStatus: "BOOKED" as const,
-    }));
-
     const repo = repository({
       loadLearning: vi.fn(async () => manyCourses),
-      loadSchedule: vi.fn(async () => manySessions),
     });
 
-    await getHomeView(repo, userId, true);
+    await getHomeView(repo, userId, true, now);
 
     expect(repo.loadLearning).toHaveBeenCalledTimes(1);
     expect(repo.loadPractice).toHaveBeenCalledTimes(1);
     expect(repo.loadSchedule).toHaveBeenCalledTimes(1);
   });
 
-  it("passes only the authenticated Student id into user-scoped Home reads", async () => {
+  it("passes only authenticated identity and the same explicit clock into scoped reads", async () => {
     const repo = repository();
 
-    await getHomeView(repo, userId, true);
+    await getHomeView(repo, userId, true, now);
 
     expect(repo.loadLearning).toHaveBeenCalledWith(userId);
     expect(repo.loadPractice).toHaveBeenCalledWith(userId);
-    expect(repo.loadSchedule).toHaveBeenCalledWith(userId);
+    expect(repo.loadSchedule).toHaveBeenCalledWith(userId, now);
   });
 
   it("fails closed before domain reads for a non-Student", async () => {
     const repo = repository();
 
-    await expect(getHomeView(repo, userId, false)).resolves.toEqual({
+    await expect(getHomeView(repo, userId, false, now)).resolves.toEqual({
       status: "unauthorized",
     });
     expect(repo.loadLearning).not.toHaveBeenCalled();
@@ -146,6 +137,25 @@ describe("Home application architecture", () => {
     expect(adapter).toContain("listRecommendationActivities");
     expect(adapter).toContain("listRecommendationHistory");
     expect(adapter).toContain("listOwnBookedSessions");
+  });
+
+  it("bounds the Schedule Home read at the owning repository", () => {
+    const scheduleAdapter = readFileSync(
+      "src/server/schedule/supabase-schedule-repository.ts",
+      "utf8",
+    );
+    const start = scheduleAdapter.indexOf("async listOwnBookedSessions");
+    const end = scheduleAdapter.indexOf("async bookSession", start);
+    const homeRead = scheduleAdapter.slice(start, end);
+
+    expect(homeRead).toContain('.eq("user_id", userId)');
+    expect(homeRead).toContain('.eq("status", "BOOKED")');
+    expect(homeRead).toContain('.eq("live_sessions.status", "SCHEDULED")');
+    expect(homeRead).toContain('.gt("live_sessions.ends_at", now.toISOString())');
+    expect(homeRead).toContain(
+      '.order("starts_at", { referencedTable: "live_sessions", ascending: true })',
+    );
+    expect(homeRead).toContain(".limit(1)");
   });
 
   it("shares one cached auth/client boundary between Student layout and Home", () => {
