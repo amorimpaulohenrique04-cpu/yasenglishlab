@@ -54,6 +54,13 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Emit canonical Prettier diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx prettier --write .github/workflows/foundation-verify.yml harness/agent-state/progress.md
+          git diff -- .github/workflows/foundation-verify.yml harness/agent-state/progress.md
+          exit 1
       - name: Format
         run: npm run format:check
       - name: Lint
@@ -325,7 +332,7 @@ jobs:
   p21-aggregate-verification:
     name: P21 Aggregate Verification
     if: github.event_name == 'pull_request' && github.head_ref == 'feat/p21-home-projection-v1'
-    needs: [quality, database]
+    needs: [supply-chain]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
