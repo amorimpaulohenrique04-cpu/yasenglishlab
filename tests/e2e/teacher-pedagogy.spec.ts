@@ -174,10 +174,10 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       try {
         const otherTeacher = await otherTeacherContext.newPage();
         await loginCanonicalOtherTeacher(otherTeacher, password);
-        const denied = await otherTeacher.request.get(`/teacher/revisoes/${attemptId}`, {
-          maxRedirects: 0,
-        });
-        expect(denied.status()).toBe(404);
+        await otherTeacher.goto(`/teacher/revisoes/${attemptId}`);
+        await expect(otherTeacher.getByRole("heading", { level: 1, name: "404" })).toBeVisible();
+        await expect(otherTeacher.getByText("This page could not be found.")).toBeVisible();
+        await expect(otherTeacher.getByText(activityTitle)).toHaveCount(0);
       } finally {
         await otherTeacherContext.close();
       }
