@@ -20,5 +20,5 @@ export interface HomeScheduleFact {
 export interface HomeReadRepository {
   loadLearning(userId: string): Promise<LearningCourse[]>;
   loadPractice(userId: string): Promise<HomePracticeInputs>;
-  loadSchedule(): Promise<HomeScheduleFact[]>;
+  loadSchedule(userId: string): Promise<HomeScheduleFact[]>;
 }
