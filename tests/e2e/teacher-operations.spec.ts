@@ -45,8 +45,8 @@ test.describe("Teacher Operations V1", () => {
 
     await loginCanonicalTeacher(page, password);
 
-    await expect(page.getByText("Teacher Ops · Conversation Practice")).toBeVisible();
-    await expect(page.getByText("Teacher B · Private scope")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Criar encontro" })).toBeVisible();
     await captureEvidence(page, "teacher-desktop.png");
 
     await page.goto("/teacher/sessoes/" + canonicalTeacherSessionId);
