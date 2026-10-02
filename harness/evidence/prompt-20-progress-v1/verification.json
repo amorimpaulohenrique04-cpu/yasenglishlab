@@ -1,0 +1,59 @@
+{
+  "feature": "prompt-20-progress-v1",
+  "status": "passed",
+  "verified": true,
+  "branch": "feat/p20-progress-v1",
+  "baseline_sha": "93666bf0478b9dabdc35c89dab72596026d7da9e",
+  "implementation_head_sha": "5f4ea8ccdad9cb394ba17d55b39fc60bc464d024",
+  "pull_request": 24,
+  "mandatory_commands": {
+    "npm run verify:agent": {
+      "conclusion": "success",
+      "run_id": 36940587065
+    },
+    "npm run verify:security": {
+      "conclusion": "success",
+      "evidence": "included in verify:agent run 36940587065"
+    },
+    "npm run verify:ui": {
+      "conclusion": "success",
+      "run_id": 36940763408
+    },
+    "npm run verify:full": {
+      "conclusion": "success",
+      "run_id": 36941525866
+    }
+  },
+  "official_ci": {
+    "run_id": 36941525748,
+    "run_number": 359,
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    }
+  },
+  "preview_artifact": {
+    "id": 11200173871,
+    "name": "preview-evidence-7b299d5d21cc49ee999e36462048c6a8b27b5387"
+  },
+  "assertions": {
+    "read_only_projection": true,
+    "no_progress_migration": true,
+    "no_runtime_service_role": true,
+    "cefr_unavailable_without_standard_setting": true,
+    "bounded_domain_reads": true,
+    "student_isolation_via_rls": true,
+    "browser_boundary_no_assessment_secrets": true,
+    "empty_partial_error_states_distinct": true,
+    "desktop_tablet_mobile_golden": true,
+    "accessibility": true,
+    "e2e": true
+  },
+  "merge_performed": false,
+  "verified_at": "2026-10-01T20:40:00-03:00"
+}

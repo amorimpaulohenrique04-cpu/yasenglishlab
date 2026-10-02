@@ -16,7 +16,7 @@ async function stabilize(page: Page) {
   });
 }
 
-test("login, home and aulas match golden baselines", async ({ page }) => {
+test("login, home, aulas and progresso match golden baselines", async ({ page }) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
   await stabilize(page);
@@ -33,4 +33,13 @@ test("login, home and aulas match golden baselines", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
   await stabilize(page);
   await expect(page).toHaveScreenshot("aulas.png", { fullPage: true });
+
+  await page.goto("/progresso");
+  await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+  await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
+  await stabilize(page);
+  await page.addStyleTag({
+    content: ".yas-progress-timeline time { visibility: hidden !important; }",
+  });
+  await expect(page).toHaveScreenshot("progresso.png", { fullPage: true });
 });

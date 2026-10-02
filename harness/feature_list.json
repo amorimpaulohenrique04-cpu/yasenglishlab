@@ -315,6 +315,25 @@
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/23"
       ],
       "updated_at": "2026-10-01T18:15:00-03:00"
+    },
+    {
+      "id": "prompt-20-progress-v1",
+      "title": "Progresso V1 / Student Progress Read Model",
+      "status": "done",
+      "verified": true,
+      "dependencies": ["prompt-19-assessment-engine-v1"],
+      "evidence": [
+        "harness/goals/prompt-20-progress-v1.md",
+        "harness/evidence/prompt-20-progress-v1/README.md",
+        "harness/evidence/prompt-20-progress-v1/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/24",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36940587065",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36940763408",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36941525866",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36941525748",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/36941525748/artifacts/11200173871"
+      ],
+      "updated_at": "2026-10-01T20:40:00-03:00"
     }
   ]
 }

@@ -128,6 +128,33 @@ test("Prática exposes skill availability, keyboard controls and WCAG A/AA compl
   await assertAxe(page);
 });
 
+test("Progresso preserves semantic indicators, navigation and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await login(page);
+
+  if ((page.viewportSize()?.width ?? 1440) < 1024) {
+    const menuButton = page.getByRole("button", { name: "Abrir navegação" });
+    await menuButton.click();
+    const mobileNav = page.getByRole("navigation", { name: "Navegação mobile" });
+    const progressLink = mobileNav.getByRole("link", { name: "Progresso", exact: true });
+    await progressLink.focus();
+    await expect(progressLink).toBeFocused();
+    await progressLink.click();
+  } else {
+    const navigation = page.getByRole("navigation").first();
+    const progressLink = navigation.getByRole("link", { name: "Progresso", exact: true });
+    await progressLink.focus();
+    await expect(progressLink).toBeFocused();
+    await progressLink.click();
+  }
+
+  await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+  await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
+  await expect(page.getByRole("progressbar", { name: "Pontuação desta avaliação" })).toBeVisible();
+  await assertAxe(page);
+});
+
 test("Agenda exposes booking states, disabled eligibility and WCAG A/AA compliance", async ({
   page,
 }) => {
