@@ -75,6 +75,9 @@
 
 .yas-home-card-heading a,
 .yas-home-link {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
   color: var(--yas-color-purple-700);
   text-decoration: none;
   font-size: var(--yas-font-size-sm);
