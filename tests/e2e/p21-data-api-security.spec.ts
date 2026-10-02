@@ -9,6 +9,7 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ownPrivateSessionId = "88100000-0000-4000-8000-000000000003";
+const canonicalTeacherId = "88000000-0000-4000-8000-000000000001";
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 if (enabled && (!password || !url || !publishableKey || !serviceRoleKey)) {
@@ -56,18 +57,23 @@ test.describe("P21 Data API security", () => {
   test.setTimeout(90_000);
 
   test("PostgREST enforces Student isolation and server-only metadata", async () => {
-    if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+    if (!password || !url || !serviceRoleKey) {
+      throw new Error("Canonical E2E environment is incomplete.");
+    }
 
+    const admin = createClient(url, serviceRoleKey, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
     const studentA = client();
     const studentB = client();
-    expect(
-      (
-        await studentA.auth.signInWithPassword({
-          email: "canonical.student@example.test",
-          password,
-        })
-      ).error,
-    ).toBeNull();
+
+    const signedInA = await studentA.auth.signInWithPassword({
+      email: "canonical.student@example.test",
+      password,
+    });
+    expect(signedInA.error).toBeNull();
+    if (!signedInA.data.user) throw new Error("Canonical Student A sign-in returned no user.");
+
     expect(
       (
         await studentB.auth.signInWithPassword({
@@ -77,43 +83,61 @@ test.describe("P21 Data API security", () => {
       ).error,
     ).toBeNull();
 
-    const own = await studentA
-      .from("live_sessions")
-      .select("id,title")
-      .eq("id", ownPrivateSessionId);
-    expect(own.error).toBeNull();
-    expect(own.data).toHaveLength(1);
+    const { data: hiddenNote, error: hiddenNoteError } = await admin
+      .from("teacher_student_notes")
+      .insert({
+        teacher_id: canonicalTeacherId,
+        student_user_id: signedInA.data.user.id,
+        body: "P21 Data API hidden Teacher note",
+      })
+      .select("id")
+      .single();
+    if (hiddenNoteError) throw hiddenNoteError;
 
-    const foreign = await studentB
-      .from("live_sessions")
-      .select("id,title")
-      .eq("id", ownPrivateSessionId);
-    expect(foreign.error).toBeNull();
-    expect(foreign.data).toEqual([]);
+    try {
+      const own = await studentA
+        .from("live_sessions")
+        .select("id,title")
+        .eq("id", ownPrivateSessionId);
+      expect(own.error).toBeNull();
+      expect(own.data).toHaveLength(1);
 
-    const meetingMetadata = await studentA
-      .from("live_sessions")
-      .select("id,meeting_ref")
-      .eq("id", ownPrivateSessionId);
-    expect(meetingMetadata.error).not.toBeNull();
+      const foreign = await studentB
+        .from("live_sessions")
+        .select("id,title")
+        .eq("id", ownPrivateSessionId);
+      expect(foreign.error).toBeNull();
+      expect(foreign.data).toEqual([]);
 
-    const providerLifecycle = await studentA
-      .from("lesson_video_assets")
-      .select("id,provider_playback_id")
-      .limit(1);
-    expect(providerLifecycle.error).not.toBeNull();
+      const meetingMetadata = await studentA
+        .from("live_sessions")
+        .select("id,meeting_ref")
+        .eq("id", ownPrivateSessionId);
+      expect(meetingMetadata.error).not.toBeNull();
 
-    const audioMetadata = await studentA
-      .from("practice_response_media")
-      .select("id,storage_path")
-      .limit(1);
-    expect(audioMetadata.error).not.toBeNull();
+      const providerLifecycle = await studentA
+        .from("lesson_video_assets")
+        .select("id,provider_playback_id")
+        .limit(1);
+      expect(providerLifecycle.error).not.toBeNull();
 
-    const teacherNotes = await studentA.from("teacher_student_notes").select("id,body").limit(1);
-    expect(teacherNotes.error).not.toBeNull();
+      const audioMetadata = await studentA
+        .from("practice_response_media")
+        .select("id,storage_path")
+        .limit(1);
+      expect(audioMetadata.error).not.toBeNull();
 
-    await studentA.auth.signOut();
-    await studentB.auth.signOut();
+      const teacherNotes = await studentA
+        .from("teacher_student_notes")
+        .select("id,body")
+        .eq("id", hiddenNote.id);
+      expect(teacherNotes.error).toBeNull();
+      expect(teacherNotes.data).toEqual([]);
+    } finally {
+      await admin.from("teacher_student_notes").delete().eq("id", hiddenNote.id);
+      await studentA.auth.signOut();
+      await studentB.auth.signOut();
+    }
   });
 
   test("privileged Teacher RPC denies AAL1 and succeeds after real TOTP AAL2", async () => {
