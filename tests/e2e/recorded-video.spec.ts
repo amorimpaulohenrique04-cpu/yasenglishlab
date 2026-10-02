@@ -183,18 +183,18 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
     await page.goto("/admin/content?kind=lesson_assets");
     const lessonGroup = page.locator("section").filter({
       has: page.getByRole("heading", {
+        level: 2,
         name: "Build your first conversation",
         exact: true,
       }),
     });
-    const videoCard = lessonGroup
-      .locator("article,section,div")
-      .filter({
-        has: page.getByRole("heading", { name: "VIDEO", exact: true }),
-      })
-      .last();
-    await expect(page.getByRole("heading", { name: "VIDEO", exact: true })).toBeVisible();
-    await videoCard.getByRole("button", { name: "Publicar VIDEO" }).click();
+    await expect(lessonGroup).toHaveCount(1);
+    const publishVideo = lessonGroup.getByRole("button", {
+      name: "Publicar VIDEO",
+      exact: true,
+    });
+    await expect(publishVideo).toBeVisible();
+    await publishVideo.click();
     await expect(page.getByText("Conteúdo publicado", { exact: true })).toBeVisible();
 
     const studentContext = await browser.newContext();

@@ -183,10 +183,16 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       }
 
       await page.goto(`/pratica?attempt=${attemptId}`);
-      await expect(page.getByText(feedback)).toBeVisible();
-      await expect(page.getByText("Realização da tarefa: Consistente")).toBeVisible();
-      await expect(page.getByText("Fluência: Consistente")).toBeVisible();
-      await expect(page.getByText(/score automático/i)).toHaveCount(0);
+      const feedbackResult = page.getByRole("region").filter({
+        has: page.getByText(feedback, { exact: true }),
+      });
+      await expect(feedbackResult).toHaveCount(1);
+      await expect(feedbackResult.getByText(feedback, { exact: true })).toBeVisible();
+      await expect(feedbackResult.getByText("Realização da tarefa: Consistente")).toBeVisible();
+      await expect(feedbackResult.getByText("Fluência: Consistente")).toBeVisible();
+      await expect(feedbackResult.getByText(/score automático/i)).toHaveCount(0);
+      await expect(feedbackResult.getByRole("progressbar")).toHaveCount(0);
+      await expect(feedbackResult.getByText(/não define proficiência CEFR/i)).toBeVisible();
     } finally {
       await teacherContext.close();
     }
