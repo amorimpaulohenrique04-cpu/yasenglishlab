@@ -1,24 +1,100 @@
 {
   "feature": "prompt-21-home-projection-v1",
-  "status": "pending",
-  "verified": false,
+  "status": "passed",
+  "verified": true,
   "branch": "feat/p21-home-projection-v1",
   "pull_request": 25,
-  "historical_runs": [
-    {
-      "implementation_head_sha": "a4def7c55943961face164cf411247f11f4dca1a",
-      "official_ci_run_id": 36952067156,
-      "conclusion": "success",
-      "note": "Historical implementation evidence only; not final proof after branch moved."
-    },
-    {
-      "head_sha": "b07b66349115b99a0911f9a345283f2674a10283",
-      "official_ci_run_id": 36954123649,
-      "conclusion": "success",
-      "note": "Rejected as final evidence because branch carried P21-specific CI workflow changes."
+  "implementation_head_sha": "0b80af3945c21ebcbc6f208c6625fae97e3df9ff",
+  "official_ci": {
+    "run_id": 36956118087,
+    "run_number": 422,
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
     }
-  ],
-  "final_verification": null,
+  },
+  "mandatory_commands": {
+    "npm run test:unit": {
+      "conclusion": "success",
+      "evidence": "Official CI #422 / Quality"
+    },
+    "npm run test:integration": {
+      "conclusion": "success",
+      "evidence": "Official CI #422 / Quality"
+    },
+    "npm run test:e2e": {
+      "conclusion": "success",
+      "evidence": "Official CI #422 / Preview Critical E2E"
+    },
+    "npm run test:a11y": {
+      "conclusion": "success",
+      "evidence": "Official CI #422 / Preview Accessibility checks"
+    },
+    "npm run test:visual:golden": {
+      "conclusion": "success",
+      "evidence": "Official CI #422 / Preview Product golden visual checks"
+    },
+    "npm run verify:agent": {
+      "conclusion": "success",
+      "run_id": 36956848003,
+      "evidence": "isolated job checked out implementation_head_sha"
+    },
+    "npm run verify:security": {
+      "conclusion": "success",
+      "run_id": 36956848003,
+      "evidence": "isolated job checked out implementation_head_sha"
+    },
+    "npm run verify:ui": {
+      "conclusion": "success",
+      "run_id": 36956848003,
+      "evidence": "isolated job checked out implementation_head_sha"
+    },
+    "npm run verify:full": {
+      "conclusion": "success",
+      "run_id": 36956848003,
+      "evidence": "isolated job checked out implementation_head_sha"
+    },
+    "npm run verify:db": {
+      "conclusion": "not_applicable",
+      "evidence": "no DB/SQL/migration change; Official CI Database job still passed"
+    }
+  },
+  "preview_artifact": {
+    "id": 11206068526,
+    "digest": "sha256:097dd0ba65389ddb757c76acec318985e529b2d0ddf51b8ee42cf8208fd2ac81",
+    "inspected": true,
+    "viewports": [
+      "desktop",
+      "tablet",
+      "mobile"
+    ]
+  },
+  "assertions": {
+    "official_ci_workflow_matches_main": true,
+    "no_migration_change": true,
+    "no_home_write_path": true,
+    "no_runtime_service_role": true,
+    "request_scoped_auth_client": true,
+    "concurrent_domain_reads": true,
+    "schedule_read_bounded": true,
+    "schedule_requires_scheduled_session": true,
+    "cancelled_completed_sessions_excluded": true,
+    "one_primary_action": true,
+    "resume_uses_last_accessed_at": true,
+    "no_global_course_average": true,
+    "existing_practice_recommendation_reused": true,
+    "progress_curriculum_projection_reused": true,
+    "empty_partial_error_distinct": true,
+    "browser_boundary_minimal": true,
+    "accessibility": true,
+    "e2e": true,
+    "desktop_tablet_mobile_golden": true
+  },
   "merge_performed": false,
-  "updated_at": "2026-10-01T23:22:00-03:00"
+  "updated_at": "2026-10-01T23:55:00-03:00"
 }
