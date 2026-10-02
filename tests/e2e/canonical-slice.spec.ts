@@ -233,7 +233,7 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
     await expect(
-      page.getByText("Vocabulário para apresentações", { exact: true }).first(),
+      page.getByText("Present simple em contexto", { exact: true }).first(),
     ).toBeVisible();
     await expect(
       page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
