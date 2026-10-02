@@ -27,20 +27,6 @@ test("login, home, aulas and progresso match golden baselines", async ({ page })
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
   await stabilize(page);
-
-  if (process.env.CI) {
-    const candidate = (await page.screenshot({ fullPage: true })).toString("base64");
-    const chunkSize = 16_000;
-    for (let offset = 0; offset < candidate.length; offset += chunkSize) {
-      console.log(
-        `P21_HOME_GOLDEN:${test.info().project.name}:${offset / chunkSize}:${candidate.slice(
-          offset,
-          offset + chunkSize,
-        )}`,
-      );
-    }
-  }
-
   await expect(page).toHaveScreenshot("home.png", { fullPage: true });
 
   await page.goto("/aulas");
