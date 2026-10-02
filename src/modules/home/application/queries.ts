@@ -7,9 +7,7 @@ import {
   type LearningModule,
 } from "@/modules/learning";
 import { recommendPractice } from "@/modules/practice";
-import type { ScheduleSessionRecord } from "@/modules/schedule";
-
-import type { HomePracticeInputs, HomeReadRepository } from "./ports";
+import type { HomePracticeInputs, HomeReadRepository, HomeScheduleFact } from "./ports";
 import type {
   HomeLearningView,
   HomePageState,
@@ -145,13 +143,13 @@ function progressSection(
   };
 }
 
-function sortedBookings(records: readonly ScheduleSessionRecord[]) {
+function sortedBookings(records: readonly HomeScheduleFact[]) {
   return records
-    .filter((session) => session.ownBookingStatus === "BOOKED")
+    .filter((session) => session.bookingStatus === "BOOKED")
     .sort((left, right) => timestamp(left.startsAt) - timestamp(right.startsAt));
 }
 
-function scheduleFacts(records: readonly ScheduleSessionRecord[], now: Date) {
+function scheduleFacts(records: readonly HomeScheduleFact[], now: Date) {
   const nowMs = now.getTime();
   const bookings = sortedBookings(records);
   const current =
@@ -163,7 +161,7 @@ function scheduleFacts(records: readonly ScheduleSessionRecord[], now: Date) {
 }
 
 function sessionView(
-  session: ScheduleSessionRecord,
+  session: HomeScheduleFact,
   happeningNow: boolean,
 ): HomeSessionView {
   return {
@@ -207,7 +205,7 @@ function learningPrimaryAction(
 }
 
 function schedulePrimaryAction(
-  session: ScheduleSessionRecord,
+  session: HomeScheduleFact,
   happeningNow: boolean,
 ): HomePrimaryAction {
   return {
