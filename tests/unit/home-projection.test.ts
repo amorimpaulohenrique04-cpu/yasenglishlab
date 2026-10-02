@@ -4,7 +4,6 @@ import {
   getHomeView,
   selectLearningAction,
   type HomeReadRepository,
-  type HomeScheduleFact,
 } from "@/modules/home";
 import type {
   LearningCourse,
@@ -12,9 +11,10 @@ import type {
   LessonProgressSnapshot,
 } from "@/modules/learning";
 import type {
-  PracticeActivityItem,
-  PracticeHistoryItem,
+  PracticeRecommendationActivity,
+  PracticeRecommendationHistoryItem,
 } from "@/modules/practice";
+import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 const userId = "81000000-0000-4000-8000-000000000001";
 const now = new Date("2026-10-01T12:00:00Z");
@@ -84,32 +84,21 @@ function course(
   };
 }
 
-const activity: PracticeActivityItem = {
+const activity: PracticeRecommendationActivity = {
   id: "practice-1",
   slug: "vocabulary",
   title: "Vocabulary quick practice",
   skill: "VOCABULARY",
-  cefrTarget: null,
-  difficulty: null,
   estimatedMinutes: 5,
-  relatedModuleId: null,
   relatedLessonId: null,
-  content: {
-    kind: "MULTIPLE_CHOICE",
-    evaluationMode: "DETERMINISTIC",
-    prompt: "Choose",
-    options: [
-      { id: "a", label: "A" },
-      { id: "b", label: "B" },
-    ],
-  },
+  evaluationMode: "DETERMINISTIC",
 };
 
 function booking(
   id: string,
   startsAt: string,
   endsAt: string,
-): HomeScheduleFact {
+): ScheduleOwnBookingFact {
   return {
     id,
     sessionType: "CORE_CLASS",
@@ -125,7 +114,7 @@ function repository(overrides: Partial<HomeReadRepository> = {}): HomeReadReposi
     loadLearning: vi.fn(async () => [course("course-1", [lesson("lesson-1", 1)])]),
     loadPractice: vi.fn(async () => ({
       activities: [activity],
-      history: [] as PracticeHistoryItem[],
+      history: [] as PracticeRecommendationHistoryItem[],
       recentLessonId: null,
     })),
     loadSchedule: vi.fn(async () => []),
@@ -190,6 +179,17 @@ describe("P21 Home projection", () => {
     expect(selectLearningAction([older, recent])?.lesson.id).toBe("recent");
   });
 
+  it("uses canonical order as the tie-break when resume timestamps are equal", () => {
+    const first = course("course-a", [
+      lesson("first", 1, progress("first", 20, "2026-10-01T11:00:00Z")),
+    ]);
+    const second = course("course-b", [
+      lesson("second", 1, progress("second", 40, "2026-10-01T11:00:00Z")),
+    ]);
+
+    expect(selectLearningAction([first, second])?.lesson.id).toBe("first");
+  });
+
   it("uses canonical course/module/lesson order when nothing has persisted progress", () => {
     const first = course("course-a", [lesson("later-position", 2), lesson("first-position", 1)]);
     const second = course("course-b", [lesson("second-course", 1)]);
@@ -239,6 +239,30 @@ describe("P21 Home projection", () => {
       kind: "schedule",
       label: "Ver sessão na Agenda",
       title: "Session now",
+    });
+  });
+
+  it("treats startsAt <= now < endsAt as the exact current-session boundary", async () => {
+    const state = await getHomeView(
+      repository({
+        loadLearning: vi.fn(async () => []),
+        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadSchedule: vi.fn(async () => [
+          booking("ended", "2026-10-01T11:00:00Z", "2026-10-01T12:00:00Z"),
+          booking("starts-now", "2026-10-01T12:00:00Z", "2026-10-01T12:30:00Z"),
+        ]),
+      }),
+      userId,
+      true,
+      now,
+    );
+
+    expect(state.status).toBe("success");
+    if (state.status !== "success") throw new Error("Expected success.");
+    expect(state.data.primaryAction?.title).toBe("Session starts-now");
+    expect(state.data.nextSession).toMatchObject({
+      status: "success",
+      data: { happeningNow: true, id: "starts-now" },
     });
   });
 
@@ -368,6 +392,35 @@ describe("P21 Home projection", () => {
     });
   });
 
+  it("uses the Progress curriculum projection for a completed focus course", async () => {
+    const older = course(
+      "older",
+      [lesson("older", 1, progress("older", 100, "2026-09-30T09:00:00Z"))],
+      { title: "Older" },
+    );
+    const recent = course(
+      "recent",
+      [lesson("recent", 1, progress("recent", 100, "2026-10-01T11:00:00Z"))],
+      { title: "Recent" },
+    );
+    const state = await getHomeView(
+      repository({
+        loadLearning: vi.fn(async () => [older, recent]),
+        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+      }),
+      userId,
+      true,
+      now,
+    );
+
+    expect(state.status).toBe("success");
+    if (state.status !== "success") throw new Error("Expected success.");
+    expect(state.data.progressSummary).toMatchObject({
+      status: "success",
+      data: { courseTitle: "Recent", completionPercent: 100, lessonsCompleted: 1, totalLessons: 1 },
+    });
+  });
+
   it("returns partial and preserves valid sections when one domain fails", async () => {
     const state = await getHomeView(
       repository({
@@ -406,11 +459,18 @@ describe("P21 Home projection", () => {
   });
 
   it("returns error when all independent sources fail", async () => {
-    const fail = vi.fn(async () => {
-      throw new Error("unavailable");
-    });
     const state = await getHomeView(
-      repository({ loadLearning: fail, loadPractice: fail, loadSchedule: fail }),
+      repository({
+        loadLearning: vi.fn(async () => {
+          throw new Error("learning unavailable");
+        }),
+        loadPractice: vi.fn(async () => {
+          throw new Error("practice unavailable");
+        }),
+        loadSchedule: vi.fn(async () => {
+          throw new Error("schedule unavailable");
+        }),
+      }),
       userId,
       true,
       now,
