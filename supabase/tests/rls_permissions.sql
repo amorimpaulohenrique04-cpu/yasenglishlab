@@ -605,18 +605,46 @@ end $$;
 select set_config('request.jwt.claim.sub', '', false);
 select set_config('request.jwt.claims', '{}', false);
 
--- Student A is TALK in the legacy RLS fixture. Private Session coverage needs the
--- BOOST entitlement only for this P21 block; restore TALK after the assertions.
-update public.subscriptions
-set plan_id = '10000000-0000-0000-0000-000000000003'
-where id = '81600000-0000-0000-0000-000000000001';
-
+-- Keep legacy Student A/TALK semantics untouched. P21 Private Session coverage gets
+-- its own BOOST Student so commercial authorization cannot contaminate earlier RLS cases.
 insert into auth.users (id, email, raw_user_meta_data)
-values ('81000000-0000-0000-0000-000000000007', 'student-c-no-enrollment@example.test', '{"display_name":"Student C"}')
+values
+  ('81000000-0000-0000-0000-000000000007', 'student-c-no-enrollment@example.test', '{"display_name":"Student C"}'),
+  ('81000000-0000-0000-0000-000000000008', 'student-d-private@example.test', '{"display_name":"Student D"}')
 on conflict (id) do nothing;
 
 insert into public.user_roles (id, user_id, role)
-values ('81100000-0000-0000-0000-000000000007', '81000000-0000-0000-0000-000000000007', 'STUDENT')
+values
+  ('81100000-0000-0000-0000-000000000007', '81000000-0000-0000-0000-000000000007', 'STUDENT'),
+  ('81100000-0000-0000-0000-000000000008', '81000000-0000-0000-0000-000000000008', 'STUDENT')
+on conflict (id) do nothing;
+
+insert into public.teacher_student_assignments (
+  id, teacher_id, student_user_id, course_id, starts_at
+)
+values (
+  '81300000-0000-0000-0000-000000000008',
+  '81200000-0000-0000-0000-000000000001',
+  '81000000-0000-0000-0000-000000000008',
+  '40000000-0000-4000-8000-000000000001',
+  now() - interval '1 day'
+)
+on conflict (id) do nothing;
+
+insert into public.subscriptions (
+  id, user_id, plan_id, provider, provider_subscription_id, status,
+  current_period_start, current_period_end
+)
+values (
+  '81600000-0000-0000-0000-000000000008',
+  '81000000-0000-0000-0000-000000000008',
+  '10000000-0000-0000-0000-000000000003',
+  'test',
+  'rls_p21_private',
+  'ACTIVE',
+  now() - interval '1 day',
+  now() + interval '30 days'
+)
 on conflict (id) do nothing;
 
 insert into public.live_sessions (
@@ -633,7 +661,7 @@ values (
   1,
   'monthly_private_sessions',
   'SCHEDULED',
-  '81000000-0000-0000-0000-000000000001',
+  '81000000-0000-0000-0000-000000000008',
   'MANUAL_EXTERNAL',
   'https://meet.example.test/p21-rls'
 )
@@ -645,7 +673,7 @@ insert into public.session_bookings (
 values (
   '82300000-0000-0000-0000-000000000001',
   '82200000-0000-0000-0000-000000000001',
-  '81000000-0000-0000-0000-000000000001',
+  '81000000-0000-0000-0000-000000000008',
   'BOOKED',
   now()
 )
@@ -739,6 +767,39 @@ where lesson_asset_id = '82700000-0000-0000-0000-000000000002';
 
 set role authenticated;
 
+select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000008', false);
+select set_config(
+  'request.jwt.claims',
+  '{"sub":"81000000-0000-0000-0000-000000000008","aal":"aal1"}',
+  false
+);
+
+do $
+declare
+  visible_count integer;
+begin
+  select count(*) into visible_count
+  from public.live_sessions
+  where id = '82200000-0000-0000-0000-000000000001';
+  if visible_count <> 1 then
+    raise exception 'P21 Student D must see own Private Session';
+  end if;
+
+  select count(*) into visible_count
+  from public.live_session_resources
+  where id = '82500000-0000-0000-0000-000000000001';
+  if visible_count <> 1 then
+    raise exception 'P21 booked private Student must see READY session resource';
+  end if;
+
+  select count(*) into visible_count
+  from public.teacher_student_notes
+  where id = '82400000-0000-0000-0000-000000000001';
+  if visible_count <> 0 then
+    raise exception 'P21 Student must never read private Teacher notes';
+  end if;
+end;
+$$;
 select set_config('request.jwt.claim.sub', '81000000-0000-0000-0000-000000000001', false);
 select set_config(
   'request.jwt.claims',
@@ -752,20 +813,6 @@ declare
   attempt_id uuid;
   media_id uuid;
 begin
-  select count(*) into visible_count
-  from public.live_sessions
-  where id = '82200000-0000-0000-0000-000000000001';
-  if visible_count <> 1 then
-    raise exception 'P21 Student A must see own Private Session';
-  end if;
-
-  select count(*) into visible_count
-  from public.live_session_resources
-  where id = '82500000-0000-0000-0000-000000000001';
-  if visible_count <> 1 then
-    raise exception 'P21 booked Student must see READY session resource';
-  end if;
-
   select count(*) into visible_count
   from public.teacher_student_notes
   where id = '82400000-0000-0000-0000-000000000001';
@@ -835,7 +882,7 @@ begin
   from public.live_sessions
   where id = '82200000-0000-0000-0000-000000000001';
   if visible_count <> 0 then
-    raise exception 'P21 Student B must not see Student A Private Session';
+    raise exception 'P21 Student B must not see Student D Private Session';
   end if;
 
   select count(*) into visible_count
@@ -989,8 +1036,4 @@ begin
     raise exception 'P21 provider lifecycle tables must stay server-only';
   end if;
 end;
-$;
-
-update public.subscriptions
-set plan_id = '10000000-0000-0000-0000-000000000002'
-where id = '81600000-0000-0000-0000-000000000001';
+$$;
