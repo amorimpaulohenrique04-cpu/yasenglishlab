@@ -381,4 +381,3 @@ Two read-only investigations and principal synthesis completed. Existing entitie
   session remains the primary action.
 - Final verification is still pending. No success claim is valid until a clean
   implementation head passes the unmodified Official CI.
-
