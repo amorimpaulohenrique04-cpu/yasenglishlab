@@ -174,7 +174,9 @@ test.describe("P21 Data API security", () => {
       expect(verified.error).toBeNull();
 
       const assurance = await teacher.auth.mfa.getAuthenticatorAssuranceLevel();
-      expect(assurance.error).toBeNull();
+      if (assurance.error || !assurance.data) {
+        throw assurance.error ?? new Error("Authenticator assurance level unavailable.");
+      }
       expect(assurance.data.currentLevel).toBe("aal2");
 
       const aal2 = await teacher.rpc("manage_teacher_availability", {
