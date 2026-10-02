@@ -118,9 +118,7 @@ export interface PracticeEvaluationPolicyPort {
   availabilityForEvaluationMode(mode: EvaluationMode): PracticeAvailability;
 }
 
-export function practiceAvailabilityForEvaluationMode(
-  mode: EvaluationMode,
-): PracticeAvailability {
+export function practiceAvailabilityForEvaluationMode(mode: EvaluationMode): PracticeAvailability {
   if (mode === "DETERMINISTIC") return "DETERMINISTIC";
   if (mode === "MANUAL_PENDING") return "MANUAL_PENDING";
   return "UNSUPPORTED";
@@ -218,8 +216,10 @@ export function recommendPractice(input: {
   }
 
   const ranked = [...supported].sort((left, right) => {
-    const leftMode = policy.availabilityForEvaluationMode(left.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
-    const rightMode = policy.availabilityForEvaluationMode(right.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
+    const leftMode =
+      policy.availabilityForEvaluationMode(left.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
+    const rightMode =
+      policy.availabilityForEvaluationMode(right.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
     if (leftMode !== rightMode) return leftMode - rightMode;
 
     const leftLesson = left.relatedLessonId === input.recentLessonId ? 0 : 1;
