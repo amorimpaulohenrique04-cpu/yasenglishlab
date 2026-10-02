@@ -192,7 +192,12 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       await expect(feedbackResult.getByText("Fluência: Consistente")).toBeVisible();
       await expect(feedbackResult.getByText(/score automático/i)).toHaveCount(0);
       await expect(feedbackResult.getByRole("progressbar")).toHaveCount(0);
-      await expect(feedbackResult.getByText(/não define proficiência CEFR/i)).toBeVisible();
+      await expect(
+        feedbackResult.getByText(
+          "Este resultado pertence somente à prática. Ele não altera seu progresso no curso nem define proficiência CEFR.",
+          { exact: true },
+        ),
+      ).toBeVisible();
     } finally {
       await teacherContext.close();
     }
