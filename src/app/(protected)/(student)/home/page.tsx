@@ -1,6 +1,14 @@
 import Link from "next/link";
 
-import { Alert, Badge, Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
+import {
+  Alert,
+  Badge,
+  Card,
+  EmptyState,
+  ErrorState,
+  PageHeader,
+  ProgressBar,
+} from "@/components/ui";
 import { practiceSkillLabel } from "@/modules/practice";
 import { YAS_SCHEDULE_TIME_ZONE, scheduleSessionTypeLabel } from "@/modules/schedule";
 import { loadHomePage } from "@/server/home/home";
@@ -107,12 +115,16 @@ export default async function StudentHomePage() {
               <h2 id="home-progress-title">Meu progresso</h2>
             </div>
             {progressSummary.status === "success" && (
-              <Link className="yas-focusable" href="/progresso">Ver detalhes →</Link>
+              <Link className="yas-focusable" href="/progresso">
+                Ver detalhes →
+              </Link>
             )}
           </div>
 
           {progressSummary.status === "error" ? (
-            <p className="yas-home-local-error" role="alert">{progressSummary.message}</p>
+            <p className="yas-home-local-error" role="alert">
+              {progressSummary.message}
+            </p>
           ) : progressSummary.status === "empty" ? (
             <p className="yas-home-empty-copy">Nenhum curso ativo para resumir.</p>
           ) : (
@@ -147,12 +159,16 @@ export default async function StudentHomePage() {
               </h2>
             </div>
             {nextSession.status === "success" && primaryAction?.kind !== "schedule" && (
-              <Link className="yas-focusable" href="/agenda">Ver agenda →</Link>
+              <Link className="yas-focusable" href="/agenda">
+                Ver agenda →
+              </Link>
             )}
           </div>
 
           {nextSession.status === "error" ? (
-            <p className="yas-home-local-error" role="alert">{nextSession.message}</p>
+            <p className="yas-home-local-error" role="alert">
+              {nextSession.message}
+            </p>
           ) : nextSession.status === "empty" ? (
             <>
               <p className="yas-home-empty-copy">Nenhuma reserva futura.</p>
@@ -187,12 +203,16 @@ export default async function StudentHomePage() {
               <h2 id="home-learning-title">Sua trilha</h2>
             </div>
             {learning.status === "success" && primaryAction?.kind !== "learning" && (
-              <Link className="yas-focusable" href="/aulas">Ver aulas →</Link>
+              <Link className="yas-focusable" href="/aulas">
+                Ver aulas →
+              </Link>
             )}
           </div>
 
           {learning.status === "error" ? (
-            <p className="yas-home-local-error" role="alert">{learning.message}</p>
+            <p className="yas-home-local-error" role="alert">
+              {learning.message}
+            </p>
           ) : learning.status === "empty" ? (
             <p className="yas-home-empty-copy">Nenhum curso ativo.</p>
           ) : (
@@ -237,12 +257,16 @@ export default async function StudentHomePage() {
               <h2 id="home-practice-title">Prática recomendada</h2>
             </div>
             {practice.status === "success" && primaryAction?.kind !== "practice" && (
-              <Link className="yas-focusable" href="/pratica">Ver práticas →</Link>
+              <Link className="yas-focusable" href="/pratica">
+                Ver práticas →
+              </Link>
             )}
           </div>
 
           {practice.status === "error" ? (
-            <p className="yas-home-local-error" role="alert">{practice.message}</p>
+            <p className="yas-home-local-error" role="alert">
+              {practice.message}
+            </p>
           ) : practice.status === "empty" ? (
             <p className="yas-home-empty-copy">Nenhuma recomendação disponível agora.</p>
           ) : (
