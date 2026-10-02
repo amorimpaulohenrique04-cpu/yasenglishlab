@@ -41,6 +41,52 @@ select public.book_live_session(current_setting('p21.group')::uuid);
 select pg_temp.p21_assert(public.get_live_session_join_access(current_setting('p21.group')::uuid)->>'status'='TOO_EARLY','Student Join window enforced');
 select public.cancel_live_booking(current_setting('p21.private')::uuid);
 select pg_temp.p21_assert(public.book_live_session(current_setting('p21.private')::uuid)::text=current_setting('p21.booking'),'Rebook identity preserved');
+
+-- A booked Student must keep an in-progress/recently-ended session in Agenda for
+-- exactly the same grace window used by Join authorization.
+reset role;
+select set_config('request.jwt.claim.sub','',true);
+select set_config('request.jwt.claims','{}',true);
+insert into public.live_sessions(
+  id,teacher_id,session_type,title,starts_at,ends_at,capacity,
+  required_entitlement_key,status,meeting_provider,meeting_ref
+) values(
+  'a1600000-0000-4000-8000-000000000001',
+  'a1100000-0000-4000-8000-000000000001',
+  'WORKSHOP',
+  'P21 Join grace projection',
+  now()-interval '1 hour',
+  now()-interval '5 minutes',
+  1,
+  null,
+  'SCHEDULED',
+  'MANUAL_EXTERNAL',
+  'https://meet.example.test/p21-grace'
+);
+insert into public.session_bookings(
+  id,live_session_id,user_id,status
+) values(
+  'a1610000-0000-4000-8000-000000000001',
+  'a1600000-0000-4000-8000-000000000001',
+  'a1000000-0000-4000-8000-000000000001',
+  'BOOKED'
+);
+set local role authenticated;
+select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000001',true);
+select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000001","aal":"aal1"}',true);
+select pg_temp.p21_assert(
+  exists(
+    select 1
+    from public.get_agenda_sessions_v2() agenda
+    where agenda->>'live_session_id'='a1600000-0000-4000-8000-000000000001'
+  ),
+  'Booked session must remain in Agenda through Join grace'
+);
+select pg_temp.p21_assert(
+  public.get_live_session_join_access('a1600000-0000-4000-8000-000000000001')->>'status'='AVAILABLE',
+  'Agenda grace session must remain joinable'
+);
+
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000002',true);
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000002","aal":"aal1"}',true);
 select pg_temp.p21_assert(not exists(select 1 from public.live_sessions where id=current_setting('p21.private')::uuid),'Private session hidden from other Student');
