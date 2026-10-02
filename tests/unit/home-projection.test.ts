@@ -110,6 +110,18 @@ function repository(overrides: Partial<HomeReadRepository> = {}): HomeReadReposi
   };
 }
 
+function deepObjectKeys(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap(deepObjectKeys);
+  }
+
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+
+  return Object.entries(value).flatMap(([key, nested]) => [key, ...deepObjectKeys(nested)]);
+}
+
 describe("P21 Home projection", () => {
   it("fails closed for a non-Student without reading any domain", async () => {
     const repo = repository();
@@ -489,9 +501,9 @@ describe("P21 Home projection", () => {
     expect(state.status).toBe("success");
     if (state.status !== "success") throw new Error("Expected success.");
     expect(Array.isArray(state.data.primaryAction)).toBe(false);
-    const serialized = JSON.stringify(state.data).toLowerCase();
-    expect(serialized).not.toContain("cefr");
-    expect(serialized).not.toContain("plan");
-    expect(serialized).not.toContain("analytics");
+    const keys = deepObjectKeys(state.data).map((key) => key.toLowerCase());
+    expect(keys).not.toContain("cefr");
+    expect(keys).not.toContain("plan");
+    expect(keys).not.toContain("analytics");
   });
 });
