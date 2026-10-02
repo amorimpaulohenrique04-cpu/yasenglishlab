@@ -45,9 +45,9 @@ async function cleanup(): Promise<void> {
       .delete()
       .in(
         "session_booking_id",
-        (
-          await admin.from("session_bookings").select("id").in("live_session_id", ids)
-        ).data?.map((item) => item.id) ?? [],
+        (await admin.from("session_bookings").select("id").in("live_session_id", ids)).data?.map(
+          (item) => item.id,
+        ) ?? [],
       );
     if (attendanceError && attendanceError.code !== "PGRST103") throw attendanceError;
     const { error: bookingError } = await admin
@@ -157,9 +157,7 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
       await page.goto(`/teacher/sessoes/${sessionId}`);
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Cohort Student A" })).toBeVisible();
-      await page
-        .getByRole("button", { name: "Marcar Cohort Student A como Presente" })
-        .click();
+      await page.getByRole("button", { name: "Marcar Cohort Student A como Presente" }).click();
       await expect(page.getByText("Presença atualizada")).toBeVisible();
     } finally {
       await studentContext.close();
@@ -180,10 +178,7 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
       await nowCard.getByRole("button", { name: "Entrar no encontro" }).click();
       const join = nowCard.getByRole("link", { name: "Abrir reunião" });
       await expect(join).toBeVisible();
-      await expect(join).toHaveAttribute(
-        "href",
-        "https://meet.example.test/canonical-home-now",
-      );
+      await expect(join).toHaveAttribute("href", "https://meet.example.test/canonical-home-now");
     } finally {
       await nowContext.close();
     }
