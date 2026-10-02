@@ -1036,3 +1036,11 @@ begin
   end if;
 end;
 $$;
+
+-- Keep P21 RLS video fixtures order-independent: lesson_single_video_v1 is a product
+-- invariant, while these two provider-backed assets exist only for assertions above.
+delete from public.lesson_assets
+where id in (
+  '82700000-0000-0000-0000-000000000001',
+  '82700000-0000-0000-0000-000000000002'
+);
