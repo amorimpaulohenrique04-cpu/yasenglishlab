@@ -4,6 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
+const homeNowEmail = "canonical.home-now@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const evidenceDir = "artifacts/canonical-slice";
 
@@ -19,7 +20,7 @@ test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
-  test("a Student without progress facts receives a real empty state", async ({ page }) => {
+  test("a Student without curriculum or booking projects the real Practice fallback", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
     await page.goto("/login");
@@ -39,6 +40,30 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Seu progresso começa aqui" })).toBeVisible();
     await expect(page.getByText("Nível CEFR ainda não disponível")).toHaveCount(0);
+  });
+
+  test("a booked session happening now outranks Practice and navigates to Agenda", async ({
+    page,
+  }) => {
+    if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
+
+    await page.goto("/login");
+    await page.getByLabel("E-mail").fill(homeNowEmail);
+    await page.getByLabel("Senha").fill(password);
+    await page.getByRole("button", { name: "Entrar" }).click();
+
+    await expect(page).toHaveURL(/\/home$/);
+    await expect(page.getByRole("heading", { name: "Sessão agora" })).toBeVisible();
+    await expect(
+      page.getByText("Home Fixture · Session happening now", { exact: true }).first(),
+    ).toBeVisible();
+
+    const primaryAction = page.getByRole("link", { name: "Ver sessão na Agenda →" });
+    await expect(primaryAction).toBeVisible();
+    await primaryAction.click();
+
+    await expect(page).toHaveURL(/\/agenda$/);
+    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
   });
 
   test("browser-visible Progress responses do not expose internal Assessment or service-role data", async ({
