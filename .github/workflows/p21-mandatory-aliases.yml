@@ -1,0 +1,122 @@
+name: P21 Mandatory Aliases
+
+on:
+  push:
+    branches:
+      - verify/p21-home-projection-0b80af39
+    paths:
+      - .github/workflows/p21-mandatory-aliases.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-agent:
+    name: verify:agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 0b80af3945c21ebcbc6f208c6625fae97e3df9ff
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: git fetch origin main:refs/remotes/origin/main
+      - run: npm run verify:agent
+
+  verify-security:
+    name: verify:security
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 0b80af3945c21ebcbc6f208c6625fae97e3df9ff
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run verify:security
+
+  verify-ui:
+    name: verify:ui
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 0b80af3945c21ebcbc6f208c6625fae97e3df9ff
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359
+        with:
+          version: 2.118.0
+      - run: npx playwright install chromium
+      - name: Start isolated Supabase
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase start
+          supabase db reset
+          supabase status -o env > /tmp/yas-p21-supabase.env
+          set -a
+          source /tmp/yas-p21-supabase.env
+          set +a
+          rm /tmp/yas-p21-supabase.env
+          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
+          SERVER_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
+          test -n "${API_URL:-}"
+          test -n "${DB_URL:-}"
+          test -n "$PUBLIC_KEY"
+          test -n "$SERVER_KEY"
+          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
+          echo "::add-mask::$E2E_PASSWORD"
+          echo "::add-mask::$SERVER_KEY"
+          {
+            echo "APP_URL=http://127.0.0.1:3000"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
+            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
+            echo "DATABASE_URL=$DB_URL"
+            echo "APP_ENV=preview"
+            echo "APP_VERSION=0b80af3945c21ebcbc6f208c6625fae97e3df9ff"
+            echo "CANONICAL_E2E=1"
+            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
+          } >> "$GITHUB_ENV"
+      - run: npm run verify:ui
+      - if: always()
+        run: supabase stop --no-backup || true
+
+  verify-full:
+    name: verify:full
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 0b80af3945c21ebcbc6f208c6625fae97e3df9ff
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359
+        with:
+          version: 2.118.0
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      - run: npx playwright install chromium
+      - run: npm run verify:full
