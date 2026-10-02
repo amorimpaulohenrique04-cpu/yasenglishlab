@@ -3,7 +3,7 @@
 Status: done  
 Owner: agent/human  
 Created: 2026-10-01  
-Updated: 2026-10-01
+Updated: 2026-10-02
 
 ## Objective
 
@@ -54,9 +54,11 @@ Um Student autenticado abre `/home` e entende rapidamente o que fazer agora. A H
 - `src/modules/home/**`
 - `src/server/home/**`
 - `src/app/globals.css` apenas para importar CSS exclusivo da Home
-- extrações mínimas em Learning/Practice/Schedule somente se necessárias para reutilização
-- testes focados na Home e ajustes canônicos de E2E/a11y/golden
-- fixture canônica somente se necessária
+- `src/app/(protected)/(student)/layout.tsx` e `src/server/student/request-context.ts` somente para compartilhar auth/client por request
+- `src/modules/practice/**`, `src/server/practice/**` e `src/app/(protected)/(student)/pratica/page.tsx` somente para extrair/reutilizar o read contract de recomendação existente
+- `src/modules/schedule/**` e `src/server/schedule/**` somente para extrair/reutilizar o read contract de booking existente
+- `scripts/setup-canonical-e2e.mjs` somente para a fixture canônica necessária à Home
+- `tests/unit/**`, `tests/integration/**`, `tests/e2e/**`, `tests/a11y/**` e `tests/visual/**`
 - `harness/**`
 - docs somente se comportamento implementado exigir sincronização
 
