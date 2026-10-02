@@ -3,8 +3,18 @@ import Mux from "@mux/mux-node";
 import { describe, expect, it, vi } from "vitest";
 import { FakeVideoProvider } from "../helpers/fake-video-provider";
 vi.mock("server-only", () => ({}));
-import { MuxVideoProvider } from "@/server/media/mux-provider";
+import { muxClient, MuxVideoProvider } from "@/server/media/mux-provider";
 describe("Mux provider contract without external calls", () => {
+  it("honors the explicit test API base URL without making a request", () => {
+    vi.stubEnv("MUX_TOKEN_ID", "test");
+    vi.stubEnv("MUX_TOKEN_SECRET", "test");
+    vi.stubEnv("MUX_BASE_URL", "http://127.0.0.1:43123");
+    try {
+      expect(muxClient().baseURL).toBe("http://127.0.0.1:43123");
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
   it("fake direct upload and playback contract have distinct credentials", async () => {
     const provider = new FakeVideoProvider();
     const upload = await provider.createDirectUpload({
