@@ -4,6 +4,7 @@ import {
   getHomeView,
   selectLearningAction,
   type HomeReadRepository,
+  type HomeScheduleFact,
 } from "@/modules/home";
 import type {
   LearningCourse,
@@ -14,7 +15,6 @@ import type {
   PracticeActivityItem,
   PracticeHistoryItem,
 } from "@/modules/practice";
-import type { ScheduleSessionRecord } from "@/modules/schedule";
 
 const userId = "81000000-0000-4000-8000-000000000001";
 const now = new Date("2026-10-01T12:00:00Z");
@@ -109,21 +109,14 @@ function booking(
   id: string,
   startsAt: string,
   endsAt: string,
-): ScheduleSessionRecord {
+): HomeScheduleFact {
   return {
     id,
     sessionType: "CORE_CLASS",
     title: `Session ${id}`,
     startsAt,
     endsAt,
-    capacity: 6,
-    status: "SCHEDULED",
-    requiredEntitlementKey: null,
-    bookedCount: 1,
-    spotsRemaining: 5,
-    ownBookingId: `booking-${id}`,
-    ownBookingStatus: "BOOKED",
-    hasRequiredEntitlement: true,
+    bookingStatus: "BOOKED",
   };
 }
 
