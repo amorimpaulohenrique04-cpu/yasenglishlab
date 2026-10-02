@@ -44,6 +44,21 @@ Attendance permanece entidade separada de booking. A escrita ocorre por RPC prot
 
 Cancelamento/remarcação, meeting provider, disponibilidade editável e autoria continuam fora deste V1.
 
+## Teacher Operations V2 / Student Agenda V2
+
+P21.4 extends V1 without turning Teacher into Admin. See [ADR 0012](./adr/0012-provider-neutral-live-operations.md).
+
+- Teacher identity remains derived from `auth.uid()` and all privileged commands require AAL2.
+- Teacher availability is durable and serialized; a new/edited session must fit an own interval.
+- Group sessions require an authorized active Cohort. Private sessions require one authorized target Student.
+- Overlap is rejected in PostgreSQL; adjacent sessions are allowed.
+- Existing bookings freeze structural session fields. Rescheduling means cancel + create a new session.
+- Student cancel/rebook reuses the existing booking identity and commercial usage snapshot.
+- `MANUAL_EXTERNAL` is the provider-neutral V1 meeting mode. Meeting references are server-only.
+- Join is authorized at request time. Student requires own BOOKED booking; Teacher requires session ownership + AAL2.
+- The initial Join window is 15 minutes before start through 15 minutes after end.
+- Domain notifications are transactional/idempotent state records; no external delivery channel is implied.
+
 ## O que não fazer
 - `students.length < 6` apenas no navegador.
 - Credencial privilegiada de reunião pública.
