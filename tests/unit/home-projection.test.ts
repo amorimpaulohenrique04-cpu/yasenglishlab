@@ -94,11 +94,7 @@ const activity: PracticeRecommendationActivity = {
   evaluationMode: "DETERMINISTIC",
 };
 
-function booking(
-  id: string,
-  startsAt: string,
-  endsAt: string,
-): ScheduleOwnBookingFact {
+function booking(id: string, startsAt: string, endsAt: string): ScheduleOwnBookingFact {
   return {
     id,
     sessionType: "CORE_CLASS",
@@ -135,11 +131,7 @@ describe("P21 Home projection", () => {
   });
 
   it("turns a persisted incomplete lesson into Continue", async () => {
-    const started = lesson(
-      "started",
-      1,
-      progress("started", 35, "2026-10-01T11:00:00Z"),
-    );
+    const started = lesson("started", 1, progress("started", 35, "2026-10-01T11:00:00Z"));
     const state = await getHomeView(
       repository({ loadLearning: vi.fn(async () => [course("course-1", [started])]) }),
       userId,
@@ -191,7 +183,10 @@ describe("P21 Home projection", () => {
   });
 
   it("uses canonical course/module/lesson order when nothing has persisted progress", () => {
-    const first = course("course-a", [lesson("later-position", 2), lesson("first-position", 1)]);
+    const first = course("course-a", [
+      lesson("later-position", 2),
+      lesson("first-position", 1),
+    ]);
     const second = course("course-b", [lesson("second-course", 1)]);
 
     expect(selectLearningAction([first, second])?.lesson.id).toBe("first-position");
@@ -206,7 +201,11 @@ describe("P21 Home projection", () => {
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => [course("course-1", [complete])]),
-        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
       }),
       userId,
       true,
@@ -246,7 +245,11 @@ describe("P21 Home projection", () => {
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => []),
-        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
         loadSchedule: vi.fn(async () => [
           booking("ended", "2026-10-01T11:00:00Z", "2026-10-01T12:00:00Z"),
           booking("starts-now", "2026-10-01T12:00:00Z", "2026-10-01T12:30:00Z"),
@@ -334,7 +337,11 @@ describe("P21 Home projection", () => {
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => []),
-        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
         loadSchedule: vi.fn(async () => [
           booking("future", "2026-10-02T12:00:00Z", "2026-10-02T13:00:00Z"),
         ]),
@@ -356,7 +363,11 @@ describe("P21 Home projection", () => {
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => []),
-        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
         loadSchedule: vi.fn(async () => []),
       }),
       userId,
@@ -406,7 +417,11 @@ describe("P21 Home projection", () => {
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => [older, recent]),
-        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
       }),
       userId,
       true,
@@ -417,7 +432,12 @@ describe("P21 Home projection", () => {
     if (state.status !== "success") throw new Error("Expected success.");
     expect(state.data.progressSummary).toMatchObject({
       status: "success",
-      data: { courseTitle: "Recent", completionPercent: 100, lessonsCompleted: 1, totalLessons: 1 },
+      data: {
+        courseTitle: "Recent",
+        completionPercent: 100,
+        lessonsCompleted: 1,
+        totalLessons: 1,
+      },
     });
   });
 
