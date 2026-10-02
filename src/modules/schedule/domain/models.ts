@@ -26,6 +26,15 @@ export interface ScheduleSessionRecord {
   hasRequiredEntitlement: boolean;
 }
 
+export interface ScheduleOwnBookingFact {
+  id: string;
+  sessionType: ScheduleSessionType;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  bookingStatus: "BOOKED";
+}
+
 export interface ScheduleSessionView extends ScheduleSessionRecord {
   availability: ScheduleAvailability;
   eligibility: {
