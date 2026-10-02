@@ -1,0 +1,32 @@
+name: P21 Closure Format
+
+on:
+  push:
+    branches:
+      - verify/p21-close-format-fedf256c
+    paths:
+      - .github/workflows/p21-closure-format.yml
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fedf256c1b3df57687ac0a03544da76ef77c50dd
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format closure files
+        run: npx prettier --write harness/agent-state/progress.md harness/evidence/prompt-21-home-projection-v1/verification.json
+      - name: Upload canonical closure files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: p21-closure-format
+          path: |
+            harness/agent-state/progress.md
+            harness/evidence/prompt-21-home-projection-v1/verification.json
+          retention-days: 1
