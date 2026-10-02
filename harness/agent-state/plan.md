@@ -4,49 +4,52 @@
 
 **prompt-21-home-projection-v1**
 
-State: in_progress / verified:false.
+State: done / verified:true.
 
 Branch: `feat/p21-home-projection-v1`.
 
-### Recovery audit
+### Delivered correction
 
-1. The previous closure was invalid because Harness/evidence said `done / verified:true`
-   while the branch head had moved beyond the documented implementation SHA.
-2. P21-specific edits to `.github/workflows/foundation-verify.yml` polluted the
-   feature scope and could make `eval:agent` observe a different tree from the
-   one reported as verified.
-3. The Home Schedule read currently filters only booking status. A BOOKED row
-   whose `live_sessions.status` is CANCELLED/COMPLETED can still become
-   Home's current/future session.
-4. The Schedule read is not bounded by time/row count at the database boundary;
-   the previous "bounded reads" test proved call count only.
-5. The request-scoped auth/client, Learning resume policy, existing Practice
-   recommendation and Progress curriculum projection are otherwise kept.
+1. Restored `.github/workflows/foundation-verify.yml` exactly to `main`;
+   P21 has no workflow or migration diff.
+2. Kept the request-scoped shared auth/client, deterministic Learning resume,
+   existing Practice recommendation and P20 curricular projection.
+3. Corrected Schedule's Home read to accept the same explicit clock used by
+   Home and return only the authenticated Student's own BOOKED booking whose
+   referenced live session is SCHEDULED and has not ended.
+4. Bounded the Schedule read at PostgreSQL/Data API: referenced start ordering
+   plus `limit(1)`, so Home reads only the current/next applicable booking.
+5. Added canonical regression fixtures for BOOKED rows linked to CANCELLED and
+   COMPLETED sessions and proved they never surface in Home while the valid
+   SCHEDULED current session remains primary.
+6. Preserved one `primaryAction`, partial/error semantics, minimal Practice
+   inputs, no global course average and no Home writes.
 
-### Correction plan
+### Verification
 
-1. Restore Official CI workflow exactly to `main` and keep P21 Harness
-   `in_progress / verified:false` until the final clean head passes.
-2. Bound Schedule's Home read at the Schedule repository: own BOOKED booking,
-   referenced live session SCHEDULED, `ends_at > now`, order by referenced
-   `starts_at`, limit 1.
-3. Pass the same explicit `now` from Home application to the Schedule read so
-   current/future classification remains deterministic.
-4. Add regression coverage for cancelled/completed/ended sessions and for the
-   actual bounded repository query, not only repository call count.
-5. Extend canonical fixture/E2E so cancelled/completed booked sessions are
-   readable but never surface as Home primary/next session.
-6. Review `main...branch` for migrations, writes, service-role runtime,
-   workflow drift and files outside P21 scope.
-7. Run focused tests first, then one final full Official CI on a clean candidate
-   head. Only after the implementation head is green may Harness return to
-   `done / verified:true`.
+Implementation head:
+`0b80af3945c21ebcbc6f208c6625fae97e3df9ff`.
 
-### Verification state
+Official CI #422 / run `36956118087` passed:
 
-Current status: NOT VERIFIED.
+- Supply Chain;
+- Quality: format, lint, typecheck, unit, integration, Harness, security, build;
+- Database: migration policy + two clean replays;
+- Guardrail Simulations;
+- Preview: DB integration/concurrency, RLS, observability, canonical E2E,
+  persistence/analytics, a11y, Storybook, design-system visuals and product
+  goldens;
+- CI Gate.
 
-Historical green runs remain evidence for their exact historical SHAs only and
-must not be used as proof of the eventual final head.
+Mandatory aliases were then executed literally in isolated jobs that explicitly
+checked out the same implementation SHA. Run `36956848003` passed
+`verify:agent`, `verify:security`, `verify:ui` and `verify:full`.
 
-PR #25 must remain open against `main`; no merge is part of P21.
+Preview artifact `11206068526` was inspected. Home desktop/tablet/mobile
+preserve the approved hierarchy without visible clipping/overflow; product
+goldens passed unchanged on the corrected implementation.
+
+Durable evidence:
+`harness/evidence/prompt-21-home-projection-v1/`.
+
+PR #25 remains open against `main`; no merge was performed.
