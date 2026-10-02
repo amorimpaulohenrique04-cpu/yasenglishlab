@@ -239,7 +239,7 @@ export async function getHomeView(
   const settled = await Promise.allSettled([
     repository.loadLearning(userId),
     repository.loadPractice(userId),
-    repository.loadSchedule(userId),
+    repository.loadSchedule(userId, now),
   ] as const);
 
   const domainNames = ["learning", "practice", "schedule"] as const;
