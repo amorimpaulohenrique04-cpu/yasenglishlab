@@ -68,10 +68,11 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
     return { activities, history, recentLessonId };
   }
 
-  async loadSchedule(): Promise<HomeScheduleFact[]> {
+  async loadSchedule(userId: string): Promise<HomeScheduleFact[]> {
     const { data, error } = await this.client
       .from("session_bookings")
       .select("status, live_sessions!inner(id, session_type, title, starts_at, ends_at)")
+      .eq("user_id", userId)
       .eq("status", "BOOKED");
 
     if (error) throw new Error("Unable to load Home Schedule bookings.");
