@@ -281,8 +281,7 @@ test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({
 test("P21 recorded-video Admin upload state is accessible before publication", async ({ page }) => {
   await loginCanonicalAdmin(page, password!, {
     next: "/admin/content/8c100000-0000-4000-8000-000000000001?kind=lesson_assets",
-    destination:
-      /\/admin\/content\/8c100000-0000-4000-8000-000000000001\?kind=lesson_assets$/,
+    destination: /\/admin\/content\/8c100000-0000-4000-8000-000000000001\?kind=lesson_assets$/,
   });
   await expect(page.getByRole("heading", { name: "Vídeo gravado" })).toBeVisible();
   const prepare = page.getByRole("button", { name: "Preparar envio de vídeo" });
