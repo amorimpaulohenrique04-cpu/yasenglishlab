@@ -1,15 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  getHomeView,
-  selectLearningAction,
-  type HomeReadRepository,
-} from "@/modules/home";
-import type {
-  LearningCourse,
-  LearningLesson,
-  LessonProgressSnapshot,
-} from "@/modules/learning";
+import { getHomeView, selectLearningAction, type HomeReadRepository } from "@/modules/home";
+import type { LearningCourse, LearningLesson, LessonProgressSnapshot } from "@/modules/learning";
 import type {
   PracticeRecommendationActivity,
   PracticeRecommendationHistoryItem,
@@ -183,21 +175,14 @@ describe("P21 Home projection", () => {
   });
 
   it("uses canonical course/module/lesson order when nothing has persisted progress", () => {
-    const first = course("course-a", [
-      lesson("later-position", 2),
-      lesson("first-position", 1),
-    ]);
+    const first = course("course-a", [lesson("later-position", 2), lesson("first-position", 1)]);
     const second = course("course-b", [lesson("second-course", 1)]);
 
     expect(selectLearningAction([first, second])?.lesson.id).toBe("first-position");
   });
 
   it("does not invent a lesson when every applicable lesson is complete", async () => {
-    const complete = lesson(
-      "complete",
-      1,
-      progress("complete", 100, "2026-10-01T10:00:00Z"),
-    );
+    const complete = lesson("complete", 1, progress("complete", 100, "2026-10-01T10:00:00Z"));
     const state = await getHomeView(
       repository({
         loadLearning: vi.fn(async () => [course("course-1", [complete])]),
@@ -316,11 +301,7 @@ describe("P21 Home projection", () => {
   });
 
   it("falls back from Learning to Practice when all lessons are complete", async () => {
-    const complete = lesson(
-      "complete",
-      1,
-      progress("complete", 100, "2026-10-01T10:00:00Z"),
-    );
+    const complete = lesson("complete", 1, progress("complete", 100, "2026-10-01T10:00:00Z"));
     const state = await getHomeView(
       repository({ loadLearning: vi.fn(async () => [course("course-1", [complete])]) }),
       userId,

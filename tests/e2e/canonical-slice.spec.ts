@@ -179,7 +179,9 @@ test.describe("canonical learning vertical slice", () => {
     await primaryHomeAction.focus();
     await expect(primaryHomeAction).toBeFocused();
     await primaryHomeAction.click();
-    await expect(page).toHaveURL(/\/aulas\/yas-foundations\/modulos\/[^/]+\/aulas\/welcome-to-yas$/);
+    await expect(page).toHaveURL(
+      /\/aulas\/yas-foundations\/modulos\/[^/]+\/aulas\/welcome-to-yas$/,
+    );
     await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
     await page.goto("/home");
 

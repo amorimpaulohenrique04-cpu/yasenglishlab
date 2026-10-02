@@ -2,11 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  getHomeView,
-  type HomePracticeInputs,
-  type HomeReadRepository,
-} from "@/modules/home";
+import { getHomeView, type HomePracticeInputs, type HomeReadRepository } from "@/modules/home";
 import type { LearningCourse } from "@/modules/learning";
 import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 

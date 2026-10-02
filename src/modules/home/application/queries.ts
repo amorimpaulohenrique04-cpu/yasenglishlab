@@ -56,9 +56,7 @@ function orderedSelections(courses: readonly LearningCourse[]): LearningSelectio
 }
 
 export function selectLearningAction(courses: readonly LearningCourse[]): LearningSelection | null {
-  const incomplete = orderedSelections(courses).filter(
-    ({ lesson }) => !isLessonComplete(lesson),
-  );
+  const incomplete = orderedSelections(courses).filter(({ lesson }) => !isLessonComplete(lesson));
 
   let resumed: LearningSelection | null = null;
   for (const candidate of incomplete) {
@@ -258,8 +256,7 @@ export async function getHomeView(
   const scheduleRecords = settled[2].status === "fulfilled" ? settled[2].value : [];
 
   const selection = settled[0].status === "fulfilled" ? selectLearningAction(courses) : null;
-  const focus =
-    settled[0].status === "fulfilled" ? selectFocusCourse(courses, selection) : null;
+  const focus = settled[0].status === "fulfilled" ? selectFocusCourse(courses, selection) : null;
   const practice =
     practiceInputs === null
       ? {

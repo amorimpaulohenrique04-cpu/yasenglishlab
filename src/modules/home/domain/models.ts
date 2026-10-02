@@ -4,9 +4,7 @@ import type { ScheduleSessionType } from "@/modules/schedule";
 export type HomeDomainName = "learning" | "practice" | "schedule";
 
 export type HomeSection<T> =
-  | { status: "success"; data: T }
-  | { status: "empty" }
-  | { status: "error"; message: string };
+  { status: "success"; data: T } | { status: "empty" } | { status: "error"; message: string };
 
 export interface HomePrimaryAction {
   kind: "learning" | "practice" | "schedule";
