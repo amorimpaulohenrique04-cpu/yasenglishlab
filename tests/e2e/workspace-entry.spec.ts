@@ -21,7 +21,7 @@ test("multi-role requires a selector and allows only authorized choices", async 
   await expect(page).toHaveURL(/\/workspace$/);
 });
 test("Teacher cannot refresh Student routes without STUDENT role", async ({ page }) => {
-  await loginCanonicalTeacher(page, password);
+  await loginCanonicalTeacher(page, password, { next: "" });
   for (const path of ["/home", "/aulas", "/pratica", "/materiais", "/progresso", "/agenda"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/profile\?auth=forbidden$/);

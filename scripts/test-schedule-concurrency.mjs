@@ -190,7 +190,7 @@ runAdmin(`
   select id::uuid,'${teacherId}','CORE_CLASS','Quota concurrency',
     date_trunc('week',now())+interval '14 days 12 hours',date_trunc('week',now())+interval '14 days 13 hours',6,'weekly_core_classes'
   from unnest(array['${quotaSessions.join("','")}']) id
-  on conflict(id) do update set starts_at=excluded.starts_at,ends_at=excluded.ends_at;
+  on conflict(id) do update set starts_at=excluded.starts_at,ends_at=excluded.ends_at,status='SCHEDULED';
 `);
 function quotaBookingSql(id) {
   return `set role authenticated;
@@ -249,4 +249,66 @@ const finalUsage = Number(
 if (finalUsage > 1) throw new Error("Cancel/retry race exceeded quota.");
 console.log(
   "✓ Real retry/cancellation concurrency passed: stable UUID and at most one consumed unit.",
+);
+
+runAdmin(quotaBookingSql(winnerSession));
+function teacherSql(command) {
+  return `set role authenticated;
+    select set_config('request.jwt.claim.sub','${teacherUser}',false);
+    select set_config('request.jwt.claims','{"sub":"${teacherUser}","aal":"aal2"}',false);
+    ${command};`;
+}
+const teacherAttendanceRace = await withBarrier(
+  `select id from public.session_bookings where id='${originalBooking}' for update`,
+  [
+    teacherSql(`select public.cancel_teacher_live_session('${winnerSession}')`),
+    teacherSql(`select public.mark_teacher_attendance('${originalBooking}','ATTENDED')`),
+  ],
+);
+if (
+  teacherAttendanceRace[0].code !== 0 ||
+  (teacherAttendanceRace[1].code !== 0 &&
+    !teacherAttendanceRace[1].stderr.includes("active booked participant"))
+)
+  throw new Error(
+    `Teacher cancellation/attendance race failed: ${JSON.stringify(teacherAttendanceRace)}`,
+  );
+if (
+  runAdmin(`select status from public.session_bookings where id='${originalBooking}'`) !==
+  "TEACHER_CANCELLED"
+)
+  throw new Error("Teacher cancellation must win final booking state.");
+if (
+  Number(
+    runAdmin(
+      `select count(*) from public.attendance where session_booking_id='${originalBooking}'`,
+    ),
+  ) > 1
+)
+  throw new Error("Attendance race duplicated a fact.");
+const otherSession = quotaSessions.find((id) => id !== winnerSession);
+const teacherBookingRace = await withBarrier(
+  `select id from public.live_sessions where id='${otherSession}' for update`,
+  [
+    teacherSql(`select public.cancel_teacher_live_session('${otherSession}')`),
+    quotaBookingSql(otherSession),
+  ],
+);
+if (
+  teacherBookingRace[0].code !== 0 ||
+  (teacherBookingRace[1].code !== 0 && !teacherBookingRace[1].stderr.includes("non-scheduled"))
+)
+  throw new Error(
+    `Teacher cancellation/booking race failed: ${JSON.stringify(teacherBookingRace)}`,
+  );
+if (
+  Number(
+    runAdmin(
+      `select count(*) from public.session_bookings where live_session_id in ('${quotaSessions.join("','")}') and status='BOOKED'`,
+    ),
+  ) !== 0
+)
+  throw new Error("Teacher cancellation left commercial usage or active bookings.");
+console.log(
+  "✓ Teacher cancellation versus attendance/booking races passed: unique attendance, cancelled sessions and zero active consumption.",
 );

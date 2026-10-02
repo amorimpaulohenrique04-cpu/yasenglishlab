@@ -1,6 +1,8 @@
 // Local proof runner: captures Supabase credentials without printing them.
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { rmSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 const npmCli = "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js";
 const status = spawnSync("supabase", ["status", "-o", "env"], { encoding: "utf8" });
 if (status.status !== 0) throw new Error("Local Supabase status failed.");
@@ -39,6 +41,18 @@ function run(args) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 const stage = process.argv[2];
+if (["admin-e2e", "canonical-e2e", "admin-a11y", "verify:ui", "verify:full"].includes(stage)) {
+  const running = await fetch(env.APP_URL, { signal: AbortSignal.timeout(1000) }).then(
+    () => true,
+    () => false,
+  );
+  if (running)
+    throw new Error("Refusing to clear isolated Next cache while its server is running.");
+  const generated = resolve(".next-p18");
+  if (dirname(generated) !== process.cwd() || generated !== join(process.cwd(), ".next-p18"))
+    throw new Error("Unexpected isolated generated path.");
+  rmSync(generated, { recursive: true, force: true });
+}
 if (stage === "admin-e2e") {
   run(["scripts/setup-canonical-e2e.mjs"]);
   run([

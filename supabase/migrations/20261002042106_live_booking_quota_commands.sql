@@ -9,30 +9,39 @@ returns boolean language sql stable security definer set search_path = '' as $$
   select exists(select 1 from public.live_sessions where id = p_session);
 $$;
 
-create or replace function private.booking_quota(p_user uuid, p_key text, p_starts_at timestamptz, p_exclude uuid default null)
+create or replace function private.booking_quota_for_config(p_user uuid, p_key text, p_starts_at timestamptz,
+ p_limit numeric, p_cadence text, p_exclude uuid default null)
 returns jsonb language plpgsql volatile security definer set search_path = '' as $$
-declare config record; win record; used_units bigint;
+declare win record; used_units bigint;
 begin
   if p_key is null then return jsonb_build_object('cadence','NONE','total',null,'used',0,'remaining',null,'allowed',true); end if;
-  select * into config from private.booking_entitlement(p_user,p_key,now());
-  if not found or config.limit_value <= 0 then
+  if p_limit is null or p_limit <= 0 then
     return jsonb_build_object('allowed',false,'reason','ENTITLEMENT_REQUIRED');
   end if;
-  if config.cadence <> 'NONE' and config.limit_value <> trunc(config.limit_value) then
+  if p_cadence <> 'NONE' and p_limit <> trunc(p_limit) then
     raise exception 'Live recurring entitlement limit must be an integer' using errcode='23514';
   end if;
-  select * into win from private.booking_usage_window(p_starts_at,config.cadence);
+  select * into win from private.booking_usage_window(p_starts_at,p_cadence);
   select count(*) into used_units from public.session_bookings b
   where b.user_id=p_user and b.entitlement_key_used=p_key
     and (p_exclude is null or b.id<>p_exclude)
     and b.usage_session_starts_at >= win.window_start and b.usage_session_starts_at < win.window_end
     and (b.status='BOOKED' or (b.status='CANCELLED' and
       (b.cancelled_at is null or b.cancelled_at >= b.usage_session_starts_at)));
-  return jsonb_build_object('cadence',config.cadence,
-    'total',case when config.cadence='NONE' then null else config.limit_value end,
-    'used',used_units,'remaining',case when config.cadence='NONE' then null else greatest(config.limit_value-used_units,0) end,
-    'allowed',config.cadence='NONE' or used_units<config.limit_value,
-    'reason',case when config.cadence<>'NONE' and used_units>=config.limit_value then 'QUOTA_EXCEEDED' else null end);
+  return jsonb_build_object('cadence',p_cadence,
+    'total',case when p_cadence='NONE' then null else p_limit end,
+    'used',used_units,'remaining',case when p_cadence='NONE' then null else greatest(p_limit-used_units,0) end,
+    'allowed',p_cadence='NONE' or used_units<p_limit,
+    'reason',case when p_cadence<>'NONE' and used_units>=p_limit then 'QUOTA_EXCEEDED' else null end);
+end $$;
+revoke all on function private.booking_quota_for_config(uuid,text,timestamptz,numeric,text,uuid) from public,anon,authenticated;
+
+create or replace function private.booking_quota(p_user uuid, p_key text, p_starts_at timestamptz, p_exclude uuid default null)
+returns jsonb language plpgsql volatile security definer set search_path = '' as $$
+declare config record;
+begin
+  select * into config from private.booking_entitlement(p_user,p_key,now());
+  return private.booking_quota_for_config(p_user,p_key,p_starts_at,config.limit_value,coalesce(config.cadence,'NONE'),p_exclude);
 end $$;
 
 create or replace function private.validate_booking()
@@ -83,12 +92,13 @@ begin
   select count(*) into occupied from public.session_bookings b
     where b.live_session_id=new.live_session_id and b.status='BOOKED' and b.id<>new.id;
   if occupied>=session_row.capacity then raise exception 'live session capacity exceeded' using errcode='23514'; end if;
-  quota := private.booking_quota(new.user_id,session_row.required_entitlement_key,session_row.starts_at,new.id);
+  -- Resolve one configuration for both validation and the persisted snapshot.
+  select * into config from private.booking_entitlement(new.user_id,session_row.required_entitlement_key,now());
+  quota := private.booking_quota_for_config(new.user_id,session_row.required_entitlement_key,session_row.starts_at,config.limit_value,coalesce(config.cadence,'NONE'),new.id);
   if not (quota->>'allowed')::boolean then
     if quota->>'reason'='ENTITLEMENT_REQUIRED' then raise exception 'required entitlement is not available' using errcode='42501'; end if;
     raise exception 'booking quota exceeded' using errcode='23514';
   end if;
-  select * into config from private.booking_entitlement(new.user_id,session_row.required_entitlement_key,now());
   select * into win from private.booking_usage_window(session_row.starts_at,coalesce(config.cadence,'NONE'));
   new.entitlement_key_used := session_row.required_entitlement_key;
   new.plan_entitlement_id_used := config.config_id;
@@ -240,8 +250,8 @@ begin
         case when tg_op = 'DELETE' then old.enrollment_id else new.enrollment_id end,
       'lesson_id', case when tg_op = 'DELETE' then old.lesson_id else new.lesson_id end,
       'status', case when tg_op = 'DELETE' then old.status else new.status end,
-      'progress_percent',
-        case when tg_op = 'DELETE' then old.progress_percent else new.progress_percent end
+      'completion_percent',
+        case when tg_op = 'DELETE' then old.completion_percent else new.completion_percent end
     );
   else
     details := jsonb_build_object('operation', tg_op);

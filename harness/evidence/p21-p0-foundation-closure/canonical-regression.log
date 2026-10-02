@@ -1,0 +1,1268 @@
+Canonical E2E fixture ready.
+[WebServer] (node:5832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:15552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:23928) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:8252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\canonical-slice.spec.ts:24:7 › canonical learning vertical slice › a Student without curriculum or booking projects the real Practice fallback (8.7s)
+  ok 2 [chromium] › tests\e2e\canonical-slice.spec.ts:48:7 › canonical learning vertical slice › a booked session happening now outranks Practice and navigates to Agenda (5.6s)
+  ok 3 [chromium] › tests\e2e\canonical-slice.spec.ts:78:7 › canonical learning vertical slice › browser-visible Progress responses do not expose internal Assessment or service-role data (6.9s)
+  ok 4 [chromium] › tests\e2e\canonical-slice.spec.ts:125:7 › canonical learning vertical slice › browser-visible Home responses keep the projection DTO minimal (5.7s)
+[WebServer] (node:25332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="6e8374b5-a9e3-4e7f-ad9a-df230afeb833"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="ffb93bfb-7d2a-48a6-ae2d-0a8ff923b07a"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="2b8066e2-13cc-42b3-980a-f554ec277989"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="ba364aee-f3d2-4386-bff3-db0b7b0466ee"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="39a069f1-6803-4016-80ee-a702b2b13feb"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+[WebServer] (node:18124) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="f71d906e-6d5c-4c08-8477-99a62bb0e39a"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="ae493cd3-b8d7-46c0-9fe2-5d29dda2fc13"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="e568487c-e488-4b57-92c9-3d551e343c98"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="f16163bf-8cc4-46aa-a0f8-d3a53f24c7a4"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="73191b7a-4dc7-417b-b5f9-3db220405067"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/agenda" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <AgendaPage>
+[WebServer]                   <div className="schedule-m...">
+[WebServer]                     <header>
+[WebServer]                     <div>
+[WebServer]                     <div className="schedule-m...">
+[WebServer]                       <section className="schedule-m..." aria-labelledby="agenda-ses...">
+[WebServer]                         <div>
+[WebServer]                         <div className="schedule-m...">
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                                 <form action={function cancelLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-86..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="86400000-0000-0000-0000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-86..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="86400000-0000-0000-0000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+[WebServer] (node:18740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:23516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <LoadingBoundary name="materiais/" loading={[...]}>
+[WebServer]       <Suspense name="materiais/" fallback={<Fragment>}>
+[WebServer]         <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]           <RedirectBoundary>
+[WebServer]             <RedirectErrorBoundary router={{...}}>
+[WebServer]               <InnerLayoutRouter url="/materiais" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+[WebServer]                 <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                   <SegmentTrieNode>
+[WebServer]                   <MaterialsPage>
+[WebServer]                     <div className="yas-materi...">
+[WebServer]                       <header>
+[WebServer]                       <div className="yas-materi...">
+[WebServer]                         <form className="yas-materi..." role="search" method="get">
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <Input>
+[WebServer]                               <FieldFrame>
+[WebServer]                                 <div className="yas-field" data-tone="default">
+[WebServer]                                   <label>
+[WebServer]                                   <input
+[WebServer]                                     name="q"
+[WebServer]                                     type="search"
+[WebServer]                                     defaultValue=""
+[WebServer]                                     placeholder="Buscar materiais, aulas ou temas…"
+[WebServer]                                     id="_S_1_"
+[WebServer]                                     className="yas-field-control"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           ...
+[WebServer]                         ...
+[WebServer]                       ...
+[WebServer]                         <details className="yas-materi..." open={true}>
+[WebServer]                           <summary>
+[WebServer]                           <div className="yas-materi...">
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000005"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                             <MaterialRow>
+[WebServer]                               <div className="yas-materi...">
+[WebServer]                                 <span>
+[WebServer]                                 <div>
+[WebServer]                                 <div className="yas-materi...">
+[WebServer]                                   <a>
+[WebServer]                                   <form action={function setMaterialFavoriteAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="materialId"
+[WebServer]                                       value="81710000-0000-4000-8000-000000000006"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="favorited"
+[WebServer]                                       value="true"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                 ...
+[WebServer]               ...
+[WebServer]  
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <Suspense name="pratica/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/pratica" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <PracticePage>
+[WebServer]                   <div className="yas-practi...">
+[WebServer]                     <header>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <Card>
+[WebServer]                         <section className="yas-card y...">
+[WebServer]                           <div className="yas-practi...">
+[WebServer]                             <span>
+[WebServer]                             <h2>
+[WebServer]                             <p>
+[WebServer]                             <small>
+[WebServer]                             <StartPracticeForm>
+[WebServer]                               <form action={function startPracticeAction}>
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="activityId"
+[WebServer]                                   value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 <input
+[WebServer]                                   type="hidden"
+[WebServer]                                   name="idempotencyKey"
+[WebServer]                                   value="5ed36a20-3758-424d-9d03-911b91047518"
+[WebServer] -                                 style={{caret-color:"transparent"}}
+[WebServer]                                 >
+[WebServer]                                 ...
+[WebServer]                           ...
+[WebServer]                       ...
+[WebServer]                     <section>
+[WebServer]                     <div className="yas-practi...">
+[WebServer]                       <section aria-labelledby="practice-a...">
+[WebServer]                         <div>
+[WebServer]                         <div className="yas-practi...">
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000004"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="4f91da0f-efb9-4b2e-9a88-c74921ef3572"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000001"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="89146088-3e93-41c7-b98f-82440e97cbd9"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000003"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="fe681ab3-6ee2-4e08-bc64-f03324523fc1"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                           <Card>
+[WebServer]                             <section className="yas-card y...">
+[WebServer]                               <span>
+[WebServer]                               <h3>
+[WebServer]                               <p>
+[WebServer]                               <div className="yas-practi...">
+[WebServer]                                 <small>
+[WebServer]                                 <StartPracticeForm>
+[WebServer]                                   <form action={function startPracticeAction}>
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="activityId"
+[WebServer]                                       value="83000000-0000-4000-8000-000000000002"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     <input
+[WebServer]                                       type="hidden"
+[WebServer]                                       name="idempotencyKey"
+[WebServer]                                       value="e114d1bd-4ce2-4e6d-810c-f6aadafc61f5"
+[WebServer] -                                     style={{caret-color:"transparent"}}
+[WebServer]                                     >
+[WebServer]                                     ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+[WebServer] [browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+[WebServer] 
+[WebServer] - A server/client branch `if (typeof window !== 'undefined')`.
+[WebServer] - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+[WebServer] - Date formatting in a user's locale which doesn't match the server.
+[WebServer] - External changing data without sending a snapshot of it along with the HTML.
+[WebServer] - Invalid HTML tag nesting.
+[WebServer] 
+[WebServer] It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+[WebServer] 
+[WebServer] https://react.dev/link/hydration-mismatch
+[WebServer] 
+[WebServer]   ...
+[WebServer]     <Suspense name="agenda/" fallback={<Fragment>}>
+[WebServer]       <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+[WebServer]         <RedirectBoundary>
+[WebServer]           <RedirectErrorBoundary router={{...}}>
+[WebServer]             <InnerLayoutRouter url="/agenda" tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} segmentPath={[...]} ...>
+[WebServer]               <SegmentViewNode type="page" pagePath="(protected...">
+[WebServer]                 <SegmentTrieNode>
+[WebServer]                 <AgendaPage>
+[WebServer]                   <div className="schedule-m...">
+[WebServer]                     <header>
+[WebServer]                     <div>
+[WebServer]                     <div className="schedule-m...">
+[WebServer]                       <section className="schedule-m..." aria-labelledby="agenda-ses...">
+[WebServer]                         <div>
+[WebServer]                         <div className="schedule-m...">
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                                 <form action={function cancelLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88100000-0000-4000-8000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000001"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-88..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="88200000-0000-4000-8000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-86..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="86400000-0000-0000-0000-000000000002"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                           <SessionCard>
+[WebServer]                             <Card>
+[WebServer]                               <section aria-labelledby="session-86..." className="yas-card s...">
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <div>
+[WebServer]                                 <form action={function bookLiveSessionAction}>
+[WebServer]                                   <input
+[WebServer]                                     type="hidden"
+[WebServer]                                     name="liveSessionId"
+[WebServer]                                     value="86400000-0000-0000-0000-000000000003"
+[WebServer] -                                   style={{caret-color:"transparent"}}
+[WebServer]                                   >
+[WebServer]                                   ...
+[WebServer]                       ...
+[WebServer]               ...
+[WebServer]             ...
+[WebServer]  
+[WebServer] (node:12924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [chromium] › tests\e2e\canonical-slice.spec.ts:169:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume (1.5m)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '2607946034'
+[WebServer] }
+[WebServer] (node:23576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+  5 passed (2.3m)

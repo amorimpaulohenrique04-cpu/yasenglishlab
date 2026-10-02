@@ -21,6 +21,8 @@ create table public.cohort_memberships (
 );
 create unique index cohort_membership_one_active on public.cohort_memberships(cohort_id,user_id) where status='ACTIVE';
 create index cohort_membership_student_idx on public.cohort_memberships(user_id,cohort_id,status);
+create index cohort_membership_enrollment_idx on public.cohort_memberships(enrollment_id);
+create index cohorts_course_idx on public.cohorts(course_id);
 create table public.cohort_teachers (
  id uuid primary key default gen_random_uuid(),
  cohort_id uuid not null references public.cohorts(id) on delete restrict,

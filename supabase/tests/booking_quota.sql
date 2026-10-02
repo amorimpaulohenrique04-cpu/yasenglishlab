@@ -43,6 +43,15 @@ select public.book_live_session('9b200000-0000-0000-0000-000000000001');
 select pg_temp.assert_true((select count(*) from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001')=1,'rebooking must not duplicate a row');
 reset role;
 select pg_temp.assert_true((select count(*) from public.audit_logs where actor_user_id='9b000000-0000-0000-0000-000000000001' and action='quota_denied')=3,'result RPC quota denial audit must survive inner rollback');
+set local role authenticated;
+do $$ begin
+ begin perform public.book_live_session('9b200000-0000-0000-0000-000000000002');
+  raise exception 'legacy wrapper unexpectedly booked over quota'; exception when check_violation then
+  if sqlerrm<>'booking quota exceeded' then raise; end if;
+ end;
+end $$;
+reset role;
+select pg_temp.assert_true((select count(*) from public.audit_logs where actor_user_id='9b000000-0000-0000-0000-000000000001' and action='quota_denied')=3,'legacy wrapper raised denial rolls back its audit; result boundary is required');
 select pg_temp.assert_true((select usage_window_start from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001') =
  date_trunc('week',(now() at time zone 'America/Recife')+interval '2 weeks') at time zone 'America/Recife','quota uses session window not booking time');
 
@@ -84,6 +93,21 @@ do $$ begin
  begin update public.session_bookings set usage_limit=999 where live_session_id='9b200000-0000-0000-0000-000000000007';
   raise exception 'snapshot mutation was accepted'; exception when check_violation then
   if sqlerrm<>'booking usage snapshot is immutable' then raise; end if;
+ end;
+end $$;
+update public.plan_entitlements set limit_value=2 where plan_id='10000000-0000-0000-0000-000000000003'
+ and entitlement_id=(select id from public.entitlements where key='weekly_core_classes') and effective_to is null;
+select pg_temp.assert_true((select usage_limit=1 from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000007'),'config mutation must not rewrite commercial snapshot');
+select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000002','weekly_core_classes',now()-interval '1 day')->>'total'='2.00','new decision resolves current config while preserving old consumption');
+update public.plan_entitlements set limit_value=0 where plan_id='10000000-0000-0000-0000-000000000003'
+ and entitlement_id=(select id from public.entitlements where key='weekly_core_classes') and effective_to is null;
+select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000002','weekly_core_classes',now())->>'reason'='ENTITLEMENT_REQUIRED','zero limit denies recurring capability');
+update public.plan_entitlements set limit_value=1.5 where plan_id='10000000-0000-0000-0000-000000000003'
+ and entitlement_id=(select id from public.entitlements where key='weekly_core_classes') and effective_to is null;
+do $$ begin
+ begin perform private.booking_quota('9b000000-0000-0000-0000-000000000002','weekly_core_classes',now());
+  raise exception 'fractional live quota accepted'; exception when check_violation then
+  if sqlerrm<>'Live recurring entitlement limit must be an integer' then raise; end if;
  end;
 end $$;
 rollback;

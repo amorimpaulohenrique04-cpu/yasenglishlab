@@ -43,7 +43,7 @@ Authorized workspace after login/MFA, transactional weekly/monthly booking quota
 - [ ] P21.2: session-start Recife WEEK/MONTH quotas, snapshots, cancellation/rebooking, audit and real concurrency.
 - [ ] P21.3: cohort model, enrollment prerequisite, admin commands and strict cross-cohort RLS, legacy assignments preserved.
 - [ ] P13–P21 regression checks, clean replay/upgrade and all final aliases pass.
-- [ ] PR against main, no merge, Official CI and inspected evidence.
+- [ ] PR against main, no merge, CI dispatched/status reported and inspected local evidence. User explicitly waived waiting for green CI in the latest instruction.
 
 ## Allowed files / domains
 
@@ -91,7 +91,7 @@ Authorized workspace after login/MFA, transactional weekly/monthly booking quota
 - `npm run verify:db`
 - `npm run verify:ui`
 - `npm run verify:full`
-- Official CI; two clean replays and upgrade evidence.
+- Dispatch Official CI and report its current status; do not wait for green, as explicitly directed by the user. Two clean replays and upgrade evidence remain required.
 
 ## Required evidence
 
@@ -99,4 +99,4 @@ Logs, SHA, DB/RLS/concurrency assertions, UI screenshots/a11y and CI artifacts u
 
 ## Definition of done
 
-All checkpoints/gates pass with inspected evidence, docs/ADRs and Harness updated, PR created and Official CI green; no merge.
+All local checkpoints/gates pass with inspected evidence, docs/ADRs and Harness updated, PR created and current Official CI status reported; no merge. The user's latest instruction supersedes waiting for green CI.

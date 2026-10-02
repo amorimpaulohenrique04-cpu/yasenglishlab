@@ -4,6 +4,14 @@
 
 accepted — 2026-10-02
 
+## Date
+
+2026-10-02
+
+## Context
+
+The main booking trigger checked positive entitlement and session capacity without consuming recurring allowance across distinct sessions.
+
 ## Decision
 
 Derive commercial usage from booking facts and immutable snapshots. Recurring windows use the session start in America/Recife: Monday week or calendar month, inclusive start and exclusive end. Resolve the current temporal entitlement at command time; snapshot its key, configuration, cadence, limit and window. NONE authorizes access without a recurring cap.
@@ -17,6 +25,10 @@ The application uses `book_live_session_result(uuid)` so a quota denial can roll
 ## Upgrade and privacy
 
 Backfill historical key and session time from existing facts; resolve configuration at booked_at only when recoverable. Mark unresolved legacy provenance without inventing a historical limit. Ambiguous legacy cancellations without a timestamp block migration for reconciliation. Snapshot fields are excluded from authenticated Data API grants; Agenda exposes total/used/remaining and eligibility only.
+
+## Alternatives
+
+A separate mutable balance duplicates booking truth and requires reconciliation. Session-only locking cannot serialize distinct sessions. Booking-time windows allocate a future session to the wrong commercial period. All were rejected.
 
 ## Consequences and validation
 

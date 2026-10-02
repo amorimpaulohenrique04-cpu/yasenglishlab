@@ -29,6 +29,8 @@ test.describe("Teacher Operations V1", () => {
     await page.getByLabel("Senha").fill(password);
     await page.getByRole("button", { name: "Entrar" }).click();
 
+    await expect(page).toHaveURL(/\/home$/);
+    await page.goto("/teacher");
     await expect(page).toHaveURL(/\/profile\?auth=forbidden$/);
     await expect(page.getByRole("heading", { name: "Suas sessões" })).toHaveCount(0);
   });

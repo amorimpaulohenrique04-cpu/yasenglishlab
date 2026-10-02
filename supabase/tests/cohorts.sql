@@ -82,6 +82,14 @@ select pg_temp.check_cohort(not has_table_privilege('anon','public.cohorts','SEL
 select set_config('request.jwt.claim.sub','9c000000-0000-0000-0000-000000000005',true);
 select set_config('request.jwt.claims','{"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}',true);
 set local role authenticated;
+select public.manage_cohort('ADD_STUDENT','9c200000-0000-0000-0000-000000000001','{"user_id":"9c000000-0000-0000-0000-000000000001"}');
+select pg_temp.check_cohort((select count(*) from public.cohort_memberships where cohort_id='9c200000-0000-0000-0000-000000000001' and user_id='9c000000-0000-0000-0000-000000000001')=2,'reentry creates a new membership episode without deleting history');
+do $$ begin
+ begin perform public.manage_cohort('ADD_STUDENT','9c200000-0000-0000-0000-000000000001','{"user_id":"9c000000-0000-0000-0000-000000000003"}');
+  raise exception 'missing enrollment accepted'; exception when check_violation then
+  if sqlerrm<>'active compatible enrollment required' then raise; end if;
+ end;
+end $$;
 select public.manage_cohort('CREATE',null,'{"course_id":"40000000-0000-4000-8000-000000000001","name":"Lifecycle","code":"test-cohort-lifecycle","timezone":"America/Recife","starts_at":"2026-01-01"}');
 select public.manage_cohort('EDIT',(select id from public.cohorts where code='test-cohort-lifecycle'),'{"name":"Lifecycle edited"}');
 select public.manage_cohort('ADD_STUDENT',(select id from public.cohorts where code='test-cohort-lifecycle'),'{"user_id":"9c000000-0000-0000-0000-000000000001"}');

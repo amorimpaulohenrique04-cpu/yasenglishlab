@@ -66,6 +66,7 @@ do $$ begin
 end $$;
 
 create index session_bookings_usage_idx on public.session_bookings(user_id, entitlement_key_used, usage_session_starts_at);
+create index session_bookings_entitlement_snapshot_idx on public.session_bookings(plan_entitlement_id_used) where plan_entitlement_id_used is not null;
 alter table public.session_bookings add constraint booking_usage_window_valid
   check ((usage_window_start is null and usage_window_end is null) or usage_window_end > usage_window_start);
 revoke all on function private.booking_usage_window(timestamptz,text) from public, anon, authenticated;

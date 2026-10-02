@@ -1,0 +1,7 @@
+Closes P21.1–P21.3 on the real main baseline: staff login/MFA resolves authorized workspaces, Student pages explicitly require STUDENT, recurring live booking allowance is consumed transactionally, and cohorts isolate Student/Teacher operational access while preserving legacy assignments and nullable session cohorts.
+
+Four additive migrations introduce immutable usage snapshots, one resolved commercial configuration per booking, session → Student advisory → booking locks, capacity/quota checks, idempotent retry/cancel/rebook, durable result-based quota denial audit, cohort episodes and authenticated ADMIN+AAL2 administration. The original UUID booking RPC, Teacher session ownership/attendance, Home read projection and Practice/Assessment boundaries remain compatible. No historical migration, CI workflow, provider integration or golden baseline is changed.
+
+Validation: focused real MFA/browser/axe scenarios, unit/integration/build/security/DB checks, SQL/RLS, synchronized capacity/quota/retry/cancellation races and main-to-feature legacy upgrade evidence are included. Final UI/full alias results are being consolidated before marking this PR ready. Ambiguous legacy CANCELLED rows without timestamps intentionally block rollout for reconciliation; unresolved commercial history is marked explicitly.
+
+The user explicitly requested reporting CI status without waiting for green. No merge is authorized by this task. Evidence and ADRs 0007–0009 are linked from `harness/evidence/p21-p0-foundation-closure/README.md` and `docs/P21_FOUNDATION.md`.

@@ -59,6 +59,18 @@ if (priorAdminContent) {
   if (error) throw error;
 }
 
+// Admin reorder legitimately moves Getting Started to position 2. Restore the
+// isolated canonical baseline before another run, using publication transitions.
+const canonicalModuleId = "41000000-0000-4000-8000-000000000001";
+for (const values of [
+  { publication_status: "DRAFT", published_at: null },
+  { position: 1 },
+  { publication_status: "PUBLISHED", published_at: "2026-10-01T00:00:00Z" },
+]) {
+  const { error } = await admin.from("modules").update(values).eq("id", canonicalModuleId);
+  if (error) throw error;
+}
+
 const { data: listed, error: listError } = await admin.auth.admin.listUsers({
   page: 1,
   perPage: 1000,

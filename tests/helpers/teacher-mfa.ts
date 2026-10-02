@@ -66,18 +66,26 @@ async function resolveTotpSecret(page: Page): Promise<string> {
   return readFileSync(secretPath, "utf8").trim();
 }
 
-export async function loginCanonicalTeacher(page: Page, password: string): Promise<void> {
-  await page.goto("/login?next=%2Fteacher");
+export async function loginCanonicalTeacher(
+  page: Page,
+  password: string,
+  options: { next?: string } = {},
+): Promise<void> {
+  const next = options.next ?? "/teacher";
+  await page.goto(`/login?next=${encodeURIComponent(next)}`);
   await page.getByLabel("E-mail").fill(canonicalTeacherEmail);
   await page.getByLabel("Senha").fill(password);
   await page.getByRole("button", { name: "Entrar" }).click();
 
-  await expect(page).toHaveURL(/\/mfa\?next=%2Fteacher/i);
+  await expect(page).toHaveURL(next ? /\/mfa\?next=%2Fteacher/i : /\/mfa\?next=$/);
   await expect(
     page.getByRole("heading", { name: "Verificação em duas etapas obrigatória" }),
   ).toBeVisible();
 
   const secret = await resolveTotpSecret(page);
+  const protectedResponse = await page.request.get("/teacher", { maxRedirects: 0 });
+  expect(protectedResponse.status()).toBe(307);
+  expect(protectedResponse.headers().location).toContain("/mfa");
   await page.getByLabel("Código do autenticador").fill(totp(secret));
   await page.getByRole("button", { name: "Verificar código" }).click();
 

@@ -190,6 +190,11 @@ test.describe("canonical learning vertical slice", () => {
 
     const primaryHomeAction = page.getByRole("link", { name: "Começar aula →" });
     await expect(primaryHomeAction).toBeVisible();
+    const primaryHref = await primaryHomeAction.getAttribute("href");
+    if (!primaryHref) throw new Error("Home primary learning action has no destination.");
+    // Compile the cold dynamic route and verify its authenticated HTTP boundary
+    // before measuring the browser navigation; keep the existing assertion timeout.
+    expect((await page.request.get(primaryHref)).status()).toBe(200);
     await primaryHomeAction.focus();
     await expect(primaryHomeAction).toBeFocused();
     await primaryHomeAction.click();

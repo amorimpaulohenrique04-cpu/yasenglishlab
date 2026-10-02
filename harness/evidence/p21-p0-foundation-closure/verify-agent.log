@@ -41,10 +41,10 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 
  Test Files  16 passed (16)
       Tests  86 passed (86)
-   Start at  02:07:30
-   Duration  3.72s (import 57%, transform 36%, tests 4%, worker 3%)
+   Start at  02:27:04
+   Duration  6.28s (import 62%, transform 30%, tests 6%, worker 3%)
 
-  Transform  transforming modules took 4.24s · 36% of tracked time, re-done on every run
+  Transform  transforming modules took 4.36s · 30% of tracked time, re-done on every run
              persist transforms across runs with fsModuleCache: true
              learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
 
@@ -63,10 +63,10 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 
  Test Files  12 passed | 1 skipped (13)
       Tests  54 passed | 1 skipped (55)
-   Start at  02:07:35
-   Duration  2.48s (import 59%, transform 31%, tests 8%, worker 3%)
+   Start at  02:27:13
+   Duration  6.31s (import 56%, transform 36%, tests 6%, worker 2%)
 
-  Transform  transforming modules took 2.52s · 31% of tracked time, re-done on every run
+  Transform  transforming modules took 6.84s · 36% of tracked time, re-done on every run
              persist transforms across runs with fsModuleCache: true
              learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
 
@@ -85,18 +85,18 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
 
 ▲ Next.js 16.3.6 (Turbopack)
 - Environments: .env.local
-✓ Running next.config.ts took 231ms
+✓ Running next.config.ts took 209ms
 
   Creating an optimized production build ...
-✓ Compiled successfully in 16.3s
+✓ Compiled successfully in 3.9s
   Running TypeScript ...
-  Finished TypeScript in 16.6s ...
+  Finished TypeScript in 36.2s ...
   Collecting page data using 7 workers ...
   Generating static pages using 7 workers (0/22) ...
   Generating static pages using 7 workers (5/22) 
   Generating static pages using 7 workers (10/22) 
   Generating static pages using 7 workers (16/22) 
-✓ Generating static pages using 7 workers (22/22) in 1375ms
+✓ Generating static pages using 7 workers (22/22) in 1908ms
   Finalizing page optimization ...
 
 Route (app)
@@ -138,27 +138,28 @@ Route (app)
 > yasenglishlab@0.1.0 verify:harness
 > node scripts/verify-harness.mjs
 
-file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:11
-    throw new Error(message);
-          ^
+✓ Ratchet contract valid: controlled red fixture rejected, green fixture accepted, 17 durable failure record(s) verified.
+✓ Engineering System 1.0 contract valid: docs, Harness state, registry, UI gates, RLS, CI/CD, observability and Ratchet surfaces are internally consistent.
+✓ Platform contract valid: red fixture rejected, shell-free Windows fixture accepted, 20 scripts audited, LF enforced.
+✓ Harness contract valid: 25 required paths, 24 registry entries.
 
-Error: harness/failure-log/2026-10-02-p21-recurring-usage.md: resolved repeatable failure requires After proof
-    at assert (file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:11:11)
-    at file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/verify-ratchet.mjs:215:3
-    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
-    at async node:internal/modules/esm/loader:643:26
-    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+> yasenglishlab@0.1.0 verify:security
+> node scripts/verify-security.mjs
 
-Node.js v24.19.0
-file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:51
-    throw new Error(`Command failed: ${command} ${args.join(" ")}`);
-          ^
+✓ Security boundary valid across 183 source files; RLS evidence and Yas threat model are present.
 
-Error: Command failed: C:\Program Files\nodejs\node.exe scripts/verify-ratchet.mjs
-    at run (file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:51:11)
-    at file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/verify-harness.mjs:118:1
-    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
-    at async node:internal/modules/esm/loader:643:26
-    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+> yasenglishlab@0.1.0 eval:agent
+> node scripts/eval-agent.mjs
 
-Node.js v24.19.0
+✓ required documentation declared: docs/TESTING.md, docs/DEFINITION_OF_DONE.md, docs/SECURITY.md, docs/AUTH_RBAC_RLS.md
+✓ changed files stay in declared scope: 91 changed file(s) covered
+✓ no unreviewed duplicate UI primitive: no new UI primitive files
+✓ no newly ignored failing checks: no new skip/fixme/failure suppression
+✓ UI changes carry screenshot evidence: visual test/evidence changed
+✓ database schema changes include migration: no schema-side change detected
+✓ RLS changes include executable authorization test: RLS test changed
+✓ no high-confidence secret in changed files: clean
+✓ task exists in feature registry: in_progress
+✓ no premature success claim: status=in_progress, verified=false
+
+✓ Agent behavioral eval passed (10 automated/proxy rules).

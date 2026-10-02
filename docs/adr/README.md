@@ -26,3 +26,6 @@ Start new records from [TEMPLATE.md](./TEMPLATE.md). The required decision field
 - [0004 — Provider-neutral observability boundary](./0004-provider-neutral-observability-boundary.md)
 - [0005 — Failure-to-guard engineering ratchet](./0005-engineering-ratchet.md)
 - [0006 — Admin Content V1 publication](./0006-admin-content-publication.md)
+- [0007 — Role-aware workspaces](./0007-role-aware-workspaces.md)
+- [0008 — Transactional live usage](./0008-transactional-live-usage.md)
+- [0009 — Cohort compatibility](./0009-cohorts-compatible-scope.md)
