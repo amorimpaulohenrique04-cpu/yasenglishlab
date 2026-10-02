@@ -98,6 +98,7 @@ export async function loginCanonicalTeacher(
   password: string,
   _options: { next?: string } = {},
 ): Promise<void> {
+  void _options;
   await loginTeacherAccount(page, canonicalTeacherEmail, password);
 }
 
