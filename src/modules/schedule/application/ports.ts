@@ -8,7 +8,7 @@ export interface ScheduleRepository {
 }
 
 export interface ScheduleHomeReadRepository {
-  listOwnBookedSessions(userId: string): Promise<ScheduleOwnBookingFact[]>;
+  listOwnBookedSessions(userId: string, now: Date): Promise<ScheduleOwnBookingFact[]>;
 }
 
 export type ScheduleAnalyticsPort = ProductAnalyticsPort;
