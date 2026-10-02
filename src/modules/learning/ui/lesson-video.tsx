@@ -68,10 +68,12 @@ export function LessonVideo({
         while (pending.current) {
           const checkpoint = pending.current;
           pending.current = null;
+          const wasCompleted = completed.current;
           await checkpointVideoAction(lessonId, checkpoint.position, checkpoint.ended);
           saved.current = checkpoint.position;
           completed.current ||= checkpoint.ended;
-          if (ended) await lessonVideoAnalyticsAction(assetId, lessonId, "completed");
+          if (checkpoint.ended && !wasCompleted)
+            await lessonVideoAnalyticsAction(assetId, lessonId, "completed");
         }
       } catch {
         setError("Não foi possível salvar a posição. A próxima atualização tentará novamente.");
