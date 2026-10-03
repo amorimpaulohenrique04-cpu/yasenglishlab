@@ -109,7 +109,7 @@ export function AssessmentRunner({ execution }: { execution: AssessmentExecution
         <Select
           label="Sua resposta"
           tone={error ? "error" : "default"}
-          message={error ? "Confira sua resposta e tente salvar novamente." : undefined}
+          message={error ? "Confira sua resposta e tente salvar novamente." : ""}
           value={String(answers[item.id]?.optionId ?? "")}
           options={[
             { value: "", label: "Selecione uma opção" },
@@ -126,7 +126,7 @@ export function AssessmentRunner({ execution }: { execution: AssessmentExecution
           <Textarea
             label="Sua resposta"
             tone={error ? "error" : "default"}
-            message={error ? "Confira sua resposta e tente salvar novamente." : undefined}
+            message={error ? "Confira sua resposta e tente salvar novamente." : ""}
             maxLength={4000}
             value={String(answers[item.id]?.text ?? "")}
             onChange={(e) => change({ text: e.target.value })}

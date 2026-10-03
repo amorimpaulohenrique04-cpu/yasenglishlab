@@ -91,7 +91,7 @@ export default async function OnboardingPage({
                   message={
                     result === "invalid"
                       ? "Confira o intervalo: o início deve vir antes do fim."
-                      : undefined
+                      : ""
                   }
                   type="time"
                   required
@@ -101,7 +101,7 @@ export default async function OnboardingPage({
                   name="end"
                   label="Disponível até"
                   tone={result === "invalid" ? "error" : "default"}
-                  message={result === "invalid" ? "Informe um fim posterior ao início." : undefined}
+                  message={result === "invalid" ? "Informe um fim posterior ao início." : ""}
                   type="time"
                   required
                   defaultValue={minuteLabel(view.preferences[0]?.endMinute ?? 1260)}

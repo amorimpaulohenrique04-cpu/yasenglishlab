@@ -58,6 +58,18 @@ select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000002'
 select pg_temp.assert_true((select count(*)=0 from public.placement_cases),'Student B cannot read A');
 select pg_temp.denied('select public.begin_placement()');
 reset role;
+insert into public.subscriptions(user_id,plan_id,provider,provider_subscription_id,status) values('99000000-0000-4000-8000-000000000002','10000000-0000-0000-0000-000000000001','test','placement-test-b','ACTIVE');
+set local role authenticated;
+select public.start_assessment_attempt('99030000-0000-4000-8000-000000000001','99060000-0000-4000-8000-000000000002');
+select public.record_assessment_response((select id from public.assessment_attempts where user_id=auth.uid()),'99040000-0000-4000-8000-000000000001','{"optionId":"a"}');
+select public.record_assessment_response((select id from public.assessment_attempts where user_id=auth.uid()),'99040000-0000-4000-8000-000000000002','{"text":"Prior initial assessment evidence."}');
+select public.complete_assessment_attempt((select id from public.assessment_attempts where user_id=auth.uid()));
+select public.begin_placement();
+select public.save_placement_preferences('America/Recife',1,1080,1260);
+select public.start_placement_assessment();
+select pg_temp.assert_true((select count(*)=1 from public.assessment_attempts where user_id=auth.uid()),'existing initial attempt reused without retake');
+select pg_temp.assert_true((select state='REVIEW_PENDING' from public.placement_cases),'prior completion routes directly to review');
+reset role;
 select set_config('placement.test.case',(select id::text from public.placement_cases where user_id='99000000-0000-4000-8000-000000000001'),true);
 set local role authenticated;
 select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000003',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000003","aal":"aal1"}',true);
