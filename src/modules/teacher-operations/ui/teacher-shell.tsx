@@ -9,7 +9,14 @@ import { Avatar, Drawer, IconButton } from "@/components/ui";
 
 import styles from "./teacher-operations.module.css";
 
-const navigation = [{ id: "sessions", label: "Sessões", href: "/teacher" }] as const;
+const navigation = [
+  { id: "home", label: "Início", href: "/teacher" },
+  { id: "sessions", label: "Sessões", href: "/teacher/sessoes" },
+  { id: "cohorts", label: "Turmas", href: "/teacher/turmas" },
+  { id: "students", label: "Alunos", href: "/teacher/alunos" },
+  { id: "reviews", label: "Revisões", href: "/teacher/revisoes" },
+  { id: "availability", label: "Disponibilidade", href: "/teacher/disponibilidade" },
+] as const;
 
 function CalendarIcon() {
   return (
@@ -46,7 +53,8 @@ export function TeacherShell({
   const sidebarItems = navigation.map((item) => ({
     ...item,
     icon: <CalendarIcon />,
-    active: pathname === item.href || pathname.startsWith(item.href + "/"),
+    active:
+      pathname === item.href || (item.href !== "/teacher" && pathname.startsWith(item.href + "/")),
   }));
 
   return (
@@ -96,9 +104,11 @@ export function TeacherShell({
         description="Acesse suas operações de aula."
       >
         <nav className={styles.drawerNav} aria-label="Navegação mobile do professor">
-          <Link href="/teacher" onClick={() => setDrawerOpen(false)}>
-            Sessões
-          </Link>
+          {navigation.map((item) => (
+            <Link key={item.id} href={item.href} onClick={() => setDrawerOpen(false)}>
+              {item.label}
+            </Link>
+          ))}
           <Link href="/profile" onClick={() => setDrawerOpen(false)}>
             Perfil
           </Link>

@@ -115,6 +115,8 @@ jobs:
         run: bash scripts/ci/validate-migrations.sh yas_clean_first
       - name: Replay migrations from a second clean database
         run: bash scripts/ci/validate-migrations.sh yas_clean_replay
+      - name: Validate base-to-head upgrade with legacy data
+        run: bash scripts/ci/validate-upgrade.sh yas_upgrade
 
   guardrail-simulations:
     name: Guardrail Simulations

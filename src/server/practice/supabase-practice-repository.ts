@@ -63,6 +63,7 @@ function evaluationStatusFromRow(value: unknown): PracticeResultView["evaluation
     value === "CORRECT" ||
     value === "INCORRECT" ||
     value === "PENDING_MANUAL" ||
+    value === "MANUAL_REVIEWED" ||
     value === "NOT_SCORED"
   ) {
     return value;

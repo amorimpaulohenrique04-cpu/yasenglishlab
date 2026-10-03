@@ -1,6 +1,16 @@
 import Link from "next/link";
 
-import { Alert, Badge, Button, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  Input,
+  Textarea,
+  EmptyState,
+  ErrorState,
+  PageHeader,
+} from "@/components/ui";
 import {
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
@@ -12,6 +22,22 @@ import styles from "@/modules/teacher-operations/ui/teacher-operations.module.cs
 import { loadTeacherSessionPage } from "@/server/teacher-operations/teacher-operations";
 
 import { markAttendanceAction } from "./actions";
+import { saveSessionAction, cancelTeacherSessionAction, teacherJoinAction } from "../actions";
+import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
+import { SessionForm } from "@/modules/teacher-operations/ui/session-form";
+import { JoinMeeting } from "@/modules/schedule/ui/join-meeting";
+import {
+  loadSessionResources,
+  loadTeacherResourceChoices,
+} from "@/server/teacher-operations/resources";
+import { SessionResources } from "@/modules/teacher-operations/ui/session-resources";
+import { ResourceFileUpload } from "@/modules/teacher-operations/ui/resource-file-upload";
+import {
+  createResourceAction,
+  sessionResourceAccessAction,
+  resourceUploadAction,
+  completeResourceUploadAction,
+} from "../resource-actions";
 
 interface TeacherSessionPageProps {
   params: Promise<{ sessionId: string }>;
@@ -72,6 +98,12 @@ export default async function TeacherSessionPage({
   }
 
   const { session, roster } = state;
+  const context = await loadTeacherOperationContext();
+  const editable = context.sessions.find((item) => item.id === sessionId);
+  const [resources, choices] = await Promise.all([
+    loadSessionResources(sessionId),
+    loadTeacherResourceChoices(),
+  ]);
   const start = new Date(session.startsAt);
   const end = new Date(session.endsAt);
   const attendanceResult = firstValue(query.attendance);
@@ -122,7 +154,80 @@ export default async function TeacherSessionPage({
         </span>
       </Card>
 
+      {firstValue(query.save) === "error" && (
+        <Alert
+          tone="error"
+          title="Alteração rejeitada"
+          description="Confira disponibilidade, vínculos e reservas existentes."
+        />
+      )}
+      {session.status === "SCHEDULED" && (
+        <>
+          <JoinMeeting sessionId={session.id} action={teacherJoinAction} />
+          {editable && (
+            <SessionForm context={context} action={saveSessionAction} session={editable} />
+          )}
+          <form action={cancelTeacherSessionAction}>
+            <input type="hidden" name="sessionId" value={session.id} />
+            <Button variant="secondary" type="submit">
+              Cancelar encontro
+            </Button>
+          </form>
+        </>
+      )}
+
       <section aria-labelledby="teacher-roster-title">
+        <SessionResources resources={resources} action={sessionResourceAccessAction} />
+        <Card>
+          <h2>Atribuir recurso ou tarefa</h2>
+          <form action={createResourceAction} className={styles.operationForm}>
+            <input name="sessionId" type="hidden" value={sessionId} />
+            <label>
+              Tipo
+              <select name="resource_type">
+                <option value="RESOURCE">Recurso</option>
+                <option value="HOMEWORK">Tarefa</option>
+              </select>
+            </label>
+            <Input label="Título" name="title" required maxLength={200} />
+            <Textarea label="Instruções" name="instructions" maxLength={4000} />
+            <Input
+              label="Prazo com fuso (opcional)"
+              name="due_at"
+              placeholder="2026-10-10T18:00:00-03:00"
+            />
+            <label>
+              Material
+              <select name="material_id">
+                <option value="">Sem material</option>
+                {choices.materials.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Prática
+              <select name="practice_activity_id">
+                <option value="">Sem prática</option>
+                {choices.activities.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Input label="Link HTTPS (opcional)" name="external_url" type="url" maxLength={2048} />
+            <p>Selecione apenas uma referência por recurso.</p>
+            <Button type="submit">Atribuir</Button>
+          </form>
+          <ResourceFileUpload
+            sessionId={sessionId}
+            upload={resourceUploadAction}
+            complete={completeResourceUploadAction}
+          />
+        </Card>
         <div className={styles.rosterHeading}>
           <div>
             <h2 id="teacher-roster-title">Participantes</h2>

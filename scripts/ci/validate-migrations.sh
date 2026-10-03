@@ -31,6 +31,14 @@ exception when duplicate_object then
   null;
 end
 $$;
+
+do $$
+begin
+  create role service_role nologin bypassrls;
+exception when duplicate_object then
+  null;
+end
+$$;
 SQL
 
 psql -d "$DB_NAME" -v ON_ERROR_STOP=1 <<'SQL'
@@ -49,6 +57,14 @@ create table storage.buckets (
   public boolean not null default false,
   file_size_limit bigint,
   allowed_mime_types text[]
+);
+
+create table storage.objects (
+  id uuid primary key default gen_random_uuid(),
+  bucket_id text references storage.buckets(id),
+  name text not null,
+  metadata jsonb,
+  unique(bucket_id,name)
 );
 
 create function auth.uid()

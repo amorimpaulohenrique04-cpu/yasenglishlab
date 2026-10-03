@@ -18,9 +18,9 @@ async function assertAxe(page: Page) {
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
 }
 
-async function login(page: Page) {
+async function login(page: Page, loginEmail = email) {
   await page.goto("/login");
-  await page.getByLabel("E-mail").fill(email);
+  await page.getByLabel("E-mail").fill(loginEmail);
   await page.getByLabel("Senha").fill(password!);
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page).toHaveURL(/\/home$/);
@@ -221,5 +221,70 @@ test("Admin Content exposes keyboard navigation and WCAG A/AA compliance", async
   const createModule = page.getByRole("button", { name: "Novo módulo" });
   await createModule.focus();
   await expect(createModule).toBeFocused();
+  await assertAxe(page);
+});
+
+test("Teacher P21 operations pages preserve form semantics and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await loginCanonicalTeacher(page, password!);
+
+  for (const target of [
+    "/teacher/sessoes",
+    "/teacher/disponibilidade",
+    "/teacher/sessoes/nova",
+    "/teacher/turmas",
+    "/teacher/alunos",
+    "/teacher/revisoes",
+  ]) {
+    await page.goto(target);
+    await expect(page.getByRole("main")).toBeVisible();
+    await assertAxe(page);
+  }
+
+  await page.goto("/teacher/disponibilidade");
+  const start = page.getByLabel("Início com fuso");
+  await start.focus();
+  await expect(start).toBeFocused();
+
+  await page.goto("/teacher/sessoes/nova");
+  const title = page.getByLabel("Título");
+  await title.focus();
+  await expect(title).toBeFocused();
+});
+
+test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({ page }) => {
+  await login(page, "canonical.home-now@example.test");
+  await page.goto("/agenda/88400000-0000-4000-8000-000000000002");
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Home Fixture · Session happening now", exact: true }),
+  ).toBeVisible();
+  await assertAxe(page);
+
+  await page.context().clearCookies();
+  await login(page, "canonical.cohort-student@example.test");
+  await page.goto("/pratica?skill=SPEAKING");
+  const activity = page.locator(".yas-practice-activity-card").filter({
+    has: page.getByRole("heading", { name: "Canonical Speaking Review", exact: true }),
+  });
+  await activity.getByRole("button", { name: "Praticar →" }).click();
+  const audio = page.getByLabel("Arquivo de áudio (até 25 MiB)");
+  await expect(audio).toBeVisible();
+  await audio.focus();
+  await expect(audio).toBeFocused();
+  await expect(page.getByRole("button", { name: "Gravar áudio" })).toBeVisible();
+  await assertAxe(page);
+});
+
+test("P21 recorded-video Admin upload state is accessible before publication", async ({ page }) => {
+  await loginCanonicalAdmin(page, password!, {
+    next: "/admin/content/8c100000-0000-4000-8000-000000000001?kind=lesson_assets",
+    destination: /\/admin\/content\/8c100000-0000-4000-8000-000000000001\?kind=lesson_assets$/,
+  });
+  await expect(page.getByRole("heading", { name: "Vídeo gravado" })).toBeVisible();
+  const prepare = page.getByRole("button", { name: "Preparar envio de vídeo" });
+  await prepare.focus();
+  await expect(prepare).toBeFocused();
   await assertAxe(page);
 });

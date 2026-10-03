@@ -13,11 +13,12 @@ insert into public.teachers(id,user_id) values('9b100000-0000-0000-0000-00000000
 insert into public.subscriptions(user_id,plan_id,provider,status) values
  ('9b000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000003','test','ACTIVE'),
  ('9b000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000003','test','ACTIVE');
-insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key)
+insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,target_student_user_id)
 select ('9b200000-0000-0000-0000-'||lpad(n::text,12,'0'))::uuid,'9b100000-0000-0000-0000-000000000001',
   case when n<=3 then 'CORE_CLASS' else 'PRIVATE_SESSION' end,'Quota session '||n,
   ts,ts+interval '45 minutes',case when n<=3 then 6 else 1 end,
-  case when n<=3 then 'weekly_core_classes' else 'monthly_private_sessions' end
+  case when n<=3 then 'weekly_core_classes' else 'monthly_private_sessions' end,
+  case when n>3 then '9b000000-0000-0000-0000-000000000001'::uuid end
 from (select n, case when n<=3 then
   (date_trunc('week',now() at time zone 'America/Recife')+interval '2 weeks 12 hours'+case when n=3 then interval '1 week' else (n-1)*interval '1 day' end) at time zone 'America/Recife'
   else (date_trunc('month',now() at time zone 'America/Recife')+interval '2 months 8 days 12 hours'+case when n=6 then interval '1 month' else (n-4)*interval '1 day' end) at time zone 'America/Recife' end ts

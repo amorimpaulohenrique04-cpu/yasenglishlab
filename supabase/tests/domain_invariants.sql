@@ -1,3 +1,4 @@
+begin;
 -- Plain PostgreSQL assertions for critical domain invariants.
 -- Run after migrations + supabase/seed.sql in an isolated database.
 
@@ -51,7 +52,7 @@ insert into public.live_sessions (
 values (
   '93000000-0000-0000-0000-000000000001',
   '91000000-0000-0000-0000-000000000001',
-  'PRIVATE_SESSION',
+  'WORKSHOP',
   'Capacity invariant',
   now() - interval '2 hours',
   now() - interval '75 minutes',
@@ -172,3 +173,5 @@ begin
   end;
 end;
 $$;
+
+rollback;

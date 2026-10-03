@@ -33,6 +33,9 @@ const progressAssessmentAttemptId = "88a00000-0000-4000-8000-000000000001";
 const progressSkillScoreId = "88b00000-0000-4000-8000-000000000001";
 const subscriptionId = "88000000-0000-4000-8000-000000000002";
 const adminContentTestTitle = "Canonical E2E Module";
+const p21AudioActivityId = "8c000000-0000-4000-8000-000000000001";
+const p21VideoAssetId = "8c100000-0000-4000-8000-000000000001";
+const p21VideoLessonId = "42000000-0000-4000-8000-000000000003";
 const sessionIds = [
   "88100000-0000-4000-8000-000000000001",
   "88100000-0000-4000-8000-000000000002",
@@ -135,6 +138,7 @@ const cleanup = [
   admin.from("lesson_progress").delete().eq("user_id", userId),
   admin.from("material_favorites").delete().eq("user_id", userId),
   admin.from("practice_attempts").delete().eq("user_id", userId),
+  admin.from("practice_attempts").delete().eq("user_id", cohortStudent.id),
   admin.from("assessment_attempts").delete().eq("user_id", userId),
   admin.from("session_bookings").delete().eq("user_id", userId),
   admin.from("session_bookings").delete().eq("user_id", homeNowUser.id),
@@ -145,6 +149,14 @@ for (const operation of cleanup) {
   const { error } = await operation;
   if (error) throw error;
 }
+
+// P21 video lifecycle E2E always starts from a fresh DRAFT provider record.
+// Deleting the parent cascades lesson_video_assets and avoids stale READY/provider IDs.
+const { error: p21VideoCleanupError } = await admin
+  .from("lesson_assets")
+  .delete()
+  .eq("id", p21VideoAssetId);
+if (p21VideoCleanupError) throw p21VideoCleanupError;
 
 const now = Date.now();
 const inDays = (days, extraMinutes = 0) =>
@@ -248,6 +260,45 @@ for (const operation of operations) {
   const { error } = await operation;
   if (error) throw error;
 }
+
+const { error: p21AudioActivityError } = await admin.from("practice_activities").upsert(
+  {
+    id: p21AudioActivityId,
+    slug: "canonical-speaking-review",
+    title: "Canonical Speaking Review",
+    skill: "SPEAKING",
+    cefr_target: null,
+    difficulty: "FOUNDATION",
+    estimated_minutes: 3,
+    related_module_id: canonicalModuleId,
+    related_lesson_id: "42000000-0000-4000-8000-000000000002",
+    content: {
+      kind: "MANUAL_AUDIO",
+      evaluationMode: "MANUAL_PENDING",
+      prompt: "Conte em inglês algo simples sobre o seu dia.",
+      instructions: "Grave uma resposta curta. O professor fará a revisão humana.",
+    },
+    active: true,
+    publication_status: "PUBLISHED",
+    published_at: "2026-10-01T00:00:00Z",
+  },
+  { onConflict: "id" },
+);
+if (p21AudioActivityError) throw p21AudioActivityError;
+
+const { error: p21VideoAssetError } = await admin.from("lesson_assets").insert({
+  id: p21VideoAssetId,
+  lesson_id: p21VideoLessonId,
+  asset_type: "VIDEO",
+  position: 2,
+  source_url: null,
+  storage_path: null,
+  content: null,
+  metadata: { canonical_e2e: true, title: "Canonical Recorded Video" },
+  publication_status: "DRAFT",
+  published_at: null,
+});
+if (p21VideoAssetError) throw p21VideoAssetError;
 
 for (const cohortUser of [cohortStudent, cohortStudentB, multiUser]) {
   const { error } = await admin
@@ -402,6 +453,7 @@ const sessions = [
     id: sessionIds[2],
     teacher_id: teacherId,
     session_type: "PRIVATE_SESSION",
+    target_student_user_id: userId,
     title: "Sessão particular",
     starts_at: inDays(3),
     ends_at: inDays(3, 45),
@@ -430,14 +482,16 @@ const sessions = [
     capacity: 4,
     required_entitlement_key: null,
     status: "SCHEDULED",
+    meeting_provider: "MANUAL_EXTERNAL",
+    meeting_ref: "https://meet.example.test/canonical-home-now",
   },
   {
     id: homeCancelledSessionId,
     teacher_id: teacherId,
     session_type: "CORE_CLASS",
     title: "Home Fixture · Cancelled session should not surface",
-    starts_at: inDays(0, -10),
-    ends_at: inDays(0, 50),
+    starts_at: inDays(0, 120),
+    ends_at: inDays(0, 180),
     capacity: 4,
     required_entitlement_key: null,
     status: "SCHEDULED",
@@ -447,8 +501,8 @@ const sessions = [
     teacher_id: teacherId,
     session_type: "WORKSHOP",
     title: "Home Fixture · Completed session should not surface",
-    starts_at: inDays(0, 5),
-    ends_at: inDays(0, 65),
+    starts_at: inDays(0, -180),
+    ends_at: inDays(0, -120),
     capacity: 4,
     required_entitlement_key: null,
     status: "SCHEDULED",

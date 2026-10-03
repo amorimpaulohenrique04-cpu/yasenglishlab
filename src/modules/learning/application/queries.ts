@@ -81,10 +81,18 @@ export async function getLessonView(
 
   if (!course || !courseModule || !lesson) return { status: "unauthorized" };
 
-  const content = await repository.getLessonContentForStudent(userId, lesson.id);
+  const assets = repository.getLessonAssetsForStudent
+    ? await repository.getLessonAssetsForStudent(userId, lesson.id)
+    : [];
+  const firstText = assets.find((asset) => asset.type === "TEXT");
+  const content = repository.getLessonAssetsForStudent
+    ? firstText?.type === "TEXT"
+      ? firstText.content
+      : null
+    : await repository.getLessonContentForStudent(userId, lesson.id);
   const navigation = adjacentLessons(course, lesson.id);
   return {
     status: "success",
-    data: { course, module: courseModule, lesson, content, ...navigation },
+    data: { course, module: courseModule, lesson, content, assets, ...navigation },
   };
 }

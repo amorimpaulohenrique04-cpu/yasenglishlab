@@ -46,6 +46,9 @@
     "test:observability:live": "vitest run tests/integration/observability-live.test.ts"
   },
   "dependencies": {
+    "@mux/mux-node": "15.5.0",
+    "@mux/mux-player-react": "3.13.4",
+    "@mux/mux-uploader-react": "1.5.0",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",
     "next": "16.3.6",

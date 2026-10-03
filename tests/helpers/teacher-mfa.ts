@@ -6,10 +6,14 @@ import { join } from "node:path";
 import { expect, type Page } from "@playwright/test";
 
 export const canonicalTeacherEmail = "canonical.teacher@example.test";
+export const canonicalOtherTeacherEmail = "canonical.teacher-b@example.test";
 export const canonicalOtherTeacherSessionId = "88200000-0000-4000-8000-000000000002";
 export const canonicalTeacherSessionId = "88200000-0000-4000-8000-000000000001";
 
-const secretPath = join(tmpdir(), "yas-canonical-teacher-totp.secret");
+function secretPathFor(email: string): string {
+  if (email === canonicalTeacherEmail) return join(tmpdir(), "yas-canonical-teacher-totp.secret");
+  return join(tmpdir(), `yas-${email.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-totp.secret`);
+}
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 function decodeBase32(value: string): Buffer {
@@ -44,9 +48,10 @@ function totp(secret: string, now = Date.now()): string {
   return String(binary % 1_000_000).padStart(6, "0");
 }
 
-async function resolveTotpSecret(page: Page): Promise<string> {
+async function resolveTotpSecret(page: Page, email: string): Promise<string> {
   await page.getByLabel("Código do autenticador").waitFor();
   const manualSecret = page.locator(".yas-mfa-secret");
+  const secretPath = secretPathFor(email);
 
   if (await manualSecret.isVisible()) {
     const secret = (await manualSecret.textContent())?.trim();
@@ -59,30 +64,25 @@ async function resolveTotpSecret(page: Page): Promise<string> {
 
   if (!existsSync(secretPath)) {
     throw new Error(
-      "Verified canonical Teacher MFA exists but its temporary test secret is absent.",
+      `Verified canonical Teacher MFA exists for ${email} but its temporary test secret is absent.`,
     );
   }
 
   return readFileSync(secretPath, "utf8").trim();
 }
 
-export async function loginCanonicalTeacher(
-  page: Page,
-  password: string,
-  options: { next?: string } = {},
-): Promise<void> {
-  const next = options.next ?? "/teacher";
-  await page.goto(`/login?next=${encodeURIComponent(next)}`);
-  await page.getByLabel("E-mail").fill(canonicalTeacherEmail);
+async function loginTeacherAccount(page: Page, email: string, password: string): Promise<void> {
+  await page.goto("/login?next=%2Fteacher");
+  await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password);
   await page.getByRole("button", { name: "Entrar" }).click();
 
-  await expect(page).toHaveURL(next ? /\/mfa\?next=%2Fteacher/i : /\/mfa\?next=$/);
+  await expect(page).toHaveURL(/\/mfa\?next=%2Fteacher/i);
   await expect(
     page.getByRole("heading", { name: "Verificação em duas etapas obrigatória" }),
   ).toBeVisible();
 
-  const secret = await resolveTotpSecret(page);
+  const secret = await resolveTotpSecret(page, email);
   const protectedResponse = await page.request.get("/teacher", { maxRedirects: 0 });
   expect(protectedResponse.status()).toBe(307);
   expect(protectedResponse.headers().location).toContain("/mfa");
@@ -90,5 +90,18 @@ export async function loginCanonicalTeacher(
   await page.getByRole("button", { name: "Verificar código" }).click();
 
   await expect(page).toHaveURL(/\/teacher$/);
-  await expect(page.getByRole("heading", { name: "Suas sessões" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible();
+}
+
+export async function loginCanonicalTeacher(
+  page: Page,
+  password: string,
+  _options: { next?: string } = {},
+): Promise<void> {
+  void _options;
+  await loginTeacherAccount(page, canonicalTeacherEmail, password);
+}
+
+export async function loginCanonicalOtherTeacher(page: Page, password: string): Promise<void> {
+  await loginTeacherAccount(page, canonicalOtherTeacherEmail, password);
 }

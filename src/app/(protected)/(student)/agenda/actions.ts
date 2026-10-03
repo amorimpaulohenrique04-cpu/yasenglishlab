@@ -5,6 +5,18 @@ import { redirect } from "next/navigation";
 
 import { ScheduleBookingError, bookScheduleSessionInputSchema } from "@/modules/schedule";
 import { bookCurrentStudentSession, cancelCurrentStudentSession } from "@/server/schedule/schedule";
+import { assertRole } from "@/server/auth/guards";
+import { getLiveSessionJoinAccess } from "@/server/schedule/meeting-access";
+import { getSessionResourceAccess } from "@/server/teacher-operations/resources";
+export async function studentResourceAccessAction(id: string) {
+  await assertRole("STUDENT");
+  return getSessionResourceAccess(id);
+}
+
+export async function joinLiveSessionAction(id: string) {
+  await assertRole("STUDENT");
+  return getLiveSessionJoinAccess(id);
+}
 
 function bookingResultCode(error: ScheduleBookingError): string {
   if (error.code === "ENTITLEMENT_REQUIRED") return "entitlement";

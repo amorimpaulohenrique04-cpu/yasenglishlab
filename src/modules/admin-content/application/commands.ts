@@ -26,7 +26,7 @@ export async function saveAdminContent(
   const data = parseAdminContentSaveData(input.kind, input.data);
   if (id === null && input.kind === "lesson_assets") {
     const asset = data as Extract<AdminContentSaveData, { lesson_id: string }>;
-    if (asset.source_url === null && asset.content === null) {
+    if (asset.asset_type !== "VIDEO" && asset.source_url === null && asset.content === null) {
       throw new Error("New lesson content needs a URL or text content.");
     }
   }
