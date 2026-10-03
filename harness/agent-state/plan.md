@@ -1,5 +1,18 @@
 # Agent Plan
 
+## Active task
+
+**stage-01-enrollment-core**
+
+Base `22b0562eaf308fabd363107feeecb639a126484e`; branch `feat/stage-01-enrollment-core`.
+
+1. Reconcile P21 checks separately from real Mux smoke.
+2. Add Placement domain/migration/RLS, schedule and capacity invariants.
+3. Add application/adapters, onboarding/Assessment, Teacher review, choice, Admin and Home.
+4. Prove tests/evidence, run gates, commit/push/PR and inspect CI.
+
+# Agent Plan
+
 ## Active P21 P1 — 2026-10-02
 
 Goal: `harness/goals/p21-p1-core-experience.md`. Base `78c4c689b6fbabde56083b417e7bbbfc9e302ccb` verified.
@@ -16,7 +29,7 @@ Plano detalhado: `harness/plans/p21-p0-foundation-closure.md`.
 P21.1/P21.2/P21.3 permanecem planned / verified:false; gates não executados.
 O registro histórico de P21 abaixo foi preservado.
 
-## Active task
+## Historical active task
 
 **p21-p1-core-experience**
 

@@ -67,7 +67,11 @@ export async function loginCanonicalAdmin(
   await page.goto(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
   await page.getByLabel("E-mail").fill(options.email ?? canonicalAdminEmail);
   await page.getByLabel("Senha").fill(password);
+  const response = page.waitForResponse(
+    (item) => item.request().method() === "POST" && new URL(item.url()).pathname === "/login",
+  );
   await page.getByRole("button", { name: "Entrar" }).click();
+  expect((await response).status()).toBeLessThan(400);
 
   await expect(page).toHaveURL(/\/mfa\?next=/i, { timeout: 15_000 });
   await expect(
