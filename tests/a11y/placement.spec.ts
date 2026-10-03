@@ -52,7 +52,7 @@ test("Student onboarding, persisted Assessment and choice have labels, keyboard 
   await check(ready);
   await context.close();
 });
-test("Teacher scoped review and Admin queue preserve keyboard and WCAG AA", async ({ browser }) => {
+test("Teacher scoped review preserves keyboard and WCAG AA", async ({ browser }) => {
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -76,6 +76,8 @@ test("Teacher scoped review and Admin queue preserve keyboard and WCAG AA", asyn
   await expect(page.getByLabel("Confiança na recomendação")).toBeFocused();
   await check(page);
   await teacher.close();
+});
+test("Admin queue preserves keyboard and WCAG AA", async ({ browser }) => {
   const staff = await browser.newContext(),
     staffPage = await staff.newPage();
   await loginCanonicalAdmin(staffPage, password!);

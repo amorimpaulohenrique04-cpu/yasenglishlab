@@ -109,14 +109,12 @@ export class SupabasePlacementRepository implements PlacementRepository {
     return projectionSchema.parse(await this.rpc("get_placement_projection", { p_case_id: id }));
   }
   async listCases(state?: string) {
-    return z
-      .array(projectionSchema)
-      .parse(
-        await this.rpc("get_placement_queue", {
-          p_state: state ?? null,
-          p_workspace: this.workspace,
-        }),
-      );
+    return z.array(projectionSchema).parse(
+      await this.rpc("get_placement_queue", {
+        p_state: state ?? null,
+        p_workspace: this.workspace,
+      }),
+    );
   }
   async getCandidates(caseId: string) {
     return z
