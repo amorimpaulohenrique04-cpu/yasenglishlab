@@ -93,3 +93,9 @@ Durable evidence:
 `harness/evidence/prompt-21-home-projection-v1/`.
 
 PR #25 remains open against `main`; no merge was performed.
+
+## A11y five failures — 2026-10-03
+Goal: harness/goals/a11y-five-failures.md. One joint Laya call completed. Preserve prior changes. Capture error-context and browser focus/node/hydration behavior, apply smallest proven correction, run only test:a11y once; no second correction round, commit, push or verified flag update.
+
+## GitHub push — 2026-10-03
+User now authorizes commit/push. Commit existing a11y correction, diagnostic evidence and placement SQL test correction; push HEAD to feat/stage-01-enrollment-core. Generated screenshots and root execution logs remain local. No implementation changes or broader verification in this publishing task.

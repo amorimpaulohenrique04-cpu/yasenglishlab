@@ -35,7 +35,10 @@ select pg_temp.assert_true(public.begin_placement()=(select id from public.place
 select pg_temp.denied('select public.start_placement_assessment()','23514');
 select public.save_placement_preferences('America/Recife',1,1080,1260);
 select public.save_placement_preferences('America/Recife',1,1080,1260);
-select pg_temp.assert_true((select count(*)=1 from public.audit_logs where entity_id=(select id from public.placement_cases) and action='placement_preferences_saved'),'identical preference retry preserves audit');
+select set_config('placement.test.case',(select id::text from public.placement_cases),true);
+reset role;
+select pg_temp.assert_true((select count(*)=1 from public.audit_logs where entity_id=current_setting('placement.test.case')::uuid and action='placement_preferences_saved'),'identical preference retry preserves audit');
+set local role authenticated;
 select public.start_placement_assessment();
 select pg_temp.assert_true(public.start_placement_assessment()=(select assessment_attempt_id from public.placement_cases),'start retry same attempt');
 select pg_temp.denied('select answer_key from public.assessment_items');

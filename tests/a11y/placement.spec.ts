@@ -34,6 +34,7 @@ test("Student onboarding, persisted Assessment and choice have labels, keyboard 
 }) => {
   await login(page, "resume");
   await page.goto("/onboarding/assessment");
+  await expect(page.getByLabel("Sua resposta")).toBeVisible();
   await page.getByLabel("Sua resposta").focus();
   await expect(page.getByLabel("Sua resposta")).toBeFocused();
   await page.keyboard.press("Tab");
@@ -71,6 +72,7 @@ test("Teacher scoped review preserves keyboard and WCAG AA", async ({ browser })
   await page.goto("/teacher/revisoes/placement");
   await check(page);
   await page.goto(`/teacher/revisoes/placement/${c!.id}`);
+  await expect(page.getByLabel("Feedback para o aluno")).toBeVisible();
   await page.getByLabel("Feedback para o aluno").focus();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Confiança na recomendação")).toBeFocused();
@@ -82,6 +84,7 @@ test("Admin queue preserves keyboard and WCAG AA", async ({ browser }) => {
     staffPage = await staff.newPage();
   await loginCanonicalAdmin(staffPage, password!);
   await staffPage.goto("/admin/enrollments");
+  await expect(staffPage.getByLabel("Filtrar por etapa")).toBeVisible();
   await staffPage.getByLabel("Filtrar por etapa").focus();
   await staffPage.keyboard.press("Tab");
   await expect(staffPage.getByRole("button", { name: "Filtrar", exact: true })).toBeFocused();

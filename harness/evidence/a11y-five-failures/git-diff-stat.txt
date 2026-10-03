@@ -1,0 +1,34 @@
+ artifacts/canonical-slice/agenda-desktop.png       | Bin 308701 -> 328648 bytes
+ artifacts/canonical-slice/aulas-desktop.png        | Bin 185078 -> 186898 bytes
+ artifacts/canonical-slice/home-desktop.png         | Bin 257240 -> 305232 bytes
+ artifacts/canonical-slice/materiais-desktop.png    | Bin 279906 -> 281827 bytes
+ artifacts/canonical-slice/module-desktop.png       | Bin 185128 -> 186953 bytes
+ artifacts/canonical-slice/pratica-desktop.png      | Bin 401736 -> 435197 bytes
+ .../canonical-slice/pratica-resultado-desktop.png  | Bin 472452 -> 505186 bytes
+ artifacts/canonical-slice/teacher-desktop.png      | Bin 206650 -> 219754 bytes
+ artifacts/canonical-slice/teacher-mobile.png       | Bin 138485 -> 223288 bytes
+ artifacts/canonical-slice/teacher-tablet.png       | Bin 143756 -> 234999 bytes
+ .../module-draft-preview.png                       | Bin 215227 -> 218284 bytes
+ .../module-published-student.png                   | Bin 162837 -> 164759 bytes
+ .../module-unpublished-student.png                 | Bin 158842 -> 160771 bytes
+ harness/agent-state/plan.md                        |   3 +++
+ harness/agent-state/progress.md                    |   3 +++
+ .../screenshots/admin-enrollments-desktop.png      | Bin 288243 -> 346203 bytes
+ .../screenshots/admin-enrollments-mobile.png       | Bin 142223 -> 180262 bytes
+ .../screenshots/admin-enrollments-tablet.png       | Bin 144278 -> 230281 bytes
+ .../screenshots/assessment-desktop.png             | Bin 186538 -> 184777 bytes
+ .../screenshots/assessment-mobile.png              | Bin 74078 -> 71404 bytes
+ .../screenshots/assessment-tablet.png              | Bin 117968 -> 114410 bytes
+ .../screenshots/onboarding-desktop.png             | Bin 194055 -> 192379 bytes
+ .../screenshots/onboarding-mobile.png              | Bin 75865 -> 73156 bytes
+ .../screenshots/onboarding-tablet.png              | Bin 123880 -> 120286 bytes
+ .../screenshots/placement-desktop.png              | Bin 200575 -> 198999 bytes
+ .../screenshots/placement-mobile.png               | Bin 84437 -> 81750 bytes
+ .../screenshots/placement-tablet.png               | Bin 131334 -> 127959 bytes
+ .../screenshots/teacher-review-desktop.png         | Bin 288479 -> 287017 bytes
+ .../screenshots/teacher-review-mobile.png          | Bin 141215 -> 137040 bytes
+ .../screenshots/teacher-review-tablet.png          | Bin 182736 -> 177259 bytes
+ src/app/(protected)/(teacher)/loading.tsx          |   7 ++++++-
+ supabase/tests/placement.sql                       |   5 ++++-
+ tests/a11y/placement.spec.ts                       |   3 +++
+ 33 files changed, 19 insertions(+), 2 deletions(-)

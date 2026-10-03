@@ -1,0 +1,11 @@
+import { chromium } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { writeFileSync } from 'node:fs';
+const browser=await chromium.launch();
+const context=await browser.newContext();
+const page=await context.newPage();
+await page.setContent('<main><div aria-busy="true" aria-label="Carregando área do professor"><div aria-hidden="true">Loading skeleton</div></div></main>');
+const result=await new AxeBuilder({page}).withRules(['aria-prohibited-attr']).analyze();
+writeFileSync('harness/evidence/a11y-five-failures/axe-before.json',JSON.stringify(result.violations,null,2));
+console.log(JSON.stringify(result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({html:n.html,failureSummary:n.failureSummary}))}))));
+await browser.close();

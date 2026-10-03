@@ -3,7 +3,12 @@ import styles from "@/modules/teacher-operations/ui/teacher-operations.module.cs
 
 export default function TeacherLoading() {
   return (
-    <div className={styles.page} aria-busy="true" aria-label="Carregando área do professor">
+    <div
+      className={styles.page}
+      role="status"
+      aria-busy="true"
+      aria-label="Carregando área do professor"
+    >
       <Skeleton width="16rem" height="2.5rem" />
       <div className={styles.loadingGrid}>
         <Card>
