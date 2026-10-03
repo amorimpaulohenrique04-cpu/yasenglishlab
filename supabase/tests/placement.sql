@@ -94,6 +94,13 @@ select pg_temp.assert_true((select count(*)=2 from public.get_placement_candidat
 select pg_temp.assert_true(not exists(select 1 from public.get_placement_candidates(current_setting('placement.test.case')::uuid) candidate where candidate->>'id'='99050000-0000-4000-8000-000000000002'),'incompatible Tuesday filtered');
 select pg_temp.denied('select public.get_placement_review_evidence(current_setting(''placement.test.case'')::uuid)');
 select pg_temp.denied('select public.confirm_placement_choice(''99050000-0000-4000-8000-000000000002'')','23514');
+reset role;
+update public.subscriptions set current_period_start=now()+interval '1 hour' where provider_subscription_id='placement-test-a';
+set local role authenticated;
+select pg_temp.denied('select public.confirm_placement_choice(''99050000-0000-4000-8000-000000000001'')');
+reset role;
+update public.subscriptions set current_period_start=null where provider_subscription_id='placement-test-a';
+set local role authenticated;
 select public.confirm_placement_choice('99050000-0000-4000-8000-000000000001');
 select public.confirm_placement_choice('99050000-0000-4000-8000-000000000001');
 select pg_temp.denied('select public.confirm_placement_choice(null)','23514');

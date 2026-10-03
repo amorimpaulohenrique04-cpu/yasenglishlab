@@ -255,7 +255,7 @@ begin
  if c.state<>'STUDENT_DECISION' then raise exception 'student decision required' using errcode='23514'; end if;
  select * into co from public.cohorts where id=p_cohort_id for update;
  if co.id is null or not private.placement_cohort_compatible(c.id,co.id,true) then raise exception 'cohort incompatible' using errcode='23514'; end if;
- if not exists(select 1 from public.subscriptions where id=c.subscription_id and user_id=c.user_id and status='ACTIVE' and (ended_at is null or ended_at>now()) and (current_period_end is null or current_period_end>now())) then raise exception 'confirmed commercial state required' using errcode='42501'; end if;
+ if not exists(select 1 from public.subscriptions where id=c.subscription_id and user_id=c.user_id and status='ACTIVE' and started_at<=now() and (ended_at is null or ended_at>now()) and (current_period_start is null or current_period_start<=now()) and (current_period_end is null or current_period_end>now())) then raise exception 'confirmed commercial state required' using errcode='42501'; end if;
  select id into e from public.enrollments where user_id=c.user_id and course_id=co.course_id and status='ACTIVE' order by created_at desc limit 1;
  if e is null then insert into public.enrollments(user_id,course_id,status) values(c.user_id,co.course_id,'ACTIVE') on conflict(user_id,course_id) do update set status='ACTIVE',completed_at=null returning id into e; end if;
  insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) values(co.id,c.user_id,e) returning id into m;
