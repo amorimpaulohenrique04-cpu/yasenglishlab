@@ -418,3 +418,7 @@ All five literal local aliases passed. Final full: 86 unit, 54 integration (one 
 ## 2026-10-02 — P21 P1 implementation stopped at user request
 
 Base 78c4c689b6fbabde56083b417e7bbbfc9e302ccb and branch feat/p21-p1-core-experience verified. Additive operations/pedagogy/video implementation and SQL/concurrency evidence produced. Final lint/typecheck, structural harness/security/DB passed. Two clean local replays and SQL/RLS passed before the final audio metadata hardening. Full agent gate failed a GOAL documentation declaration (corrected, not fully rerun). E2E loops, legacy upgrade, visual review, full/UI gates and Official CI remain pending. User asked to stop because credits were running out; no completion claim. See harness/evidence/p21-p1-core-experience/REPORT.md. Registry remains in_progress and verified:false.
+
+## 2026-10-03 ? P21 reconciliation / Stage 01 start
+
+Fetched main matches requested SHA 22b0562eaf308fabd363107feeecb639a126484e. PR #31 merged; Official CI 37080829934 inspected green across all jobs. Historical interruption report retained. Real Mux smoke unverified: combined P21 remains in_progress/verified:false. Stage 01 branch/GOAL created; no prior Placement domain found. Untracked Laya scripts preserved.

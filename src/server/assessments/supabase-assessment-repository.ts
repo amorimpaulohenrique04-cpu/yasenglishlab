@@ -9,6 +9,7 @@ import {
   type AssessmentResponseView,
   type AssessmentSkill,
   type AssessmentSkillScoreView,
+  assessmentExecutionSchema,
 } from "@/modules/assessments";
 import { SKILLS } from "@/modules/domain";
 
@@ -69,6 +70,43 @@ function skillScoreFromRow(row: Row): AssessmentSkillScoreView {
 
 export class SupabaseAssessmentRepository implements AssessmentRepository {
   constructor(private readonly client: SupabaseClient) {}
+
+  async getExecution(attemptId: string, userId: string) {
+    const { data: attempt, error: attemptError } = await this.client
+      .from("assessment_attempts")
+      .select("id,status,assessment_version_id")
+      .eq("id", attemptId)
+      .eq("user_id", userId)
+      .single();
+    if (attemptError || !attempt) throw new Error("Assessment execution unavailable.");
+    const [items, responses] = await Promise.all([
+      this.client
+        .from("assessment_items")
+        .select("id,position,skill,item_type,prompt")
+        .eq("assessment_version_id", attempt.assessment_version_id)
+        .order("position"),
+      this.client
+        .from("assessment_responses")
+        .select("assessment_item_id,response")
+        .eq("assessment_attempt_id", attemptId),
+    ]);
+    if (items.error || responses.error) throw new Error("Assessment execution unavailable.");
+    return assessmentExecutionSchema.parse({
+      attemptId: attempt.id,
+      status: attempt.status,
+      items: (items.data ?? []).map((i) => ({
+        id: i.id,
+        position: i.position,
+        skill: i.skill,
+        itemType: i.item_type,
+        prompt: i.prompt,
+      })),
+      responses: (responses.data ?? []).map((r) => ({
+        itemId: r.assessment_item_id,
+        response: r.response,
+      })),
+    });
+  }
 
   private async getAttempt(attemptId: string): Promise<AssessmentAttemptView> {
     const { data: attempt, error: attemptError } = await this.client

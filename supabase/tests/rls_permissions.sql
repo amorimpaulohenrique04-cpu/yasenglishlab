@@ -1044,3 +1044,6 @@ where id in (
   '82700000-0000-0000-0000-000000000001',
   '82700000-0000-0000-0000-000000000002'
 );
+-- Enrollment Core authorization is exercised against the same real database.
+-- This included transactional suite has its own fixtures and rolls back all changes.
+\ir placement.sql

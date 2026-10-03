@@ -7,12 +7,22 @@ import {
   type CompleteAssessmentInput,
   type RecordAssessmentResponseInput,
   type StartAssessmentInput,
+  getAssessmentExecution,
 } from "@/modules/assessments";
 import { SupabaseProductAnalytics } from "@/server/analytics/supabase-product-analytics";
 import { assertRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 
 import { SupabaseAssessmentRepository } from "./supabase-assessment-repository";
+
+export async function loadCurrentStudentAssessment(attemptId: string) {
+  const auth = await assertRole("STUDENT");
+  return getAssessmentExecution(
+    new SupabaseAssessmentRepository(await createSupabaseServerClient()),
+    attemptId,
+    auth.userId,
+  );
+}
 
 export async function startCurrentStudentAssessment(input: StartAssessmentInput) {
   await assertRole("STUDENT");

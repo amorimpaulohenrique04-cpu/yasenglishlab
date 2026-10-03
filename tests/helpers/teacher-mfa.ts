@@ -75,7 +75,11 @@ async function loginTeacherAccount(page: Page, email: string, password: string):
   await page.goto("/login?next=%2Fteacher");
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password);
+  const response = page.waitForResponse(
+    (item) => item.request().method() === "POST" && new URL(item.url()).pathname === "/login",
+  );
   await page.getByRole("button", { name: "Entrar" }).click();
+  expect((await response).status()).toBeLessThan(400);
 
   await expect(page).toHaveURL(/\/mfa\?next=%2Fteacher/i);
   await expect(

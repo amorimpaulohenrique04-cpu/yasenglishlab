@@ -16,6 +16,7 @@ A pasta `docs/` é a fonte de verdade modular do produto e da engenharia. Use pr
 - [SECURITY.md](./SECURITY.md)
 
 ## Domínios
+- [PLACEMENT.md](./PLACEMENT.md) — Enrollment Core, review pedagógica e matching operacional.
 - [ADMIN_CONTENT.md](./ADMIN_CONTENT.md)
 - [BILLING.md](./BILLING.md)
 - [CEFR_ASSESSMENT.md](./CEFR_ASSESSMENT.md)
