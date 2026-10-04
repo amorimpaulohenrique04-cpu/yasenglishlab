@@ -294,7 +294,11 @@ export function KanbanBoard({
   return (
     <div className="yas-kanban-board" aria-label={label}>
       {columns.map((column) => (
-        <section className="yas-kanban-column" key={column.id} aria-labelledby={`${column.id}-title`}>
+        <section
+          className="yas-kanban-column"
+          key={column.id}
+          aria-labelledby={`${column.id}-title`}
+        >
           <header className="yas-kanban-heading">
             <h2 id={`${column.id}-title`}>{column.title}</h2>
             <span aria-label={`${column.count} itens`}>{column.count}</span>
