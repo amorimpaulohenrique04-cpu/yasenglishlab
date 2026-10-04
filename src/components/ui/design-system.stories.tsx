@@ -8,13 +8,17 @@ import {
   Button,
   Card,
   Checkbox,
+  DataTable,
   Dialog,
   Drawer,
   Dropdown,
   EmptyState,
   ErrorState,
+  FilterBar,
+  FormDialog,
   IconButton,
   Input,
+  MetricCard,
   PageHeader,
   ProgressBar,
   ProgressRing,
@@ -236,6 +240,55 @@ export const NavigationAndOverlays: Story = {
       </div>
     );
   },
+};
+
+export const Operations: Story = {
+  render: () => (
+    <div className="yas-stack" style={{ maxWidth: 1080 }}>
+      <PageHeader
+        title="Operações"
+        description="Primitives compartilhados das superfícies Admin e Teacher."
+        actions={
+          <FormDialog trigger="Nova entrada" title="Criar entrada">
+            <div className="yas-stack">
+              <Input label="Nome" defaultValue="Aluno exemplo" />
+              <Button type="button" variant="primary">Salvar</Button>
+            </div>
+          </FormDialog>
+        }
+      />
+      <section className="yas-metric-strip" aria-label="Indicadores de operações">
+        <MetricCard label="Ativos" value="12" detail="Registros disponíveis" />
+        <MetricCard label="Pendentes" value="3" detail="Precisam de atenção" />
+      </section>
+      <FilterBar aria-label="Filtrar operações">
+        <Input label="Buscar" placeholder="Nome ou e-mail" />
+        <Button type="submit">Filtrar</Button>
+      </FilterBar>
+      <DataTable
+        caption="Operações recentes"
+        columns={[
+          { id: "name", label: "Nome" },
+          { id: "status", label: "Status" },
+        ]}
+        rows={[
+          {
+            id: "1",
+            cells: [
+              "Aluno exemplo",
+              <Badge key="status" tone="success">Ativo</Badge>,
+            ],
+            mobile: (
+              <Card>
+                <strong>Aluno exemplo</strong>
+                <Badge tone="success">Ativo</Badge>
+              </Card>
+            ),
+          },
+        ]}
+      />
+    </div>
+  ),
 };
 
 export const ContentStates: Story = {
