@@ -84,13 +84,13 @@ select pg_temp.denied('select * from public.admin_teacher_directory('''', 51, 0)
 select pg_temp.denied('select * from public.admin_teacher_directory('''', 25, -1)', '22023');
 reset role;
 set local role service_role;
-select pg_temp.assert_true(
-  public.admin_reconcile_teacher('teacher-reconcile@example.test', '99300000-0000-4000-8000-000000000001') is not null,
-  'Server-only reconciliation creates the Teacher record for the verified Admin actor');
+select public.admin_reconcile_teacher(
+  'teacher-reconcile@example.test', '99300000-0000-4000-8000-000000000001') as reconciled_teacher_id \gset
 select pg_temp.assert_true(
   public.admin_reconcile_teacher('TEACHER-RECONCILE@example.test', '99300000-0000-4000-8000-000000000001') =
-    (select id from public.teachers where user_id = '99300000-0000-4000-8000-000000000005'),
+    :'reconciled_teacher_id'::uuid,
   'Server retry reconciles to the same Teacher record');
+reset role;
 select pg_temp.assert_true(
   (select count(*) = 1 from public.user_roles where user_id = '99300000-0000-4000-8000-000000000005' and role = 'TEACHER')
   and (select count(*) = 1 from public.teachers where user_id = '99300000-0000-4000-8000-000000000005'),
@@ -99,6 +99,7 @@ select pg_temp.assert_true(
   (select count(*) = 1 from public.audit_logs where action = 'teacher_provisioned'
        and entity_id = (select id from public.teachers where user_id = '99300000-0000-4000-8000-000000000005')),
   'Teacher reconciliation is audited once, without duplicate retry events');
+set local role service_role;
 select pg_temp.denied(
   'select public.admin_reconcile_teacher(''missing-teacher@example.test'',''99300000-0000-4000-8000-000000000001'')', 'P0002');
 reset role;
