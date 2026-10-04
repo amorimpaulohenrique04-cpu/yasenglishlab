@@ -40,5 +40,6 @@ Run PR #33 Database check `111469259654` from `37213468368`, or run the prior te
 
 ## Before/after proof
 
-Before: Official CI failed on the direct `teachers` read as `service_role`.  
+Before: Official CI failed on the direct `teachers` read as `service_role`.
+
 After: the focused SQL/RLS suite passes locally; the corrected Official CI run remains pending.
