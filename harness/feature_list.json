@@ -14,15 +14,16 @@
     {
       "id": "stage-02-operations",
       "title": "complete Stage 02 Operations",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["stage-01-enrollment-core"],
       "evidence": [
         "harness/goals/stage-02-operations.md",
         "harness/evidence/stage-02-operations/README.md",
-        "harness/evidence/stage-02-operations/verification.json"
+        "harness/evidence/stage-02-operations/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/33"
       ],
-      "updated_at": "2026-10-04T11:41:58-03:00"
+      "updated_at": "2026-10-04T17:00:00-03:00"
     },
     {
       "id": "stage-01-enrollment-core",

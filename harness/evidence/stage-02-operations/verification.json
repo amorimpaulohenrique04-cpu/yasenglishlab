@@ -1,10 +1,10 @@
 {
   "feature": "stage-02-operations",
-  "status": "partial",
-  "verified": false,
+  "status": "passed",
+  "verified": true,
   "baseline_sha": "34f5e32f313fe16b8c09bcf13b64b4a7d11b9236",
   "branch": "feat/stage-02-operations",
-  "tested_scope": "Admin Overview; Students/Student 360; Admin Teachers; Cohorts V2; bounded Teacher operational/pedagogical surfaces; CRM Leads V1. Full local verification passed before the focused Admin Teachers test-fixture correction; PR #33 is open and corrected Official CI is pending",
+  "tested_scope": "Admin Overview; Students/Student 360; Admin Teachers; Cohorts V2; bounded Teacher operational/pedagogical surfaces; CRM Leads V1. Full local verification and Official CI passed at 979412681e08ab4334c975c1591e65b7c9d0fe2f; PR #33 remains open for user merge",
   "checks": {
     "typecheck": {
       "command": "node_modules/.bin/tsc.cmd --noEmit",
@@ -139,13 +139,16 @@
   ],
   "verify_full": {
     "command": "npm run verify:full (local Supabase reset/replay, isolated Next output, telemetry disabled)",
-    "result": "failed_e2e_26_of_28",
-    "details": "Previously passed on commit 3c6db60 with all local gates. Rerun on the corrected service-role test fixture cleanly reset/replayed migrations and passed core format/lint/typecheck/build; unit 96/96; integration 68 passed/1 skipped; 11 SQL integration files; 7 RLS SQL files; Harness; security; and all 10 agent eval rules. E2E completed 26/28; workspace-entry.spec.ts multi-role MFA stayed at /mfa?next= after TOTP, and Teacher route-guard timed out with captured /profile access-denied page. Accessibility and visual gates did not run. Separate focused admin-teachers SQL/RLS passed. Run used SUPABASE_HOME=.supabase-home-stage02, SUPABASE_TELEMETRY_DISABLED=1, DO_NOT_TRACK=1, PLAYWRIGHT_PORT=4001 and YAS_ISOLATED_VERIFY=1."
+    "result": "passed",
+    "head_sha": "979412681e08ab4334c975c1591e65b7c9d0fe2f",
+    "details": "Clean local Supabase reset/replay; core format/lint/typecheck/build; unit 96/96; integration 68 passed/1 skipped; 11 SQL integration files; 7 RLS SQL files; Harness; security; all 10 agent eval rules; canonical E2E 28/28; persistence/analytics; accessibility 28/28; Storybook build and visual 6/6; golden visual 3/3. Earlier transient workspace E2E and a11y focus failures passed isolated reruns and the final full run. Used SUPABASE_HOME=.supabase-home-stage02, SUPABASE_TELEMETRY_DISABLED=1, DO_NOT_TRACK=1, PLAYWRIGHT_PORT=4001 and YAS_ISOLATED_VERIFY=1."
   },
-  "not_run": [
-    "Official CI rerun on corrected commit",
-    "verify:ui on corrected worktree after E2E stopped verify:full",
-    "final-state CI after final Harness evidence update"
-  ],
+  "official_ci": {
+    "run_id": "37215008624",
+    "head_sha": "979412681e08ab4334c975c1591e65b7c9d0fe2f",
+    "result": "passed",
+    "checks": ["Supply Chain", "Database", "Guardrail Simulations", "Quality", "Preview", "CI Gate"]
+  },
+  "not_run": ["final-state CI after this Harness evidence and registry update"],
   "pull_request": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/33"
 }

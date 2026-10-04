@@ -516,3 +516,12 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Follow-up `verify:agent` initially reproduced two evaluator defects: prose-only GOAL scope was not parsed, and the RLS proxy accepted only the central permissions test despite changed, registered per-domain authorization SQL. Updated concrete GOAL globs and the evaluator; `verify:agent` then passed all 10 rules. Durable red/green record: `harness/failure-log/2026-10-04-stage-02-agent-eval-scope-and-rls.md`.
 - Final `verify:full` passed after clean local Supabase reset/replay on `3c6db60`: 96 unit tests, 68 integration passed/1 skipped, 11 SQL integration files, 7 RLS files, Harness/security/eval, E2E 28/28, canonical persistence/analytics, a11y 28/28, Storybook 6/6 and golden 3/3. Used temporary workspace `SUPABASE_HOME`, official CLI telemetry opt-out variables, and isolated Playwright port 4001; no product security settings changed.
 - Stage 02 remains `in_progress / verified:false`. The first implementation commit is pushed, but `3c6db60` remains ahead of origin. The GitHub public compare/pull page shows no Stage 02 PR and requires sign-in; Official CI and final-state CI therefore remain pending. No merge attempted.
+
+# 2026-10-04 — Stage 02 final verification and publication
+
+- Fixed the Official CI-discovered `service_role` permission error in `supabase/tests/admin_teachers.sql` without changing product grants, policies, or authorization behavior. The focused SQL/RLS suite passed after the fixture correction.
+- Final `npm run verify:full` passed on `979412681e08ab4334c975c1591e65b7c9d0fe2f`: migrations reset/replayed; format/lint/typecheck/build, unit 96/96, integration 68 passed/1 skipped, SQL integration 11 files, RLS 7 files, Harness, security, agent eval 10/10, E2E 28/28, persistence/analytics, a11y 28/28, Storybook 6/6, and golden 3/3.
+- Official CI run `37215008624` passed on the same SHA: Supply Chain, Database, Guardrail Simulations, Quality, Preview and CI Gate.
+- Stage 02 feature is now `done / verified:true`; evidence: `harness/evidence/stage-02-operations/README.md`, `verification.json`, local full gate, and PR #33. PR remains open and unmerged for the user.
+- Only untracked `artifacts/canonical-slice/*` and `artifacts/p21-foundation/*` remain; they were not added, moved, or changed by this work.
+- This Harness/registry evidence update requires a final Official CI inspection on its resulting commit; no merge is requested.
