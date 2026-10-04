@@ -21,10 +21,10 @@ test("Teacher operational surfaces stay scoped and usable on mobile", async ({
   if (!student) throw new Error("Canonical assigned Student is missing.");
 
   await loginCanonicalTeacher(page, password);
-  await expect(page.getByRole("link", { name: "Revisões de prática" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Revisões de prática", exact: true })).toBeVisible();
   await page.goto("/teacher/turmas");
   await expect(page.getByRole("heading", { name: "Turmas", exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Cohort Basic", exact: true })).toBeVisible();
+  await expect(page.getByRole("row", { name: /Cohort Basic/ })).toBeVisible();
   await page.goto("/teacher/alunos");
   await expect(page.getByRole("link", { name: "Cohort Student A" })).toBeVisible();
   await page.goto(`/teacher/alunos/${student.id}`);
@@ -53,4 +53,21 @@ test("Teacher operational surfaces stay scoped and usable on mobile", async ({
     fullPage: true,
   });
   await testInfo.attach("teacher-student-mobile.png", { body: mobile, contentType: "image/png" });
+
+  await page.goto("/teacher/disponibilidade");
+  await expect(page.getByRole("heading", { name: "Disponibilidade", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Data").first()).toHaveAttribute("type", "date");
+  await expect(page.getByLabel("Início").first()).toHaveAttribute("type", "time");
+  await expect(page.getByLabel("Término").first()).toHaveAttribute("type", "time");
+  expect(
+    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+  ).toEqual([]);
+  const availability = await page.screenshot({
+    path: testInfo.outputPath("teacher-availability-mobile.png"),
+    fullPage: true,
+  });
+  await testInfo.attach("teacher-availability-mobile.png", {
+    body: availability,
+    contentType: "image/png",
+  });
 });

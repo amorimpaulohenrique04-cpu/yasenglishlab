@@ -20,6 +20,7 @@ test("Admin manages a lead and accessible follow-up workflow after MFA", async (
     "aria-current",
     "page",
   );
+  await page.getByRole("button", { name: "Novo lead" }).click();
   await page.getByRole("textbox", { name: /^Nome/ }).first().fill(leadName);
   await page.getByLabel("Email", { exact: true }).first().fill(`stage02-${suffix}@example.test`);
   await page
@@ -31,7 +32,7 @@ test("Admin manages a lead and accessible follow-up workflow after MFA", async (
   await page.getByRole("textbox", { name: "Buscar nome, email ou telefone" }).fill(leadName);
   await page.getByRole("button", { name: "Filtrar" }).click();
   await expect(page.getByRole("heading", { name: leadName })).toHaveCount(1);
-  await page.getByText("Detalhes e ações").last().click();
+  await page.getByRole("button", { name: "Detalhes e ações" }).last().click();
   await page.getByLabel("Avançar etapa").last().selectOption("CONTACTED");
   await page.getByRole("button", { name: "Atualizar etapa" }).last().click();
   await expect(

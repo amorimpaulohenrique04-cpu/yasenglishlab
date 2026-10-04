@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-import { Badge, Card, PageHeader } from "@/components/ui";
+import { Badge, Card, MetricCard, PageHeader } from "@/components/ui";
+import { loadAdminLeads } from "@/server/crm/crm";
+import { loadCohortAdministration } from "@/server/cohorts/cohorts";
 import { placementLabels } from "@/modules/placement";
 import { loadPlacementQueue } from "@/server/placement/placement";
 import styles from "./admin-overview.module.css";
@@ -9,9 +11,11 @@ const attentionStates = ["REVIEW_PENDING", "STUDENT_DECISION"] as const;
 const queueLimit = 100;
 
 export default async function AdminPage() {
-  const [reviewQueue, decisionQueue] = await Promise.all([
+  const [reviewQueue, decisionQueue, newLeads, cohortPage] = await Promise.all([
     loadPlacementQueue("ADMIN", "REVIEW_PENDING"),
     loadPlacementQueue("ADMIN", "STUDENT_DECISION"),
+    loadAdminLeads("", "NEW", 1),
+    loadCohortAdministration("", 0),
   ]);
   const queues = { REVIEW_PENDING: reviewQueue, STUDENT_DECISION: decisionQueue };
 
@@ -21,6 +25,32 @@ export default async function AdminPage() {
         title="Visão geral"
         description="Acompanhe as etapas atuais da entrada dos alunos."
       />
+      <section className="yas-metric-strip" aria-label="Indicadores operacionais">
+        <MetricCard
+          label="Revisões de entrada"
+          value={reviewQueue.length === queueLimit ? `${queueLimit}+` : reviewQueue.length}
+          detail="Casos aguardando revisão"
+          href="/admin/enrollments?state=REVIEW_PENDING"
+        />
+        <MetricCard
+          label="Decisões de alunos"
+          value={decisionQueue.length === queueLimit ? `${queueLimit}+` : decisionQueue.length}
+          detail="Casos aguardando escolha"
+          href="/admin/enrollments?state=STUDENT_DECISION"
+        />
+        <MetricCard
+          label="Novos leads"
+          value={newLeads.leads.length === 25 ? "25+" : newLeads.leads.length}
+          detail="Até 25 registros carregados"
+          href="/admin/leads?stage=NEW"
+        />
+        <MetricCard
+          label="Turmas ativas"
+          value={cohortPage.cohorts.filter((cohort) => cohort.status === "ACTIVE").length}
+          detail={`Na página atual · ${cohortPage.cohorts.length} de até 25 turmas`}
+          href="/admin/cohorts"
+        />
+      </section>
       <div className={styles.queueGrid}>
         {attentionStates.map((state) => {
           const cases = queues[state];

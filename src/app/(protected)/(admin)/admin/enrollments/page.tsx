@@ -4,10 +4,13 @@ import {
   Badge,
   Button,
   Card,
+  DataTable,
+  DetailDrawer,
   EmptyState,
+  FilterBar,
+  FormDialog,
   Input,
   PageHeader,
-  SectionHeader,
   Select,
   Textarea,
 } from "@/components/ui";
@@ -41,7 +44,7 @@ export default async function EnrollmentsPage({
           }
         />
       )}
-      <form className="yas-stack" action="/admin/enrollments">
+      <FilterBar action="/admin/enrollments" aria-label="Filtrar matrículas">
         <Select
           label="Filtrar por etapa"
           name="state"
@@ -52,76 +55,115 @@ export default async function EnrollmentsPage({
           ]}
         />
         <Button type="submit">Filtrar</Button>
-      </form>
+      </FilterBar>
       {cases.length === 0 && (
         <EmptyState
           title="Nenhum caso nesta fila"
           description="Novas entradas confirmadas aparecerão aqui."
         />
       )}
-      {cases.map((view) => (
-        <Card className="yas-stack" key={view.case.id}>
-          <SectionHeader
-            title={`${view.displayName ?? "Aluno"} · Caso ${view.case.id.slice(0, 8)}`}
-          />
-          <Badge tone={view.case.state === "ENROLLED" ? "success" : "info"}>
-            {placementLabels[view.case.state]}
-          </Badge>
-          <p>
-            Na etapa desde{" "}
-            <time dateTime={view.case.state_changed_at}>
-              {new Date(view.case.state_changed_at).toLocaleString("pt-BR", {
-                timeZone: "America/Recife",
-              })}
-            </time>
-          </p>
-          <details>
-            <summary>Detalhes da entrada</summary>
-            <div className="yas-stack">
-              <p>Teste: {view.assessmentSummary?.status ?? "Não iniciado"}</p>
-              {view.assessmentSummary && (
-                <p>
-                  Evidência objetiva: {view.assessmentSummary.objectiveScore ?? "—"} · Itens
-                  pendentes: {view.assessmentSummary.pendingCount ?? "—"}
-                </p>
-              )}
-              <p>Recomendação: {view.recommendedTitle ?? "Aguardando revisão"}</p>
-              <p>{view.review?.feedback}</p>
-              <p>Escolha inicial: {view.chosenTitle ?? "Aguardando aluno"}</p>
-              <p>Turma atual: {view.currentCohort ?? "Ainda sem matrícula"}</p>
-              {view.case.state === "ENROLLED" && (
-                <form action={transferPlacementAction} className="yas-stack">
-                  <h3>Transferir turma</h3>
-                  <input type="hidden" name="caseId" value={view.case.id} />
-                  <input type="hidden" name="operationId" value={randomUUID()} />
-                  <Select
-                    label="Nova turma"
-                    name="cohortId"
-                    options={cohorts
-                      .filter((c) => c.status === "ACTIVE")
-                      .map((c) => ({ value: c.id, label: `${c.name} · ${c.timezone}` }))}
-                    required
-                  />
-                  <Textarea
-                    name="reason"
-                    label="Motivo da transferência"
-                    required
-                    maxLength={1000}
-                  />
-                  <Button type="submit">Validar e transferir</Button>
+      {cases.length > 0 && (
+        <DataTable
+          caption="Fila de Placement e matrículas"
+          columns={[
+            { id: "student", label: "Aluno" },
+            { id: "state", label: "Etapa" },
+            { id: "since", label: "Na etapa desde" },
+            { id: "recommendation", label: "Recomendação" },
+            { id: "cohort", label: "Turma atual" },
+            { id: "action", label: "Ação" },
+          ]}
+          rows={cases.map((view) => {
+            const name = view.displayName ?? "Aluno";
+            const since = new Date(view.case.state_changed_at).toLocaleString("pt-BR", {
+              timeZone: "America/Recife",
+            });
+            const detail = (
+              <DetailDrawer trigger="Detalhes da entrada" title={`${name} · Matrícula`}>
+                <div className="yas-stack">
+                  <p>Teste: {view.assessmentSummary?.status ?? "Não iniciado"}</p>
+                  {view.assessmentSummary && (
+                    <p>
+                      Evidência objetiva: {view.assessmentSummary.objectiveScore ?? "—"} · Itens
+                      pendentes: {view.assessmentSummary.pendingCount ?? "—"}
+                    </p>
+                  )}
+                  <p>Recomendação: {view.recommendedTitle ?? "Aguardando revisão"}</p>
+                  {view.review?.feedback && <p>{view.review.feedback}</p>}
+                  <p>Escolha inicial: {view.chosenTitle ?? "Aguardando aluno"}</p>
+                  <p>Turma atual: {view.currentCohort ?? "Ainda sem matrícula"}</p>
+                  {view.case.state === "ENROLLED" && (
+                    <form action={transferPlacementAction} className="yas-stack">
+                      <h3>Transferir turma</h3>
+                      <input type="hidden" name="caseId" value={view.case.id} />
+                      <input type="hidden" name="operationId" value={randomUUID()} />
+                      <Select
+                        label="Nova turma"
+                        name="cohortId"
+                        options={cohorts
+                          .filter((cohort) => cohort.status === "ACTIVE")
+                          .map((cohort) => ({
+                            value: cohort.id,
+                            label: `${cohort.name} · ${cohort.timezone}`,
+                          }))}
+                        required
+                      />
+                      <Textarea
+                        name="reason"
+                        label="Motivo da transferência"
+                        required
+                        maxLength={1000}
+                      />
+                      <Button type="submit">Validar e transferir</Button>
+                      <p>
+                        A recomendação original e a escolha inicial serão preservadas. Horário e
+                        capacidade serão validados novamente.
+                      </p>
+                    </form>
+                  )}
+                </div>
+              </DetailDrawer>
+            );
+            const status = (
+              <Badge tone={view.case.state === "ENROLLED" ? "success" : "info"}>
+                {placementLabels[view.case.state]}
+              </Badge>
+            );
+            return {
+              id: view.case.id,
+              cells: [
+                name,
+                status,
+                <time key="since" dateTime={view.case.state_changed_at}>
+                  {since}
+                </time>,
+                view.recommendedTitle ?? "Aguardando revisão",
+                view.currentCohort ?? "Ainda sem turma",
+                detail,
+              ],
+              mobile: (
+                <article className="yas-row-summary">
+                  <h2>{name}</h2>
+                  <div className="yas-row-summary-meta">
+                    {status}
+                    <time dateTime={view.case.state_changed_at}>{since}</time>
+                  </div>
                   <p>
-                    A recomendação original e a escolha inicial serão preservadas. Horário e
-                    capacidade serão validados novamente.
+                    {view.recommendedTitle ?? "Aguardando revisão"} ·{" "}
+                    {view.currentCohort ?? "Ainda sem turma"}
                   </p>
-                </form>
-              )}
-            </div>
-          </details>
-        </Card>
-      ))}
+                  {detail}
+                </article>
+              ),
+            };
+          })}
+        />
+      )}
       <Card className="yas-stack">
-        <details>
-          <summary>Preparar horário e capacidade para Placement</summary>
+        <FormDialog
+          trigger="Preparar horário e capacidade para Placement"
+          title="Horário e capacidade de Placement"
+        >
           <form action={configurePlacementCohortAction} className="yas-stack">
             <p>
               Configure somente horários recorrentes confirmados da turma. O horário não é inferido
@@ -152,7 +194,7 @@ export default async function EnrollmentsPage({
             <Input label="Fim do encontro" name="end" type="time" required />
             <Button type="submit">Salvar horário e capacidade</Button>
           </form>
-        </details>
+        </FormDialog>
       </Card>
     </div>
   );

@@ -11,6 +11,23 @@ const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const teacherId = "88000000-0000-4000-8000-000000000001";
 const title = "P21 Core Live · Teacher created";
 
+function localDateTime(value: Date): { date: string; time: string } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Recife",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(value);
+  const part = (type: string) => parts.find((item) => item.type === type)?.value ?? "";
+  return {
+    date: `${part("year")}-${part("month")}-${part("day")}`,
+    time: `${part("hour")}:${part("minute")}`,
+  };
+}
+
 if (enabled && (!password || !url || !serviceRoleKey)) {
   throw new Error("Core Live E2E requires canonical local Supabase credentials.");
 }
@@ -96,9 +113,12 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
 
     await loginCanonicalTeacher(page, password);
     await page.goto("/teacher/disponibilidade");
-    await page.getByLabel("Início com fuso").fill(availabilityStart.toISOString());
-    await page.getByLabel("Término com fuso").fill(availabilityEnd.toISOString());
-    await page.getByRole("button", { name: "Adicionar intervalo" }).click();
+    const localStart = localDateTime(availabilityStart);
+    const localEnd = localDateTime(availabilityEnd);
+    await page.getByLabel("Data").first().fill(localStart.date);
+    await page.getByLabel("Início").first().fill(localStart.time);
+    await page.getByLabel("Término").first().fill(localEnd.time);
+    await page.getByRole("button", { name: "Adicionar horário" }).click();
     await expect(page).toHaveURL(/\/teacher\/disponibilidade\?save=success$/);
 
     await page.goto("/teacher/sessoes/nova");

@@ -2,6 +2,13 @@
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-10-04 — stage-02-1-operations-ux started
+
+- Confirmed GitHub `main` advanced to merge commit `f7ca51a5c0b2bb74b4e620d298454c93ab426b21`, containing Stage 02 PR #33; created `feat/stage-02-1-operations-ux` from that base.
+- Preserved existing untracked `artifacts/canonical-slice/*` and `artifacts/p21-foundation/` without modification.
+- Registered `stage-02-1-operations-ux` as `in_progress` / `verified:false`; reconciled the Stage 02 GOAL from `in_progress` to its registry's already-verified `done` state.
+- Implementation and verification have not started; current checks and design/domain discovery remain pending.
+
 ## 2026-10-01 — Admin Content V1 discovery
 
 Two read-only investigations and principal synthesis completed. Existing entities, Student consumers, ordering constraints, Admin+AAL2 and audit infrastructure mapped. Admin Content does not exist. Publication blocked by the open pedagogical-review decision and absent durable draft/publication contract. No runtime/migrations changed. Registry remains blocked and unverified; check results belong in P18 evidence.
@@ -525,3 +532,11 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Stage 02 feature is now `done / verified:true`; evidence: `harness/evidence/stage-02-operations/README.md`, `verification.json`, local full gate, and PR #33. PR remains open and unmerged for the user.
 - Only untracked `artifacts/canonical-slice/*` and `artifacts/p21-foundation/*` remain; they were not added, moved, or changed by this work.
 - The final-state Official CI run `37218336532` passed for `f1c8cab5fff4169b18f52f87c4eb46b0fd44addf`, including Preview and CI Gate; no merge is requested.
+
+# 2026-10-04 — Stage 2.1 UX implementation handoff
+
+- Implemented the Admin/Teacher operations presentation pass, shared operation tables/filters/metrics/overlays/schedule grid, responsive Cohorts/Enrollment/Lead/Student/Teacher surfaces, and calendar-style Teacher availability inputs. Added a bounded Admin Students visual projection migration and focused regression coverage.
+- Focused checks observed green: format, lint, typecheck, build, 97 unit tests, 68 integration tests (1 existing skip), static DB contracts (26 migrations/17 invariants), SQL integration (12 files including concurrency), RLS (8 files), Harness, security, and agent eval (10/10). The Student directory projection migration applied successfully during a clean local Supabase reset/replay.
+- Full E2E/a11y/visual verification remains incomplete. The first aggregate run could not bind port 3000 (`EACCES`); an isolated-port retry was interrupted at the user's request during database reset, before E2E started. An isolated Cohorts E2E reproduction also remained on the Admin loading fallback. `cohorts-booking.spec.ts` now navigates directly and waits for its cohort row; `admin-cohorts.spec.ts` restores canonical capacity after its assertion, but those final test adjustments have not been rerun.
+- User requested stopping localhost and completing with a report. Stopped the verification-owned Supabase containers; confirmed no listener on ports 3000, 4001, or 4002. `git diff --check` passed. Existing untracked canonical-slice and P21 artifacts were preserved; no screenshot cleanup was performed.
+- Stage 02 remains `done / verified:true`. Stage 2.1 remains `in_progress / verified:false` pending user-run E2E, a11y, visual, and remaining requested verification gates; Official CI was not run.

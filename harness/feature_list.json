@@ -26,6 +26,15 @@
       "updated_at": "2026-10-04T17:00:00-03:00"
     },
     {
+      "id": "stage-02-1-operations-ux",
+      "title": "Operations UX/UI Closure",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["stage-02-operations"],
+      "evidence": ["harness/goals/stage-02-1-operations-ux.md"],
+      "updated_at": "2026-10-04T19:40:00-03:00"
+    },
+    {
       "id": "stage-01-enrollment-core",
       "title": "Enrollment Core",
       "status": "done",

@@ -15,7 +15,6 @@ async function submitLogin(page: Page) {
 }
 
 async function captureEvidence(page: Page, filename: string): Promise<void> {
-  await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
   const body = await page.screenshot({ path: test.info().outputPath(filename), fullPage: true });
   await test.info().attach(filename, { body, contentType: "image/png" });
 }
