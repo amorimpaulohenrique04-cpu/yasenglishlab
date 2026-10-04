@@ -43,7 +43,10 @@
     "ci:policy": "node scripts/ci/check-repo-policy.mjs",
     "ci:secrets": "node scripts/ci/secret-scan.mjs",
     "ci:migrations": "node scripts/ci/check-migrations.mjs",
-    "test:observability:live": "vitest run tests/integration/observability-live.test.ts"
+    "test:observability:live": "vitest run tests/integration/observability-live.test.ts",
+    "security:patch-deps": "node scripts/ci/apply-braces-cve-2026-93687-patch.mjs",
+    "verify:dependency-patches": "node scripts/ci/verify-braces-cve-2026-93687-patch.mjs",
+    "verify:supply-chain": "node scripts/ci/audit-reviewed-dependencies.mjs"
   },
   "dependencies": {
     "@mux/mux-node": "15.5.0",

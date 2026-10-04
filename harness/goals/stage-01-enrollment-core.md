@@ -49,6 +49,16 @@ The existing Admin shell receives only the Matrículas navigation link so the au
 - `scripts/setup-canonical-e2e.mjs`
 - `scripts/run-sql-tests.mjs`
 - `scripts/test-placement-concurrency.mjs`
+- `package.json` scripts only, without dependency or lockfile changes
+- `scripts/ci/apply-braces-cve-2026-93687-patch.mjs`
+- `scripts/ci/verify-braces-cve-2026-93687-patch.mjs`
+- `scripts/ci/audit-reviewed-dependencies.mjs`
+- `scripts/ci/patches/braces-cve-2026-93687/**`
+- `.github/workflows/foundation-verify.yml`
+- `.github/workflows/stage-01-full-verify.yml` temporarily for final alias evidence; remove after the implementation-head run
+- `scripts/ci/validate-upgrade.sh` fixture only, to align base-to-head proof with the PRIVATE target invariant already present in current `main`
+
+Supply-chain scope was expanded on 2026-10-03 only because the mandatory CI gate is blocked by the unpatched upstream `braces@3.0.3` advisory. The mitigation must preserve `audit-level=high`, keep production dependencies at zero high/critical findings, bind the local backport to the reviewed upstream fix, and fail on any additional advisory.
 
 ## Forbidden areas
 

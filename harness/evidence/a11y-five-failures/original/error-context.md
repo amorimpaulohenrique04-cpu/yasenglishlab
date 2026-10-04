@@ -29,9 +29,9 @@ Call log:
 
 ```yaml
 - combobox "Confiança na recomendação *":
-  - option "Baixa" [selected]
-  - option "Média"
-  - option "Alta"
+    - option "Baixa" [selected]
+    - option "Média"
+    - option "Alta"
 ```
 
 # Test source
@@ -128,5 +128,5 @@ Call log:
   88 |   await check(staffPage);
   89 |   await staff.close();
   90 | });
-  91 | 
+  91 |
 ```

@@ -29,9 +29,9 @@ Call log:
 
 ```yaml
 - combobox "Sua resposta":
-  - option "Selecione uma opção"
-  - option "I work from home." [selected]
-  - option "I works from home."
+    - option "Selecione uma opção"
+    - option "I work from home." [selected]
+    - option "I works from home."
 ```
 
 # Test source
@@ -128,5 +128,5 @@ Call log:
   88 |   await check(staffPage);
   89 |   await staff.close();
   90 | });
-  91 | 
+  91 |
 ```
