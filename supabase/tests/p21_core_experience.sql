@@ -22,6 +22,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000003',true);
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","aal":"aal1"}',true);
 do $$begin begin perform public.manage_teacher_availability('CREATE',null,now()+interval '1 minute',now()+interval '3 days');raise exception 'AAL1 availability allowed';exception when insufficient_privilege then null;end;end$$;
+do $$begin begin perform public.get_teacher_operation_context();raise exception 'AAL1 operation context allowed';exception when insufficient_privilege then null;end;end$$;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","aal":"aal2"}',true);
 select set_config('p21.availability',public.manage_teacher_availability('CREATE',null,now()+interval '1 minute',now()+interval '3 days')::text,true);
 select set_config('p21.group',public.manage_teacher_session(null,jsonb_build_object('title','P21 group','session_type','CORE_CLASS','starts_at',now()+interval '1 day','ends_at',now()+interval '1 day 1 hour','capacity',6,'cohort_id','a1300000-0000-4000-8000-000000000001','meeting_url','https://meet.example.test/p21'))::text,true);
@@ -32,6 +33,10 @@ do $$begin
  begin perform public.manage_teacher_availability('DELETE',current_setting('p21.availability')::uuid);raise exception 'Dependency interval deleted';exception when check_violation then null;end;
 end$$;
 select pg_temp.p21_assert(jsonb_array_length(public.get_teacher_operation_context()->'students')=1,'Teacher scope must contain only related Student');
+select pg_temp.p21_assert(jsonb_array_length(public.get_teacher_operation_context()->'cohorts')=1,'Teacher cohort projection stays in assigned scope');
+select pg_temp.p21_assert((public.get_teacher_operation_context()->'cohorts'->0->>'occupancy')::integer=1,'Teacher cohort occupancy uses active membership');
+select pg_temp.p21_assert(jsonb_array_length(public.get_teacher_operation_context()->'cohorts'->0->'students')=1,'Teacher roster projection contains only authorized cohort Students');
+select pg_temp.p21_assert(jsonb_array_length(public.get_teacher_operation_context()->'availability')<=50 and jsonb_array_length(public.get_teacher_operation_context()->'sessions')<=100,'Teacher operation collections are bounded');
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000001',true);
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000001","aal":"aal1"}',true);
 select pg_temp.p21_assert(public.get_live_session_join_access(current_setting('p21.private')::uuid)->>'status'='NOT_AUTHORIZED','Booking required for Join');
@@ -117,6 +122,7 @@ select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000004'
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000004","aal":"aal2"}',true);
 select pg_temp.p21_assert(not public.authorize_practice_media(current_setting('p21.media')::uuid),'Unrelated Teacher audio denied');
 select pg_temp.p21_assert(not exists(select 1 from public.get_teacher_reviews(current_setting('p21.attempt')::uuid)),'Unrelated Teacher review hidden');
+select pg_temp.p21_assert(jsonb_array_length(public.get_teacher_reviews())<=100,'Teacher Practice review queue is bounded');
 select set_config('request.jwt.claim.sub','a1000000-0000-4000-8000-000000000003',true);
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","aal":"aal2"}',true);
 select pg_temp.p21_assert(public.authorize_practice_media(current_setting('p21.media')::uuid),'Related Teacher audio allowed');

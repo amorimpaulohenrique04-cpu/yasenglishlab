@@ -12,6 +12,19 @@
   },
   "features": [
     {
+      "id": "stage-02-operations",
+      "title": "complete Stage 02 Operations",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["stage-01-enrollment-core"],
+      "evidence": [
+        "harness/goals/stage-02-operations.md",
+        "harness/evidence/stage-02-operations/README.md",
+        "harness/evidence/stage-02-operations/verification.json"
+      ],
+      "updated_at": "2026-10-04T11:41:58-03:00"
+    },
+    {
       "id": "stage-01-enrollment-core",
       "title": "Enrollment Core",
       "status": "done",

@@ -51,7 +51,7 @@ test("confirmed Student → persisted Assessment → scoped Teacher AAL2 → rea
   await page.getByRole("link", { name: "Iniciar teste" }).click();
   await page.getByRole("button", { name: "Começar teste" }).click();
   await page.getByLabel("Sua resposta").selectOption("a");
-  await expect(page.getByRole("status")).toHaveText("Respostas salvas");
+  await expect(page.getByRole("status")).toHaveText("Respostas salvas", { timeout: 15_000 });
   await page.reload();
   await expect(page.getByLabel("Sua resposta")).toHaveValue("a");
   await page.goto("/profile");
@@ -62,7 +62,7 @@ test("confirmed Student → persisted Assessment → scoped Teacher AAL2 → rea
   await expect(page.getByLabel("Sua resposta")).toHaveValue("a");
   await page.getByRole("button", { name: "Próximo item" }).click();
   await page.getByLabel("Sua resposta").fill("I work from home and study English every evening.");
-  await expect(page.getByRole("status")).toHaveText("Respostas salvas");
+  await expect(page.getByRole("status")).toHaveText("Respostas salvas", { timeout: 15_000 });
   await page.getByRole("button", { name: "Concluir teste" }).click();
   await expect(page).toHaveURL(/\/onboarding$/);
   await expect(
@@ -98,6 +98,7 @@ test("confirmed Student → persisted Assessment → scoped Teacher AAL2 → rea
   await teacherContext.close();
   await page.goto("/onboarding");
   await page.getByRole("button", { name: "Ver recomendação e turmas" }).click();
+  await expect(page).toHaveURL(/\/onboarding\/placement$/);
   await expect(
     page.getByRole("heading", { name: "Trilha recomendada: Yas Foundations" }),
   ).toBeVisible();

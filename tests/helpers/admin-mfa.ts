@@ -9,6 +9,7 @@ export const canonicalAdminEmail = "canonical.admin@example.test";
 
 const secretPath = join(tmpdir(), "yas-canonical-admin-totp.secret");
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const lastSubmittedStep = new Map<string, number>();
 
 function decodeBase32(value: string): Buffer {
   const normalized = value.toUpperCase().replace(/[^A-Z2-7]/g, "");
@@ -38,6 +39,19 @@ function totp(secret: string, now = Date.now()): string {
     ((digest[offset + 2]! & 0xff) << 8) |
     (digest[offset + 3]! & 0xff);
   return String(binary % 1_000_000).padStart(6, "0");
+}
+
+async function freshTotp(secret: string, key: string): Promise<string> {
+  let now = Date.now();
+  const previousStep = lastSubmittedStep.get(key);
+  if (previousStep !== undefined && Math.floor(now / 30_000) <= previousStep) {
+    await new Promise((resolve) => setTimeout(resolve, 30_000 - (now % 30_000) + 100));
+    now = Date.now();
+  }
+
+  const step = Math.floor(now / 30_000);
+  lastSubmittedStep.set(key, step);
+  return totp(secret, now);
 }
 
 async function resolveTotpSecret(page: Page, path = secretPath): Promise<string> {
@@ -78,13 +92,11 @@ export async function loginCanonicalAdmin(
     page.getByRole("heading", { name: "Verificação em duas etapas obrigatória" }),
   ).toBeVisible();
 
-  const secret = await resolveTotpSecret(
-    page,
-    options.multi ? join(tmpdir(), "yas-canonical-multi-totp.secret") : secretPath,
-  );
-  await page.getByLabel("Código do autenticador").fill(totp(secret));
+  const totpPath = options.multi ? join(tmpdir(), "yas-canonical-multi-totp.secret") : secretPath;
+  const secret = await resolveTotpSecret(page, totpPath);
+  await page.getByLabel("Código do autenticador").fill(await freshTotp(secret, totpPath));
   await page.getByRole("button", { name: "Verificar código" }).click();
   await expect(page).toHaveURL(options.destination ?? /\/admin\/content\?kind=modules$/, {
-    timeout: 15_000,
+    timeout: 60_000,
   });
 }

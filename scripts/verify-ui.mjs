@@ -3,6 +3,10 @@ import { assert, exists, run, runNpm, success } from "./_verify-utils.mjs";
 const screens = ["login", "home", "aulas", "pratica", "materiais", "progresso", "agenda", "perfil"];
 const canonicalE2e = process.env.CANONICAL_E2E === "1";
 
+if (canonicalE2e && exists(".env.local")) {
+  process.loadEnvFile(".env.local");
+}
+
 function prepareCanonicalFixture() {
   run(process.execPath, ["scripts/setup-canonical-e2e.mjs"]);
 }

@@ -1,13 +1,10 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
-
 import { expect, test, type Page } from "@playwright/test";
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
 const homeNowEmail = "canonical.home-now@example.test";
 const password = process.env.CANONICAL_E2E_PASSWORD;
-const evidenceDir = "artifacts/canonical-slice";
 
 async function submitLogin(page: Page) {
   const response = page.waitForResponse(
@@ -19,10 +16,8 @@ async function submitLogin(page: Page) {
 
 async function captureEvidence(page: Page, filename: string): Promise<void> {
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
-  await page.screenshot({
-    path: `${evidenceDir}/${filename}`,
-    fullPage: true,
-  });
+  const body = await page.screenshot({ path: test.info().outputPath(filename), fullPage: true });
+  await test.info().attach(filename, { body, contentType: "image/png" });
 }
 
 test.describe("canonical learning vertical slice", () => {
@@ -184,7 +179,6 @@ test.describe("canonical learning vertical slice", () => {
       });
     }
 
-    mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
 
     await page.goto("/login");

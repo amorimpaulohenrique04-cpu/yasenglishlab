@@ -12,7 +12,7 @@ export default async function AvailabilityPage({
     <div className={styles.page}>
       <PageHeader
         title="Disponibilidade"
-        description="Defina intervalos explícitos para seus encontros."
+        description="Defina intervalos explícitos para seus encontros. Informe o fuso no formato ISO 8601; horários são exibidos em America/Recife."
       />
       {(await searchParams).save === "error" && (
         <Alert
@@ -44,8 +44,13 @@ export default async function AvailabilityPage({
           <form action={saveAvailabilityAction} className={styles.operationForm}>
             <input type="hidden" name="id" value={item.id} />
             <input type="hidden" name="operation" value="EDIT" />
-            <Input label="Início" name="starts_at" defaultValue={item.starts_at} required />
-            <Input label="Término" name="ends_at" defaultValue={item.ends_at} required />
+            <Input
+              label="Início com fuso"
+              name="starts_at"
+              defaultValue={item.starts_at}
+              required
+            />
+            <Input label="Término com fuso" name="ends_at" defaultValue={item.ends_at} required />
             <Button type="submit" variant="outline">
               Salvar intervalo
             </Button>

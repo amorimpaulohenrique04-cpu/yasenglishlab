@@ -16,6 +16,11 @@ A taxonomia server-side vive em `src/server/audit/actions.ts`.
 | `entitlement_change` | alteração manual/configurada de entitlement de usuário |
 | `manual_subscription_change` | intervenção administrativa em assinatura |
 | `teacher_assignment` | professor atribuído/removido de aluno |
+| `teacher_provisioned` | identidade Auth reconciliada com role `TEACHER` e registro operacional |
+| `teacher_activated` / `teacher_deactivated` | estado operacional alterado após validação de dependências |
+| `teacher_course_capability_changed` | capacidade de atender um Course publicada adicionada/removida |
+| `cohort_primary_teacher_changed` | Teacher principal operacional de uma cohort alterado |
+| `CRM_CREATE`, `CRM_UPDATE`, `CRM_STAGE`, `CRM_LINK_USER`, `CRM_INTERACTION`, `CRM_TASK`, `CRM_COMPLETE_TASK` | lead, etapa, vínculo existente ou follow-up operacional alterado |
 | `assessment_publication` | versão publicada/retirada por staff |
 | `admin_data_export` | export administrativo de dados |
 | `content_created` | criação DRAFT nas entidades educacionais existentes |

@@ -378,6 +378,22 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
     if (error) throw error;
   }
 }
+const { error: cohortSettingsError } = await admin.from("cohort_placement_settings").upsert(
+  [
+    {
+      cohort_id: cohortIds[0],
+      capacity: 6,
+      schedule: [{ weekday: 1, startMinute: 1080, endMinute: 1140 }],
+    },
+    {
+      cohort_id: cohortIds[1],
+      capacity: 6,
+      schedule: [{ weekday: 2, startMinute: 1080, endMinute: 1140 }],
+    },
+  ],
+  { onConflict: "cohort_id" },
+);
+if (cohortSettingsError) throw cohortSettingsError;
 const quotaWeek = new Date(now + 14 * 86400000);
 quotaWeek.setUTCHours(15, 0, 0, 0);
 quotaWeek.setUTCDate(quotaWeek.getUTCDate() - ((quotaWeek.getUTCDay() + 6) % 7));

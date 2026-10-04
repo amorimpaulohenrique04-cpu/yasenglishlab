@@ -36,5 +36,8 @@ pnpm-debug.log*
 .next/
 .next-*/
 
+# Local Supabase CLI telemetry/cache used for isolated verification
+/.supabase-home-stage02/
+
 .next/
 .next-*/
