@@ -3,7 +3,9 @@
 Status: in progress; this evidence covers Admin Overview, Students/Student 360, Admin Teachers, Cohorts V2, Teacher surfaces, and CRM Leads V1. Final gates and Official CI are pending; the Stage 02 feature remains `verified: false`.
 
 Base: `main@34f5e32f313fe16b8c09bcf13b64b4a7d11b9236`
-Branch: `feat/stage-02-operations` (working tree changes are not committed yet).
+Branch: `feat/stage-02-operations`
+Head: `7c157c90bd82698d4b9a17a0954c9078056409f2` (`feat(stage-02): complete operations surfaces`)
+The commit is pushed to `origin`. The worktree contains only preserved, untracked visual artifacts under `artifacts/canonical-slice/` and `artifacts/p21-foundation/`; they were not included in the commit.
 
 ## Admin Overview
 
@@ -51,4 +53,4 @@ Migration `20261004150000_stage_02_teacher_surface_projection.sql` is applied lo
 
 Migration `20261004160000_stage_02_crm_leads_v1.sql` is applied locally. `/admin/leads` provides bounded search and stage-filtered records, create/edit, terminal Won/Lost transitions, owner validation, interaction history, tasks, completion, overdue indication, and link to an existing Student. CRM tables are RLS-enabled with no direct anon/authenticated table grants; Admin+AAL2 is checked in both server actions and database RPCs. Leads do not create Auth/profile/role/enrollment/Placement state. No consent state or delivery claim is invented. `admin-crm` SQL/RLS and CRM unit tests (2/2) passed. Canonical Admin MFA Playwright/Axe passed desktop/mobile with screenshot `screenshots/admin-leads-mobile.png`.
 
-The earlier Student 360 auxiliary Playwright teardown caveat remains recorded as historical evidence. A later combined run of Admin Students, Teachers, Cohorts, and Leads completed with exit 0; the caveat is not treated as a current block. A clean local Supabase reset/replay and `npm run verify:full` passed, including integration/RLS, E2E, a11y, Storybook and golden checks. Commit/push, PR and Official CI remain pending. Stage 02 is not marked verified.
+The earlier Student 360 auxiliary Playwright teardown caveat remains recorded as historical evidence. A later combined run of Admin Students, Teachers, Cohorts, and Leads completed with exit 0; the caveat is not treated as a current block. A clean local Supabase reset/replay and `npm run verify:full` passed, including integration/RLS, E2E, a11y, Storybook and golden checks. The feature commit is pushed. No Stage 02 PR exists yet and Official CI has not run; the public compare page requires GitHub sign-in to create the PR. Stage 02 is not marked verified.

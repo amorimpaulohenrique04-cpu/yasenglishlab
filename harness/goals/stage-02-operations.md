@@ -33,11 +33,15 @@ Admin can operate overview, Students 360, Teachers, Cohorts V2, and CRM Leads th
 
 ## Allowed files / domains
 
-- Stage 02 Admin, CRM, Cohort and Teacher projection/application/server/UI domains
-- Additive Supabase migrations, RLS policies, SQL tests, deterministic fixtures
-- Focused unit/integration/E2E/a11y/visual tests
-- `docs/` contracts directly affected by implementation
-- `harness/goals/stage-02-operations.md`, feature registry, agent state, evidence, and failure records
+- `src/app/(protected)/(admin)/admin/**` and `src/app/(protected)/(teacher)/teacher/**`
+- `src/modules/admin-content/**`, `src/modules/cohorts/**`, `src/modules/crm/**`
+- `src/server/audit/**`, `src/server/cohorts/**`, `src/server/crm/**`, `src/server/students/**`, `src/server/teacher-operations/**`, `src/server/teachers/**`
+- `supabase/migrations/**`, `supabase/tests/**`
+- `tests/e2e/**`, `tests/helpers/**`, `tests/integration/**`, `tests/unit/**`, `tests/visual/**`
+- `scripts/eval-agent.mjs`, `scripts/run-sql-tests.mjs`, `scripts/setup-canonical-e2e.mjs`, `scripts/verify-ui.mjs`
+- `.gitignore`, `.prettierignore`, `eslint.config.mjs`
+- `docs/**` contracts directly affected by implementation
+- `harness/goals/stage-02-operations.md`, `harness/agent-state/**`, `harness/feature_list.json`, `harness/evidence/stage-02-operations/**`, `harness/failure-log/**`
 
 ## Forbidden areas
 

@@ -171,13 +171,23 @@ check(
 
 const migrationDiff = git(["diff", `${base}...${head}`, "--", "supabase/migrations"], true);
 const rlsChanged = /create\s+policy|drop\s+policy|row\s+level\s+security/i.test(migrationDiff);
-const rlsTestChanged = changed.includes("supabase/tests/rls_permissions.sql");
+const sqlTestRunner = readFileSync("scripts/run-sql-tests.mjs", "utf8");
+const changedAuthorizationTests = changed.filter((path) => {
+  if (!/^supabase\/tests\/.+\.sql$/.test(path) || !existsSync(path)) return false;
+  const test = readFileSync(path, "utf8");
+  const registered = sqlTestRunner.includes(`"${path}"`);
+  const changesRole = /set\s+(?:local\s+)?role\s+(?:authenticated|anon|service_role)/i.test(test);
+  const assertsDenial =
+    /(?:pg_temp\.[a-z_]*denied|insufficient_privilege|must not access|access denied)/i.test(test);
+  return registered && changesRole && assertsDenial;
+});
+const rlsTestChanged = changedAuthorizationTests.length > 0;
 check(
   "RLS changes include executable authorization test",
   !rlsChanged || rlsTestChanged,
   rlsChanged
     ? rlsTestChanged
-      ? "RLS test changed"
+      ? `registered role/denial SQL test(s): ${changedAuthorizationTests.join(", ")}`
       : "RLS changed without permission test"
     : "no RLS change",
 );

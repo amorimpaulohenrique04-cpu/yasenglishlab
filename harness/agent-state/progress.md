@@ -505,3 +505,12 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - The known Student 360 auxiliary Playwright teardown note remains historical; the combined E2E exited successfully and the caveat was not refactored.
 - No retained P21/Stage01 evidence was removed. `artifacts/p21-foundation/*` remains untouched; only screenshots from the explicitly authorized Stage 02 temporary-output cleanup were removed earlier. Current E2E captures use Playwright per-test output paths.
 - Stage 02 remains `in_progress / verified:false`. Commit/push, PR creation, actual Official CI and final-state CI remain pending; do not merge.
+
+# 2026-10-04 — Stage 02 publication audit
+
+- Reconciled current local state: branch `feat/stage-02-operations` is at `7c157c90bd82698d4b9a17a0954c9078056409f2` and local Git reports it aligned with `origin/feat/stage-02-operations`. The commit contains the Stage 02 implementation and full local verification evidence.
+- Inspected the public GitHub pull-request list and branch comparison. The feature branch appears with one commit/76 changed files, but no Stage 02 PR exists. GitHub shows Sign in and the PR creation flow is unavailable without an authenticated session; no PR was created and no merge was attempted.
+- Corrected the Stage 02 evidence README to record the pushed head and accurately leave PR/Official CI pending. The verification manifest already records `pull_request: null`, `not_run: ["Official CI"]`, and `verified: false`.
+- `npm run verify:full` and `npm run verify:agent` are recorded as passed in the immediately preceding full-gate run. Re-running them is not needed for this Harness-only correction; actual Official CI and final-state CI still require a PR.
+- Preserved untracked `artifacts/canonical-slice/*` and `artifacts/p21-foundation/*`; they remain outside the commit and untouched. Stage 02 stays `in_progress / verified:false`.
+- Follow-up `verify:agent` initially reproduced two evaluator defects: prose-only GOAL scope was not parsed, and the RLS proxy accepted only the central permissions test despite changed, registered per-domain authorization SQL. Updated concrete GOAL globs and the evaluator; direct `node scripts/eval-agent.mjs` now passes all 10 rules. Durable red/green record: `harness/failure-log/2026-10-04-stage-02-agent-eval-scope-and-rls.md`. Full `verify:agent` rerun remains required after these fixes.
