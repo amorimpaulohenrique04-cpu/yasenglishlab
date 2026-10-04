@@ -1,6 +1,6 @@
 # GOAL — stage-01-enrollment-core: Enrollment Core
 
-Status: in_progress
+Status: done
 Owner: agent
 Created: 2026-10-03
 Updated: 2026-10-03
@@ -19,13 +19,13 @@ Student resumes persisted answers, waits for review, sees a learning track and c
 
 ## Acceptance criteria
 
-- [ ] Harness reconciled without deleting historical records or claiming real Mux smoke.
-- [ ] Durable Placement transitions, preferences, immutable recommendation and separate choice.
-- [ ] Existing Assessment persists/resumes safely; no private scoring data or inferred CEFR.
-- [ ] Teacher AAL2 and assignment/cohort scope; immutable idempotent review.
-- [ ] Deterministic schedule/track/capacity matching and atomic last-seat enrollment.
-- [ ] Admin read projection and audited atomic transfer; minimal Home projection.
-- [ ] Positive/negative RLS, real SQL/concurrency/E2E, a11y/visual and all gates/CI pass.
+- [x] Harness reconciled without deleting historical records or claiming real Mux smoke.
+- [x] Durable Placement transitions, preferences, immutable recommendation and separate choice.
+- [x] Existing Assessment persists/resumes safely; no private scoring data or inferred CEFR.
+- [x] Teacher AAL2 and assignment/cohort scope; immutable idempotent review.
+- [x] Deterministic schedule/track/capacity matching and atomic last-seat enrollment.
+- [x] Admin read projection and audited atomic transfer; minimal Home projection.
+- [x] Positive/negative RLS, real SQL/concurrency/E2E, a11y/visual and all gates/CI pass.
 
 ## Allowed files / domains
 
@@ -55,7 +55,6 @@ The existing Admin shell receives only the Matrículas navigation link so the au
 - `scripts/ci/audit-reviewed-dependencies.mjs`
 - `scripts/ci/patches/braces-cve-2026-93687/**`
 - `.github/workflows/foundation-verify.yml`
-- `.github/workflows/stage-01-full-verify.yml` temporarily for final alias evidence; remove after the implementation-head run
 - `scripts/ci/validate-upgrade.sh` fixture only, to align base-to-head proof with the PRIVATE target invariant already present in current `main`
 
 Supply-chain scope was expanded on 2026-10-03 only because the mandatory CI gate is blocked by the unpatched upstream `braces@3.0.3` advisory. The mitigation must preserve `audit-level=high`, keep production dependencies at zero high/critical findings, bind the local backport to the reviewed upstream fix, and fail on any additional advisory.
@@ -75,3 +74,5 @@ Actual check results and reviewed desktop/tablet/mobile captures under `harness/
 ## Definition of done
 
 All acceptance criteria and gates pass, evidence inspected, registry verified only then; PR against main without merge. Open questions preserved.
+
+Closure proof: implementation head `8e793d9678d080d813c1236e3090e3b063226ab7` passed all five mandatory aliases in Stage 01 Full Verify run `37164246619` and the complete Official CI #498 / run `37164246623`. The temporary alias workflow was removed after producing that durable evidence.

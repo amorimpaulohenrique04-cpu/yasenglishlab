@@ -14,11 +14,18 @@
     {
       "id": "stage-01-enrollment-core",
       "title": "Enrollment Core",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["p21-p0-foundation-closure"],
-      "evidence": ["harness/goals/stage-01-enrollment-core.md"],
-      "updated_at": "2026-10-03T20:12:00-03:00"
+      "evidence": [
+        "harness/goals/stage-01-enrollment-core.md",
+        "harness/evidence/stage-01-enrollment-core/README.md",
+        "harness/evidence/stage-01-enrollment-core/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37164246619",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37164246623",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/32"
+      ],
+      "updated_at": "2026-10-03T21:30:00-03:00"
     },
     {
       "id": "p21-p1-core-experience",
