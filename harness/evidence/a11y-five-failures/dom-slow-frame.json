@@ -1,0 +1,265 @@
+[
+  {
+    "actor": "student",
+    "width": 1440,
+    "attempt": 0,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Seu teste de entrada</h1><p class=\"yas-header-description\">Responda no seu ritmo. As respostas são salvas na sua conta.</p></div></header><section class=\"yas-card",
+      "active": "BODY",
+      "atomicFocus": false
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<body><div hidden=\"\"><!--$--><!--/$--></div><div class=\"yas-app-shell\"><aside class=\"yas-sidebar\"><div class=\"yas-sidebar-brand\"><a class=\"yas-student-brand\" href=\"/home\"><span>Yas</span><small>English Lab</small></a></div><nav class=\"yas-sidebar-nav\" aria-label=\"Navegação principal\"><ul class=\"yas-sidebar-list\"><li><a class=\"yas-sidebar-link\" href=\"/home\"><span aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 11.5 12 4l9 7.5\"></path><path d=\"M5 10.5V20h14v-9.5\"></path></svg></span><span>Início</span></a></li><li>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focus-call",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "stack": "Error\n    at HTMLElement.focus (<anonymous>:8:124)\n    at eval (eval at evaluate (:311:30), <anonymous>:1:173)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 390,
+    "attempt": 0,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Seu teste de entrada</h1><p class=\"yas-header-description\">Responda no seu ritmo. As respostas são salvas na sua conta.</p></div></header><section class=\"yas-card",
+      "active": "BODY",
+      "atomicFocus": false
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<body><div hidden=\"\"><!--$--><!--/$--></div><div class=\"yas-app-shell\"><aside class=\"yas-sidebar\"><div class=\"yas-sidebar-brand\"><a class=\"yas-student-brand\" href=\"/home\"><span>Yas</span><small>English Lab</small></a></div><nav class=\"yas-sidebar-nav\" aria-label=\"Navegação principal\"><ul class=\"yas-sidebar-list\"><li><a class=\"yas-sidebar-link\" href=\"/home\"><span aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 11.5 12 4l9 7.5\"></path><path d=\"M5 10.5V20h14v-9.5\"></path></svg></span><span>Início</span></a></li><li>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focus-call",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "stack": "Error\n    at HTMLElement.focus (<anonymous>:8:124)\n    at eval (eval at evaluate (:311:30), <anonymous>:1:173)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "teacher",
+    "width": 1440,
+    "attempt": 0,
+    "before": {
+      "id": "_S_2_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Revisar teste de entrada</h1><p class=\"yas-header-description\">Use as evidências para recomendar uma trilha de aprendizagem. Não atribua CEFR oficial.</p></div></",
+      "active": "BODY",
+      "atomicFocus": false
+    },
+    "url": "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+    "initial": {
+      "tag": "TEXTAREA",
+      "id": "_S_2_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<textarea name=\"feedback\" maxlength=\"4000\" id=\"_S_2_\" class=\"yas-field-control\" required=\"\"></textarea>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<a class=\"teacher-operations-module__w4zjFq__brand\" href=\"/teacher\"><span>Yas</span><small>English Lab · Professor</small></a>"
+    },
+    "current": {
+      "id": "_S_2_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>",
+      "events": [
+        {
+          "event": "focus-call",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "stack": "Error\n    at HTMLElement.focus (<anonymous>:8:124)\n    at eval (eval at evaluate (:311:30), <anonymous>:1:173)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+        },
+        {
+          "event": "focusin",
+          "tag": "A",
+          "id": "",
+          "time": 1955.5999999940395
+        },
+        {
+          "event": "focusout",
+          "tag": "A",
+          "id": "",
+          "time": 4976.29999999702
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 4994
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 4994.70000000298
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/mfa?next=%2Fteacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96"
+    ]
+  },
+  {
+    "actor": "admin",
+    "width": 390,
+    "attempt": 0,
+    "before": {
+      "id": "_S_1_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Matrículas</h1><p class=\"yas-header-description\">Acompanhe a entrada do aluno, do pagamento confirmado à turma.</p></div></header><form class=\"yas-stack\" action=\"",
+      "active": "BODY",
+      "atomicFocus": false
+    },
+    "url": "http://127.0.0.1:3000/admin/enrollments",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_S_1_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<select name=\"state\" id=\"_S_1_\" class=\"yas-field-control\"><option value=\"\" selected=\"\">Todas as etapas</option><option value=\"PAYMENT_CONFIRMED\">Pagamento confirmado</option><option value=\"ASSESSMENT_REQUIRED\">Teste disponível</option><option value=\"IN_PROGRESS\">Teste em andamento</option><option value=\"REVIEW_PENDING\">Avaliação em andamento</option><option value=\"PLACEMENT_READY\">Recomendação disponível</option><option value=\"STUDENT_DECISION\">Escolha sua turma</option><option value=\"ENROLLED\">Matrícula concluída</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<button type=\"button\" aria-label=\"Abrir navegação administrativa\" class=\"yas-icon-button\">☰</button>"
+    },
+    "current": {
+      "id": "_S_1_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>",
+      "events": [
+        {
+          "event": "focus-call",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "stack": "Error\n    at HTMLElement.focus (<anonymous>:8:124)\n    at eval (eval at evaluate (:311:30), <anonymous>:1:173)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 1028.5
+        },
+        {
+          "event": "focusout",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 4079.199999988079
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 4143.0999999940395
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 4144
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/mfa?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/admin/content?kind=modules",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments"
+    ]
+  }
+]

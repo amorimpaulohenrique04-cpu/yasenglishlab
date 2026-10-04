@@ -1,5 +1,18 @@
 # Agent Plan
 
+## Active task
+
+**stage-01-enrollment-core**
+
+Base `22b0562eaf308fabd363107feeecb639a126484e`; branch `feat/stage-01-enrollment-core`.
+
+1. Reconcile P21 checks separately from real Mux smoke.
+2. Add Placement domain/migration/RLS, schedule and capacity invariants.
+3. Add application/adapters, onboarding/Assessment, Teacher review, choice, Admin and Home.
+4. Prove tests/evidence, run gates, commit/push/PR and inspect CI.
+
+# Agent Plan
+
 ## Active P21 P1 — 2026-10-02
 
 Goal: `harness/goals/p21-p1-core-experience.md`. Base `78c4c689b6fbabde56083b417e7bbbfc9e302ccb` verified.
@@ -16,7 +29,7 @@ Plano detalhado: `harness/plans/p21-p0-foundation-closure.md`.
 P21.1/P21.2/P21.3 permanecem planned / verified:false; gates não executados.
 O registro histórico de P21 abaixo foi preservado.
 
-## Active task
+## Historical active task
 
 **p21-p1-core-experience**
 
@@ -80,3 +93,11 @@ Durable evidence:
 `harness/evidence/prompt-21-home-projection-v1/`.
 
 PR #25 remains open against `main`; no merge was performed.
+
+## A11y five failures � 2026-10-03
+
+Goal: harness/goals/a11y-five-failures.md. One joint Laya call completed. Preserve prior changes. Capture error-context and browser focus/node/hydration behavior, apply smallest proven correction, run only test:a11y once; no second correction round, commit, push or verified flag update.
+
+## GitHub push � 2026-10-03
+
+User now authorizes commit/push. Commit existing a11y correction, diagnostic evidence and placement SQL test correction; push HEAD to feat/stage-01-enrollment-core. Generated screenshots and root execution logs remain local. No implementation changes or broader verification in this publishing task.

@@ -13,6 +13,7 @@ const suites = {
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
     "supabase/tests/p21_core_experience.sql",
+    "supabase/tests/placement.sql",
   ],
   rls: [
     "supabase/tests/cohorts.sql",
@@ -21,6 +22,7 @@ const suites = {
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
     "supabase/tests/p21_core_experience.sql",
+    "supabase/tests/placement.sql",
   ],
 };
 
@@ -61,5 +63,10 @@ if (suite === "integration") {
     env: process.env,
   });
   if (core.status !== 0) process.exit(core.status ?? 1);
+  const placement = spawnSync(process.execPath, ["scripts/test-placement-concurrency.mjs"], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (placement.status !== 0) process.exit(placement.status ?? 1);
 }
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);

@@ -12,6 +12,8 @@ import {
 import { practiceSkillLabel } from "@/modules/practice";
 import { YAS_SCHEDULE_TIME_ZONE, scheduleSessionTypeLabel } from "@/modules/schedule";
 import { loadHomePage } from "@/server/home/home";
+import { loadStudentPlacement } from "@/server/placement/placement";
+import { placementLabels } from "@/modules/placement";
 
 const sessionDate = new Intl.DateTimeFormat("pt-BR", {
   timeZone: YAS_SCHEDULE_TIME_ZONE,
@@ -23,6 +25,30 @@ const sessionDate = new Intl.DateTimeFormat("pt-BR", {
 });
 
 export default async function StudentHomePage() {
+  const placement = await loadStudentPlacement();
+  if (placement && placement.case.state !== "ENROLLED") {
+    return (
+      <div className="yas-stack">
+        <PageHeader title="Sua entrada no Yas" description="Seu próximo passo está aqui." />
+        <Card className="yas-stack" variant="accent">
+          <Badge tone="info">{placementLabels[placement.case.state]}</Badge>
+          <h2>
+            {placement.case.state === "REVIEW_PENDING"
+              ? "Sua avaliação está em andamento"
+              : "Continue sua entrada"}
+          </h2>
+          <p>
+            {placement.case.state === "REVIEW_PENDING"
+              ? "A equipe vai revisar seu teste e recomendar uma trilha antes da escolha de turma."
+              : "Confira o que já foi concluído e a próxima ação."}
+          </p>
+          <Link className="yas-button yas-button--primary" href="/onboarding">
+            Ver minha entrada
+          </Link>
+        </Card>
+      </div>
+    );
+  }
   const state = await loadHomePage();
 
   if (state.status === "unauthorized") {

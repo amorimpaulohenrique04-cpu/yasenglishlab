@@ -188,18 +188,19 @@ order by pe.limit_value desc
 limit 1;
 
 insert into public.live_sessions(
- id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,status,cohort_id
+ id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,status,cohort_id,target_student_user_id
 ) values (
  'a9300000-0000-4000-8000-000000000001',
  'a9100000-0000-4000-8000-000000000001',
  'PRIVATE_SESSION',
- 'Legacy private without target',
+ 'Existing private with target',
  date_trunc('day',now())+interval '60 days 12 hours',
  date_trunc('day',now())+interval '60 days 13 hours',
  1,
  'monthly_private_sessions',
  'SCHEDULED',
- null
+ null,
+ 'a9000000-0000-4000-8000-000000000002'
 );
 
 insert into public.session_bookings(
@@ -248,9 +249,9 @@ begin
     select 1 from public.live_sessions
     where id='a9300000-0000-4000-8000-000000000001'
       and session_type='PRIVATE_SESSION'
-      and target_student_user_id is null
+      and target_student_user_id='a9000000-0000-4000-8000-000000000002'
   ) then
-    raise exception 'Legacy PRIVATE session was removed or assigned an invented target';
+    raise exception 'Existing PRIVATE session target changed during upgrade';
   end if;
 
   if not exists(

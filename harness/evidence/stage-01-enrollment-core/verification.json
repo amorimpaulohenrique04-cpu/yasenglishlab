@@ -1,0 +1,72 @@
+{
+  "feature": "stage-01-enrollment-core",
+  "status": "passed",
+  "verified": true,
+  "branch": "feat/stage-01-enrollment-core",
+  "baseline_sha": "22b0562eaf308fabd363107feeecb639a126484e",
+  "implementation_head_sha": "8e793d9678d080d813c1236e3090e3b063226ab7",
+  "pull_request": 32,
+  "mandatory_commands": {
+    "npm run verify:agent": {
+      "conclusion": "success",
+      "run_id": 37164246619
+    },
+    "npm run verify:security": {
+      "conclusion": "success",
+      "run_id": 37164246619
+    },
+    "npm run verify:db": {
+      "conclusion": "success",
+      "run_id": 37164246619
+    },
+    "npm run verify:ui": {
+      "conclusion": "success",
+      "run_id": 37164246619
+    },
+    "npm run verify:full": {
+      "conclusion": "success",
+      "run_id": 37164246619
+    }
+  },
+  "official_ci": {
+    "run_id": 37164246623,
+    "run_number": 498,
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    }
+  },
+  "preview_artifact": {
+    "id": 11289301242,
+    "name": "preview-evidence-c199aa8a9b639626c9c85e9a8cec8b7e9258cb1b",
+    "digest": "sha256:7ceb3d782e8aea4a11da81dc367f6145d8a3031874f2da61e81ee69f5f368d8f"
+  },
+  "assertions": {
+    "harness_reconciled_without_mux_claim": true,
+    "placement_transitions_durable": true,
+    "recommendation_immutable_choice_separate": true,
+    "assessment_resume_and_secret_columns_protected": true,
+    "teacher_aal2_and_scope": true,
+    "review_idempotency_and_conflict_rejection": true,
+    "deterministic_cohort_matching": true,
+    "atomic_last_seat_concurrency": true,
+    "admin_transfer_audited_and_atomic": true,
+    "positive_negative_rls": true,
+    "clean_replay_and_legacy_upgrade": true,
+    "canonical_e2e": true,
+    "persistence_and_analytics": true,
+    "accessibility": true,
+    "storybook_visual": true,
+    "product_golden_visual": true,
+    "production_dependency_audit_clean": true,
+    "reviewed_braces_backport_verified": true,
+    "p21_mux_still_unverified": true
+  },
+  "merge_performed": false,
+  "verified_at": "2026-10-03T21:30:00-03:00"
+}

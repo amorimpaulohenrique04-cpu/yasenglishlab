@@ -28,6 +28,12 @@ export function AdminShell({
     .toUpperCase();
   const items = [
     {
+      id: "enrollments",
+      label: "Matrículas",
+      href: "/admin/enrollments",
+      active: pathname.startsWith("/admin/enrollments"),
+    },
+    {
       id: "cohorts",
       label: "Turmas",
       href: "/admin/cohorts",

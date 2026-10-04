@@ -67,3 +67,7 @@ For each guard, inspect:
 Keep a guard when it still protects a meaningful invariant. Merge it when another check now covers the same class more directly. Remove it when it has no unique protection, has become obsolete, or costs more than the risk it mitigates. Any removal must leave a short rationale in the relevant failure record or a superseding ADR.
 
 The goal is a smaller, stronger harness—not an ever-growing list of rules.
+
+## 2026-10-03 — Unpatched transitive advisory gate
+
+When an upstream advisory has no published fixed release, a green supply-chain gate must not come from lowering severity, using `--force`, or silently ignoring the scanner. A temporary mitigation is acceptable only when all of these are executable: production dependencies audit clean at the original severity; vulnerable installed bytes are replaced by a source-reviewed backport; provenance and the exploit boundary are tested; the full audit remains visible; and the exception matches only the exact known advisory chain. Any other finding fails the gate. Remove the temporary patch once an official fixed release is available.

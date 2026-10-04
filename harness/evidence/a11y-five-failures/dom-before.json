@@ -1,0 +1,1205 @@
+[
+  {
+    "actor": "student",
+    "width": 1440,
+    "attempt": 0,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 1665.2999999970198
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 1440,
+    "attempt": 1,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 1003.4000000059605
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 1440,
+    "attempt": 2,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 827.1000000089407
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 1440,
+    "attempt": 3,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 1110.7999999970198
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 390,
+    "attempt": 0,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 1034.7000000029802
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 390,
+    "attempt": 1,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 990.1000000089407
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 390,
+    "attempt": 2,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Seu teste de entrada</h1><p class=\"yas-header-description\">Responda no seu ritmo. As respostas são salvas na sua conta.</p></div></header><section class=\"yas-card",
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": true,
+      "activeHTML": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": true,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 842.7000000029802
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "student",
+    "width": 390,
+    "attempt": 3,
+    "before": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Seu teste de entrada</h1><p class=\"yas-header-description\">Responda no seu ritmo. As respostas são salvas na sua conta.</p></div></header><section class=\"yas-card",
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/onboarding/assessment",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_R_1uatpesndl9et5rlb_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<body><div hidden=\"\"><!--$--><!--/$--></div><div class=\"yas-app-shell\"><aside class=\"yas-sidebar\"><div class=\"yas-sidebar-brand\"><a class=\"yas-student-brand\" href=\"/home\"><span>Yas</span><small>English Lab</small></a></div><nav class=\"yas-sidebar-nav\" aria-label=\"Navegação principal\"><ul class=\"yas-sidebar-list\"><li><a class=\"yas-sidebar-link\" href=\"/home\"><span aria-hidden=\"true\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M3 11.5 12 4l9 7.5\"></path><path d=\"M5 10.5V20h14v-9.5\"></path></svg></span><span>Início</span></a></li><li>"
+    },
+    "current": {
+      "id": "_R_1uatpesndl9et5rlb_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select id=\"_R_1uatpesndl9et5rlb_\" class=\"yas-field-control\"><option value=\"\">Selecione uma opção</option><option value=\"a\" selected=\"\">I work from home.</option><option value=\"b\">I works from home.</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_R_1uatpesndl9et5rlb_",
+          "time": 2826.2000000029802
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/login",
+      "http://127.0.0.1:3000/home",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment",
+      "http://127.0.0.1:3000/onboarding/assessment"
+    ]
+  },
+  {
+    "actor": "teacher",
+    "width": 1440,
+    "attempt": 0,
+    "before": {
+      "id": "_S_2_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+    "initial": {
+      "tag": "TEXTAREA",
+      "id": "_S_2_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<textarea name=\"feedback\" maxlength=\"4000\" id=\"_S_2_\" class=\"yas-field-control\" required=\"\"></textarea>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>"
+    },
+    "current": {
+      "id": "_S_2_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1535.7999999970198
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1579.2000000029802
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 1580.9000000059605
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3187.6000000089407
+        },
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3188.1000000089407
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3191.7999999970198
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3192.2999999970198
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/mfa?next=%2Fteacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96"
+    ]
+  },
+  {
+    "actor": "teacher",
+    "width": 1440,
+    "attempt": 1,
+    "before": {
+      "id": "_S_2_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+    "initial": {
+      "tag": "TEXTAREA",
+      "id": "_S_2_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<textarea name=\"feedback\" maxlength=\"4000\" id=\"_S_2_\" class=\"yas-field-control\" required=\"\"></textarea>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>"
+    },
+    "current": {
+      "id": "_S_2_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1932
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1967.0999999940395
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 1968
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3502.0999999940395
+        },
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3502.5
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3504.7000000029802
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3505.0999999940395
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/mfa?next=%2Fteacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96"
+    ]
+  },
+  {
+    "actor": "teacher",
+    "width": 1440,
+    "attempt": 2,
+    "before": {
+      "id": "_S_2_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+    "initial": {
+      "tag": "TEXTAREA",
+      "id": "_S_2_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<textarea name=\"feedback\" maxlength=\"4000\" id=\"_S_2_\" class=\"yas-field-control\" required=\"\"></textarea>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>"
+    },
+    "current": {
+      "id": "_S_2_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1485.2000000029802
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1495.9000000059605
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 1496.9000000059605
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3034
+        },
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3034.2000000029802
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3036.5
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3036.7999999970198
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/mfa?next=%2Fteacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96"
+    ]
+  },
+  {
+    "actor": "teacher",
+    "width": 1440,
+    "attempt": 3,
+    "before": {
+      "id": "_S_2_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+    "initial": {
+      "tag": "TEXTAREA",
+      "id": "_S_2_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<textarea name=\"feedback\" maxlength=\"4000\" id=\"_S_2_\" class=\"yas-field-control\" required=\"\"></textarea>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>"
+    },
+    "current": {
+      "id": "_S_2_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<select name=\"confidence\" id=\"_S_3_\" class=\"yas-field-control\" required=\"\"><option value=\"LOW\">Baixa</option><option value=\"MEDIUM\">Média</option><option value=\"HIGH\">Alta</option></select>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1502.0999999940395
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 1505.3999999910593
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 1506.199999988079
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3207.199999988079
+        },
+        {
+          "event": "focusin",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3207.7999999970198
+        },
+        {
+          "event": "focusout",
+          "tag": "TEXTAREA",
+          "id": "_S_2_",
+          "time": 3211.5
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_3_",
+          "time": 3212
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/login?next=%2Fteacher",
+      "http://127.0.0.1:3000/mfa?next=%2Fteacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96",
+      "http://127.0.0.1:3000/teacher/revisoes/placement/bf74a4af-d4c9-47e9-b7dc-1722c2ea7e96"
+    ]
+  },
+  {
+    "actor": "admin",
+    "width": 390,
+    "attempt": 0,
+    "before": {
+      "id": "_S_1_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/admin/enrollments",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_S_1_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select name=\"state\" id=\"_S_1_\" class=\"yas-field-control\"><option value=\"\" selected=\"\">Todas as etapas</option><option value=\"PAYMENT_CONFIRMED\">Pagamento confirmado</option><option value=\"ASSESSMENT_REQUIRED\">Teste disponível</option><option value=\"IN_PROGRESS\">Teste em andamento</option><option value=\"REVIEW_PENDING\">Avaliação em andamento</option><option value=\"PLACEMENT_READY\">Recomendação disponível</option><option value=\"STUDENT_DECISION\">Escolha sua turma</option><option value=\"ENROLLED\">Matrícula concluída</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>"
+    },
+    "current": {
+      "id": "_S_1_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 973.8999999910593
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 988.8999999910593
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 989.2000000029802
+        },
+        {
+          "event": "focusout",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2519.5
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2519.8999999910593
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2522.5
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2522.5999999940395
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/mfa?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/admin/content?kind=modules",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments"
+    ]
+  },
+  {
+    "actor": "admin",
+    "width": 390,
+    "attempt": 1,
+    "before": {
+      "id": "_S_1_",
+      "visible": false,
+      "hiddenAncestor": "<div hidden=\"\" id=\"S:0\"><div class=\"yas-stack\"><header class=\"yas-page-header\"><div><h1>Matrículas</h1><p class=\"yas-header-description\">Acompanhe a entrada do aluno, do pagamento confirmado à turma.</p></div></header><form class=\"yas-stack\" action=\"",
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/admin/enrollments",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_S_1_",
+      "connected": true,
+      "active": false,
+      "disabled": false,
+      "inert": false,
+      "html": "<select name=\"state\" id=\"_S_1_\" class=\"yas-field-control\"><option value=\"\" selected=\"\">Todas as etapas</option><option value=\"PAYMENT_CONFIRMED\">Pagamento confirmado</option><option value=\"ASSESSMENT_REQUIRED\">Teste disponível</option><option value=\"IN_PROGRESS\">Teste em andamento</option><option value=\"REVIEW_PENDING\">Avaliação em andamento</option><option value=\"PLACEMENT_READY\">Recomendação disponível</option><option value=\"STUDENT_DECISION\">Escolha sua turma</option><option value=\"ENROLLED\">Matrícula concluída</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<button type=\"button\" aria-label=\"Abrir navegação administrativa\" class=\"yas-icon-button\">☰</button>"
+    },
+    "current": {
+      "id": "_S_1_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 1059.4000000059605
+        },
+        {
+          "event": "focusout",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2615.7999999970198
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2616.9000000059605
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2620.5999999940395
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2621.4000000059605
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/mfa?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/admin/content?kind=modules",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments"
+    ]
+  },
+  {
+    "actor": "admin",
+    "width": 390,
+    "attempt": 2,
+    "before": {
+      "id": "_S_1_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/admin/enrollments",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_S_1_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select name=\"state\" id=\"_S_1_\" class=\"yas-field-control\"><option value=\"\" selected=\"\">Todas as etapas</option><option value=\"PAYMENT_CONFIRMED\">Pagamento confirmado</option><option value=\"ASSESSMENT_REQUIRED\">Teste disponível</option><option value=\"IN_PROGRESS\">Teste em andamento</option><option value=\"REVIEW_PENDING\">Avaliação em andamento</option><option value=\"PLACEMENT_READY\">Recomendação disponível</option><option value=\"STUDENT_DECISION\">Escolha sua turma</option><option value=\"ENROLLED\">Matrícula concluída</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>"
+    },
+    "current": {
+      "id": "_S_1_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 1949.9000000059605
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 1968.2000000029802
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 1968.7000000029802
+        },
+        {
+          "event": "focusout",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 3506.2999999970198
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 3507
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 3510.9000000059605
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 3511.2000000029802
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/mfa?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/admin/content?kind=modules",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments"
+    ]
+  },
+  {
+    "actor": "admin",
+    "width": 390,
+    "attempt": 3,
+    "before": {
+      "id": "_S_1_",
+      "visible": true,
+      "active": "BODY"
+    },
+    "url": "http://127.0.0.1:3000/admin/enrollments",
+    "initial": {
+      "tag": "SELECT",
+      "id": "_S_1_",
+      "connected": true,
+      "active": true,
+      "disabled": false,
+      "inert": false,
+      "html": "<select name=\"state\" id=\"_S_1_\" class=\"yas-field-control\"><option value=\"\" selected=\"\">Todas as etapas</option><option value=\"PAYMENT_CONFIRMED\">Pagamento confirmado</option><option value=\"ASSESSMENT_REQUIRED\">Teste disponível</option><option value=\"IN_PROGRESS\">Teste em andamento</option><option value=\"REVIEW_PENDING\">Avaliação em andamento</option><option value=\"PLACEMENT_READY\">Recomendação disponível</option><option value=\"STUDENT_DECISION\">Escolha sua turma</option><option value=\"ENROLLED\">Matrícula concluída</option></select>"
+    },
+    "after": {
+      "connected": true,
+      "active": false,
+      "activeHTML": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>"
+    },
+    "current": {
+      "id": "_S_1_",
+      "active": false,
+      "disabled": false,
+      "inert": false
+    },
+    "settled": {
+      "active": "<button type=\"submit\" class=\"yas-button yas-button--secondary\"><span>Filtrar</span></button>",
+      "events": [
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 991
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 1006.5999999940395
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 1007.5
+        },
+        {
+          "event": "focusout",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2536.7999999970198
+        },
+        {
+          "event": "focusin",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2537.0999999940395
+        },
+        {
+          "event": "focusout",
+          "tag": "SELECT",
+          "id": "_S_1_",
+          "time": 2538.5
+        },
+        {
+          "event": "focusin",
+          "tag": "BUTTON",
+          "id": "",
+          "time": 2538.5999999940395
+        }
+      ],
+      "loading": []
+    },
+    "errors": [],
+    "navigations": [
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/login?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/mfa?next=%2Fadmin%2Fcontent%3Fkind%3Dmodules",
+      "http://127.0.0.1:3000/admin/content?kind=modules",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments",
+      "http://127.0.0.1:3000/admin/enrollments"
+    ]
+  }
+]

@@ -71,3 +71,10 @@ ADRs 0007–0009 record role-aware workspaces, session-start Recife quotas and a
 P21 final gate: Windows Home goldens predate P21 (f086e31); approved Linux Home was promoted in a4def7c. Home implementation/style has no diff against origin/main. Synchronize only the three inspected Windows Home images to the existing approved main UI; retain thresholds and all other baselines. This repairs stale platform evidence, without changing product visuals.
 
 P21 Windows verification also revealed missing Progresso win32 references: main contains only three Linux images from aff4784. Golden test generated first Windows images, which were inspected against the Linux reference and unchanged main Progress code. Add these missing platform baselines without replacing existing images or changing thresholds.
+
+## 2026-10-03 — Stage 01 dependency boundary and unpatched braces mitigation
+
+- Stage 01 depends on the verified P21 P0 foundation (role routing, transactional booking quota and Cohorts) plus its transitive verified Assessment/Teacher/Auth foundations. It does not consume P21.4–P21.6 recorded-video/Mux behavior. The registry therefore points to `p21-p0-foundation-closure`; `p21-p1-core-experience` remains independently `in_progress / verified:false` until its real Mux requirement is proved.
+- Official CI is blocked by GHSA-vfj7-8cjw-p6xm / CVE-2026-93687 in dev-only `braces@3.0.3`. No patched npm release exists as of 2026-10-03.
+- Do not downgrade Next/ESLint, lower `audit-level`, or hide the advisory. Until upstream publishes a fixed release, apply the narrow source backport derived from reviewed upstream PR micromatch/braces#72, verify exact Git blob provenance and the 100/101 depth boundary, require a clean production-dependency audit, and allow the full dev audit to pass only when every reported high finding belongs to that exact patched advisory chain.
+- Any new advisory, production-path finding, patch drift, upstream package-version drift or failed depth regression remains fail-closed.
