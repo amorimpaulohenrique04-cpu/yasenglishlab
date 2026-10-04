@@ -33,11 +33,31 @@ Admin and Teacher can complete existing operational workflows through coherent, 
 
 ## Allowed files / domains
 
-- Admin and Teacher operational UI routes/components and their presentation styles
-- Shared UI/layout primitives with multiple real Stage 2.1 consumers
-- Focused UI, E2E, accessibility, and visual tests/evidence
-- Harness goal, plan, progress, registry, and task evidence
-- Bounded server read projection only if inspection proves an existing real UI dependency is unavailable; no new UI tables
+The executable scope below is intentionally machine-readable by `eval:agent`; each pattern is bounded to the Stage 2.1 work observed in this branch.
+
+- `src/app/(protected)/(admin)/**`
+- `src/app/(protected)/(teacher)/**`
+- `src/app/globals.css`
+- `src/components/ui/**`
+- `src/modules/admin-content/ui/**`
+- `src/modules/teacher-operations/**`
+- `src/server/students/**`
+- `src/styles/**`
+- `supabase/migrations/20261004201105_admin_student_directory_visual_projection.sql`
+- `supabase/tests/students_directory.sql`
+- `scripts/run-sql-tests.mjs`
+- `scripts/verify-security.mjs`
+- `tests/e2e/**`
+- `tests/a11y/**`
+- `tests/visual/**`
+- `tests/unit/teacher-operations.test.ts`
+- `harness/agent-state/**`
+- `harness/feature_list.json`
+- `harness/goals/stage-02-1-operations-ux.md`
+- `harness/goals/stage-02-operations.md`
+- `harness/evidence/stage-02-1-operations-ux/**`
+
+No other domain is authorized. This scope does not authorize new UI-owned state tables or changes to protected business transitions.
 
 ## Forbidden areas
 
