@@ -37,7 +37,14 @@ export default async function TeacherHomePage() {
       <PageHeader
         title="Próxima atividade"
         description="Prepare seu próximo encontro e acompanhe as revisões pendentes."
-        actions={<Link href="/teacher/sessoes/nova">Criar encontro</Link>}
+        actions={
+          <div className={styles.sessionMeta}>
+            <Link href="/teacher/revisoes">Revisões de prática</Link>
+            <Link href="/teacher/revisoes/placement">Revisões de entrada</Link>
+            <Link href="/teacher/alunos">Alunos</Link>
+            <Link href="/teacher/sessoes/nova">Criar encontro</Link>
+          </div>
+        }
       />
 
       {upcoming.length === 0 ? (

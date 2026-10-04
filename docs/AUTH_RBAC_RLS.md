@@ -88,6 +88,8 @@ Service role não substitui autorização. Qualquer nova função que o use deve
 3. derivar ownership do contexto, não do browser;
 4. escrever audit trail quando a ação for crítica.
 
+Admin Teachers follows that boundary: the Auth Admin invite and role/Teacher reconciliation run only in server-only code after `assertRole("ADMIN")` enforces staff AAL2. The reconciliation RPC is executable only by `service_role`; it derives the target identity from normalized email, hardcodes the `TEACHER` role, and creates the unique Teacher row idempotently. Authenticated clients cannot call that RPC or write `user_roles`/`teachers` directly. Admin directory, capability, and lifecycle RPCs independently enforce Admin+AAL2.
+
 ## Testes obrigatórios
 
 `supabase/tests/rls_permissions.sql` executa contra PostgreSQL real e cobre, entre outros:
@@ -120,4 +122,10 @@ O scorer executa server-side/database-side; RLS/UI não são usados como mecanis
 ## P21 foundation closure
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+
+## Stage 02 operational projections
+
+Teacher operational context requires `TEACHER+AAL2`, derives the Teacher from `auth.uid()`, and only projects currently assigned cohorts/Students. Cohort roster previews, upcoming sessions, availability, and session collections are bounded. Practice review queue output is capped; a specific attempt remains subject to the same current assignment check. Teacher Student detail composes existing RLS-protected enrollment, curriculum, Practice, scored Assessment, Attendance, Placement, note, booking, and own-session homework records; it is not an administrative projection and never reads CRM or commercial data.
+
+CRM tables have RLS enabled and no direct table grants to `anon` or `authenticated`. `admin_crm_directory` and `admin_crm_mutate` repeat `ADMIN+AAL2` at the database boundary. Owner assignment accepts only existing Admin/Support identities, and linking accepts only an existing Student identity. No CRM operation creates Auth users or mutates roles, enrollment, subscription, or Placement. See [CRM Leads V1](./CRM.md).
 

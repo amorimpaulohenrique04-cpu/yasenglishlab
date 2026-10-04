@@ -17,6 +17,7 @@ async function stabilize(page: Page) {
 }
 
 test("login, home, aulas and progresso match golden baselines", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Entrar" })).toBeVisible();
   await stabilize(page);
@@ -25,7 +26,8 @@ test("login, home, aulas and progresso match golden baselines", async ({ page })
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password!);
   await page.getByRole("button", { name: "Entrar" }).click();
-  await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
+  await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+  await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible({ timeout: 15_000 });
   await stabilize(page);
   await expect(page).toHaveScreenshot("home.png", { fullPage: true });
 

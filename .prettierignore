@@ -2,6 +2,8 @@
 .next-p18
 .next-p18-build
 node_modules
+.venv-laya
+.supabase-home-stage02
 coverage
 storybook-static
 playwright-report

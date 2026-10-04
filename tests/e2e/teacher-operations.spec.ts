@@ -1,5 +1,3 @@
-import { mkdirSync } from "node:fs";
-
 import { expect, test, type Page } from "@playwright/test";
 
 import {
@@ -10,11 +8,11 @@ import {
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const password = process.env.CANONICAL_E2E_PASSWORD;
-const evidenceDir = "artifacts/canonical-slice";
 
 async function captureEvidence(page: Page, filename: string): Promise<void> {
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
-  await page.screenshot({ path: evidenceDir + "/" + filename, fullPage: true });
+  const body = await page.screenshot({ path: test.info().outputPath(filename), fullPage: true });
+  await test.info().attach(filename, { body, contentType: "image/png" });
 }
 
 test.describe("Teacher Operations V1", () => {
@@ -40,7 +38,6 @@ test.describe("Teacher Operations V1", () => {
   }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
-    mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
 
     await loginCanonicalTeacher(page, password);

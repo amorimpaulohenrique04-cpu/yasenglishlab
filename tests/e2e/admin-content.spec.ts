@@ -1,5 +1,3 @@
-import { mkdirSync } from "node:fs";
-
 import { expect, test, type Page } from "@playwright/test";
 
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
@@ -8,7 +6,6 @@ const password = process.env.CANONICAL_E2E_PASSWORD;
 const studentEmail = "canonical.student@example.test";
 const courseId = "40000000-0000-4000-8000-000000000001";
 const moduleTitle = "Canonical E2E Module";
-const evidenceDir = "artifacts/prompt-18-admin-content";
 
 if (process.env.CANONICAL_E2E !== "1" || !password) {
   throw new Error("Admin Content E2E requires the canonical local Supabase fixture.");
@@ -16,7 +13,8 @@ if (process.env.CANONICAL_E2E !== "1" || !password) {
 
 async function captureEvidence(page: Page, filename: string): Promise<void> {
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
-  await page.screenshot({ path: `${evidenceDir}/${filename}`, fullPage: true });
+  const body = await page.screenshot({ path: test.info().outputPath(filename), fullPage: true });
+  await test.info().attach(filename, { body, contentType: "image/png" });
 }
 
 async function loginStudent(page: Page): Promise<void> {
@@ -38,7 +36,6 @@ test.describe("Admin Content publication", () => {
   }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
-    mkdirSync(evidenceDir, { recursive: true });
     await page.setViewportSize({ width: 1440, height: 900 });
     await loginCanonicalAdmin(page, password);
     await expect(page.getByRole("main")).toBeVisible();

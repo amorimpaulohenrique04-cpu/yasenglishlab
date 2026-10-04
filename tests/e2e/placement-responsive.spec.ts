@@ -1,11 +1,9 @@
-import { mkdirSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 if (!password) throw new Error("Placement visual evidence requires canonical fixture.");
-const root = "harness/evidence/stage-01-enrollment-core/screenshots";
 const sizes = [
   { name: "desktop", width: 1440, height: 900 },
   { name: "tablet", width: 834, height: 1112 },
@@ -19,9 +17,11 @@ async function capture(page: Page, name: string) {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
-  mkdirSync(root, { recursive: true });
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
-  const body = await page.screenshot({ path: `${root}/${name}.png`, fullPage: true });
+  const body = await page.screenshot({
+    path: test.info().outputPath(`${name}.png`),
+    fullPage: true,
+  });
   await test.info().attach(`${name}.png`, { body, contentType: "image/png" });
 }
 async function login(page: Page, suffix: string) {

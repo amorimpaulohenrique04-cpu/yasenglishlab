@@ -22,6 +22,7 @@ const eslintConfig = defineConfig([
     "storybook-static/**",
     "playwright-report/**",
     "test-results/**",
+    ".venv-laya/**",
     "next-env.d.ts",
   ]),
 ]);

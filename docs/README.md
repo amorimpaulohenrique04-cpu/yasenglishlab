@@ -23,6 +23,7 @@ A pasta `docs/` é a fonte de verdade modular do produto e da engenharia. Use pr
 - [LIVE_CLASSES.md](./LIVE_CLASSES.md)
 - [PRACTICE_ENGINE.md](./PRACTICE_ENGINE.md)
 - [MATERIALS.md](./MATERIALS.md)
+- [CRM.md](./CRM.md) — operação mínima e proteção de Leads V1.
 
 ## Qualidade e operação
 - [PERFORMANCE.md](./PERFORMANCE.md)

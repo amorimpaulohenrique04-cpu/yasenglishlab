@@ -12,6 +12,29 @@ export const cohortSchema = z.object({
   ends_at: z.string().nullable(),
 });
 export type Cohort = z.infer<typeof cohortSchema>;
+export const cohortAdministrationRowSchema = cohortSchema.extend({
+  course_title: z.string(),
+  capacity: z.number().int().min(1).max(6).nullable(),
+  schedule: z
+    .array(
+      z.object({
+        weekday: z.number().int().min(0).max(6),
+        startMinute: z.number().int(),
+        endMinute: z.number().int(),
+      }),
+    )
+    .nullable(),
+  occupancy: z.number().int().nonnegative(),
+  student_count: z.number().int().nonnegative(),
+  students: z.array(z.object({ user_id: uuid, name: z.string().nullable() })),
+  teachers: z.array(
+    z.object({ teacher_id: uuid, name: z.string().nullable(), is_primary: z.boolean() }),
+  ),
+  next_sessions: z.array(
+    z.object({ id: uuid, title: z.string(), starts_at: z.string(), ends_at: z.string() }),
+  ),
+});
+export type CohortAdministrationRow = z.infer<typeof cohortAdministrationRowSchema>;
 export const cohortCommandSchema = z.discriminatedUnion("operation", [
   z
     .object({

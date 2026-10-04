@@ -1,0 +1,161 @@
+{
+  "feature": "stage-02-operations",
+  "status": "passed",
+  "verified": true,
+  "baseline_sha": "34f5e32f313fe16b8c09bcf13b64b4a7d11b9236",
+  "branch": "feat/stage-02-operations",
+  "tested_scope": "Admin Overview; Students/Student 360; Admin Teachers; Cohorts V2; bounded Teacher operational/pedagogical surfaces; CRM Leads V1. Full local verification and Official CI passed at 979412681e08ab4334c975c1591e65b7c9d0fe2f; PR #33 remains open for user merge",
+  "checks": {
+    "typecheck": {
+      "command": "node_modules/.bin/tsc.cmd --noEmit",
+      "result": "passed"
+    },
+    "eslint": {
+      "command": "node_modules/.bin/eslint.cmd 'src/app/(protected)/(admin)/admin/page.tsx' src/modules/admin-content/ui/admin-shell.tsx tests/e2e/cohorts-booking.spec.ts",
+      "result": "passed"
+    },
+    "prettier": {
+      "command": "node_modules/.bin/prettier.cmd --check <changed files>",
+      "result": "passed"
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    "admin_students_typecheck_eslint": {
+      "command": "node_modules/.bin/tsc.cmd --noEmit; node_modules/.bin/eslint.cmd <changed Students files>",
+      "result": "passed"
+    },
+    "admin_students_database_migration": {
+      "command": "supabase migration up --local; supabase migration list --local; node scripts/run-sql-tests.mjs students-directory",
+      "result": "passed",
+      "details": "Both Student directory and curricular-summary migrations synchronized; focused SQL/RLS tests passed"
+    },
+    "student_360_target_role_guard": {
+      "command": "node_modules/.bin/tsc.cmd --noEmit; node_modules/.bin/eslint.cmd 'src/server/students/students.ts'; DATABASE_URL=local:55322 node scripts/run-sql-tests.mjs students-directory; git diff --check",
+      "result": "passed",
+      "details": "Detail loader checks STUDENT role before querying target data; existing user_roles RLS enforces Admin+AAL2 for this lookup. Focused SQL/RLS regression, typecheck, lint, and diff check passed. No schema change was required."
+    },
+    "student_360_e2e": {
+      "command": "node --env-file=.env.local node_modules/@playwright/test/cli.js test tests/e2e/admin-students.spec.ts",
+      "result": "test_passed_teardown_interrupted",
+      "details": "Single Chromium test passed MFA, directory-to-detail navigation, all Student 360 section assertions, and Axe; Playwright webServer teardown hung and was interrupted (process exit 1)"
+    },
+    "admin_teachers_database_rls": {
+      "command": "supabase migration up --local; DATABASE_URL=local:55322 node scripts/run-sql-tests.mjs admin-teachers",
+      "result": "passed",
+      "details": "Admin+AAL2 allow; AAL1, Teacher, Student, Support, and anonymous denied; bounded/search projection, service-only idempotent reconciliation, audit, lifecycle dependency blocks, temporal primary cohort preservation, no direct role mutation or global authenticated table access"
+    },
+    "admin_teachers_service_role_retry_fixture": {
+      "command": "DATABASE_URL=local:55322 node scripts/run-sql-tests.mjs admin-teachers",
+      "result": "passed",
+      "details": "Corrected CI-discovered fixture permission error by comparing retry RPC output with the captured first return value; table assertions run after RESET ROLE. No product grant or policy changed.",
+      "official_ci_failure": "PR #33 run 37213468368, Database check 111469259654 failed because the previous fixture selected public.teachers as service_role"
+    },
+    "admin_teachers_application": {
+      "command": "node_modules/.bin/vitest.cmd run tests/integration/admin-teachers-application.test.ts",
+      "result": "passed",
+      "passed": 5,
+      "failed": 0
+    },
+    "admin_teachers_e2e_a11y": {
+      "command": "node --env-file=.env.local node_modules/@playwright/test/cli.js test tests/e2e/admin-teachers.spec.ts (combined canonical run)",
+      "result": "passed",
+      "passed": 1,
+      "failed": 0,
+      "details": "Admin MFA, bounded directory and Axe WCAG 2 A/AA passed using the existing canonical fixture helper and an ephemeral process-only password"
+    },
+    "admin_cohorts_v2": {
+      "command": "DATABASE_URL=local:55322 node scripts/run-sql-tests.mjs admin-cohorts; psql supabase/tests/cohorts.sql; psql supabase/tests/placement.sql; Playwright tests/e2e/admin-cohorts.spec.ts",
+      "result": "passed",
+      "details": "Bounded Admin+AAL2 projection, membership lifecycle guards, schedule/capacity, active/primary teacher behavior, Stage01 transfer compatibility, desktop/mobile Axe and screenshots"
+    },
+    "teacher_surfaces": {
+      "command": "psql supabase/tests/p21_core_experience.sql; psql supabase/tests/teacher_operations.sql; psql supabase/tests/cohorts.sql; psql supabase/tests/placement.sql; Playwright tests/e2e/teacher-surfaces.spec.ts",
+      "result": "passed",
+      "details": "Teacher AAL2/assignment-scoped and bounded projections, own-session operations, Stage01 compatibility, responsive Student detail, Axe and screenshot"
+    },
+    "crm_unit": {
+      "command": "node_modules/.bin/vitest.cmd run tests/unit/crm.test.ts",
+      "result": "passed",
+      "passed": 2,
+      "failed": 0
+    },
+    "crm_database_rls": {
+      "command": "DATABASE_URL=local:55322 node scripts/run-sql-tests.mjs admin-crm",
+      "result": "passed",
+      "details": "Admin+AAL2; AAL1/Teacher/Student/Support/anon denial; bounded literal search; no direct grants; transition policy; owner validation; task completion; audit; Student link without identity/role mutation"
+    },
+    "crm_e2e_a11y": {
+      "command": "node --env-file=.env.local node_modules/@playwright/test/cli.js test tests/e2e/admin-leads.spec.ts",
+      "result": "passed",
+      "passed": 1,
+      "failed": 0,
+      "accessibility_viewports": ["desktop", "mobile"]
+    },
+    "admin_overview_e2e": {
+      "command": "node_modules/.bin/playwright.cmd test tests/e2e/cohorts-booking.spec.ts -g 'Admin default entry after MFA administers cohort metadata'",
+      "result": "passed",
+      "passed": 1,
+      "failed": 0,
+      "accessibility_viewports": ["desktop", "tablet", "mobile"]
+    },
+    "placement_e2e_diagnostic_rerun": {
+      "command": "node scripts/setup-canonical-e2e.mjs; npm run test:e2e -- tests/e2e/placement-enrollment.spec.ts --grep 'confirmed Student'",
+      "result": "passed",
+      "passed": 1,
+      "failed": 0,
+      "details": "Focused local fixture flow passed after extending autosave assertion timeout to 15 seconds and asserting redirect to /onboarding/placement; 1.3m test duration"
+    },
+    "verify_agent": {
+      "command": "npm run verify:agent",
+      "result": "passed",
+      "details": "Passed after Harness evaluator fix: format, lint, typecheck, unit 96/96, integration 68 passed/1 skipped, DB contract validation, production build, Harness/Ratchet, security boundary and all 10 agent eval rules."
+    },
+    "verify_security": {
+      "command": "npm run verify:security",
+      "result": "passed"
+    },
+    "verify_db": {
+      "command": "npm run verify:db",
+      "result": "passed"
+    },
+    "verify_ui": {
+      "command": "npm run verify:ui (CANONICAL_E2E=1, YAS_ISOLATED_VERIFY=1, PLAYWRIGHT_PORT=4001)",
+      "result": "passed",
+      "passed": 28,
+      "failed": 0,
+      "details": "Full UI gate passed: Storybook build, 28 E2E, 28 desktop/mobile accessibility checks, 6 Storybook visual checks, and 3 desktop/tablet/mobile golden checks. Screenshot output uses per-test Playwright artifacts; retained P21 evidence was preserved."
+    }
+  },
+  "screenshots": [
+    "harness/evidence/stage-02-operations/screenshots/admin-overview-desktop.png",
+    "harness/evidence/stage-02-operations/screenshots/admin-overview-tablet.png",
+    "harness/evidence/stage-02-operations/screenshots/admin-overview-mobile.png",
+    "harness/evidence/stage-02-operations/screenshots/admin-cohorts-desktop.png",
+    "harness/evidence/stage-02-operations/screenshots/admin-cohorts-mobile.png",
+    "harness/evidence/stage-02-operations/screenshots/admin-leads-mobile.png",
+    "harness/evidence/stage-02-operations/screenshots/teacher-student-mobile.png"
+  ],
+  "verify_full": {
+    "command": "npm run verify:full (local Supabase reset/replay, isolated Next output, telemetry disabled)",
+    "result": "passed",
+    "head_sha": "979412681e08ab4334c975c1591e65b7c9d0fe2f",
+    "details": "Clean local Supabase reset/replay; core format/lint/typecheck/build; unit 96/96; integration 68 passed/1 skipped; 11 SQL integration files; 7 RLS SQL files; Harness; security; all 10 agent eval rules; canonical E2E 28/28; persistence/analytics; accessibility 28/28; Storybook build and visual 6/6; golden visual 3/3. Earlier transient workspace E2E and a11y focus failures passed isolated reruns and the final full run. Used SUPABASE_HOME=.supabase-home-stage02, SUPABASE_TELEMETRY_DISABLED=1, DO_NOT_TRACK=1, PLAYWRIGHT_PORT=4001 and YAS_ISOLATED_VERIFY=1."
+  },
+  "official_ci": {
+    "run_id": "37218336532",
+    "head_sha": "f1c8cab5fff4169b18f52f87c4eb46b0fd44addf",
+    "result": "passed",
+    "checks": [
+      "Supply Chain",
+      "Database",
+      "Guardrail Simulations",
+      "Quality",
+      "Preview",
+      "CI Gate"
+    ],
+    "previous_code_commit_run_id": "37215008624"
+  },
+  "pull_request": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/33"
+}

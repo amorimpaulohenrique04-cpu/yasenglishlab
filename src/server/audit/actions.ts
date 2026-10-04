@@ -8,6 +8,10 @@ export const PRIVILEGED_AUDIT_ACTIONS = {
   ENTITLEMENT_CHANGE: "entitlement_change",
   MANUAL_SUBSCRIPTION_CHANGE: "manual_subscription_change",
   TEACHER_ASSIGNMENT: "teacher_assignment",
+  TEACHER_PROVISIONED: "teacher_provisioned",
+  TEACHER_ACTIVATED: "teacher_activated",
+  TEACHER_DEACTIVATED: "teacher_deactivated",
+  TEACHER_COURSE_CAPABILITY_CHANGED: "teacher_course_capability_changed",
   ASSESSMENT_PUBLICATION: "assessment_publication",
   ADMIN_DATA_EXPORT: "admin_data_export",
 } as const;

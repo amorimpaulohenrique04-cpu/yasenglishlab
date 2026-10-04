@@ -28,10 +28,34 @@ export function AdminShell({
     .toUpperCase();
   const items = [
     {
+      id: "overview",
+      label: "Visão geral",
+      href: "/admin",
+      active: pathname === "/admin",
+    },
+    {
       id: "enrollments",
       label: "Matrículas",
       href: "/admin/enrollments",
       active: pathname.startsWith("/admin/enrollments"),
+    },
+    {
+      id: "students",
+      label: "Alunos",
+      href: "/admin/students",
+      active: pathname.startsWith("/admin/students"),
+    },
+    {
+      id: "teachers",
+      label: "Professores",
+      href: "/admin/teachers",
+      active: pathname.startsWith("/admin/teachers"),
+    },
+    {
+      id: "leads",
+      label: "Leads",
+      href: "/admin/leads",
+      active: pathname.startsWith("/admin/leads"),
     },
     {
       id: "cohorts",
@@ -53,13 +77,13 @@ export function AdminShell({
         <Sidebar
           ariaLabel="Navegação administrativa"
           brand={
-            <Link className={styles.brand} href={contentHref}>
+            <Link className={styles.brand} href="/admin">
               <span>Yas</span>
               <small>English Lab · Administração</small>
             </Link>
           }
           items={items}
-          footer={<span>Administração de conteúdo</span>}
+          footer={<span>Operações administrativas</span>}
         />
       }
       topbar={
@@ -74,7 +98,7 @@ export function AdminShell({
                   ☰
                 </IconButton>
               </span>
-              <span className={styles.topbarLabel}>Área administrativa</span>
+              <span className={styles.topbarLabel}>Operações administrativas</span>
             </>
           }
           end={
@@ -91,9 +115,24 @@ export function AdminShell({
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         title="Navegação administrativa"
-        description="Acesse a administração de conteúdo."
+        description="Acesse as áreas administrativas."
       >
         <nav className={styles.drawerNav} aria-label="Navegação administrativa no celular">
+          <Link href="/admin" onClick={() => setDrawerOpen(false)}>
+            Visão geral
+          </Link>
+          <Link href="/admin/enrollments" onClick={() => setDrawerOpen(false)}>
+            Matrículas
+          </Link>
+          <Link href="/admin/students" onClick={() => setDrawerOpen(false)}>
+            Alunos
+          </Link>
+          <Link href="/admin/teachers" onClick={() => setDrawerOpen(false)}>
+            Professores
+          </Link>
+          <Link href="/admin/leads" onClick={() => setDrawerOpen(false)}>
+            Leads
+          </Link>
           <Link href="/admin/cohorts" onClick={() => setDrawerOpen(false)}>
             Turmas
           </Link>

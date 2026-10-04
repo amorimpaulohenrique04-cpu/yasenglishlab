@@ -24,11 +24,17 @@ const suites = {
     "supabase/tests/p21_core_experience.sql",
     "supabase/tests/placement.sql",
   ],
+  "students-directory": ["supabase/tests/students_directory.sql"],
+  "admin-teachers": ["supabase/tests/admin_teachers.sql"],
+  "admin-cohorts": ["supabase/tests/admin_cohorts.sql"],
+  "admin-crm": ["supabase/tests/admin_crm.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
-  console.error("Usage: node scripts/run-sql-tests.mjs <integration|rls>");
+  console.error(
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm>",
+  );
   process.exit(2);
 }
 
