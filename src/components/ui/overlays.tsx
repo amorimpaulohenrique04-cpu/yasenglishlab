@@ -142,7 +142,12 @@ function OperationOverlay({
       <Button variant="outline" onClick={() => setOpen(true)}>
         {trigger}
       </Button>
-      <Overlay open={open} onOpenChange={setOpen} title={title} {...(description ? { description } : {})}>
+      <Overlay
+        open={open}
+        onOpenChange={setOpen}
+        title={title}
+        {...(description ? { description } : {})}
+      >
         {children}
       </Overlay>
     </>
