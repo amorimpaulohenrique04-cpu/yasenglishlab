@@ -13,6 +13,11 @@ const stories = [
     viewport: { width: 1024, height: 1000 },
   },
   {
+    id: "design-system-foundations--operations",
+    name: "operations",
+    viewport: { width: 1280, height: 1000 },
+  },
+  {
     id: "design-system-layout--desktop-shell",
     name: "desktop-shell",
     viewport: { width: 1440, height: 900 },
