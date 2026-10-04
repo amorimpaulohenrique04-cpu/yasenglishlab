@@ -104,7 +104,7 @@
     "verify_agent": {
       "command": "npm run verify:agent",
       "result": "passed",
-      "details": "Format, lint, typecheck, unit/integration suites, DB contract validation, build, Harness verification, security boundary and agent eval completed successfully"
+      "details": "Passed after Harness evaluator fix: format, lint, typecheck, unit 96/96, integration 68 passed/1 skipped, DB contract validation, production build, Harness/Ratchet, security boundary and all 10 agent eval rules."
     },
     "verify_security": {
       "command": "npm run verify:security",
@@ -134,7 +134,7 @@
   "verify_full": {
     "command": "npm run verify:full (local Supabase reset/replay, isolated Next output, telemetry disabled)",
     "result": "passed",
-    "details": "Core formatting/lint/typecheck/build; unit 96/96; integration 68 passed, 1 skipped; 11 SQL integration files; 7 RLS SQL files; Harness; security; agent eval; canonical E2E 28/28; persistence/analytics assertion; accessibility 28/28; Storybook visual 6/6; golden visual 3/3."
+    "details": "Passed on commit 3c6db60 after a clean local Supabase reset/replay: core formatting/lint/typecheck/build; unit 96/96; integration 68 passed/1 skipped; 11 SQL integration files; 7 RLS SQL files; Harness; security; 10 agent eval rules; canonical E2E 28/28; persistence/analytics assertion; accessibility 28/28; Storybook visual 6/6; golden visual 3/3. Run used SUPABASE_HOME=.supabase-home-stage02, SUPABASE_TELEMETRY_DISABLED=1, DO_NOT_TRACK=1, PLAYWRIGHT_PORT=4001 and YAS_ISOLATED_VERIFY=1."
   },
   "not_run": ["Official CI"],
   "pull_request": null
