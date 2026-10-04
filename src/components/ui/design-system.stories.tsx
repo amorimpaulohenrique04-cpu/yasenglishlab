@@ -274,10 +274,7 @@ export const Operations: Story = {
         rows={[
           {
             id: "1",
-            cells: [
-              "Aluno exemplo",
-              <Badge key="status" tone="success">Ativo</Badge>,
-            ],
+            cells: ["Aluno exemplo", <Badge key="status" tone="success">Ativo</Badge>],
             mobile: (
               <Card>
                 <strong>Aluno exemplo</strong>
