@@ -1,6 +1,7 @@
 import {
   useId,
   type ButtonHTMLAttributes,
+  type FormHTMLAttributes,
   type InputHTMLAttributes,
   type ReactNode,
   type SelectHTMLAttributes,
@@ -233,5 +234,13 @@ export function Radio({ label, className, ...props }: ChoiceProps) {
       <input {...props} type="radio" className="yas-check-control" />
       <span>{label}</span>
     </label>
+  );
+}
+
+export function FilterBar({ className, children, ...props }: FormHTMLAttributes<HTMLFormElement>) {
+  return (
+    <form {...props} className={cx("yas-filter-bar", className)}>
+      {children}
+    </form>
   );
 }
