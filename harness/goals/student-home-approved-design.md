@@ -25,6 +25,7 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 - `src/app/(protected)/(student)/home/page.tsx`
 - `src/modules/home/**`
 - `tests/unit/home-projection.test.ts`
+- `scripts/ci/validate-upgrade.sh`
 - `tests/integration/home-application.test.ts`
 - `tests/e2e/canonical-slice.spec.ts`
 - `tests/a11y/critical-flows.spec.ts`
