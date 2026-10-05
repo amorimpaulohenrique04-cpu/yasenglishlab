@@ -550,3 +550,11 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Official CI run `37245878022` passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate. Observed counts: unit 97/97; integration 68 passed + 1 existing skip; SQL integration 12 files; RLS 8 files; critical E2E final summary 27 passed with no failure; accessibility 30/30; Storybook visual 7/7; golden 3/3.
 - `verify:agent` and `verify:full` were not re-invoked literally after the remediation commits. Their executable constituents were all green in Official CI #530, and the 10 `eval:agent` rules were deterministically reproduced against the current diff. `verification.json` records this distinction rather than fabricating wrapper execution.
 - Stage 02 remains `done / verified:true`. Stage 02.1 is now `done / verified:true` with PR #34 and Official CI #530 as durable evidence. A final Official CI run on this committed Harness state is still required before merge; no merge is requested.
+
+
+# 2026-10-04 — Student Home approved design refactor started
+
+- Created `refactor/student-home-approved-design` from current main merge `58b9a3d85ed8a94fdde9b3f3839821128c3eaca4`.
+- Frozen the existing Home architecture: Server Component page, one Learning/Practice/Schedule read each, concurrent application orchestration, current primary-action priority and independent partial/error states.
+- Scope explicitly excludes shared Student shell/layout, server repositories, database, RLS/auth, fake streak/analytics/search/notifications, global overrides and visual-tolerance changes.
+- Implementation has not yet been claimed verified; task remains `in_progress / verified:false`.
