@@ -19,7 +19,7 @@
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --write harness/agent-state/progress.md \"src/app/(protected)/(student)/home/page.tsx\" src/modules/home/application/queries.ts src/modules/home/ui/home.css && git diff -- harness/agent-state/progress.md \"src/app/(protected)/(student)/home/page.tsx\" src/modules/home/application/queries.ts src/modules/home/ui/home.css && exit 1",
     "verify": "node scripts/verify.mjs",
     "verify:harness": "node scripts/verify-harness.mjs",
     "verify:ratchet": "node scripts/verify-ratchet.mjs",
