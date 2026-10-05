@@ -83,7 +83,17 @@ export function AdminShell({
             </Link>
           }
           items={items}
-          footer={<span>Operações administrativas</span>}
+          footer={
+            <Link className={styles.sidebarFooterLink} href={contentHref}>
+              <span className={styles.sidebarFooterMark} aria-hidden="true">
+                AD
+              </span>
+              <span>
+                <strong>Administração</strong>
+                <small>Conteúdos e operação</small>
+              </span>
+            </Link>
+          }
         />
       }
       topbar={

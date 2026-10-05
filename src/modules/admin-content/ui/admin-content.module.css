@@ -34,6 +34,39 @@
   font-size: var(--yas-font-size-sm);
   font-weight: var(--yas-weight-semibold);
 }
+.sidebarFooterLink {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--yas-space-3);
+  border-radius: var(--yas-radius-md);
+  color: var(--yas-color-white);
+  padding: var(--yas-space-3);
+  text-decoration: none;
+}
+.sidebarFooterMark {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-grid;
+  place-items: center;
+  border: var(--yas-border-width) solid rgb(255 255 255 / 24%);
+  border-radius: var(--yas-radius-pill);
+  background: rgb(255 255 255 / 10%);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+.sidebarFooterLink span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: var(--yas-space-1);
+}
+.sidebarFooterLink strong {
+  font-size: var(--yas-font-size-sm);
+}
+.sidebarFooterLink small {
+  color: rgb(255 255 255 / 72%);
+  font-size: var(--yas-font-size-xs);
+}
 .drawerNav {
   display: grid;
   gap: var(--yas-space-2);
@@ -77,7 +110,8 @@
 .kindLinkActive:focus-visible,
 .backLink:focus-visible,
 .profileLink:focus-visible,
-.brand:focus-visible {
+.brand:focus-visible,
+.sidebarFooterLink:focus-visible {
   outline: 2px solid var(--yas-color-focus);
   outline-offset: 3px;
   box-shadow: var(--yas-shadow-focus);

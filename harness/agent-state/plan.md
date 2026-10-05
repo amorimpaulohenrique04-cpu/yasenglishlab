@@ -2,13 +2,12 @@
 
 ## Active task
 
-**student-home-approved-design**
+**admin-home-approved-design**
 
-Base `58b9a3d85ed8a94fdde9b3f3839821128c3eaca4`; branch `refactor/student-home-approved-design`.
+Branch `refactor/admin-home-approved-design`, based on `main`.
 
-1. Freeze the existing Student Home domain/application contracts before presentation work: three concurrent reads, primary-action priority, partial/error semantics, Server Component boundary and accessible names.
-2. Add only the smallest bounded read-model delta needed by the approved design: derive up to three upcoming lessons from the already-loaded Learning projection; do not add a repository method or server query.
-3. Refactor only the Student Home page composition and Home-scoped CSS. Reuse current Card/Badge/ProgressBar primitives and design tokens. Do not alter StudentShell, layout.css or global Design System behavior.
-4. Run focused unit/integration validation before visual work is considered stable. Diagnose a failing test before editing; do not weaken tests.
-5. Inspect desktop/tablet/mobile output, then update only intentional Home golden baselines. Never change the golden tolerance and never replace Login/Aulas/Progresso baselines.
-6. Run `verify:agent`, `verify:ui` and one final `verify:full`; publish a PR and inspect Official CI. Keep `verified:false` until actual evidence is green.
+1. Preserve the Admin home Server Component contract: the same four reads stay inside one `Promise.all`, with no new data source, route, migration, auth, RLS, or Server Action.
+2. Refactor only `src/app/(protected)/(admin)/admin/page.tsx` and `src/app/(protected)/(admin)/admin/admin-overview.module.css` unless a real shell defect appears.
+3. Map the reference to real data: Leads, active Cohorts, Placement Review Pending, and Student Decision. Omit fake search, notifications, charts, agenda, payments, reports, and settings.
+4. Build the hierarchy as header, metric strip, operational onboarding summary, priority tasks, and real shortcuts/lists with responsive CSS modules and existing primitives.
+5. Validate with changed-file Prettier/ESLint, typecheck, focused Admin a11y/smoke, visual review at 1440x900, 834x1112, and 390x844, then `verify:agent`, `verify:ui`, and one final `verify:full`.
