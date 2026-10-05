@@ -260,8 +260,8 @@ export default async function StudentHomePage() {
                   />
                   <div className="yas-home-progress-facts">
                     <span>
-                      {progressSummary.data.lessonsCompleted} de{" "}
-                      {progressSummary.data.totalLessons} aulas concluídas
+                      {progressSummary.data.lessonsCompleted} de {progressSummary.data.totalLessons}{" "}
+                      aulas concluídas
                     </span>
                     <span>{progressSummary.data.courseTitle}</span>
                   </div>
@@ -303,10 +303,7 @@ export default async function StudentHomePage() {
                     Consulte a agenda para encontrar a próxima sessão disponível.
                   </p>
                   {primaryAction?.kind !== "schedule" && (
-                    <Link
-                      className="yas-button yas-button--secondary yas-focusable"
-                      href="/agenda"
-                    >
+                    <Link className="yas-button yas-button--secondary yas-focusable" href="/agenda">
                       Ver agenda →
                     </Link>
                   )}
