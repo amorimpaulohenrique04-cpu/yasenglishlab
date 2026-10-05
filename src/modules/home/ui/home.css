@@ -5,7 +5,7 @@
 
 .yas-home-dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.8fr) minmax(0, 0.75fr);
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 0.75fr) minmax(0, 0.7fr);
   gap: var(--yas-space-4);
   align-items: start;
 }
