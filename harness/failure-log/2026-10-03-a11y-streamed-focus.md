@@ -42,3 +42,14 @@ Use the preserved five original failure contexts and run the affected Placement/
 
 Before: five preserved accessibility failures reproduced the streamed-focus and loading-semantics defects.  
 After: `npm run test:a11y` exited 0 with 28 passed, 0 skipped and 0 failed while retaining the original focus/keyboard assertions.
+
+## 2026-10-05 Teacher new-session recurrence
+
+PR related: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/35
+
+The final Student UI wrapper passed 28 E2E scenarios, then failed the Teacher P21 desktop focus assertion on the new-session title input. The same scenario passed in an isolated desktop/mobile run (2/2), consistent with the previously recorded streamed visibility hazard. The final title interaction lacked the visibility barrier already used by the availability controls immediately above it.
+
+The correction adds a visible assertion before native focus. It retains the existing focused assertion, axe checks, routes, viewports and all timeouts. This strengthens readiness coverage without weakening keyboard behavior or changing Teacher product code.
+
+Before: UI wrapper reported `getByLabel('Título')` inactive at the 5000 ms focus assertion. Isolated unchanged reproduction passed 2/2; the aggregate failure remains the red evidence.
+After: focused desktop/mobile validation passed 2/2 with the visibility barrier and original focus assertions. Final UI/full gates remain pending; this follow-up is not yet claimed fully verified.

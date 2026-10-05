@@ -276,6 +276,7 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
 
   await page.goto("/teacher/sessoes/nova");
   const title = page.getByLabel("Título");
+  await expect(title).toBeVisible();
   await title.focus();
   await expect(title).toBeFocused();
 });

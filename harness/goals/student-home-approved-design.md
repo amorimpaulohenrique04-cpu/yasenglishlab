@@ -46,6 +46,8 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 ## Allowed files / domains
 
+- `tests/a11y/critical-flows.spec.ts`
+- `harness/failure-log/2026-10-03-a11y-streamed-focus.md`
 - `scripts/ci/validate-upgrade.sh`
 - `src/app/(protected)/(student)/home/page.tsx`
 - `src/modules/home/ui/home.css`
@@ -67,6 +69,8 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 ## Forbidden areas
 
 The existing `validate-upgrade.sh` correction is explicitly retained: no head-only migration means the base-to-head upgrade is not applicable after successful migration/seed replay. This is not authorization to bypass upgrade validation when new migrations exist.
+
+2026-10-05 scope addition: final UI verification reproduced a Teacher new-session focus failure on streamed content. Apply the existing Ratchet visibility-before-focus guard only to that assertion and record the recurrence. Keep native focus, axe, viewports and timeouts intact; no Teacher product change is authorized.
 
 - Student/Admin/Teacher shared shell or global layout refactors.
 - `src/server/**`, `supabase/**`, auth/RLS, migrations, entitlements, CEFR, analytics and notification policy.
