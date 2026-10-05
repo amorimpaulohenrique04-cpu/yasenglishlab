@@ -565,3 +565,11 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Refactored only Student Home composition and `home.css` using existing Card/Badge/ProgressBar primitives and Yas tokens. StudentShell, shared layout, server adapters, DB/RLS/auth and global Design System were not modified.
 - The approved screenshot is treated as visual direction only: no fake streak, fake weekly minutes, fake search, fake notification control or invented analytics was added.
 - Verification is pending CI; no golden baseline has been updated and no success claim is made yet.
+
+
+## 2026-10-04 — Student Home visual review refinement
+
+- Reviewed generated desktop/tablet/mobile Home evidence after E2E, persistence, accessibility and Storybook checks passed.
+- Rejected a Home-scoped CSS selector that hid `ProgressBar` internals because it would be a presentation override.
+- Added an additive `showLabel` option to the existing `ProgressBar` primitive; it preserves the accessible `aria-label` while allowing Home to omit duplicate visible copy. Defaults preserve every existing consumer.
+- Removed the CSS override. Golden promotion is deferred until fresh screenshots from this exact head are inspected.
