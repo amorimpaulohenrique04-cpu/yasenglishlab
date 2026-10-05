@@ -232,7 +232,7 @@ export default async function StudentHomePage() {
               <div className="yas-home-card-heading">
                 <div>
                   <span className="yas-home-eyebrow">Progresso no curso</span>
-                  <h2 id="home-progress-title">Meu progresso</h2>
+                  <h2 id="home-progress-title">Progresso</h2>
                 </div>
                 {progressSummary.status === "success" && (
                   <Link className="yas-focusable" href="/progresso">
