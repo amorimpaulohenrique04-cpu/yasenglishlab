@@ -37,6 +37,6 @@ Source reviewed: `16b2a94`; baseline promotion: `7ce961f`.
 - [x] Verify agent green.
 - [x] Verify UI green.
 - [ ] Verify full green.
-- [x] Official CI entirely green for source 9ca3de5; final evidence commit remains pending.
+- [ ] Official CI entirely green for final source; 9ca3de5 passed, 570893f failed E2E and correction remains pending.
 
 Unchecked items are pending, not waived. Admin work remains gated by Student completion.

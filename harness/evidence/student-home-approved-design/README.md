@@ -16,12 +16,13 @@ Status: in progress.
 - [x] Desktop/tablet/mobile visual evidence inspected on Windows and Linux.
 - [x] Only intentional Home goldens updated (six platform-specific Home images).
 - [ ] `verify:agent`, `verify:ui`, `verify:full` green.
-- [x] Official CI green for source commit 9ca3de55a7d3c959ad5b69217a313e7b06bbb056.
+- [ ] Official CI green for final code (older 9ca3de5 passed; 570893f failed).
 
 The task remains `in_progress / verified:false` until the unchecked evidence exists.
 
 ## Final gate attempt, 2026-10-05
 
+- Final code remains unverified. `verify:ui` passed again on 570893f: 29 E2E, 30 a11y, seven design-system tests and three golden projects. [CI 37269576841](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37269576841) failed all three cohort mutation attempts: click succeeded but drawer did not open. Controlled blocked-script reproduction proved OperationOverlay's server-rendered trigger was enabled before hydration. GOAL scope was extended before adding a hydration readiness guard to the existing primitive and a permanent regression test. Final focused repetition passed 6/6; post-correction aggregate wrappers and CI remain pending.
 - `verify:ui` passed: 28 E2E, 30 accessibility, seven design-system checks and three complete Windows golden projects.
 - [Official CI 37264212150](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37264212150) completed successfully for `9ca3de55a7d3c959ad5b69217a313e7b06bbb056`.
 - `verify:full` failed after passing core/build, real SQL integration/RLS, Harness, security and eval. Its E2E phase passed 25 tests and failed three: Admin cohort metadata navigation exceeded the existing 30-second test budget; Teacher live-session save did not redirect within five seconds; Placement responsive exceeded its 180-second test budget.

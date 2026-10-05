@@ -94,3 +94,30 @@ test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) =
     fullPage: true,
   });
 });
+
+test("Admin drawer does not accept interaction before hydration", async ({ page }) => {
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/static/chunks/*.js*", async (route) => {
+    await scriptsReady;
+    await route.continue();
+  });
+  try {
+    await page.goto("/admin/cohorts", { waitUntil: "commit" });
+    const trigger = page.getByRole("row", { name: /Cohort Basic/ }).getByRole("button", {
+      name: "Gerenciar",
+    });
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toBeDisabled();
+    releaseScripts();
+    await expect(trigger).toBeEnabled();
+    await trigger.click();
+    await expect(page.getByRole("dialog", { name: "Cohort Basic" })).toBeVisible();
+  } finally {
+    releaseScripts();
+  }
+});
