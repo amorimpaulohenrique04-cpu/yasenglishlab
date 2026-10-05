@@ -46,6 +46,7 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 ## Allowed files / domains
 
+- `scripts/ci/validate-upgrade.sh`
 - `src/app/(protected)/(student)/home/page.tsx`
 - `src/modules/home/ui/home.css`
 - `src/components/ui/display.tsx`
@@ -64,6 +65,8 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 - `harness/evidence/student-home-approved-design/**`
 
 ## Forbidden areas
+
+The existing `validate-upgrade.sh` correction is explicitly retained: no head-only migration means the base-to-head upgrade is not applicable after successful migration/seed replay. This is not authorization to bypass upgrade validation when new migrations exist.
 
 - Student/Admin/Teacher shared shell or global layout refactors.
 - `src/server/**`, `supabase/**`, auth/RLS, migrations, entitlements, CEFR, analytics and notification policy.

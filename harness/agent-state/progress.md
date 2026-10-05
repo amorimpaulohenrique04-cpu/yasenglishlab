@@ -565,3 +565,11 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Refactored only Student Home composition and `home.css` using existing Card/Badge/ProgressBar primitives and Yas tokens. StudentShell, shared layout, server adapters, DB/RLS/auth and global Design System were not modified.
 - The approved screenshot is treated as visual direction only: no fake streak, fake weekly minutes, fake search, fake notification control or invented analytics was added.
 - Verification is pending CI; no golden baseline has been updated and no success claim is made yet.
+
+## 2026-10-05 — Student Home reviewed baseline promotion
+
+- Continued from `16b2a94`; focused Home unit/integration tests passed 32/32.
+- Reviewed Windows and actual Linux runner captures at all three required viewports, then promoted only six Home baselines. Complete Windows golden spec passed 3/3 with Login/Aulas/Progresso unchanged and tolerance 0.0015.
+- Browser checks confirmed zero horizontal overflow, no framework error overlay and keyboard focus on the primary CTA at 1440x900, 834x1112 and 390x844.
+- GOAL now declares the existing user-authorized `validate-upgrade.sh` correction; the scope eval rejected it before documentation and passed 10/10 afterward. No upgrade behavior changed.
+- Final verification wrappers and Official CI remain pending; Student stays in_progress/verified:false and Admin has not started.
