@@ -210,6 +210,7 @@ export default async function StudentHomePage() {
                           <ProgressBar
                             value={lesson.completionPercent}
                             label={isCurrent ? "Progresso da aula" : `Progresso de ${lesson.title}`}
+                            showLabel={false}
                             showValue={false}
                           />
                           <span aria-hidden="true">{lesson.completionPercent}%</span>
@@ -256,6 +257,7 @@ export default async function StudentHomePage() {
                   <ProgressBar
                     value={progressSummary.data.completionPercent}
                     label={`Conclusão de ${progressSummary.data.courseTitle}`}
+                    showLabel={false}
                     showValue={false}
                   />
                   <div className="yas-home-progress-facts">
