@@ -50,7 +50,9 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   }
   await expect(card).toBeVisible();
 });
-test("Admin default entry after MFA administers cohort metadata", async ({ page }, testInfo) => {
+test("Admin default entry after MFA preserves responsive overview evidence", async ({
+  page,
+}, testInfo) => {
   await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
   await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Avaliação em andamento" })).toBeVisible();
@@ -70,7 +72,11 @@ test("Admin default entry after MFA administers cohort metadata", async ({ page 
       contentType: "image/png",
     });
   }
+});
+test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   await page.goto("/admin/cohorts");
   const cohort = page.getByRole("row", { name: /Cohort Basic/ });
   await expect(cohort).toBeVisible();

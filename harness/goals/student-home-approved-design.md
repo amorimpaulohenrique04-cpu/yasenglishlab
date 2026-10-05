@@ -46,6 +46,8 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 ## Allowed files / domains
 
+- `tests/e2e/cohorts-booking.spec.ts`
+- `harness/failure-log/2026-10-05-admin-overview-e2e-budget.md`
 - `tests/a11y/critical-flows.spec.ts`
 - `harness/failure-log/2026-10-03-a11y-streamed-focus.md`
 - `scripts/ci/validate-upgrade.sh`
@@ -71,6 +73,8 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 The existing `validate-upgrade.sh` correction is explicitly retained: no head-only migration means the base-to-head upgrade is not applicable after successful migration/seed replay. This is not authorization to bypass upgrade validation when new migrations exist.
 
 2026-10-05 scope addition: final UI verification reproduced a Teacher new-session focus failure on streamed content. Apply the existing Ratchet visibility-before-focus guard only to that assertion and record the recurrence. Keep native focus, axe, viewports and timeouts intact; no Teacher product change is authorized.
+
+2026-10-05 verification scope addition: the existing Admin default-entry test combines real MFA, three overview captures and cohort mutation in one 30-second test. Two full runs exhausted that budget at different cohort stages; the identical isolated flow passed in 14.8 seconds after environment restoration. Separate overview evidence from cohort mutation into independent original-budget scenarios, retaining every assertion and screenshot. Do not alter Admin product code, authorization, retries or timeouts. Record before/after evidence; completion remains pending until aggregate gates pass.
 
 - Student/Admin/Teacher shared shell or global layout refactors.
 - `src/server/**`, `supabase/**`, auth/RLS, migrations, entitlements, CEFR, analytics and notification policy.

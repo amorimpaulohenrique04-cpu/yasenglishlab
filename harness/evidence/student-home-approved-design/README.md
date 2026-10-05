@@ -12,13 +12,22 @@ Status: in progress.
 - [x] No fake streak, fake weekly-minutes, search or notification controls.
 - [x] No global CSS override or visual tolerance change.
 - [x] Focused unit/integration checks green (32 tests).
-- [ ] Canonical E2E and a11y green.
+- [x] Canonical E2E and a11y green in final verify:ui (28 E2E, 30 a11y).
 - [x] Desktop/tablet/mobile visual evidence inspected on Windows and Linux.
 - [x] Only intentional Home goldens updated (six platform-specific Home images).
 - [ ] `verify:agent`, `verify:ui`, `verify:full` green.
-- [ ] Official CI green.
+- [x] Official CI green for source commit 9ca3de55a7d3c959ad5b69217a313e7b06bbb056.
 
 The task remains `in_progress / verified:false` until the unchecked evidence exists.
+
+## Final gate attempt, 2026-10-05
+
+- `verify:ui` passed: 28 E2E, 30 accessibility, seven design-system checks and three complete Windows golden projects.
+- [Official CI 37264212150](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37264212150) completed successfully for `9ca3de55a7d3c959ad5b69217a313e7b06bbb056`.
+- `verify:full` failed after passing core/build, real SQL integration/RLS, Harness, security and eval. Its E2E phase passed 25 tests and failed three: Admin cohort metadata navigation exceeded the existing 30-second test budget; Teacher live-session save did not redirect within five seconds; Placement responsive exceeded its 180-second test budget.
+- These failures are not waived or attributed conclusively to product code. The local C: drive measured only 55 MB free. Server restart and isolated reproduction are pending. No timeout, retry, golden tolerance or product assertion was relaxed.
+- Admin implementation has not started because Student completion remains gated by successful full verification and final evidence-commit CI.
+- After the user freed C: to 6.9 GB, generated cache was restored from D: to the ordinary workspace `.next` directory and temporary MFA files restored to the normal TEMP directory. Teacher and Placement isolated reproductions passed; unchanged Admin passed once in 14.8 seconds. A second full gate passed 27/28 E2E but again exhausted the combined Admin scenario's 30-second budget. GOAL scope was extended before separating overview evidence from cohort mutation, retaining original assertions, paths, viewports, MFA and timeouts. The final separated scenarios passed twice (4/4), with mutations in 21.7 and 20.3 seconds. Aggregate gates for this test correction remain pending.
 
 ## 2026-10-05 baseline review
 

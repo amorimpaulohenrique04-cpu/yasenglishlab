@@ -29,14 +29,14 @@ Source reviewed: `16b2a94`; baseline promotion: `7ce961f`.
 - [x] Home goldens updated only after review.
 - [x] Unit suite green: 99 tests.
 - [x] Integration suite green: 68 passed, one preexisting skip.
-- [ ] E2E green.
-- [ ] Accessibility green.
-- [ ] Design-system visual green.
+- [x] E2E green in verify:ui: 28 tests (verify:full repetition failed separately).
+- [x] Accessibility green: 30 tests.
+- [x] Design-system visual green: seven tests.
 - [x] Windows product golden green: all three complete spec projects.
-- [ ] Linux product golden green.
+- [x] Linux product golden green in Official CI 37264212150.
 - [x] Verify agent green.
-- [ ] Verify UI green.
+- [x] Verify UI green.
 - [ ] Verify full green.
-- [ ] Official CI entirely green.
+- [x] Official CI entirely green for source 9ca3de5; final evidence commit remains pending.
 
 Unchecked items are pending, not waived. Admin work remains gated by Student completion.
