@@ -558,3 +558,12 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Frozen the existing Home architecture: Server Component page, one Learning/Practice/Schedule read each, concurrent application orchestration, current primary-action priority and independent partial/error states.
 - Scope explicitly excludes shared Student shell/layout, server repositories, database, RLS/auth, fake streak/analytics/search/notifications, global overrides and visual-tolerance changes.
 - Implementation has not yet been claimed verified; task remains `in_progress / verified:false`.
+
+
+## 2026-10-04 — Student Home implementation pass
+
+- Added only one application-model delta: `HomeLearningView.upcomingLessons`, bounded to three and derived from the already-loaded focused Learning course. Existing `lesson`, repository ports, concurrency and primary-action selection remain unchanged.
+- Added unit coverage proving the projection starts at the selected/resumed lesson, is capped at three, and is empty for a completed course.
+- Refactored only Student Home composition and `home.css` using existing Card/Badge/ProgressBar primitives and Yas tokens. StudentShell, shared layout, server adapters, DB/RLS/auth and global Design System were not modified.
+- The approved screenshot is treated as visual direction only: no fake streak, fake weekly minutes, fake search, fake notification control or invented analytics was added.
+- Verification is pending CI; no golden baseline has been updated and no success claim is made yet.
