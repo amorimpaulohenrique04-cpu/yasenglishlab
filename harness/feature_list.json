@@ -12,6 +12,22 @@
   },
   "features": [
     {
+      "id": "admin-home-approved-design",
+      "title": "Admin Home approved design refactor",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["stage-02-1-operations-ux"],
+      "evidence": [
+        "harness/goals/admin-home-approved-design.md",
+        "harness/evidence/admin-home-approved-design/validation.md",
+        "harness/evidence/admin-home-approved-design/admin-home-check.mjs",
+        "harness/evidence/admin-home-approved-design/admin-desktop.png",
+        "harness/evidence/admin-home-approved-design/admin-tablet.png",
+        "harness/evidence/admin-home-approved-design/admin-mobile.png"
+      ],
+      "updated_at": "2026-10-05T18:24:00-03:00"
+    },
+    {
       "id": "student-home-approved-design",
       "title": "Student Home approved design refactor",
       "status": "done",
