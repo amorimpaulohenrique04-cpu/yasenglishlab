@@ -252,7 +252,9 @@ export const Operations: Story = {
           <FormDialog trigger="Nova entrada" title="Criar entrada">
             <div className="yas-stack">
               <Input label="Nome" defaultValue="Aluno exemplo" />
-              <Button type="button" variant="primary">Salvar</Button>
+              <Button type="button" variant="primary">
+                Salvar
+              </Button>
             </div>
           </FormDialog>
         }
@@ -274,7 +276,12 @@ export const Operations: Story = {
         rows={[
           {
             id: "1",
-            cells: ["Aluno exemplo", <Badge key="status" tone="success">Ativo</Badge>],
+            cells: [
+              "Aluno exemplo",
+              <Badge key="status" tone="success">
+                Ativo
+              </Badge>,
+            ],
             mobile: (
               <Card>
                 <strong>Aluno exemplo</strong>
