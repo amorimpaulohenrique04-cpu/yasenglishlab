@@ -85,7 +85,13 @@ test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) =
   const drawer = page.getByRole("dialog");
   const form = drawer.getByRole("form", { name: "Editar Cohort Basic" });
   await form.getByRole("textbox", { name: /^Nome/ }).fill("Cohort Basic");
+  const saved = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      new URL(response.url()).pathname === "/admin/cohorts",
+  );
   await form.getByRole("button", { name: "Salvar nome" }).click();
+  expect((await saved).status()).toBeLessThan(400);
   await expect(page.getByText("Turma atualizada", { exact: true })).toBeVisible();
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
