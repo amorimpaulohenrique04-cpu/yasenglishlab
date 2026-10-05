@@ -71,12 +71,12 @@ test("Admin default entry after MFA administers cohort metadata", async ({ page 
     });
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByRole("link", { name: "Turmas", exact: true }).first().click();
-  const cohort = page
-    .getByRole("heading", { name: "Cohort Basic", exact: true })
-    .locator("xpath=../..");
-  await cohort.getByText("Editar informações da turma", { exact: true }).click();
-  const form = page.getByRole("form", { name: "Editar Cohort Basic" });
+  await page.goto("/admin/cohorts");
+  const cohort = page.getByRole("row", { name: /Cohort Basic/ });
+  await expect(cohort).toBeVisible();
+  await cohort.getByRole("button", { name: "Gerenciar" }).click();
+  const drawer = page.getByRole("dialog");
+  const form = drawer.getByRole("form", { name: "Editar Cohort Basic" });
   await form.getByRole("textbox", { name: /^Nome/ }).fill("Cohort Basic");
   await form.getByRole("button", { name: "Salvar nome" }).click();
   await expect(page.getByText("Turma atualizada", { exact: true })).toBeVisible();

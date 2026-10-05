@@ -2,12 +2,13 @@
 
 ## Active task
 
-**stage-02-operations**
+**stage-02-1-operations-ux**
 
-Base `34f5e32f313fe16b8c09bcf13b64b4a7d11b9236`; branch `feat/stage-02-operations`.
+Base `f7ca51a5c0b2bb74b4e620d298454c93ab426b21` (Stage 02 merge #33); branch `feat/stage-02-1-operations-ux`.
 
-1. Preserve completed Admin Overview, Students/Student 360, and Admin Teachers work and its historical E2E teardown/credential caveats.
-2. Implement only missing deltas for Admin Cohorts V2, Teacher operational surfaces, and CRM Leads V1, following the Stage 02 request and local domain/security contracts.
-3. For each block: inspect only its contracts and implementation; use Laya multilingual for block routing and material failures; make the smallest change; run focused application, SQL/RLS, E2E/a11y/visual checks as applicable.
-4. Audit Stage 01/P21 regressions and all Stage 02 acceptance criteria, repair focused gaps, then run final gates sequentially and diagnose failures causally. Keep E2E screenshots in per-test Playwright output plus attachments so gates cannot overwrite retained Stage 01/P21/Stage 02 evidence.
-5. Update evidence/Harness, commit coherent changes, push only `feat/stage-02-operations`, open a PR to `main`, inspect the actual Official CI run and final-Harness-state CI. Never merge `main`; retain `in_progress` / `verified:false` until every required condition is evidenced.
+1. Treat the supplied roadmap HTML/screenshots as the approved visual objective; keep domain/security/accessibility contracts authoritative for behavior.
+2. Audit the real Admin/Teacher pages and reusable UI primitives; reconcile Stage 02 GOAL metadata with its verified registry state.
+3. Implement shared presentation primitives only where multiple real consumers exist, then redesign Admin Overview, Leads, Students/Student 360, Teachers, Cohorts, Enrollments, and Teacher operational pages in focused blocks.
+4. Preserve projections, actions, source-of-truth ownership, RLS/AAL2, lifecycle and all existing domain transitions; only add a bounded read projection if a verified UI dependency is missing.
+5. Per block, run focused behavior/E2E/a11y/visual checks and inspect desktop/tablet/mobile evidence without touching existing untracked artifacts; then run required verification gates sequentially and record actual results.
+6. Update task evidence and Harness to observed status; do not mark this feature verified or claim green checks until evidence and applicable Official CI confirm it.

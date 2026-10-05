@@ -126,13 +126,11 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       await loginCanonicalTeacher(teacher, password);
       await teacher.goto("/teacher/revisoes");
 
-      await expect(
-        teacher.getByRole("heading", {
-          name: `Cohort Student A · ${activityTitle}`,
-          exact: true,
-        }),
-      ).toBeVisible();
-      await teacher.getByRole("link", { name: "Revisar resposta" }).click();
+      const reviewRow = teacher.getByRole("row", {
+        name: new RegExp(`Cohort Student A ${activityTitle}`),
+      });
+      await expect(reviewRow).toBeVisible();
+      await reviewRow.getByRole("link", { name: "Revisar resposta" }).click();
       await expect(teacher).toHaveURL(new RegExp(`/teacher/revisoes/${attemptId}$`));
 
       await teacher.getByRole("button", { name: "Carregar áudio" }).click();

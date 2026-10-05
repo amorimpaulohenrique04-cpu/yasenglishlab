@@ -1,0 +1,98 @@
+{
+  "task": "stage-02-1-operations-ux",
+  "status": "passed",
+  "branch": "feat/stage-02-1-operations-ux",
+  "base_sha": "f7ca51a5c0b2bb74b4e620d298454c93ab426b21",
+  "verified_implementation_head": "dbb84a70cc1323e7e49bcd0b0161fd97013b4414",
+  "pull_request": 34,
+  "pull_request_url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/34",
+  "official_ci": {
+    "run_id": 37245878022,
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37245878022",
+    "conclusion": "success",
+    "jobs": {
+      "Supply Chain": "success",
+      "Quality": "success",
+      "Database": "success",
+      "Guardrail Simulations": "success",
+      "Preview": "success",
+      "CI Gate": "success"
+    },
+    "preview_artifact": {
+      "id": 11319661407,
+      "name": "preview-evidence-e028f4a919fa42ed4c1cc158d332e090236ff9b4",
+      "size_bytes": 3185583,
+      "retention_days": 14
+    }
+  },
+  "observed_results": {
+    "unit": {
+      "passed": 97
+    },
+    "integration": {
+      "passed": 68,
+      "skipped": 1
+    },
+    "sql_integration": {
+      "files_passed": 12
+    },
+    "rls": {
+      "files_passed": 8
+    },
+    "critical_e2e": {
+      "passed": 27,
+      "note": "Playwright announced 28 tests; final summary reported 27 passed with no failure."
+    },
+    "accessibility": {
+      "passed": 30
+    },
+    "storybook_visual": {
+      "passed": 7
+    },
+    "product_golden": {
+      "passed": 3
+    }
+  },
+  "gate_contract": {
+    "verify:security": {
+      "status": "passed",
+      "execution": "literal constituent",
+      "evidence": "Official CI #530 / Quality / Security invariants"
+    },
+    "verify:db": {
+      "status": "passed",
+      "execution": "validated constituent plus stronger database CI",
+      "evidence": "Static DB contracts were green before publication; Official CI #530 Database passed clean migration, replay and base-to-head upgrade."
+    },
+    "verify:ui": {
+      "status": "passed",
+      "execution": "equivalent constituents",
+      "evidence": "Official CI #530 Preview passed E2E, a11y, Storybook build, Storybook visual and product golden checks."
+    },
+    "verify:agent": {
+      "status": "passed",
+      "execution": "constituents plus deterministic evaluator reproduction",
+      "evidence": "Quality passed core/harness/security constituents. eval-agent rules were reproduced against the current PR diff: required docs, allowed scope, primitive review, no new skipped checks, visual evidence, migration contract, RLS evidence, secret scan and registry state all pass.",
+      "exact_wrapper_invocation_after_remediation": false
+    },
+    "verify:full": {
+      "status": "passed",
+      "execution": "Official CI equivalent",
+      "evidence": "The verify-full orchestrator contains no additional test class beyond core/DB/RLS/E2E/persistence/a11y/Storybook/golden; all were executed successfully by Official CI #530.",
+      "exact_wrapper_invocation_after_remediation": false
+    }
+  },
+  "remediation_validation": [
+    "The stale accessibility locator 'Início com fuso' was replaced by the shipped Data/Início/Término controls and the complete accessibility suite passed.",
+    "Stage 2.1 operation primitives were consolidated into existing Design System modules; no new parallel primitive files remain in the PR.",
+    "A representative Operations Storybook story is covered by axe and screenshot evidence; Storybook visual suite passed 7/7.",
+    "Generic canonical/P21 runtime screenshots were removed from the PR diff; task evidence is isolated under harness/evidence/stage-02-1-operations-ux/.",
+    "All changed files are covered by the machine-readable GOAL scope.",
+    "No protected business transition or RLS weakening was introduced."
+  ],
+  "notes": [
+    "No claim is made that npm run verify:agent or npm run verify:full were re-invoked as wrapper commands after the remediation commits; their executable constituents and evaluator contract were validated as recorded above.",
+    "A final Official CI run on the done/verified Harness state is required after this evidence commit; its result is an external final-state validation and does not change this implementation evidence."
+  ],
+  "recorded_at": "2026-10-04T21:20:00-03:00"
+}

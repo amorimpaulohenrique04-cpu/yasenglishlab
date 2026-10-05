@@ -44,6 +44,10 @@ insert into public.enrollments(id, user_id, course_id, status) values
    '99100000-0000-4000-8000-000000000011',
    '40000000-0000-4000-8000-000000000001',
    'ACTIVE');
+insert into public.cohorts(id, course_id, name, code, status, starts_at) values
+  ('99120000-0000-4000-8000-000000000011', '40000000-0000-4000-8000-000000000001', 'Directory Cohort', 'directory-cohort', 'ACTIVE', now() - interval '1 day');
+insert into public.cohort_memberships(cohort_id, user_id, enrollment_id) values
+  ('99120000-0000-4000-8000-000000000011', '99100000-0000-4000-8000-000000000011', '99110000-0000-4000-8000-000000000011');
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '99100000-0000-4000-8000-000000000001', true),
@@ -71,6 +75,26 @@ select pg_temp.assert_true(
      and max(completion_percent) = 0
    from public.admin_student_curriculum_summary('99100000-0000-4000-8000-000000000011')),
   'Admin AAL2 gets an active-course curriculum summary with canonical completion semantics');
+select pg_temp.assert_true(
+  (select count(*) = 1
+     and bool_and(enrollment_status = 'ACTIVE')
+     and bool_and(cohort_id = '99120000-0000-4000-8000-000000000011'::uuid)
+     and bool_and(cohort_name = 'Directory Cohort')
+     and bool_and(completion_percent = 0)
+     and bool_and(course_title = (select title from public.courses where id = '40000000-0000-4000-8000-000000000001'))
+   from public.admin_student_directory_v2('', 50, 0, '40000000-0000-4000-8000-000000000001', null, null, 'ACTIVE')
+   where user_id = '99100000-0000-4000-8000-000000000011'),
+  'bounded directory projection includes real course, cohort, enrollment, and curriculum state');
+select pg_temp.assert_true(
+  (select count(*) = 1 from public.admin_student_directory_v2('Directory Ana', 1, 0, null, null, null, null)
+   where display_name = 'Directory Ana 100%')
+  and (select count(*) = 1 from public.admin_student_directory_v2('Directory Ana', 1, 1, null, null, null, null)
+   where display_name = 'Directory Ana Silva'),
+  'new directory RPC searches names and returns bounded non-overlapping pages');
+select pg_temp.assert_true(
+  (select count(*) = 1 from public.admin_student_directory_v2('', 50, 0, null, '99120000-0000-4000-8000-000000000011', null, null)
+   where user_id = '99100000-0000-4000-8000-000000000011'),
+  'directory cohort filter returns the selected cohort');
 select pg_temp.denied('select * from public.admin_student_directory('''', 51, 0)', '22023');
 select pg_temp.denied('select * from public.admin_student_directory('''', 1, -1)', '22023');
 select pg_temp.assert_true(
@@ -85,15 +109,19 @@ select pg_temp.assert_true(
   'source tables remain RLS-protected and not globally writable');
 select pg_temp.assert_true(
   has_function_privilege('authenticated', 'public.admin_student_directory(text,integer,integer)', 'EXECUTE')
-  and not has_function_privilege('anon', 'public.admin_student_directory(text,integer,integer)', 'EXECUTE'),
+  and not has_function_privilege('anon', 'public.admin_student_directory(text,integer,integer)', 'EXECUTE')
+  and has_function_privilege('authenticated', 'public.admin_student_directory_v2(text,integer,integer,uuid,uuid,text,text)', 'EXECUTE')
+  and not has_function_privilege('anon', 'public.admin_student_directory_v2(text,integer,integer,uuid,uuid,text,text)', 'EXECUTE'),
   'only authenticated callers receive the RPC grant; function enforces Admin AAL2');
 
 select set_config('request.jwt.claims', '{"sub":"99100000-0000-4000-8000-000000000001","aal":"aal1"}', true);
 select pg_temp.denied('select * from public.admin_student_directory('''', 25, 0)');
+select pg_temp.denied('select * from public.admin_student_directory_v2(null, 25, 0, null, null, null, null)');
 select pg_temp.denied('select * from public.admin_student_curriculum_summary(''99100000-0000-4000-8000-000000000011'')');
 
 select set_config('request.jwt.claim.sub', '99100000-0000-4000-8000-000000000002', true),
        set_config('request.jwt.claims', '{"sub":"99100000-0000-4000-8000-000000000002","aal":"aal2"}', true);
+select pg_temp.denied('select * from public.admin_student_directory_v2(null, 25, 0, null, null, null, null)');
 select pg_temp.denied('select * from public.admin_student_directory('''', 25, 0)');
 select pg_temp.denied('select * from public.admin_student_curriculum_summary(''99100000-0000-4000-8000-000000000011'')');
 select pg_temp.assert_true(
@@ -102,6 +130,7 @@ select pg_temp.assert_true(
 
 select set_config('request.jwt.claim.sub', '99100000-0000-4000-8000-000000000003', true),
        set_config('request.jwt.claims', '{"sub":"99100000-0000-4000-8000-000000000003","aal":"aal2"}', true);
+select pg_temp.denied('select * from public.admin_student_directory_v2(null, 25, 0, null, null, null, null)');
 select pg_temp.denied('select * from public.admin_student_directory('''', 25, 0)');
 select pg_temp.denied('select * from public.admin_student_curriculum_summary(''99100000-0000-4000-8000-000000000011'')');
 select pg_temp.assert_true(
@@ -109,6 +138,9 @@ select pg_temp.assert_true(
   and (select count(*) = 0 from public.user_roles where user_id = '99100000-0000-4000-8000-000000000011'),
   'Student cannot read another Student profile or role through base table RLS');
 
+reset role;
+set local role anon;
+select pg_temp.denied('select * from public.admin_student_directory_v2(null, 25, 0, null, null, null, null)');
 reset role;
 select pg_temp.assert_true(
   (select prosecdef from pg_proc where oid = 'public.admin_student_directory(text,integer,integer)'::regprocedure)

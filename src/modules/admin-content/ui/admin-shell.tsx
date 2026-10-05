@@ -34,10 +34,10 @@ export function AdminShell({
       active: pathname === "/admin",
     },
     {
-      id: "enrollments",
-      label: "Matrículas",
-      href: "/admin/enrollments",
-      active: pathname.startsWith("/admin/enrollments"),
+      id: "cohorts",
+      label: "Turmas",
+      href: "/admin/cohorts",
+      active: pathname.startsWith("/admin/cohorts"),
     },
     {
       id: "students",
@@ -46,22 +46,22 @@ export function AdminShell({
       active: pathname.startsWith("/admin/students"),
     },
     {
-      id: "teachers",
-      label: "Professores",
-      href: "/admin/teachers",
-      active: pathname.startsWith("/admin/teachers"),
-    },
-    {
       id: "leads",
       label: "Leads",
       href: "/admin/leads",
       active: pathname.startsWith("/admin/leads"),
     },
     {
-      id: "cohorts",
-      label: "Turmas",
-      href: "/admin/cohorts",
-      active: pathname.startsWith("/admin/cohorts"),
+      id: "teachers",
+      label: "Professores",
+      href: "/admin/teachers",
+      active: pathname.startsWith("/admin/teachers"),
+    },
+    {
+      id: "enrollments",
+      label: "Matrículas",
+      href: "/admin/enrollments",
+      active: pathname.startsWith("/admin/enrollments"),
     },
     {
       id: "content",
@@ -121,20 +121,20 @@ export function AdminShell({
           <Link href="/admin" onClick={() => setDrawerOpen(false)}>
             Visão geral
           </Link>
-          <Link href="/admin/enrollments" onClick={() => setDrawerOpen(false)}>
-            Matrículas
+          <Link href="/admin/cohorts" onClick={() => setDrawerOpen(false)}>
+            Turmas
           </Link>
           <Link href="/admin/students" onClick={() => setDrawerOpen(false)}>
             Alunos
           </Link>
-          <Link href="/admin/teachers" onClick={() => setDrawerOpen(false)}>
-            Professores
-          </Link>
           <Link href="/admin/leads" onClick={() => setDrawerOpen(false)}>
             Leads
           </Link>
-          <Link href="/admin/cohorts" onClick={() => setDrawerOpen(false)}>
-            Turmas
+          <Link href="/admin/teachers" onClick={() => setDrawerOpen(false)}>
+            Professores
+          </Link>
+          <Link href="/admin/enrollments" onClick={() => setDrawerOpen(false)}>
+            Matrículas
           </Link>
           <Link href={contentHref} onClick={() => setDrawerOpen(false)}>
             Conteúdos

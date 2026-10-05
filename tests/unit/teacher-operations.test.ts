@@ -2,12 +2,18 @@ import { describe, expect, it } from "vitest";
 
 import {
   markTeacherAttendanceInputSchema,
+  localAvailabilityToIso,
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
   teacherSessionTypeLabel,
 } from "@/modules/teacher-operations";
 
 describe("teacher operations domain", () => {
+  it("converts a Recife wall-clock availability slot independently of machine timezone", () => {
+    expect(localAvailabilityToIso("2026-10-10", "09:00")).toBe("2026-10-10T12:00:00.000Z");
+    expect(() => localAvailabilityToIso("2026-02-30", "09:00")).toThrow(RangeError);
+  });
+
   it("accepts only the contracted attendance states", () => {
     expect(
       markTeacherAttendanceInputSchema.parse({

@@ -217,8 +217,9 @@ assert(
 );
 assert(
   read("scripts/run-sql-tests.mjs").includes("supabase/tests/cohorts.sql") &&
-    read("scripts/run-sql-tests.mjs").includes("supabase/tests/booking_quota.sql"),
-  "Quota and cohort SQL security evidence must run in official regression suites.",
+    read("scripts/run-sql-tests.mjs").includes("supabase/tests/booking_quota.sql") &&
+    read("scripts/run-sql-tests.mjs").includes("supabase/tests/students_directory.sql"),
+  "Quota, cohort and bounded Student directory SQL security evidence must run in official regression suites.",
 );
 for (const path of sourceFiles) {
   const content = read(path);

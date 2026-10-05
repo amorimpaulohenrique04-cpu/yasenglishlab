@@ -224,6 +224,29 @@ test("Admin Content exposes keyboard navigation and WCAG A/AA compliance", async
   await assertAxe(page);
 });
 
+test("Admin and Teacher operation overviews preserve landmarks, focus and WCAG A/AA compliance", async ({
+  page,
+}) => {
+  await loginCanonicalAdmin(page, password!);
+  await page.goto("/admin");
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Visão geral", exact: true })).toBeVisible();
+  const enrollments = page.getByRole("link", { name: "Abrir Matrículas" }).first();
+  await enrollments.focus();
+  await expect(enrollments).toBeFocused();
+  await assertAxe(page);
+
+  await page.context().clearCookies();
+  await loginCanonicalTeacher(page, password!);
+  await page.goto("/teacher");
+  await expect(page.getByRole("main")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Próxima atividade", exact: true })).toBeVisible();
+  const reviews = page.getByRole("link", { name: "Revisões de prática", exact: true });
+  await reviews.focus();
+  await expect(reviews).toBeFocused();
+  await assertAxe(page);
+});
+
 test("Teacher P21 operations pages preserve form semantics and WCAG A/AA compliance", async ({
   page,
 }) => {
@@ -243,9 +266,13 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
   }
 
   await page.goto("/teacher/disponibilidade");
-  const start = page.getByLabel("Início com fuso");
-  await start.focus();
-  await expect(start).toBeFocused();
+  for (const label of ["Data", "Início", "Término"]) {
+    const control = page.getByLabel(label, { exact: true }).first();
+    await expect(control).toBeVisible();
+    await control.focus();
+    await expect(control).toBeFocused();
+  }
+  await assertAxe(page);
 
   await page.goto("/teacher/sessoes/nova");
   const title = page.getByLabel("Título");

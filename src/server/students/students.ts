@@ -9,6 +9,14 @@ interface StudentDirectoryRow {
   user_id: string;
   display_name: string;
   created_at: string;
+  course_id: string | null;
+  course_title: string | null;
+  cohort_id: string | null;
+  cohort_name: string | null;
+  enrollment_status: "ACTIVE" | "COMPLETED" | "CANCELLED" | null;
+  placement_state: string | null;
+  completion_percent: number | null;
+  next_session_at: string | null;
 }
 
 interface CurriculumSummaryRow {
@@ -21,22 +29,49 @@ interface CurriculumSummaryRow {
   latest_activity_at: string | null;
 }
 
-export async function loadAdminStudents(query: string, page: number) {
+export async function loadAdminStudents(
+  query: string,
+  page: number,
+  filters: {
+    courseId?: string;
+    cohortId?: string;
+    placementState?: string;
+    enrollmentStatus?: string;
+  } = {},
+) {
   await requirePageRole("ADMIN");
   const supabase = await createSupabaseServerClient();
   const safeQuery = query.trim().slice(0, 120);
   const safePage = Number.isSafeInteger(page) && page >= 1 && page <= 80_000_000 ? page : 1;
-  const { data, error } = await supabase.rpc("admin_student_directory", {
-    p_query: safeQuery,
-    p_limit: pageSize,
-    p_offset: (safePage - 1) * pageSize,
-  });
-  if (error) throw new Error("Unable to load authorized student directory.");
+  const [directory, courses, cohorts] = await Promise.all([
+    supabase.rpc("admin_student_directory_v2", {
+      p_query: safeQuery,
+      p_limit: pageSize,
+      p_offset: (safePage - 1) * pageSize,
+      p_course_id: filters.courseId || null,
+      p_cohort_id: filters.cohortId || null,
+      p_placement_state: filters.placementState || null,
+      p_enrollment_status: filters.enrollmentStatus || null,
+    }),
+    supabase
+      .from("courses")
+      .select("id,title")
+      .eq("active", true)
+      .eq("publication_status", "PUBLISHED")
+      .order("title")
+      .limit(50),
+    supabase.from("cohorts").select("id,name").eq("status", "ACTIVE").order("name").limit(100),
+  ]);
+  if (directory.error || courses.error || cohorts.error)
+    throw new Error("Unable to load authorized student directory.");
   return {
-    students: (data ?? []) as StudentDirectoryRow[],
+    students: (directory.data ?? []) as StudentDirectoryRow[],
+    courses: courses.data ?? [],
+    cohorts: cohorts.data ?? [],
     query: safeQuery,
     page: safePage,
     pageSize,
+    filters,
   };
 }
 

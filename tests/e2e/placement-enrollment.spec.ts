@@ -133,14 +133,12 @@ test("confirmed Student → persisted Assessment → scoped Teacher AAL2 → rea
   const adminPage = await adminContext.newPage();
   await loginCanonicalAdmin(adminPage, password!);
   await adminPage.goto("/admin/enrollments");
-  const card = adminPage.locator(".yas-card").filter({
-    has: adminPage.getByRole("heading", {
-      name: new RegExp(`Placement New.*${placement.id.slice(0, 8)}`),
-    }),
-  });
-  await expect(card.getByText("Matrícula concluída", { exact: true })).toBeVisible();
-  await card.getByText("Detalhes da entrada", { exact: true }).click();
-  await expect(card.getByText("Turma atual: Placement Monday", { exact: true })).toBeVisible();
+  const row = adminPage.getByRole("row").filter({ hasText: "Placement New" });
+  await expect(row.getByText("Matrícula concluída", { exact: true })).toBeVisible();
+  await row.getByRole("button", { name: "Detalhes da entrada" }).click();
+  await expect(
+    adminPage.getByRole("dialog").getByText("Turma atual: Placement Monday", { exact: true }),
+  ).toBeVisible();
   await axe(adminPage);
   await adminContext.close();
 });

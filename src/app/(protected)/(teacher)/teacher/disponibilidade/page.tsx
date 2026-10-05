@@ -1,4 +1,5 @@
-import { Alert, Button, Card, Input, PageHeader } from "@/components/ui";
+import { Alert, Button, Card, PageHeader } from "@/components/ui";
+import { AvailabilitySlotForm } from "./availability-slot-form";
 import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
 import { saveAvailabilityAction } from "./actions";
@@ -12,7 +13,7 @@ export default async function AvailabilityPage({
     <div className={styles.page}>
       <PageHeader
         title="Disponibilidade"
-        description="Defina intervalos explícitos para seus encontros. Informe o fuso no formato ISO 8601; horários são exibidos em America/Recife."
+        description="Defina os horários disponíveis para seus encontros."
       />
       {(await searchParams).save === "error" && (
         <Alert
@@ -22,39 +23,16 @@ export default async function AvailabilityPage({
         />
       )}
       <Card>
-        <form action={saveAvailabilityAction} className={styles.operationForm}>
-          <input type="hidden" name="operation" value="CREATE" />
-          <Input
-            label="Início com fuso"
-            name="starts_at"
-            required
-            placeholder="2026-10-10T09:00:00-03:00"
-          />
-          <Input
-            label="Término com fuso"
-            name="ends_at"
-            required
-            placeholder="2026-10-10T18:00:00-03:00"
-          />
-          <Button type="submit">Adicionar intervalo</Button>
-        </form>
+        <AvailabilitySlotForm operation="CREATE" />
       </Card>
       {context.availability.map((item) => (
         <Card key={item.id}>
-          <form action={saveAvailabilityAction} className={styles.operationForm}>
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="operation" value="EDIT" />
-            <Input
-              label="Início com fuso"
-              name="starts_at"
-              defaultValue={item.starts_at}
-              required
-            />
-            <Input label="Término com fuso" name="ends_at" defaultValue={item.ends_at} required />
-            <Button type="submit" variant="outline">
-              Salvar intervalo
-            </Button>
-          </form>
+          <AvailabilitySlotForm
+            id={item.id}
+            operation="EDIT"
+            startsAt={item.starts_at}
+            endsAt={item.ends_at}
+          />
           <form action={saveAvailabilityAction}>
             <input type="hidden" name="id" value={item.id} />
             <input type="hidden" name="operation" value="DELETE" />
