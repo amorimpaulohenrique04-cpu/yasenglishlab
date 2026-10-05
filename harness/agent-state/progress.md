@@ -580,3 +580,12 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Literal verify:agent and verify:ui passed, including 30 E2E, 30 a11y, seven design-system checks and three complete Windows golden projects. Only six Home baselines differ from main, with tolerance 0.0015 intact.
 - Latest verify:full passed core, real SQL/RLS, Harness/security/eval, 30 E2E and persistence/analytics, but failed Teacher P21 desktop accessibility at the original 30-second scenario budget (29 a11y passed). Isolated reproduction and responsible-layer diagnosis remain pending. No full-green claim is justified.
 - User requested finalization. Evidence is recorded without promoting registry status: Student remains in_progress/verified:false; final evidence-commit CI and all Admin implementation work remain pending.
+
+# 2026-10-05 — Student Home corrected-source verified closure
+
+- Removed one duplicate Axe scan from the existing Teacher P21 accessibility scenario without adding tests or reducing route coverage: six unique Teacher routes remain covered exactly once each; Data/Início/Término/Título focus assertions remain unchanged.
+- No product code, Auth/RLS, StudentShell, global layout, timeout, retry, sleep, forced interaction, skip/fixme or visual tolerance changed in the closure correction.
+- Official CI 37325202782 passed on corrected source `5ae2d9a50ec373ebca6bd262f366a4b503cd8cb1`: Supply Chain, Database, Quality, Guardrail Simulations, Preview and CI Gate all green.
+- Observed corrected-source counts: unit 99/99; integration 68 passed + 1 preexisting skip; critical E2E 30/30; accessibility 30/30; Storybook visual 7/7; product golden 3/3. Migration/upgrade, real DB/RLS, observability, persistence/analytics, build and security gates also passed.
+- The literal local `verify:full` wrapper was not re-invoked from this execution environment. The prior local red result is retained; its only blocker was the Teacher P21 desktop a11y 30-second budget, and the corrected constituent gate is green in Official CI. No false wrapper-pass claim is made.
+- Student Home is now `done / verified:true`. PR #35 remains open for review/merge. Admin design refactor is the next separate branch/task after refreshed main.
