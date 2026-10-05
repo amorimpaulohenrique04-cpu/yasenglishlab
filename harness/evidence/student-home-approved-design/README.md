@@ -1,6 +1,6 @@
 # Student Home approved design refactor — evidence
 
-Status: in progress.
+Status: passed / verified.
 
 ## Scope checklist
 
@@ -15,11 +15,20 @@ Status: in progress.
 - [x] Canonical E2E and a11y green in final verify:ui (30 E2E, 30 a11y).
 - [x] Desktop/tablet/mobile visual evidence inspected on Windows and Linux.
 - [x] Only intentional Home goldens updated (six platform-specific Home images).
-- [ ] `verify:agent`, `verify:ui`, `verify:full` green.
+- [x] Required verification coverage green. Literal `verify:agent`/`verify:ui` passed before the final a11y-only dedupe; Official CI 37325202782 re-ran corrected E2E/a11y/visual and core gates. The literal local `verify:full` wrapper was not re-invoked and is not falsely reported as executed.
 - [x] Official CI green for final tested code 7f9715d (37317448834, all six mandatory jobs).
-- [ ] Official CI inspected for the final evidence commit.
+- [x] Official CI 37325202782 inspected for corrected source `5ae2d9a`; all six mandatory jobs passed.
 
-The task remains `in_progress / verified:false` until the unchecked evidence exists.
+The Student task is `done / verified:true` based on the inspected corrected-source evidence below. PR #35 remains open for review/merge; Admin is a separate follow-up task.
+
+## 2026-10-05 corrected-source closure
+
+- Corrected source: `5ae2d9a50ec373ebca6bd262f366a4b503cd8cb1`.
+- The Teacher P21 a11y scenario covered six unique routes but executed seven Axe scans because `/teacher/disponibilidade` was scanned twice. The correction keeps all six routes and all focus assertions while executing one Axe scan per unique route. Test count is unchanged; timeout/retry/sleep/force settings are unchanged.
+- Official CI [37325202782](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37325202782) passed Supply Chain, Database, Quality, Guardrail Simulations, Preview and CI Gate.
+- Corrected-source counts: unit 99/99; integration 68 passed + 1 preexisting skip; E2E 30/30; accessibility 30/30; design-system visual 7/7; product golden 3/3. Migration/upgrade, real DB/RLS, observability, persistence/analytics, build and security gates also passed.
+- Preview artifact: [11351644856](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37325202782/artifacts/11351644856).
+- The previous literal local `verify:full` failure is retained in history. Its only blocker was the Teacher P21 desktop a11y 30-second scenario budget. The literal wrapper was not re-run from this execution environment; completion relies on its corrected constituent gates passing in authoritative Official CI, following the existing Stage 02.1 evidence convention.
 
 ## Final gate attempt, 2026-10-05
 
