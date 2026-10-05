@@ -11,6 +11,7 @@ import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
 import type { HomePracticeInputs, HomeReadRepository } from "./ports";
 import type {
+  HomeLearningLesson,
   HomeLearningView,
   HomePageState,
   HomePrimaryAction,
@@ -111,6 +112,42 @@ function selectFocusCourse(
   return course ? { course, summary } : null;
 }
 
+function homeLearningLesson(
+  course: LearningCourse,
+  courseModule: LearningModule,
+  lesson: LearningLesson,
+): HomeLearningLesson {
+  return {
+    id: lesson.id,
+    title: lesson.title,
+    moduleTitle: courseModule.title,
+    href: `/aulas/${course.slug}/modulos/${courseModule.id}/aulas/${lesson.slug}`,
+    estimatedMinutes: lesson.estimatedMinutes,
+    completionPercent: lesson.progress?.completionPercent ?? 0,
+    hasPersistedProgress: lesson.progress !== null,
+  };
+}
+
+function upcomingLearningLessons(
+  focus: FocusCourse,
+  selection: LearningSelection | null,
+): HomeLearningLesson[] {
+  const incomplete = orderedCourseLessons(focus.course).filter(
+    (lesson) => !isLessonComplete(lesson),
+  );
+  const selectedId =
+    selection && selection.course.id === focus.course.id ? selection.lesson.id : null;
+  const selectedIndex = selectedId
+    ? incomplete.findIndex((lesson) => lesson.id === selectedId)
+    : 0;
+  const startIndex = selectedIndex >= 0 ? selectedIndex : 0;
+
+  return incomplete.slice(startIndex, startIndex + 3).flatMap((lesson) => {
+    const courseModule = focus.course.modules.find((module) => module.id === lesson.moduleId);
+    return courseModule ? [homeLearningLesson(focus.course, courseModule, lesson)] : [];
+  });
+}
+
 function learningSection(
   focus: FocusCourse | null,
   selection: LearningSelection | null,
@@ -129,16 +166,9 @@ function learningSection(
       totalLessons: focus.summary.totalLessons,
       lesson:
         selection && selection.course.id === focus.course.id
-          ? {
-              id: selection.lesson.id,
-              title: selection.lesson.title,
-              moduleTitle: selection.module.title,
-              href: `/aulas/${selection.course.slug}/modulos/${selection.module.id}/aulas/${selection.lesson.slug}`,
-              estimatedMinutes: selection.lesson.estimatedMinutes,
-              completionPercent: selection.lesson.progress?.completionPercent ?? 0,
-              hasPersistedProgress: selection.lesson.progress !== null,
-            }
+          ? homeLearningLesson(selection.course, selection.module, selection.lesson)
           : null,
+      upcomingLessons: upcomingLearningLessons(focus, selection),
     },
   };
 }
