@@ -145,7 +145,13 @@ function OperationOverlay({
   const Overlay = mode === "dialog" ? Dialog : Drawer;
   return (
     <>
-      <Button variant="outline" disabled={!hydrated} onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        aria-disabled={!hydrated}
+        onClick={() => {
+          if (hydrated) setOpen(true);
+        }}
+      >
         {trigger}
       </Button>
       <Overlay
