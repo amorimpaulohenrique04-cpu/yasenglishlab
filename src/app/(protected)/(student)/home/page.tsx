@@ -146,7 +146,10 @@ export default async function StudentHomePage() {
             </div>
           </Card>
 
-          <Card className="yas-home-card yas-home-learning-card" aria-labelledby="home-learning-title">
+          <Card
+            className="yas-home-card yas-home-learning-card"
+            aria-labelledby="home-learning-title"
+          >
             <div className="yas-home-card-heading">
               <div>
                 <span className="yas-home-eyebrow">Próximas aulas</span>
