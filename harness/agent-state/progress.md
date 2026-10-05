@@ -566,7 +566,6 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - The approved screenshot is treated as visual direction only: no fake streak, fake weekly minutes, fake search, fake notification control or invented analytics was added.
 - Verification is pending CI; no golden baseline has been updated and no success claim is made yet.
 
-
 ## 2026-10-04 — Student Home visual review refinement
 
 - Reviewed generated desktop/tablet/mobile Home evidence after E2E, persistence, accessibility and Storybook checks passed.
