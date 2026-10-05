@@ -540,3 +540,14 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Full E2E/a11y/visual verification remains incomplete. The first aggregate run could not bind port 3000 (`EACCES`); an isolated-port retry was interrupted at the user's request during database reset, before E2E started. An isolated Cohorts E2E reproduction also remained on the Admin loading fallback. `cohorts-booking.spec.ts` now navigates directly and waits for its cohort row; `admin-cohorts.spec.ts` restores canonical capacity after its assertion, but those final test adjustments have not been rerun.
 - User requested stopping localhost and completing with a report. Stopped the verification-owned Supabase containers; confirmed no listener on ports 3000, 4001, or 4002. `git diff --check` passed. Existing untracked canonical-slice and P21 artifacts were preserved; no screenshot cleanup was performed.
 - Stage 02 remains `done / verified:true`. Stage 2.1 remains `in_progress / verified:false` pending user-run E2E, a11y, visual, and remaining requested verification gates; Official CI was not run.
+
+# 2026-10-04 — Stage 02.1 gate remediation and verified closure
+
+- Reconciled the stale availability accessibility selector with the shipped `Data` / `Início` / `Término` controls; added Admin/Teacher overview focus+axe coverage. Official CI #530 subsequently passed the complete accessibility suite (30/30).
+- Semantically reviewed Stage 2.1 shared operation primitives and consolidated them into existing `display.tsx`, `controls.tsx`, and `overlays.tsx`; removed the parallel `operations.tsx` and `operation-overlays.tsx` files. No changed file remains outside the machine-readable GOAL scope.
+- Added a representative Operations Storybook story and visual coverage. Official CI #530 passed Storybook build, 7/7 design-system visual tests and 3/3 product golden tests.
+- Removed unrelated generic canonical/P21 screenshot artifacts from the PR diff; task evidence now lives under `harness/evidence/stage-02-1-operations-ux/`.
+- Official CI run `37245878022` passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate. Observed counts: unit 97/97; integration 68 passed + 1 existing skip; SQL integration 12 files; RLS 8 files; critical E2E final summary 27 passed with no failure; accessibility 30/30; Storybook visual 7/7; golden 3/3.
+- `verify:agent` and `verify:full` were not re-invoked literally after the remediation commits. Their executable constituents were all green in Official CI #530, and the 10 `eval:agent` rules were deterministically reproduced against the current diff. `verification.json` records this distinction rather than fabricating wrapper execution.
+- Stage 02 remains `done / verified:true`. Stage 02.1 is now `done / verified:true` with PR #34 and Official CI #530 as durable evidence. A final Official CI run on this committed Harness state is still required before merge; no merge is requested.
+
