@@ -1,0 +1,33 @@
+name: Student Home Prettier Probe
+
+on:
+  push:
+    branches:
+      - verify/student-home-prettier-probe
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Format scoped files
+        run: |
+          npx prettier --write             harness/agent-state/progress.md             'src/app/(protected)/(student)/home/page.tsx'             src/modules/home/application/queries.ts             src/modules/home/ui/home.css
+      - name: Emit formatted files
+        shell: bash
+        run: |
+          for file in             harness/agent-state/progress.md             'src/app/(protected)/(student)/home/page.tsx'             src/modules/home/application/queries.ts             src/modules/home/ui/home.css
+          do
+            echo "::group::FILE:$file"
+            cat "$file"
+            echo "::endgroup::"
+          done
