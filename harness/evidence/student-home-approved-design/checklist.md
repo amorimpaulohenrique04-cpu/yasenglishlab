@@ -29,14 +29,17 @@ Source reviewed: `16b2a94`; baseline promotion: `7ce961f`.
 - [x] Home goldens updated only after review.
 - [x] Unit suite green: 99 tests.
 - [x] Integration suite green: 68 passed, one preexisting skip.
-- [x] E2E green in verify:ui: 28 tests (verify:full repetition failed separately).
+- [x] E2E green in verify:ui and latest verify:full: 30 tests.
 - [x] Accessibility green: 30 tests.
 - [x] Design-system visual green: seven tests.
 - [x] Windows product golden green: all three complete spec projects.
-- [x] Linux product golden green in Official CI 37264212150.
+- [x] Linux product golden green in Official CI 37317448834.
 - [x] Verify agent green.
 - [x] Verify UI green.
-- [ ] Verify full green.
-- [ ] Official CI entirely green for final source; 9ca3de5 passed, 570893f failed E2E and correction remains pending.
+- [ ] Verify full green: latest run failed Teacher P21 desktop accessibility at the 30-second scenario budget; 29 a11y passed.
+- [x] Official CI entirely green for final tested source 7f9715d: all six jobs in run 37317448834.
+- [ ] Official CI for the final evidence commit inspected.
+- [ ] Admin branch created from refreshed main after Student closure.
+- [ ] Admin page/CSS refactor, three-viewports review, tests and separate PR.
 
 Unchecked items are pending, not waived. Admin work remains gated by Student completion.

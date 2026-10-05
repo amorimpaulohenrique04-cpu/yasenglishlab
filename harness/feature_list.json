@@ -17,8 +17,15 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": ["stage-02-1-operations-ux"],
-      "evidence": ["harness/goals/student-home-approved-design.md"],
-      "updated_at": "2026-10-04T22:20:00-03:00"
+      "evidence": [
+        "harness/goals/student-home-approved-design.md",
+        "harness/evidence/student-home-approved-design/README.md",
+        "harness/evidence/student-home-approved-design/checklist.md",
+        "harness/evidence/student-home-approved-design/verification.json",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/35",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37317448834"
+      ],
+      "updated_at": "2026-10-05T11:09:45-03:00"
     },
     {
       "id": "stage-02-operations",

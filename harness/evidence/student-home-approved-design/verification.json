@@ -1,0 +1,56 @@
+{
+  "status": "in_progress",
+  "verified": false,
+  "source_sha": "7f9715d123b54aa1f4ee151b99c2c1ef9eca9624",
+  "pull_request": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/35",
+  "official_ci": {
+    "url": "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37317448834",
+    "conclusion": "success",
+    "jobs": ["Supply Chain", "Database", "Quality", "Guardrail Simulations", "Preview", "CI Gate"],
+    "final_evidence_commit_ci": "pending"
+  },
+  "checks": {
+    "focused_home": "32 passed",
+    "verify_agent": "passed",
+    "verify_ui": "passed: 30 E2E, 30 a11y, 7 design-system, 3 complete golden projects",
+    "verify_full": "failed: Teacher P21 desktop a11y exceeded 30000 ms; 29 a11y passed; core, SQL/RLS and 30 E2E passed"
+  },
+  "golden_tolerance": 0.0015,
+  "changed_goldens": [
+    "tests/visual/goldens/desktop/home-win32.png",
+    "tests/visual/goldens/desktop/home-linux.png",
+    "tests/visual/goldens/tablet/home-win32.png",
+    "tests/visual/goldens/tablet/home-linux.png",
+    "tests/visual/goldens/mobile/home-win32.png",
+    "tests/visual/goldens/mobile/home-linux.png"
+  ],
+  "real_data": ["Learning course/lesson/progress", "Practice recommendation", "Schedule sessions"],
+  "omitted_mockup_elements": [
+    "invented streak",
+    "invented weekly minutes",
+    "search without read model",
+    "notifications without read model"
+  ],
+  "preserved": [
+    "StudentShell",
+    "global layout",
+    "Auth/RLS",
+    "Login/Aulas/Progresso goldens",
+    "three concurrent reads",
+    "primaryAction priority"
+  ],
+  "documented_scope_exceptions": [
+    "existing upgrade gate correction",
+    "overlay hydration activation guard",
+    "Teacher streamed visibility assertion",
+    "Admin E2E scenario separation",
+    "exact mandatory fresh-TOTP wait budget reservation",
+    "command response assertion"
+  ],
+  "pending": [
+    "Teacher desktop timeout isolated diagnosis",
+    "green final verify:full",
+    "final evidence-commit CI inspection",
+    "Admin branch/refactor/review/checks/separate PR"
+  ]
+}

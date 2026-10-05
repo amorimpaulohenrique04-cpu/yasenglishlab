@@ -573,3 +573,10 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Browser checks confirmed zero horizontal overflow, no framework error overlay and keyboard focus on the primary CTA at 1440x900, 834x1112 and 390x844.
 - GOAL now declares the existing user-authorized `validate-upgrade.sh` correction; the scope eval rejected it before documentation and passed 10/10 afterward. No upgrade behavior changed.
 - Final verification wrappers and Official CI remain pending; Student stays in_progress/verified:false and Admin has not started.
+
+## 2026-10-05 - Latest verification and requested closeout
+
+- Source `7f9715d123b54aa1f4ee151b99c2c1ef9eca9624` is pushed to the existing Student branch. Official CI 37317448834 passed all six mandatory jobs; PR #35 remains open without merge.
+- Literal verify:agent and verify:ui passed, including 30 E2E, 30 a11y, seven design-system checks and three complete Windows golden projects. Only six Home baselines differ from main, with tolerance 0.0015 intact.
+- Latest verify:full passed core, real SQL/RLS, Harness/security/eval, 30 E2E and persistence/analytics, but failed Teacher P21 desktop accessibility at the original 30-second scenario budget (29 a11y passed). Isolated reproduction and responsible-layer diagnosis remain pending. No full-green claim is justified.
+- User requested finalization. Evidence is recorded without promoting registry status: Student remains in_progress/verified:false; final evidence-commit CI and all Admin implementation work remain pending.
