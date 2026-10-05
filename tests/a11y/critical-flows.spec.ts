@@ -254,8 +254,6 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
 
   for (const target of [
     "/teacher/sessoes",
-    "/teacher/disponibilidade",
-    "/teacher/sessoes/nova",
     "/teacher/turmas",
     "/teacher/alunos",
     "/teacher/revisoes",
@@ -266,6 +264,7 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
   }
 
   await page.goto("/teacher/disponibilidade");
+  await expect(page.getByRole("main")).toBeVisible();
   for (const label of ["Data", "Início", "Término"]) {
     const control = page.getByLabel(label, { exact: true }).first();
     await expect(control).toBeVisible();
@@ -275,10 +274,12 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
   await assertAxe(page);
 
   await page.goto("/teacher/sessoes/nova");
+  await expect(page.getByRole("main")).toBeVisible();
   const title = page.getByLabel("Título");
   await expect(title).toBeVisible();
   await title.focus();
   await expect(title).toBeFocused();
+  await assertAxe(page);
 });
 
 test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({ page }) => {
