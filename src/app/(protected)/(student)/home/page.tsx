@@ -260,8 +260,8 @@ export default async function StudentHomePage() {
                   />
                   <div className="yas-home-progress-facts">
                     <span>
-                      {progressSummary.data.lessonsCompleted} de {progressSummary.data.totalLessons}{" "}
-                      aulas concluídas
+                      {progressSummary.data.lessonsCompleted} de{" "}
+                      {progressSummary.data.totalLessons} aulas concluídas
                     </span>
                     <span>{progressSummary.data.courseTitle}</span>
                   </div>
