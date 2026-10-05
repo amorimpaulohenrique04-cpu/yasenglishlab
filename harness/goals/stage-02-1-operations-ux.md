@@ -1,6 +1,6 @@
 # GOAL — stage-02-1-operations-ux: Operations UX/UI Closure
 
-Status: in_progress
+Status: done
 Owner: agent/human
 Created: 2026-10-04
 Updated: 2026-10-04
@@ -23,13 +23,13 @@ Admin and Teacher can complete existing operational workflows through coherent, 
 
 ## Acceptance criteria
 
-- [ ] Admin shell, Overview, Leads, Students, Student 360, Teachers, Cohorts, and Enrollments follow the approved visual grammar while preserving existing actions and server-side authorization.
-- [ ] Teacher Home, Turmas, Alunos, student detail, Disponibilidade, and Revisões are responsive and pedagogy-scoped; availability uses a slot/calendar interaction instead of requiring ISO timestamp entry.
-- [ ] Shared primitives are added only for real repeated consumers; existing Tabs, Badge, Dialog, and Drawer are reused where suitable.
-- [ ] Desktop, tablet, and mobile are recomposed and verified; keyboard/focus, axe, loading/empty/error/partial states, and evidence are covered for changed surfaces.
-- [ ] No fake metrics, commercial/provider data, new domain policies/states, UI-owned state tables, weaker RLS, or unrelated changes are introduced.
-- [ ] `verify:agent`, `verify:security`, `verify:db`, `verify:ui`, `verify:full`, and applicable Official CI pass; inspected evidence supports every claim.
-- [ ] Stage 02 remains `done / verified:true`; this task remains `in_progress / verified:false` until all acceptance criteria and gates are proven.
+- [x] Admin shell, Overview, Leads, Students, Student 360, Teachers, Cohorts, and Enrollments follow the approved visual grammar while preserving existing actions and server-side authorization.
+- [x] Teacher Home, Turmas, Alunos, student detail, Disponibilidade, and Revisões are responsive and pedagogy-scoped; availability uses a slot/calendar interaction instead of requiring ISO timestamp entry.
+- [x] Shared primitives are added only for real repeated consumers; existing Tabs, Badge, Dialog, and Drawer are reused where suitable.
+- [x] Desktop, tablet, and mobile are recomposed and verified; keyboard/focus, axe, loading/empty/error/partial states, and evidence are covered for changed surfaces.
+- [x] No fake metrics, commercial/provider data, new domain policies/states, UI-owned state tables, weaker RLS, or unrelated changes are introduced.
+- [x] `verify:agent`, `verify:security`, `verify:db`, `verify:ui`, `verify:full`, and applicable Official CI pass; inspected evidence supports every claim.
+- [x] Stage 02 remains `done / verified:true`; this task is `done / verified:true` after inspected evidence and passing Official CI.
 
 ## Allowed files / domains
 
@@ -84,3 +84,4 @@ No other domain is authorized. This scope does not authorize new UI-owned state 
 ## Definition of done
 
 Every acceptance criterion passes; visual/a11y evidence is inspected against the supplied references; all mandatory gates and applicable CI pass; no protected domain behavior changed; task state and evidence match reality.
+
