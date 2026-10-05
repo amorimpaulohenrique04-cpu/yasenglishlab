@@ -53,3 +53,11 @@ The correction adds a visible assertion before native focus. It retains the exis
 
 Before: UI wrapper reported `getByLabel('Título')` inactive at the 5000 ms focus assertion. Isolated unchanged reproduction passed 2/2; the aggregate failure remains the red evidence.
 After: focused desktop/mobile validation passed 2/2 with the visibility barrier and original focus assertions. Final UI/full gates remain pending; this follow-up is not yet claimed fully verified.
+
+## 2026-10-05 Teacher P21 aggregate-budget closure
+
+The later local full-gate failure was not a missing Teacher route, Axe rule or focus assertion. The Teacher P21 accessibility scenario covered six unique routes but performed seven Axe scans because `/teacher/disponibilidade` was scanned in the generic route loop and then scanned again after the availability focus checks. Under aggregate local latency, the 30-second test budget could expire before later routes.
+
+Correction commit `5ae2d9a50ec373ebca6bd262f366a4b503cd8cb1` removes only that duplicate work and reorders the two form-specific routes so their focus checks and Axe scan occur in the same visit. Coverage remains six unique routes with exactly one Axe scan each. The `Data`, `Início`, `Término` and `Título` native focus assertions remain. No new test, timeout increase, retry, sleep, forced interaction, skip or Axe suppression was introduced.
+
+Official CI 37325202782 passed the corrected source: 30/30 E2E, 30/30 accessibility, 7/7 design-system visual and 3/3 product golden, with all six mandatory jobs green. The earlier red local evidence remains part of the record; it is not deleted or rewritten.
