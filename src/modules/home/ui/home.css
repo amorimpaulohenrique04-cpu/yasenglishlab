@@ -326,6 +326,11 @@
   width: 100%;
 }
 
+.yas-home-learning-progress .yas-progress-header,
+.yas-home-progress-card .yas-progress-header {
+  display: none;
+}
+
 .yas-home-progress-card,
 .yas-home-schedule-card {
   min-height: 18rem;
