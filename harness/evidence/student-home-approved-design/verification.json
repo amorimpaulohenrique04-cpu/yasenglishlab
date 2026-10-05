@@ -19,7 +19,7 @@
     "accessibility": "30 passed",
     "design_system_visual": "7 passed",
     "product_golden": "3 passed",
-    "verify_agent": "literal pass predates final a11y-only dedupe; final diff remains within declared scope with no suppression or product change",
+    "verify_agent": "literal pass predates final a11y-only dedupe; final diff remains within declared scope with no suppression/product change",
     "verify_ui": "literal pass predates final a11y-only dedupe; all E2E/a11y/visual constituents reran green in Official CI",
     "verify_full": "last literal local run failed only Teacher P21 desktop a11y at 30000 ms; corrected source reran relevant full-gate constituents green in Official CI; literal wrapper not re-invoked in this execution environment"
   },
