@@ -137,9 +137,7 @@ function upcomingLearningLessons(
   );
   const selectedId =
     selection && selection.course.id === focus.course.id ? selection.lesson.id : null;
-  const selectedIndex = selectedId
-    ? incomplete.findIndex((lesson) => lesson.id === selectedId)
-    : 0;
+  const selectedIndex = selectedId ? incomplete.findIndex((lesson) => lesson.id === selectedId) : 0;
   const startIndex = selectedIndex >= 0 ? selectedIndex : 0;
 
   return incomplete.slice(startIndex, startIndex + 3).flatMap((lesson) => {
