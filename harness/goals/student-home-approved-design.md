@@ -46,6 +46,7 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 ## Allowed files / domains
 
+- `tests/helpers/admin-mfa.ts`
 - `src/components/ui/overlays.tsx`
 - `tests/e2e/cohorts-booking.spec.ts`
 - `harness/failure-log/2026-10-05-admin-overview-e2e-budget.md`
@@ -80,6 +81,8 @@ The existing `validate-upgrade.sh` correction is explicitly retained: no head-on
 2026-10-05 hydration investigation scope addition: Official CI 37269576841 failed all three cohort-mutation attempts after an apparently successful click on the visible, enabled DetailDrawer trigger. The trace preserves focus on Gerenciar, no drawer and no JavaScript error. The existing OperationOverlay primitive exposes its client-only interaction enabled in server HTML. Add controlled pre-hydration coverage before applying a narrow hydration readiness guard to this existing primitive. This exception changes no shell, global layout, domain read, authorization or API; verify shared overlay consumers through full UI coverage.
 
 Verification setup clarification: freshTotp in the existing real-MFA helper may wait almost 30 seconds to avoid replaying a submitted code. Authentication setup for the separated Admin scenarios therefore runs in its own 60-second fixture budget, matching the helper's existing destination wait. Functional scenario budgets stay at 30 seconds and assertion timeouts stay unchanged. No MFA shortcut, session impersonation or retry is introduced. Hydration readiness uses aria-disabled plus activation gating to retain keyboard focus during loading; controlled coverage asserts both readiness and native focus.
+
+Final setup scope correction: the same freshTotp wait exhausted the existing Admin-overview accessibility scenario after Admin Content. Isolate only this mandatory cryptographic wait centrally in the test helper by adding its exact scheduled duration to the current scenario budget. Remove the task-local MFA fixture; all tests continue using the original helper and original functional budget. This is not a blanket timeout increase: zero extra time is granted when no fresh-window wait occurs, assertion timeouts remain unchanged, and real MFA is retained. Record this limitation explicitly in evidence and validate full E2E/a11y/CI.
 
 - Student/Admin/Teacher shared shell or global layout refactors.
 - `src/server/**`, `supabase/**`, auth/RLS, migrations, entitlements, CEFR, analytics and notification policy.

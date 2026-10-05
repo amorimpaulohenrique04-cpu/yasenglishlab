@@ -1,19 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 if (process.env.CANONICAL_E2E !== "1" || !password)
   throw new Error("Cohort E2E requires canonical local fixture.");
 
-const adminTest = test.extend<{ adminPage: Page }>({
-  adminPage: [
-    async ({ page }, use) => {
-      await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
-      await use(page);
-    },
-    { timeout: 60_000 },
-  ],
-});
 test("Student cohort booking, quota, cancellation and rebooking persist", async ({
   page,
 }, testInfo) => {
@@ -60,31 +51,32 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   }
   await expect(card).toBeVisible();
 });
-adminTest(
-  "Admin default entry after MFA preserves responsive overview evidence",
-  async ({ adminPage: page }, testInfo) => {
-    await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Avaliação em andamento" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Escolha sua turma" })).toBeVisible();
-    for (const [name, width, height] of [
-      ["desktop", 1440, 1000],
-      ["tablet", 768, 1024],
-      ["mobile", 390, 844],
-    ] as const) {
-      await page.setViewportSize({ width, height });
-      const screenshot = await page.screenshot({
-        path: testInfo.outputPath(`admin-overview-${name}.png`),
-        fullPage: true,
-      });
-      await testInfo.attach(`admin-overview-${name}.png`, {
-        body: screenshot,
-        contentType: "image/png",
-      });
-    }
-  },
-);
-adminTest("Admin after MFA administers cohort metadata", async ({ adminPage: page }, testInfo) => {
+test("Admin default entry after MFA preserves responsive overview evidence", async ({
+  page,
+}, testInfo) => {
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Avaliação em andamento" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Escolha sua turma" })).toBeVisible();
+  for (const [name, width, height] of [
+    ["desktop", 1440, 1000],
+    ["tablet", 768, 1024],
+    ["mobile", 390, 844],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    const screenshot = await page.screenshot({
+      path: testInfo.outputPath(`admin-overview-${name}.png`),
+      fullPage: true,
+    });
+    await testInfo.attach(`admin-overview-${name}.png`, {
+      body: screenshot,
+      contentType: "image/png",
+    });
+  }
+});
+test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
   await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   await page.goto("/admin/cohorts");
   const cohort = page.getByRole("row", { name: /Cohort Basic/ });
@@ -104,34 +96,32 @@ adminTest("Admin after MFA administers cohort metadata", async ({ adminPage: pag
   });
 });
 
-adminTest(
-  "Admin drawer does not accept interaction before hydration",
-  async ({ adminPage: page }) => {
-    await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
-    let releaseScripts!: () => void;
-    const scriptsReady = new Promise<void>((resolve) => {
-      releaseScripts = resolve;
+test("Admin drawer does not accept interaction before hydration", async ({ page }) => {
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/static/chunks/*.js*", async (route) => {
+    const response = await route.fetch();
+    if ((await response.text()).includes("OperationOverlay")) await scriptsReady;
+    await route.fulfill({ response });
+  });
+  try {
+    await page.goto("/admin/cohorts", { waitUntil: "commit" });
+    const trigger = page.getByRole("row", { name: /Cohort Basic/ }).getByRole("button", {
+      name: "Gerenciar",
     });
-    await page.route("**/_next/static/chunks/*.js*", async (route) => {
-      const response = await route.fetch();
-      if ((await response.text()).includes("OperationOverlay")) await scriptsReady;
-      await route.fulfill({ response });
-    });
-    try {
-      await page.goto("/admin/cohorts", { waitUntil: "commit" });
-      const trigger = page.getByRole("row", { name: /Cohort Basic/ }).getByRole("button", {
-        name: "Gerenciar",
-      });
-      await expect(trigger).toBeVisible();
-      await expect(trigger).toBeDisabled();
-      await trigger.focus();
-      await expect(trigger).toBeFocused();
-      releaseScripts();
-      await expect(trigger).toBeEnabled();
-      await trigger.click();
-      await expect(page.getByRole("dialog", { name: "Cohort Basic" })).toBeVisible();
-    } finally {
-      releaseScripts();
-    }
-  },
-);
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toBeDisabled();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    releaseScripts();
+    await expect(trigger).toBeEnabled();
+    await trigger.click();
+    await expect(page.getByRole("dialog", { name: "Cohort Basic" })).toBeVisible();
+  } finally {
+    releaseScripts();
+  }
+});
