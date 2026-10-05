@@ -48,6 +48,7 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 - `src/app/(protected)/(student)/home/page.tsx`
 - `src/modules/home/ui/home.css`
+- `src/components/ui/display.tsx`
 - `src/modules/home/domain/models.ts`
 - `src/modules/home/application/queries.ts`
 - `tests/unit/home-projection.test.ts`
