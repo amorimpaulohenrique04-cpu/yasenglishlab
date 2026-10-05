@@ -1,9 +1,9 @@
 # GOAL — student-home-approved-design: Student Home approved design refactor
 
-Status: in_progress  
+Status: done  
 Owner: agent/human  
 Created: 2026-10-04  
-Updated: 2026-10-04
+Updated: 2026-10-05
 
 ## Objective
 
@@ -33,16 +33,16 @@ The Student Home presents a stronger dashboard hierarchy matching the approved r
 
 ## Acceptance criteria
 
-- [ ] Existing Home reads remain exactly one Learning, one Practice and one Schedule read, started concurrently.
-- [ ] Primary-action priority and all existing unauthorized/error/empty/partial states remain unchanged.
-- [ ] The Home page remains a Server Component and does not acquire direct SQL, mutations or a new data owner.
-- [ ] A bounded `upcomingLessons` projection, if needed, is derived only from the already-loaded Learning course and does not replace the existing `lesson` contract.
-- [ ] The Home visually follows the approved hierarchy without fake streak, fake analytics, fake search, fake notifications or hardcoded product metrics.
-- [ ] Shared Student shell, Aulas and Progresso visuals are not changed by this task.
-- [ ] Existing accessible names used by E2E/a11y remain stable where behavior is unchanged.
-- [ ] Desktop 1440×900, tablet 834×1112 and mobile 390×844 have no horizontal document overflow and preserve logical reading order.
-- [ ] Only intentional Student Home golden baselines change; visual tolerance is not weakened.
-- [ ] Focused tests, `verify:agent`, `verify:ui`, `verify:full` and applicable Official CI pass before the task can be marked verified.
+- [x] Existing Home reads remain exactly one Learning, one Practice and one Schedule read, started concurrently.
+- [x] Primary-action priority and all existing unauthorized/error/empty/partial states remain unchanged.
+- [x] The Home page remains a Server Component and does not acquire direct SQL, mutations or a new data owner.
+- [x] A bounded `upcomingLessons` projection, if needed, is derived only from the already-loaded Learning course and does not replace the existing `lesson` contract.
+- [x] The Home visually follows the approved hierarchy without fake streak, fake analytics, fake search, fake notifications or hardcoded product metrics.
+- [x] Shared Student shell, Aulas and Progresso visuals are not changed by this task.
+- [x] Existing accessible names used by E2E/a11y remain stable where behavior is unchanged.
+- [x] Desktop 1440×900, tablet 834×1112 and mobile 390×844 have no horizontal document overflow and preserve logical reading order.
+- [x] Only intentional Student Home golden baselines change; visual tolerance is not weakened.
+- [x] Focused tests and required verification coverage are green. Literal `verify:agent` and `verify:ui` passed before the final a11y-only dedupe; Official CI 37325202782 re-ran corrected unit/integration/build, DB/RLS, 30 E2E, 30 a11y, Storybook visual and product golden gates. The prior literal local `verify:full` blocker was the Teacher P21 a11y budget corrected here; that wrapper was not re-invoked from this execution environment.
 
 ## Allowed files / domains
 
@@ -83,6 +83,8 @@ The existing `validate-upgrade.sh` correction is explicitly retained: no head-on
 Verification setup clarification: freshTotp in the existing real-MFA helper may wait almost 30 seconds to avoid replaying a submitted code. Authentication setup for the separated Admin scenarios therefore runs in its own 60-second fixture budget, matching the helper's existing destination wait. Functional scenario budgets stay at 30 seconds and assertion timeouts stay unchanged. No MFA shortcut, session impersonation or retry is introduced. Hydration readiness uses aria-disabled plus activation gating to retain keyboard focus during loading; controlled coverage asserts both readiness and native focus.
 
 Final setup scope correction: the same freshTotp wait exhausted the existing Admin-overview accessibility scenario after Admin Content. Isolate only this mandatory cryptographic wait centrally in the test helper by adding its exact scheduled duration to the current scenario budget. Remove the task-local MFA fixture; all tests continue using the original helper and original functional budget. This is not a blanket timeout increase: zero extra time is granted when no fresh-window wait occurs, assertion timeouts remain unchanged, and real MFA is retained. Record this limitation explicitly in evidence and validate full E2E/a11y/CI.
+
+Final verification scope correction: the Teacher P21 accessibility scenario covered six unique Teacher routes but performed seven Axe scans because `/teacher/disponibilidade` was scanned twice. Preserve the same six-route coverage and every focus assertion while performing exactly one Axe scan per unique route. Do not add tests, retries, sleeps, forced interaction or timeout budget. Official CI on corrected source must remain green.
 
 - Student/Admin/Teacher shared shell or global layout refactors.
 - `src/server/**`, `supabase/**`, auth/RLS, migrations, entitlements, CEFR, analytics and notification policy.
