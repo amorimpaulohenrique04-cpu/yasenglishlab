@@ -193,6 +193,59 @@ describe("P21 Home projection", () => {
     expect(selectLearningAction([first, second])?.lesson.id).toBe("first-position");
   });
 
+  it("projects at most three upcoming lessons from the focused Learning course", async () => {
+    const completed = lesson("completed", 1, progress("completed", 100, "2026-09-30T09:00:00Z"));
+    const started = lesson("started", 2, progress("started", 35, "2026-10-01T11:00:00Z"));
+    const third = lesson("third", 3);
+    const fourth = lesson("fourth", 4);
+    const fifth = lesson("fifth", 5);
+    const state = await getHomeView(
+      repository({
+        loadLearning: vi.fn(async () => [
+          course("course-1", [completed, started, third, fourth, fifth]),
+        ]),
+      }),
+      userId,
+      true,
+      now,
+    );
+
+    expect(state.status).toBe("success");
+    if (state.status !== "success") throw new Error("Expected success.");
+    expect(state.data.learning.status).toBe("success");
+    if (state.data.learning.status !== "success") throw new Error("Expected learning.");
+
+    expect(state.data.learning.data.lesson?.id).toBe("started");
+    expect(state.data.learning.data.upcomingLessons.map((item) => item.id)).toEqual([
+      "started",
+      "third",
+      "fourth",
+    ]);
+  });
+
+  it("keeps the upcoming lesson projection empty when the focused course is complete", async () => {
+    const complete = lesson("complete", 1, progress("complete", 100, "2026-10-01T10:00:00Z"));
+    const state = await getHomeView(
+      repository({
+        loadLearning: vi.fn(async () => [course("course-1", [complete])]),
+        loadPractice: vi.fn(async () => ({
+          activities: [],
+          history: [],
+          recentLessonId: null,
+        })),
+      }),
+      userId,
+      true,
+      now,
+    );
+
+    expect(state.status).toBe("success");
+    if (state.status !== "success") throw new Error("Expected success.");
+    expect(state.data.learning.status).toBe("success");
+    if (state.data.learning.status !== "success") throw new Error("Expected learning.");
+    expect(state.data.learning.data.upcomingLessons).toEqual([]);
+  });
+
   it("does not invent a lesson when every applicable lesson is complete", async () => {
     const complete = lesson("complete", 1, progress("complete", 100, "2026-10-01T10:00:00Z"));
     const state = await getHomeView(

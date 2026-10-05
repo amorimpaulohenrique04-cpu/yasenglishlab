@@ -86,6 +86,7 @@ export function Avatar({ image, label, fallback, size = "md" }: AvatarProps) {
 export interface ProgressBarProps {
   value: number;
   label?: string;
+  showLabel?: boolean;
   showValue?: boolean;
   tone?: "default" | "priority";
 }
@@ -93,6 +94,7 @@ export interface ProgressBarProps {
 export function ProgressBar({
   value,
   label,
+  showLabel = true,
   showValue = true,
   tone = "default",
 }: ProgressBarProps) {
@@ -108,9 +110,9 @@ export function ProgressBar({
       aria-valuenow={safe}
       aria-label={label ?? "Progresso"}
     >
-      {(label || showValue) && (
+      {((label && showLabel) || showValue) && (
         <div className="yas-progress-header">
-          <span>{label}</span>
+          {label && showLabel && <span>{label}</span>}
           {showValue && <strong>{safe}%</strong>}
         </div>
       )}

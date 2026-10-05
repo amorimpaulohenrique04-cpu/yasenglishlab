@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 export const canonicalAdminEmail = "canonical.admin@example.test";
 
@@ -45,7 +45,15 @@ async function freshTotp(secret: string, key: string): Promise<string> {
   let now = Date.now();
   const previousStep = lastSubmittedStep.get(key);
   if (previousStep !== undefined && Math.floor(now / 30_000) <= previousStep) {
-    await new Promise((resolve) => setTimeout(resolve, 30_000 - (now % 30_000) + 100));
+    const waitMs = 30_000 - (now % 30_000) + 100;
+    // Keep the operation budget intact while waiting for a non-replayed MFA code.
+    const info = test.info();
+    info.setTimeout(info.timeout + waitMs);
+    info.annotations.push({
+      type: "mfa-window-wait",
+      description: `${waitMs} ms reserved for a fresh TOTP code; operation budget unchanged.`,
+    });
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
     now = Date.now();
   }
 

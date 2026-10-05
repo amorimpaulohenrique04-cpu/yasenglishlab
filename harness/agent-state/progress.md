@@ -550,3 +550,42 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Official CI run `37245878022` passed Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate. Observed counts: unit 97/97; integration 68 passed + 1 existing skip; SQL integration 12 files; RLS 8 files; critical E2E final summary 27 passed with no failure; accessibility 30/30; Storybook visual 7/7; golden 3/3.
 - `verify:agent` and `verify:full` were not re-invoked literally after the remediation commits. Their executable constituents were all green in Official CI #530, and the 10 `eval:agent` rules were deterministically reproduced against the current diff. `verification.json` records this distinction rather than fabricating wrapper execution.
 - Stage 02 remains `done / verified:true`. Stage 02.1 is now `done / verified:true` with PR #34 and Official CI #530 as durable evidence. A final Official CI run on this committed Harness state is still required before merge; no merge is requested.
+
+# 2026-10-04 — Student Home approved design refactor started
+
+- Created `refactor/student-home-approved-design` from current main merge `58b9a3d85ed8a94fdde9b3f3839821128c3eaca4`.
+- Frozen the existing Home architecture: Server Component page, one Learning/Practice/Schedule read each, concurrent application orchestration, current primary-action priority and independent partial/error states.
+- Scope explicitly excludes shared Student shell/layout, server repositories, database, RLS/auth, fake streak/analytics/search/notifications, global overrides and visual-tolerance changes.
+- Implementation has not yet been claimed verified; task remains `in_progress / verified:false`.
+
+## 2026-10-04 — Student Home implementation pass
+
+- Added only one application-model delta: `HomeLearningView.upcomingLessons`, bounded to three and derived from the already-loaded focused Learning course. Existing `lesson`, repository ports, concurrency and primary-action selection remain unchanged.
+- Added unit coverage proving the projection starts at the selected/resumed lesson, is capped at three, and is empty for a completed course.
+- Refactored only Student Home composition and `home.css` using existing Card/Badge/ProgressBar primitives and Yas tokens. StudentShell, shared layout, server adapters, DB/RLS/auth and global Design System were not modified.
+- The approved screenshot is treated as visual direction only: no fake streak, fake weekly minutes, fake search, fake notification control or invented analytics was added.
+- Verification is pending CI; no golden baseline has been updated and no success claim is made yet.
+
+## 2026-10-05 — Student Home reviewed baseline promotion
+
+- Continued from `16b2a94`; focused Home unit/integration tests passed 32/32.
+- Reviewed Windows and actual Linux runner captures at all three required viewports, then promoted only six Home baselines. Complete Windows golden spec passed 3/3 with Login/Aulas/Progresso unchanged and tolerance 0.0015.
+- Browser checks confirmed zero horizontal overflow, no framework error overlay and keyboard focus on the primary CTA at 1440x900, 834x1112 and 390x844.
+- GOAL now declares the existing user-authorized `validate-upgrade.sh` correction; the scope eval rejected it before documentation and passed 10/10 afterward. No upgrade behavior changed.
+- Final verification wrappers and Official CI remain pending; Student stays in_progress/verified:false and Admin has not started.
+
+## 2026-10-05 - Latest verification and requested closeout
+
+- Source `7f9715d123b54aa1f4ee151b99c2c1ef9eca9624` is pushed to the existing Student branch. Official CI 37317448834 passed all six mandatory jobs; PR #35 remains open without merge.
+- Literal verify:agent and verify:ui passed, including 30 E2E, 30 a11y, seven design-system checks and three complete Windows golden projects. Only six Home baselines differ from main, with tolerance 0.0015 intact.
+- Latest verify:full passed core, real SQL/RLS, Harness/security/eval, 30 E2E and persistence/analytics, but failed Teacher P21 desktop accessibility at the original 30-second scenario budget (29 a11y passed). Isolated reproduction and responsible-layer diagnosis remain pending. No full-green claim is justified.
+- User requested finalization. Evidence is recorded without promoting registry status: Student remains in_progress/verified:false; final evidence-commit CI and all Admin implementation work remain pending.
+
+# 2026-10-05 — Student Home corrected-source verified closure
+
+- Removed one duplicate Axe scan from the existing Teacher P21 accessibility scenario without adding tests or reducing route coverage: six unique Teacher routes remain covered exactly once each; Data/Início/Término/Título focus assertions remain unchanged.
+- No product code, Auth/RLS, StudentShell, global layout, timeout, retry, sleep, forced interaction, skip/fixme or visual tolerance changed in the closure correction.
+- Official CI 37325202782 passed on corrected source `5ae2d9a50ec373ebca6bd262f366a4b503cd8cb1`: Supply Chain, Database, Quality, Guardrail Simulations, Preview and CI Gate all green.
+- Observed corrected-source counts: unit 99/99; integration 68 passed + 1 preexisting skip; critical E2E 30/30; accessibility 30/30; Storybook visual 7/7; product golden 3/3. Migration/upgrade, real DB/RLS, observability, persistence/analytics, build and security gates also passed.
+- The literal local `verify:full` wrapper was not re-invoked from this execution environment. The prior local red result is retained; its only blocker was the Teacher P21 desktop a11y 30-second budget, and the corrected constituent gate is green in Official CI. No false wrapper-pass claim is made.
+- Student Home is now `done / verified:true`. PR #35 remains open for review/merge. Admin design refactor is the next separate branch/task after refreshed main.

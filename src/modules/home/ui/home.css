@@ -1,62 +1,183 @@
 .yas-home-page {
   display: grid;
-  gap: var(--yas-space-6);
+  gap: var(--yas-space-5);
 }
 
-.yas-home-overview {
+.yas-home-dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.8fr) minmax(16rem, 0.75fr);
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 0.75fr) minmax(0, 0.7fr);
   gap: var(--yas-space-4);
-  align-items: stretch;
+  align-items: start;
+}
+
+.yas-home-main-column,
+.yas-home-side-column,
+.yas-home-side-top {
+  display: contents;
 }
 
 .yas-home-hero {
-  min-height: 18rem;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.yas-home-learning-card {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.yas-home-progress-card {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.yas-home-schedule-card {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.yas-home-practice-card {
+  grid-column: 2 / 4;
+  grid-row: 2;
+}
+
+.yas-home-hero {
+  position: relative;
+  min-height: 21rem;
   display: grid;
-  align-content: center;
-  gap: var(--yas-space-4);
+  align-items: center;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--yas-color-purple-950), var(--yas-color-purple-600));
+  background:
+    radial-gradient(
+      circle at 92% 10%,
+      color-mix(in srgb, var(--yas-color-purple-500) 72%, transparent),
+      transparent 28%
+    ),
+    linear-gradient(135deg, var(--yas-color-purple-950), var(--yas-color-purple-700));
   color: var(--yas-color-white);
-  padding: var(--yas-space-6);
+  padding: var(--yas-space-8);
+}
+
+.yas-home-hero-content {
+  position: relative;
+  z-index: 1;
+  width: min(60%, 34rem);
+  display: grid;
+  justify-items: start;
+  gap: var(--yas-space-5);
+}
+
+.yas-home-hero-copy {
+  display: grid;
+  gap: var(--yas-space-2);
 }
 
 .yas-home-hero h2,
 .yas-home-hero p,
 .yas-home-card h2,
-.yas-home-card h3,
 .yas-home-card p {
   margin: 0;
 }
 
 .yas-home-hero h2 {
-  max-width: 30rem;
   color: inherit;
   font-size: var(--yas-font-size-3xl);
   line-height: var(--yas-line-tight);
 }
 
 .yas-home-hero p {
-  max-width: 34rem;
   color: var(--yas-color-purple-100);
+  line-height: var(--yas-line-body);
 }
 
 .yas-home-primary-cta {
   width: fit-content;
-  min-height: var(--yas-control-height-md);
+  min-height: var(--yas-control-height-lg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--yas-radius-md);
   background: var(--yas-color-yellow-500);
   color: var(--yas-color-ink);
-  padding-inline: var(--yas-space-5);
+  padding-inline: var(--yas-space-6);
   text-decoration: none;
   font-weight: var(--yas-weight-bold);
 }
 
 .yas-home-primary-cta:hover {
   background: var(--yas-color-yellow-400);
+}
+
+.yas-home-hero-art {
+  position: absolute;
+  z-index: 0;
+  inset-block: var(--yas-space-8) var(--yas-space-6);
+  inset-inline-end: var(--yas-space-8);
+  width: min(38%, 22rem);
+}
+
+.yas-home-hero-orb {
+  position: absolute;
+  width: 15rem;
+  aspect-ratio: 1;
+  inset-block-start: -5rem;
+  inset-inline-end: -5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--yas-color-purple-500) 74%, transparent);
+}
+
+.yas-home-hero-sheet {
+  position: absolute;
+  inset-inline-end: 0;
+  width: 80%;
+  aspect-ratio: 1.35;
+  border: var(--yas-border-width) solid color-mix(in srgb, var(--yas-color-white) 28%, transparent);
+  border-radius: var(--yas-radius-xl);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--yas-color-white) 42%, transparent),
+    color-mix(in srgb, var(--yas-color-purple-200) 35%, transparent)
+  );
+  box-shadow: var(--yas-shadow-floating);
+}
+
+.yas-home-hero-sheet::after {
+  content: "";
+  position: absolute;
+  inset: auto var(--yas-space-5) var(--yas-space-5);
+  height: 0.45rem;
+  border-radius: var(--yas-radius-pill);
+  background: color-mix(in srgb, var(--yas-color-white) 58%, transparent);
+  box-shadow:
+    0 calc(var(--yas-space-3) * -1) 0 color-mix(in srgb, var(--yas-color-white) 42%, transparent),
+    0 calc(var(--yas-space-6) * -1) 0 color-mix(in srgb, var(--yas-color-white) 30%, transparent);
+}
+
+.yas-home-hero-sheet--back {
+  inset-block-end: 5%;
+  transform: rotate(-7deg) translateX(-14%);
+  opacity: 0.62;
+}
+
+.yas-home-hero-sheet--front {
+  inset-block-end: 12%;
+  display: grid;
+  place-items: center;
+  transform: rotate(4deg);
+}
+
+.yas-home-hero-play {
+  position: relative;
+  z-index: 1;
+  width: 5rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--yas-radius-xl);
+  background: color-mix(in srgb, var(--yas-color-white) 82%, var(--yas-color-purple-100));
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-2xl);
+  box-shadow: var(--yas-shadow-card);
 }
 
 .yas-home-card {
@@ -73,11 +194,11 @@
   gap: var(--yas-space-3);
 }
 
-.yas-home-card-heading a,
-.yas-home-link {
-  min-height: 2.75rem;
+.yas-home-card-heading a {
+  min-height: var(--yas-control-height-md);
   display: inline-flex;
   align-items: center;
+  flex: none;
   color: var(--yas-color-purple-700);
   text-decoration: none;
   font-size: var(--yas-font-size-sm);
@@ -85,7 +206,7 @@
 }
 
 .yas-home-card-heading a:hover,
-.yas-home-link:hover {
+.yas-home-lesson-title:hover {
   text-decoration: underline;
 }
 
@@ -101,48 +222,149 @@
 
 .yas-home-card-copy,
 .yas-home-meta,
-.yas-home-empty-copy {
+.yas-home-empty-copy,
+.yas-home-progress-caption {
   color: var(--yas-color-muted);
   font-size: var(--yas-font-size-sm);
   line-height: var(--yas-line-body);
 }
 
+.yas-home-learning-card {
+  gap: var(--yas-space-5);
+}
+
+.yas-home-learning-path {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-home-learning-row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 2.25rem 3rem minmax(0, 1fr) minmax(10rem, 0.72fr);
+  align-items: center;
+  gap: var(--yas-space-3);
+  border-radius: var(--yas-radius-lg);
+  padding: var(--yas-space-3);
+}
+
+.yas-home-learning-row[data-current="true"] {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-home-learning-step,
+.yas-home-learning-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.yas-home-learning-step {
+  width: 2rem;
+  aspect-ratio: 1;
+  border: var(--yas-border-strong);
+  border-radius: 50%;
+  background: var(--yas-color-white);
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-home-learning-row[data-current="true"] .yas-home-learning-step {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-home-learning-icon {
+  width: 3rem;
+  aspect-ratio: 1;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-600);
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-home-learning-copy {
+  min-width: 0;
+  display: grid;
+  gap: var(--yas-space-1);
+}
+
+.yas-home-lesson-title {
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: var(--yas-color-ink);
+  text-decoration: none;
+  font-size: var(--yas-font-size-md);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-home-learning-status {
+  min-width: 0;
+  display: grid;
+  justify-items: end;
+  gap: var(--yas-space-2);
+}
+
+.yas-home-learning-progress {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(5rem, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-2);
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-home-learning-progress .yas-progress {
+  width: 100%;
+}
+
+.yas-home-progress-card,
+.yas-home-schedule-card {
+  min-height: 18rem;
+}
+
 .yas-home-progress-value {
-  color: var(--yas-color-purple-800);
+  color: var(--yas-color-purple-700);
   font-size: var(--yas-font-size-3xl);
   font-weight: var(--yas-weight-bold);
   line-height: 1;
 }
 
 .yas-home-progress-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--yas-space-2) var(--yas-space-4);
+  display: grid;
+  gap: var(--yas-space-1);
   color: var(--yas-color-muted);
   font-size: var(--yas-font-size-sm);
 }
 
-.yas-home-secondary {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: var(--yas-space-4);
-  align-items: start;
-}
-
-.yas-home-lesson {
-  display: grid;
-  gap: var(--yas-space-3);
+.yas-home-progress-note {
   border-radius: var(--yas-radius-md);
-  background: var(--yas-color-surface-soft);
-  padding: var(--yas-space-4);
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-muted);
+  padding: var(--yas-space-3);
+  font-size: var(--yas-font-size-sm);
+  line-height: var(--yas-line-body);
 }
 
-.yas-home-lesson strong {
-  color: var(--yas-color-ink);
-  font-size: var(--yas-font-size-lg);
+.yas-home-schedule-empty {
+  display: grid;
+  align-content: start;
+  gap: var(--yas-space-3);
 }
 
-.yas-home-practice-highlight,
+.yas-home-schedule-empty .yas-button {
+  width: 100%;
+  margin-top: auto;
+}
+
 .yas-home-session-highlight {
   display: grid;
   gap: var(--yas-space-2);
@@ -151,10 +373,61 @@
   padding: var(--yas-space-4);
 }
 
-.yas-home-practice-highlight strong,
 .yas-home-session-highlight strong {
   color: var(--yas-color-ink);
   font-size: var(--yas-font-size-lg);
+}
+
+.yas-home-practice-card {
+  gap: var(--yas-space-5);
+}
+
+.yas-home-practice-highlight {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-4);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-purple-50);
+  padding: var(--yas-space-4);
+}
+
+.yas-home-practice-icon {
+  width: 3.5rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-xl);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-home-practice-copy {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: var(--yas-space-1);
+}
+
+.yas-home-practice-copy strong {
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-lg);
+  overflow-wrap: anywhere;
+}
+
+.yas-home-practice-open {
+  width: var(--yas-control-height-md);
+  height: var(--yas-control-height-md);
+  display: grid;
+  place-items: center;
+  border: var(--yas-border-strong);
+  border-radius: 50%;
+  background: var(--yas-color-white);
+  color: var(--yas-color-purple-700);
+  text-decoration: none;
+  font-weight: var(--yas-weight-bold);
 }
 
 .yas-home-local-error {
@@ -163,27 +436,61 @@
 }
 
 @media (max-width: 74rem) {
-  .yas-home-overview {
-    grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.8fr);
+  .yas-home-dashboard {
+    grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.85fr);
   }
 
-  .yas-home-overview > :last-child {
-    grid-column: 1 / -1;
+  .yas-home-main-column,
+  .yas-home-side-column {
+    min-width: 0;
+    display: grid;
+    gap: var(--yas-space-4);
+  }
+
+  .yas-home-side-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--yas-space-4);
+  }
+
+  .yas-home-hero,
+  .yas-home-learning-card,
+  .yas-home-progress-card,
+  .yas-home-schedule-card,
+  .yas-home-practice-card {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .yas-home-hero-content {
+    width: min(65%, 32rem);
+  }
+
+  .yas-home-hero-art {
+    width: min(34%, 18rem);
+  }
+
+  .yas-home-learning-row {
+    grid-template-columns: 2.25rem 3rem minmax(0, 1fr);
+  }
+
+  .yas-home-learning-status {
+    grid-column: 3;
+    justify-items: start;
   }
 }
 
 @media (max-width: 63.99rem) {
-  .yas-home-overview,
-  .yas-home-secondary {
-    grid-template-columns: 1fr;
+  .yas-home-dashboard {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .yas-home-overview > :last-child {
-    grid-column: auto;
+  .yas-home-side-top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .yas-home-hero {
-    min-height: 15rem;
+    min-height: 19rem;
   }
 }
 
@@ -192,13 +499,21 @@
     gap: var(--yas-space-4);
   }
 
-  .yas-home-hero {
-    min-height: 0;
-    padding: var(--yas-space-5);
+  .yas-home-side-top {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .yas-home-hero h2 {
-    font-size: var(--yas-font-size-2xl);
+  .yas-home-hero {
+    min-height: 0;
+    padding: var(--yas-space-6);
+  }
+
+  .yas-home-hero-content {
+    width: 100%;
+  }
+
+  .yas-home-hero-art {
+    display: none;
   }
 
   .yas-home-primary-cta {
@@ -208,5 +523,45 @@
   .yas-home-card-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .yas-home-card-heading a {
+    width: fit-content;
+  }
+
+  .yas-home-learning-row {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .yas-home-learning-icon {
+    display: none;
+  }
+
+  .yas-home-learning-copy,
+  .yas-home-learning-status {
+    grid-column: 2;
+  }
+
+  .yas-home-learning-status {
+    justify-items: stretch;
+  }
+
+  .yas-home-learning-status .yas-badge {
+    justify-self: start;
+  }
+
+  .yas-home-practice-highlight {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .yas-home-practice-open {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .yas-home-progress-card,
+  .yas-home-schedule-card {
+    min-height: 0;
   }
 }

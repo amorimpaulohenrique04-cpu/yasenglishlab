@@ -34,6 +34,7 @@ export interface HomeLearningView {
   lessonsCompleted: number;
   totalLessons: number;
   lesson: HomeLearningLesson | null;
+  upcomingLessons: HomeLearningLesson[];
 }
 
 export interface HomePracticeView {

@@ -7,6 +7,7 @@ import {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactElement,
   type ReactNode,
 } from "react";
@@ -122,6 +123,10 @@ export function Drawer(props: DrawerProps) {
   return <Modal {...props} className="yas-drawer" />;
 }
 
+const subscribeHydration = () => () => {};
+const clientHydrated = () => true;
+const serverHydrated = () => false;
+
 function OperationOverlay({
   mode,
   trigger,
@@ -136,10 +141,17 @@ function OperationOverlay({
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const hydrated = useSyncExternalStore(subscribeHydration, clientHydrated, serverHydrated);
   const Overlay = mode === "dialog" ? Dialog : Drawer;
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        aria-disabled={!hydrated}
+        onClick={() => {
+          if (hydrated) setOpen(true);
+        }}
+      >
         {trigger}
       </Button>
       <Overlay

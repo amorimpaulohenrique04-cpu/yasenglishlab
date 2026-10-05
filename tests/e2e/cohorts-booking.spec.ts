@@ -4,6 +4,7 @@ import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 if (process.env.CANONICAL_E2E !== "1" || !password)
   throw new Error("Cohort E2E requires canonical local fixture.");
+
 test("Student cohort booking, quota, cancellation and rebooking persist", async ({
   page,
 }, testInfo) => {
@@ -50,7 +51,9 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   }
   await expect(card).toBeVisible();
 });
-test("Admin default entry after MFA administers cohort metadata", async ({ page }, testInfo) => {
+test("Admin default entry after MFA preserves responsive overview evidence", async ({
+  page,
+}, testInfo) => {
   await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
   await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Avaliação em andamento" })).toBeVisible();
@@ -70,7 +73,11 @@ test("Admin default entry after MFA administers cohort metadata", async ({ page 
       contentType: "image/png",
     });
   }
+});
+test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   await page.goto("/admin/cohorts");
   const cohort = page.getByRole("row", { name: /Cohort Basic/ });
   await expect(cohort).toBeVisible();
@@ -78,7 +85,13 @@ test("Admin default entry after MFA administers cohort metadata", async ({ page 
   const drawer = page.getByRole("dialog");
   const form = drawer.getByRole("form", { name: "Editar Cohort Basic" });
   await form.getByRole("textbox", { name: /^Nome/ }).fill("Cohort Basic");
+  const saved = page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      new URL(response.url()).pathname === "/admin/cohorts",
+  );
   await form.getByRole("button", { name: "Salvar nome" }).click();
+  expect((await saved).status()).toBeLessThan(400);
   await expect(page.getByText("Turma atualizada", { exact: true })).toBeVisible();
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
@@ -87,4 +100,40 @@ test("Admin default entry after MFA administers cohort metadata", async ({ page 
     path: testInfo.outputPath("cohort-admin-desktop.png"),
     fullPage: true,
   });
+});
+
+test("Admin drawer does not accept interaction before hydration", async ({ page }) => {
+  await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
+  await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
+  let releaseScripts!: () => void;
+  let primitiveScriptHeld = false;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/static/chunks/*.js*", async (route) => {
+    const response = await route.fetch();
+    if ((await response.text()).includes("OperationOverlay")) {
+      primitiveScriptHeld = true;
+      await scriptsReady;
+    }
+    await route.fulfill({ response });
+  });
+  try {
+    await page.goto("/admin/cohorts", { waitUntil: "domcontentloaded" });
+    await expect.poll(() => primitiveScriptHeld).toBe(true);
+    const trigger = page.getByRole("row", { name: /Cohort Basic/ }).getByRole("button", {
+      name: "Gerenciar",
+    });
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toBeDisabled();
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    releaseScripts();
+    await expect(trigger).toBeEnabled();
+    await trigger.click();
+    await expect(page.getByRole("dialog", { name: "Cohort Basic" })).toBeVisible();
+  } finally {
+    releaseScripts();
+    await page.unrouteAll({ behavior: "wait" });
+  }
 });

@@ -2,13 +2,13 @@
 
 ## Active task
 
-**stage-02-1-operations-ux**
+**student-home-approved-design**
 
-Base `f7ca51a5c0b2bb74b4e620d298454c93ab426b21` (Stage 02 merge #33); branch `feat/stage-02-1-operations-ux`.
+Base `58b9a3d85ed8a94fdde9b3f3839821128c3eaca4`; branch `refactor/student-home-approved-design`.
 
-1. Treat the supplied roadmap HTML/screenshots as the approved visual objective; keep domain/security/accessibility contracts authoritative for behavior.
-2. Audit the real Admin/Teacher pages and reusable UI primitives; reconcile Stage 02 GOAL metadata with its verified registry state.
-3. Implement shared presentation primitives only where multiple real consumers exist, then redesign Admin Overview, Leads, Students/Student 360, Teachers, Cohorts, Enrollments, and Teacher operational pages in focused blocks.
-4. Preserve projections, actions, source-of-truth ownership, RLS/AAL2, lifecycle and all existing domain transitions; only add a bounded read projection if a verified UI dependency is missing.
-5. Per block, run focused behavior/E2E/a11y/visual checks and inspect desktop/tablet/mobile evidence without touching existing untracked artifacts; then run required verification gates sequentially and record actual results.
-6. Update task evidence and Harness to observed status; do not mark this feature verified or claim green checks until evidence and applicable Official CI confirm it.
+1. Freeze the existing Student Home domain/application contracts before presentation work: three concurrent reads, primary-action priority, partial/error semantics, Server Component boundary and accessible names.
+2. Add only the smallest bounded read-model delta needed by the approved design: derive up to three upcoming lessons from the already-loaded Learning projection; do not add a repository method or server query.
+3. Refactor only the Student Home page composition and Home-scoped CSS. Reuse current Card/Badge/ProgressBar primitives and design tokens. Do not alter StudentShell, layout.css or global Design System behavior.
+4. Run focused unit/integration validation before visual work is considered stable. Diagnose a failing test before editing; do not weaken tests.
+5. Inspect desktop/tablet/mobile output, then update only intentional Home golden baselines. Never change the golden tolerance and never replace Login/Aulas/Progresso baselines.
+6. Run `verify:agent`, `verify:ui` and one final `verify:full`; publish a PR and inspect Official CI. Keep `verified:false` until actual evidence is green.
