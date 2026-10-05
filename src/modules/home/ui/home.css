@@ -113,8 +113,7 @@
   inset-inline-end: 0;
   width: 80%;
   aspect-ratio: 1.35;
-  border: var(--yas-border-width) solid
-    color-mix(in srgb, var(--yas-color-white) 28%, transparent);
+  border: var(--yas-border-width) solid color-mix(in srgb, var(--yas-color-white) 28%, transparent);
   border-radius: var(--yas-radius-xl);
   background: linear-gradient(
     145deg,
@@ -132,10 +131,8 @@
   border-radius: var(--yas-radius-pill);
   background: color-mix(in srgb, var(--yas-color-white) 58%, transparent);
   box-shadow:
-    0 calc(var(--yas-space-3) * -1) 0
-      color-mix(in srgb, var(--yas-color-white) 42%, transparent),
-    0 calc(var(--yas-space-6) * -1) 0
-      color-mix(in srgb, var(--yas-color-white) 30%, transparent);
+    0 calc(var(--yas-space-3) * -1) 0 color-mix(in srgb, var(--yas-color-white) 42%, transparent),
+    0 calc(var(--yas-space-6) * -1) 0 color-mix(in srgb, var(--yas-color-white) 30%, transparent);
 }
 
 .yas-home-hero-sheet--back {
