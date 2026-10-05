@@ -5,22 +5,40 @@
 
 .yas-home-dashboard {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(22rem, 1fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.8fr) minmax(0, 0.75fr);
   gap: var(--yas-space-4);
   align-items: start;
 }
 
 .yas-home-main-column,
-.yas-home-side-column {
-  min-width: 0;
-  display: grid;
-  gap: var(--yas-space-4);
+.yas-home-side-column,
+.yas-home-side-top {
+  display: contents;
 }
 
-.yas-home-side-top {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--yas-space-4);
+.yas-home-hero {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.yas-home-learning-card {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.yas-home-progress-card {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.yas-home-schedule-card {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.yas-home-practice-card {
+  grid-column: 2 / 4;
+  grid-row: 2;
 }
 
 .yas-home-hero {
@@ -422,8 +440,26 @@
     grid-template-columns: minmax(0, 1.35fr) minmax(19rem, 0.85fr);
   }
 
+  .yas-home-main-column,
+  .yas-home-side-column {
+    min-width: 0;
+    display: grid;
+    gap: var(--yas-space-4);
+  }
+
   .yas-home-side-top {
+    display: grid;
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--yas-space-4);
+  }
+
+  .yas-home-hero,
+  .yas-home-learning-card,
+  .yas-home-progress-card,
+  .yas-home-schedule-card,
+  .yas-home-practice-card {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .yas-home-hero-content {
