@@ -84,4 +84,3 @@ No other domain is authorized. This scope does not authorize new UI-owned state 
 ## Definition of done
 
 Every acceptance criterion passes; visual/a11y evidence is inspected against the supplied references; all mandatory gates and applicable CI pass; no protected domain behavior changed; task state and evidence match reality.
-
