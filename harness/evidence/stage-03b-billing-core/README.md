@@ -1,6 +1,6 @@
 # Stage 03B — Billing Core
 
-Status: in_progress / verified:false. Official CI pending.
+Status: **done / verified:true** following green Official CI [37478655801](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37478655801) at implementation SHA 615187b0223135c0c078c2aeae2932528f348eb9. Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all passed.
 
 Base: main@2afd4d1b4ee20bfbc1bb9ec4ad32216cea1d0381, pulled once, initial tree clean.
 Branch: feat/stage-03b-billing-core. 3A remains done/verified; macro remains in_progress/verified:false.
@@ -46,9 +46,8 @@ not expose administrative replay. Partial refunds are neutral, with no invented
 refund/proration policy. Details and official links: docs/BILLING.md.
 
 No new out-of-scope failure observed. Historical ignored generated-file typecheck
-issue from 3A was not rerun or modified. Temporary PostgreSQL must be stopped.
+issue from 3A was not rerun or modified. Temporary PostgreSQL stopped after focused verification.
 
 ## Publication
 
-PR / Official CI links pending. Claim done only after mandatory CI is green and
-reviewed. Stop after 3B merge before 3C.
+[PR #41](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/41) opened and attached to this chat. Official CI above passed at implementation SHA, including clean typecheck, full database/upgrade checks and Preview. This closure changes only Harness evidence/status; implementation remains identical. Final required checks are available at [PR checks](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/41/checks). Merge only after those checks are green, then update clean main and stop before 3C.

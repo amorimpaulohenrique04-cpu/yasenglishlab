@@ -603,3 +603,5 @@ Stage 03A closure: security PR #40 (source-map-js 1.2.1 to 1.2.2, lockfile only)
 ## 2026-10-06 — Stage 03B
 
 Started separately from clean main@2afd4d1 on feat/stage-03b-billing-core. Authenticated Asaas normalization, atomic immutable-event/snapshot/Subscription reconciliation and shared private Placement initialization. 44 focused tests, focused typecheck/lint/security, real SQL/RLS, existing Placement/quota and three 8-connection concurrency scenarios passed. No public checkout/UI/notifications/dependency changes or broad local suites. 3B in_progress/verified:false pending Official CI; macro unchanged. Evidence: harness/evidence/stage-03b-billing-core/README.md.
+
+Stage 03B closure: PR #41 implementation SHA 615187b0223135c0c078c2aeae2932528f348eb9 passed all Official CI gates in run 37478655801, including Database and Preview. Evidence inspected; 3B done/verified:true, macro still in_progress/verified:false. This closure changes Harness records only. Merge after final required checks, update clean main, stop before 3C. Temporary PostgreSQL stopped.

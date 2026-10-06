@@ -1,6 +1,6 @@
 # GOAL — stage-03b-billing-core: atomic reconciliation
 
-Status: in_progress
+Status: done
 
 Owner: agent
 
@@ -26,7 +26,7 @@ main@2afd4d1b4ee20bfbc1bb9ec4ad32216cea1d0381; 3A done/verified. docs/BILLING.md
 - [x] Atomic durable idempotent reconciliation with snapshot financial checks and ordering.
 - [x] One initial Placement, no Auth impersonation or premature Enrollment.
 - [x] Anon/authenticated denied billing RPC; service_role permitted.
-- [ ] Focused checks and Official CI green before verified/merge.
+- [x] Focused checks and Official CI green before verified/merge.
 
 ## Allowed files / domains
 
