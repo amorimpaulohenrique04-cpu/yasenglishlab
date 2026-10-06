@@ -6,9 +6,10 @@ select jsonb_build_object('provider','ASAAS','eventId',k,'sourceType','notificat
  'action',effect,'sessionId',s,'checkoutId',null,'subscriptionId',sub,'paymentId','pay_notification',
  'amountCents',cents,'currency','BRL','cycleDate','2026-10-06');
 $$;
-insert into auth.users(id,email,email_confirmed_at) values
- ('ae000000-0000-4000-8000-000000000001','notification-one@example.com',now()),
- ('ae000000-0000-4000-8000-000000000002','notification-two@example.com',now());
+-- SQL exercises Billing/outbox ownership; verified email belongs to Auth adapter tests.
+-- Use the minimal id-only Auth contract shared by real Supabase and CI's stub.
+insert into auth.users(id) values
+ ('ae000000-0000-4000-8000-000000000001'),('ae000000-0000-4000-8000-000000000002');
 insert into public.user_roles(user_id,role) values
  ('ae000000-0000-4000-8000-000000000001','STUDENT'),('ae000000-0000-4000-8000-000000000002','STUDENT');
 

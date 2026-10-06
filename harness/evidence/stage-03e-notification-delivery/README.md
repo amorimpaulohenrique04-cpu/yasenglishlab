@@ -44,7 +44,9 @@ No local broad gate, UI/E2E, Storybook, visual or accessibility tests were run. 
 
 ## Official CI and PR
 
-Pending implementation PR and Official CI. 3A–3D remain done/verified:true; macro Stage 3 remains in_progress/verified:false; 3F remains planned/verified:false.
+PR: [#46](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/46). Initial CI [37541504099](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37541504099) passed Quality/Supply Chain/Guardrail Simulations but rejected the new SQL fixture's unnecessary email_confirmed_at column against CI's minimal Auth stub. The fix uses id-only fixtures; verified-email assertions remain in the Auth adapter tests. One affected local SQL/RLS rerun passed; no unrelated check was repeated. Ratchet: harness/failure-log/2026-10-06-notification-auth-fixture-contract.md. Corrected-head Official CI pending.
+
+3A–3D remain done/verified:true; macro Stage 3 remains in_progress/verified:false; 3F remains planned/verified:false.
 
 ## Out of scope
 
