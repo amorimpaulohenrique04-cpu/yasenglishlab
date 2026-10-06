@@ -1,10 +1,8 @@
 # Agent Plan
 
-Active task: stage-03b-billing-core; branch feat/stage-03b-billing-core.
+Active task: stage-03c-public-commercial-flow; branch feat/stage-03c-public-commercial-flow.
 
-1. Preserve main@2afd4d1 and 3A; confirm minimal official webhook semantics.
-2. Add authenticated normalization, atomic RPC and shared private Placement initialization.
-3. Run focused Billing, SQL/RLS, Placement/quota, concurrency, touched format/lint/typecheck/security.
-4. Record evidence, open PR, observe CI, mark done after green, merge and update clean main. Stop before 3C.
-
-Closure: PR #41 implementation passed Official CI 37478655801. Record 3B done/verified:true; await required checks for this Harness-only commit, merge exact head, update clean main, and stop before 3C.
+1. Preserve clean main@8199ff2 and 3A/3B; read minimal Auth/Billing/UI contracts and official signUp behavior.
+2. Add live public projection, public landing/signup, safe Student creation/continuation, existing checkout bridge and owned persisted return. Guard test-only local hosted provider.
+3. Run focused units/integration/typecheck/lint, one canonical E2E, scoped a11y and six responsive screenshots; record any unrelated blocker without scope expansion.
+4. Open PR, observe Official CI, close Harness after green, merge exact final head and update clean main. Stop before 3D.

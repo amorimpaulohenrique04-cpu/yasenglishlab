@@ -19,6 +19,9 @@ export function authorizedNextPath(
   if (!next) return null;
   const pathname = new URL(next, "https://yas.invalid").pathname;
   if (pathname === "/profile" || pathname === "/reset-password") return next;
+  if (pathname === "/checkout" || pathname === "/billing/return") {
+    return roles.includes("STUDENT") ? next : null;
+  }
   const root = pathname.split("/")[1] ?? "";
   const role = ["home", "aulas", "pratica", "materiais", "progresso", "agenda"].includes(root)
     ? "STUDENT"
