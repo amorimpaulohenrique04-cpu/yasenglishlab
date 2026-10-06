@@ -1,6 +1,6 @@
 # Stage 03C — Public Commercial Flow
 
-Status: in_progress / verified:false. Official CI and merge pending.
+Status: done / verified:true. Implementation verified by Official CI. Linked PR checks record the final head and merge authority.
 
 Base: `8199ff2f3a7965ebc9ebf1184db30bd3b2af49c7`.
 Branch: `feat/stage-03c-public-commercial-flow`.
@@ -43,4 +43,6 @@ The focused E2E also hit ENOSPC while Turbopack persisted this run's generated d
 
 ## Official CI
 
-[PR #44](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/44), implementation 9bcd06c2111c0ffc9d8d2ad8bc8a287ad380e06f. Initial [Official CI run 37492306733](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37492306733) passed Supply Chain, Database, Guardrails and Quality through functional tests, then rejected the new failure log's missing required metadata/sections. The record was corrected to the existing template and ratchet validator; no functional implementation changed. CI remains pending. Stage 03A/03B remain done/verified; macro remains in_progress/verified:false; 3D remains planned.
+[PR #44](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/44), implementation 9bcd06c2111c0ffc9d8d2ad8bc8a287ad380e06f. Initial [Official CI run 37492306733](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37492306733) passed Supply Chain, Database, Guardrails and Quality through functional tests, then rejected the new failure log's missing required metadata/sections. The record was corrected to the existing template and ratchet validator; no functional implementation changed. CI was pending at that correction. Stage 03A/03B remain done/verified; macro remains in_progress/verified:false; 3D remains planned.
+
+[Official CI run 37492862994](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37492862994) passed every gate on eb4beabd31ef752cfb453da967464872c0105072: Supply Chain, Database, Quality (including Harness, security and production build), Guardrail Simulations, Preview (including actual commercial E2E, accessibility and visual checks), and CI Gate. Stage 03C is therefore done/verified; this closure changes only Harness records. The final closure head must also be green on [PR checks](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/44/checks) before merge. No further implementation, local matrix or 3D work.

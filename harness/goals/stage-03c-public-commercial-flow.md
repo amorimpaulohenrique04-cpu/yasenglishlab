@@ -1,6 +1,6 @@
 # GOAL — stage-03c-public-commercial-flow: public signup and checkout
 
-Status: in_progress
+Status: done
 
 Owner: agent
 
@@ -28,7 +28,7 @@ AGENTS.md; docs/PRODUCT.md, BILLING.md, AUTH_RBAC_RLS.md, UI_CONTRACT.md and OPE
 - [x] Checkout enforces Student, live plan and existing commercial state, reusing startCheckout.
 - [x] Return enforces ownership and PAID+ACTIVE+real Placement; result query has no authority.
 - [x] Fake impossible in production; fake redirect never activates payment.
-- [ ] Focused unit/integration/E2E/a11y/responsive evidence and Official CI green before merge.
+- [x] Focused unit/integration/E2E/a11y/responsive evidence and Official CI green before merge.
 
 ## Allowed files / domains
 

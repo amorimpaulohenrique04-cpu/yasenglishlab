@@ -53,3 +53,5 @@ The pre-fix nav selector produces axe contrast 2.13:1; the pre-fix Entrar link m
 Before: canonical E2E failed axe contrast, then 44px target assertion; public projection with seeded GUID returned no plans due to schema rejection. Official CI run 37492306733 rejected the missing ratchet metadata/sections.
 
 After: final local canonical E2E passed in 26.0s with nine accessibility/responsive/target checks and six screenshots. The projection integration test with the seed-shaped GUID passed. The same existing ratchet validator is executed after record correction; Official CI remains the final authority.
+
+Official CI proof: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37492862994 passed all gates on eb4beabd31ef752cfb453da967464872c0105072, including ratchet, the canonical commercial E2E, accessibility, production build and Preview. No functional test or invariant was weakened.
