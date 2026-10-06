@@ -64,6 +64,12 @@ export function AdminShell({
       active: pathname.startsWith("/admin/enrollments"),
     },
     {
+      id: "billing",
+      label: "Pagamentos",
+      href: "/admin/billing",
+      active: pathname.startsWith("/admin/billing"),
+    },
+    {
       id: "content",
       label: "Conteúdos",
       href: contentHref,
@@ -145,6 +151,13 @@ export function AdminShell({
           </Link>
           <Link href="/admin/enrollments" onClick={() => setDrawerOpen(false)}>
             Matrículas
+          </Link>
+          <Link
+            href="/admin/billing"
+            aria-current={pathname.startsWith("/admin/billing") ? "page" : undefined}
+            onClick={() => setDrawerOpen(false)}
+          >
+            Pagamentos
           </Link>
           <Link href={contentHref} onClick={() => setDrawerOpen(false)}>
             Conteúdos

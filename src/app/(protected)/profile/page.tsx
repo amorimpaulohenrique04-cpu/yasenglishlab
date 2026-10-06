@@ -1,3 +1,5 @@
+import { StudentSubscription } from "@/modules/billing/ui/student-subscription";
+import { loadOwnSubscription } from "@/server/billing/own-subscription";
 import { Alert, Badge, Button, Card, Input } from "@/components/ui";
 import { requirePageAuth } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -22,6 +24,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   if (error || !profile) {
     throw new Error("Unable to load profile.");
   }
+
+  const subscription = auth.roles.includes("STUDENT") ? await loadOwnSubscription() : null;
 
   return (
     <main className="yas-profile-shell">
@@ -84,6 +88,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             </form>
           </div>
         </Card>
+
+        {auth.roles.includes("STUDENT") && <StudentSubscription subscription={subscription} />}
 
         <form action={logoutAction}>
           <Button type="submit" variant="outline">
