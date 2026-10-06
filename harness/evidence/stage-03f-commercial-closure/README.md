@@ -30,7 +30,7 @@ Rodada única antes do primeiro push: verify:harness e verify:ratchet passaram (
 
 ## Final closure CI
 
-Official CI da closure PR é obrigatório antes do merge. Primeiro commit mantém 3F e macro in_progress/verified:false. Após CI verde, somente a atualização mínima de registry/evidence/GOAL para done será permitida; nenhum ajuste cosmético posterior.
+[PR #47](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/47): [Official CI 37546188382](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37546188382) completed/success no head 7b51edd8c039b74af571fc5d989e7e060624c703; todos os seis jobs verdes. Primeiro commit manteve 3F e macro in_progress/verified:false. Este fechamento modifica somente seus estados, evidence e GOAL. A main exige pull request e CI Gate estrito do head atual: o commit adicional de estado é tecnicamente necessário e seus [checks finais](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/47/checks) devem passar antes do merge. Nenhum ajuste cosmético ou novo gate local.
 
 ## Known non-blockers
 
@@ -38,4 +38,4 @@ Homologação Asaas sandbox, domínio/chave Resend e invocação confiável de d
 
 ## Conclusion
 
-Auditoria consistente; closure em andamento. Nenhuma feature nova, código de produto, migration, teste, dependência ou UI no diff. Stage 3 só será CLOSED após CI, fechamento do Harness, merge e main limpa. Parar imediatamente após essa sequência.
+Auditoria consistente e closure verificada pelo CI integrado reutilizado e pelo CI da PR #47. 3A–3F e macro Stage 3 done/verified:true; Stage 3 — Commercial SaaS: CLOSED, efetivado pelo merge condicionado ao CI do head final e main limpa. Nenhuma feature nova, código de produto, migration, teste, dependência ou UI no diff. Parar imediatamente após essa sequência.

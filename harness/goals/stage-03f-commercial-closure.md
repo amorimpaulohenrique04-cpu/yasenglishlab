@@ -1,6 +1,6 @@
 # GOAL — stage-03f-commercial-closure
 
-Status: in_progress
+Status: done
 
 Owner: agent
 
@@ -18,8 +18,8 @@ AGENTS.md, docs/DEFINITION_OF_DONE.md, docs/TESTING.md, harness/feature_list.jso
 
 - [x] Evidence 3A–3E auditada; PRs mergeadas e checks finais verdes.
 - [x] Diff somente Harness; nenhum produto, migration, teste ou dependência.
-- [ ] Validators baratos e Official CI da closure verdes.
-- [ ] 3F e macro done/verified:true; PR mergeada e main limpa.
+- [x] Validators baratos e Official CI da closure verdes (37546188382).
+- [x] 3F e macro done/verified:true; registro efetivado pelo merge após CI do head final e conferência de main limpa.
 
 ## Allowed files / domains
 
