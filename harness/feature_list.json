@@ -23,7 +23,7 @@
     {
       "id": "stage-03a-billing-provider-foundation",
       "title": "stage-03a-billing-provider-foundation",
-      "status": "in_progress",
+      "status": "blocked",
       "verified": false,
       "dependencies": ["stage-02-1-operations-ux"],
       "evidence": [

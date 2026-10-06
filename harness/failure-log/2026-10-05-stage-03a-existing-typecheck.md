@@ -12,6 +12,8 @@ General local typecheck fails in unrelated generated artifacts.
 
 ## Evidence
 
+CI additionally failed in existing dependency audit: run 37400249103 reports source-map-js high severity, GHSA-68fv-2mgg-jv7q. Quality/database/preview jobs skipped. package.json and package-lock.json have no diff against base. OUT_OF_SCOPE_EXISTING_FAILURE; no investigation, dependency edits or manual CI retries.
+
 `node node_modules/typescript/bin/tsc --noEmit` failed on pre-existing generated `.next-p18/dev/types/routes.d.ts` (TS1435 at line 81 and multiple syntax errors) and validator.ts (TS1128 at line 179). These ignored build artifacts are outside the Stage 03A diff; no causal relation to billing imports. Not investigated, changed, or retried.
 
 ## Root cause
