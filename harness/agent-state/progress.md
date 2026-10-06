@@ -9,6 +9,7 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Additive APPLIED-only BillingEvent trigger, notification dedupe, service-only outbox, atomic claim/fencing, bounded retry and Resend/Fake adapters implemented without changing Billing or adding dependencies.
 - Focused 28 unit/integration tests, SQL/RLS, concurrent workers and security advisors passed. Formatting/lint/type checks and final diff review gate the commit. No local UI/full verification. Official CI and PR closure remain pending.
 - PR #46 initial CI 37541504099 rejected the 3E SQL fixture's unnecessary email_confirmed_at field in its minimal Auth stub. Corrected only to id-only Auth fixtures; repeated the affected SQL/RLS check once successfully and recorded permanent CI portability protection in the failure log. Source/provider and Billing implementations stayed unchanged; corrected CI pending.
+- Corrected implementation eadbce8 passed Official CI 37541866527 with all six jobs successful, including Notification SQL/RLS/concurrency in the broad CI path. Recorded evidence and marked only 3E done/verified:true; 3A–3D, macro and 3F states preserved. Final closure-head CI remains a merge condition; authorized final sequence is merge, clean main and stop before 3F. Local Yas stack stopped with data preserved.
 
 ## 2026-10-04 — stage-02-1-operations-ux started
 

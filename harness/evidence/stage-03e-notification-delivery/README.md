@@ -1,6 +1,6 @@
 # Stage 03E — Notification Delivery
 
-Status: in_progress / verified:false, awaiting Official CI.
+Status: done / verified:true, implementation verified by Official CI 37541866527.
 
 Base: main@aa7bc4824363b69b1cebdeb5df74b9146ad17ba9.
 
@@ -44,9 +44,13 @@ No local broad gate, UI/E2E, Storybook, visual or accessibility tests were run. 
 
 ## Official CI and PR
 
-PR: [#46](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/46). Initial CI [37541504099](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37541504099) passed Quality/Supply Chain/Guardrail Simulations but rejected the new SQL fixture's unnecessary email_confirmed_at column against CI's minimal Auth stub. The fix uses id-only fixtures; verified-email assertions remain in the Auth adapter tests. One affected local SQL/RLS rerun passed; no unrelated check was repeated. Ratchet: harness/failure-log/2026-10-06-notification-auth-fixture-contract.md. Corrected-head Official CI pending.
+PR: [#46](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/46). Initial CI [37541504099](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37541504099) passed Quality/Supply Chain/Guardrail Simulations but rejected the new SQL fixture's unnecessary email_confirmed_at column against CI's minimal Auth stub. The fix uses id-only fixtures; verified-email assertions remain in the Auth adapter tests. One affected local SQL/RLS rerun passed; no unrelated check was repeated. Ratchet: harness/failure-log/2026-10-06-notification-auth-fixture-contract.md.
 
-3A–3D remain done/verified:true; macro Stage 3 remains in_progress/verified:false; 3F remains planned/verified:false.
+Corrected implementation head eadbce8a9ac0aebd8d381ec0bf3f76074189dcba passed [Official CI 37541866527](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37541866527): Supply Chain, Quality, Database, Guardrail Simulations, Preview and CI Gate all succeeded. Database proved clean/replay/upgrade compatibility. Preview proved real integration/concurrency, RLS, observability, E2E/persistence, accessibility, Storybook and goldens. The Notification concurrency helper passed through the CI runner as well as locally. These broad checks ran only in Official CI.
+
+The Harness closure commit is subject to the same [final-head PR checks](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/46/checks). Merge requires their success and the exact current head SHA; the PR records the resulting merge commit. Final sequence: merge, fast-forward main, confirm clean checkout, stop before 3F.
+
+3A–3E are done/verified:true; macro Stage 3 remains in_progress/verified:false; 3F remains planned/verified:false.
 
 ## Out of scope
 

@@ -135,6 +135,7 @@ Uma nova vertical slice deve criar o menor domínio/port necessário, implementa
 ## P21 foundation closure
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
+
 ## Transactional notification delivery
 
 Billing aplicado → notifications → notification_deliveries → processor server-only → NotificationDeliveryProvider (Resend/Fake). Dedupe local, claim bounded e retry independentes do estado comercial. Recipient vem de Auth; scheduler permanece aberto. Ver [ADR 0014](adr/0014-resend-transactional-email.md).

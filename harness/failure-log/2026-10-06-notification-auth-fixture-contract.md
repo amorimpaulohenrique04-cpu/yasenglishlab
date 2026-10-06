@@ -46,4 +46,4 @@ Run the initial a102a2d notification_delivery.sql against the Official CI minima
 
 Before: Official CI 37541504099 rejected the expanded Auth fixture with exit code 3.
 
-After: the single affected local SQL/RLS rerun passed with exit code 0 and rollback after the id-only correction. The corrected-head Official CI result is recorded in Stage 03E evidence.
+After: the single affected local SQL/RLS rerun passed with exit code 0 and rollback after the id-only correction. Corrected head eadbce8 passed Official CI 37541866527, including clean/replay/upgrade Database and real Preview SQL/RLS/concurrency; Stage 03E evidence links the run.

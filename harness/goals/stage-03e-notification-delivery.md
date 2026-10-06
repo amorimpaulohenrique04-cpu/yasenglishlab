@@ -1,6 +1,6 @@
 # GOAL — stage-03e-notification-delivery: Transactional delivery
 
-Status: in_progress
+Status: done
 
 Owner: agent
 
@@ -25,7 +25,7 @@ Base main@aa7bc4824363b69b1cebdeb5df74b9146ad17ba9; branch feat/stage-03e-notifi
 - [x] Evento aplicado gera uma Notification e uma delivery; stale/rejected/ignored/duplicate não geram.
 - [x] RLS server-only na delivery, ownership da Notification preservado; dois claims concorrentes são disjuntos.
 - [x] Templates determinísticos, idempotency estável, retries bounded e falha de email independente de Billing.
-- [ ] Checks focados e Official CI verdes; PR mergeada e main limpa.
+- [x] Checks focados e Official CI verdes, comprovados no run 37541866527; fechamento da PR #46 condicionado ao CI do head final.
 
 ## Allowed files / domains
 
