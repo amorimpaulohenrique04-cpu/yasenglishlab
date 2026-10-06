@@ -31,7 +31,7 @@ const rows = ["ACTIVE", "PAST_DUE", "CANCELLED"].map((status, i) => ({
   billing_checkout_session_id: i < 2 ? id(i + 50) : null,
 }));
 type TableRow = Record<string, unknown>;
-function database(owner?: string) {
+function database(owner?: string, ignoreOwnerFilter = false) {
   const calls: {
     table: string;
     columns: string;
@@ -70,7 +70,9 @@ function database(owner?: string) {
         },
         eq(column: string, value: unknown) {
           call.filters.push([column, value]);
-          values = values.filter((row) => row[column] === value);
+          if (!ignoreOwnerFilter || column !== "user_id") {
+            values = values.filter((row) => row[column] === value);
+          }
           return query;
         },
         in(column: string, list: unknown[]) {
@@ -180,17 +182,9 @@ describe("authorized billing read models", () => {
     ).toBe(true);
   });
   it("rejects a mismatched owner even if a client incorrectly returns it", async () => {
-    mocks.server.mockResolvedValue(database().client);
     mocks.ownGuard.mockResolvedValue({ userId: id(99) });
     // Bypass the adapter's ownership filter to exercise defense in depth.
-    const client = database().client;
-    const original = client.from.bind(client);
-    client.from = ((table: string) => {
-      const q = original(table);
-      q.eq = (() => q) as typeof q.eq;
-      return q;
-    }) as typeof client.from;
-    mocks.server.mockResolvedValue(client);
+    mocks.server.mockResolvedValue(database(undefined, true).client);
     await expect(loadOwnSubscription()).rejects.toThrow("scope violation");
     expect(mocks.admin).not.toHaveBeenCalled();
   });

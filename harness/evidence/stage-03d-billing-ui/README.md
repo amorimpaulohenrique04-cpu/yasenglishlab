@@ -35,3 +35,5 @@ Cinco imagens revisadas visualmente: admin-desktop.png (1440), admin-tablet.png 
 ## Official CI
 
 Pendente. Único gate amplo. Nenhuma suíte local ampla executada.
+
+CI inicial 37534534349: TypeScript rejeitou apenas o adapter de teste novo (TS2339). Corrigido sem mudança de UI/read models; typecheck focado exit 0, ESLint do teste exit 0 e oito integration tests passaram. E2Es não repetidos porque a correção afetou somente o mock.
