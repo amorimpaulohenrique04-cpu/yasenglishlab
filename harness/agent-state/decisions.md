@@ -1,5 +1,9 @@
 # Harness Decisions
 
+## 2026-10-06 — Stage 03E transactional notification boundary
+
+ADR 0014 chooses authorized Resend behind a provider port, without SDK. Applied Billing requires the existing audit witness as well as mirror ordering/status, distinguishing equal-priority stale events without touching 3B. Local notification/channel dedupe, stable generated delivery keys, lease fencing and bounded retries control delivery independently of Billing. A 23-hour retry horizon avoids resend outside the provider's 24-hour dedupe window. Current verified Auth email is resolved server-side; operational rows and RPCs have no browser privileges. Provider acceptance alone establishes SENT. Invocation/hosting, Resend webhooks, UI and 3F remain out of scope.
+
 ## 2026-10-06 — Stage 03B billing boundary
 
 Use documented Asaas authToken header, not a fabricated signature. Persist only normalized identifiers/financial values. Preserve billing_events identity: insert definitive history in the same atomic transaction, after effects or safe rejection. Service-only RPC uses system actor null and shared private Placement initialization, without Auth impersonation. Existing entitlement logic stays unchanged. No authoritative subscription periods in schemas: retain null bounds, provider-state access and dueDate only for cycle ordering; provider wall-clock projected uniformly for ordering only. Sandbox homologation required before rollout. No partial-refund/proration policy or 3C work.

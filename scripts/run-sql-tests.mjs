@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 const suite = process.argv[2];
 const suites = {
   integration: [
+    "supabase/tests/notification_delivery.sql",
     "supabase/tests/billing_checkout.sql",
     "supabase/tests/domain_invariants.sql",
     "supabase/tests/vertical_slice_persistence.sql",
@@ -18,6 +19,7 @@ const suites = {
     "supabase/tests/placement.sql",
   ],
   rls: [
+    "supabase/tests/notification_delivery.sql",
     "supabase/tests/billing_checkout.sql",
     "supabase/tests/cohorts.sql",
     "supabase/tests/rls_permissions.sql",
@@ -33,12 +35,13 @@ const suites = {
   "admin-cohorts": ["supabase/tests/admin_cohorts.sql"],
   "admin-crm": ["supabase/tests/admin_crm.sql"],
   "billing-checkout": ["supabase/tests/billing_checkout.sql"],
+  "notification-delivery": ["supabase/tests/notification_delivery.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery>",
   );
   process.exit(2);
 }
@@ -79,5 +82,14 @@ if (suite === "integration") {
     env: process.env,
   });
   if (placement.status !== 0) process.exit(placement.status ?? 1);
+  const notifications = spawnSync(
+    process.execPath,
+    ["scripts/test-notification-delivery-concurrency.mjs"],
+    {
+      stdio: "inherit",
+      env: process.env,
+    },
+  );
+  if (notifications.status !== 0) process.exit(notifications.status ?? 1);
 }
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);

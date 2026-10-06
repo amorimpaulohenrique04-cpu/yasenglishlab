@@ -1,5 +1,7 @@
-# Plano — 3D Billing UI
+# Plano — 3E Notification Delivery
 
-1. Concluído: read models authenticated/RLS bounded e snapshot server-only restrito aos registros autorizados.
-2. Concluído: Admin DataTable/mobile, três KPIs, filtros/paginação; Profile Student com benefícios compartilhados.
-3. Concluído: checks focados, dois E2Es, cinco screenshots/a11y e Official CI 37534982183 verde. Registry 3D done/verified:true; merge condicionado ao CI verde do fechamento Harness. Parar antes de 3E.
+1. ADR Resend e migration aditiva: prova de evento aplicado pelo mirror e audit; dedupe/outbox; RPCs service-only com claim SKIP LOCKED e fencing.
+2. Port, templates V1, Resend/Fake, recipient Auth e processor bounded; retries seguros e sem scheduler.
+3. Checks focados, SQL/RLS e concorrência; PR/Official CI; fechamento e merge. Não iniciar 3F.
+
+Implementação e checks verificados pelo Official CI 37541866527. Fechamento registrado; merge condicionado aos checks do head final. Após merge, main limpa e parada antes de 3F.
