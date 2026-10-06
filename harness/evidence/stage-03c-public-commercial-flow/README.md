@@ -25,6 +25,7 @@ Direct installed Node CLIs were used because the machine's global npm/npx wrappe
 - Installed Prettier/ESLint on touched files: passed; initial unused retry parameters were removed.
 - `node node_modules/@playwright/test/cli.js test tests/e2e/commercial.spec.ts --workers=1`: 1 passed, final run 26.0s. Real local signup and fixed Student role; SDK paid asset reads denied; no ACTIVE before return/webhook; fake success return remains processing even after refresh; authenticated existing webhook returns 204, persists ACTIVE/PAID and initializes real Placement; refreshed return confirms and navigates to existing onboarding. Nine focused axe/responsive/44px-target checks and exactly six screenshots are part of this one scenario.
 - `git diff --check`: passed.
+- `node scripts/verify-ratchet.mjs`: passed after fixing the new log's format rejected by Official CI; only this failed static check was rerun locally.
 
 Local Supabase was started for actual SDK signup/SSR/PostgreSQL/webhook validation. Only the already-existing pending 3A and 3B migrations were applied to bring that local instance current. No SQL/RLS suite or database migration was added/run for this slice.
 
@@ -42,4 +43,4 @@ The focused E2E also hit ENOSPC while Turbopack persisted this run's generated d
 
 ## Official CI
 
-Pending PR and Official CI. Stage 03A/03B remain done/verified; macro remains in_progress/verified:false; 3D remains planned.
+[PR #44](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/44), implementation 9bcd06c2111c0ffc9d8d2ad8bc8a287ad380e06f. Initial [Official CI run 37492306733](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37492306733) passed Supply Chain, Database, Guardrails and Quality through functional tests, then rejected the new failure log's missing required metadata/sections. The record was corrected to the existing template and ratchet validator; no functional implementation changed. CI remains pending. Stage 03A/03B remain done/verified; macro remains in_progress/verified:false; 3D remains planned.
