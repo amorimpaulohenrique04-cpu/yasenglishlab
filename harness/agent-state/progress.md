@@ -593,3 +593,5 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 ## 2026-10-05 — Stage 03A
 
 Implemented only billing provider foundation on main@28efe6a: Asaas ADR/port/server-only adapter, fake, durable checkout reservation/snapshot and focused tests. 16 tests, lint, focused typecheck, SQL/RLS and 8-connection concurrency passed. General typecheck fails on existing generated .next-p18 artifacts; OUT_OF_SCOPE_EXISTING_FAILURE recorded. PR/CI pending; macro in_progress/verified:false; 3B–3F planned.
+
+Stage 03A publication: implementation commit 7b9add3 pushed; PR #39 opened. CI run 37400249103 observed in_progress. Status PARTIAL/in_progress/verified:false until required CI/typecheck evidence is sufficient. Execution stopped; no 3B work. Temporary PostgreSQL stopped.

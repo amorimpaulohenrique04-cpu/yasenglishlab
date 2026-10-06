@@ -14,6 +14,9 @@ ADR 0013 records authorized Asaas choice and official capability verification. S
 - `node node_modules/typescript/bin/tsc --noEmit`: FAILED in existing ignored `.next-p18/dev/types` generated artifacts. OUT_OF_SCOPE_EXISTING_FAILURE; no general rerun or unrelated edits.
 - `node node_modules/typescript/bin/tsc --project harness/evidence/stage-03a-billing-provider-foundation/tsconfig.focused.json`: passed after fixing two test array nullability errors.
 - `node scripts/verify-db.mjs`: passed (structural migration checks).
+- `node scripts/verify-security.mjs`: passed, server/client boundary across 267 source files.
+- `node scripts/verify-harness.mjs`: passed after bringing new failure records into the required filename/template contract; Ratchet, engineering system and platform checks passed.
+- `git diff --check`: passed.
 - Real SQL on isolated local PostgreSQL 127.0.0.1:55483: all migrations/seed applied, focused `supabase/tests/billing_checkout.sql` passed. First failure exposed missing service_role SELECT grants; fixed explicitly and reran only SQL test. Checks snapshot, double reservation, different-plan conflict, ambiguity retention, completion idempotency, expiry/reuse, no subscription creation, client table/RPC denial and service-role execution.
 - `node harness/evidence/stage-03a-billing-provider-foundation/check-concurrency.mjs`: passed, eight independent connections, one claim/intent.
 
@@ -23,4 +26,8 @@ No live Asaas credentials used and no real charges created. Sandbox live homolog
 
 ## PR / CI
 
-Pending publication; will record actual URL/run without claiming completion while required checks fail.
+[PR #39](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/39), opened and attached to this chat. Implementation commit: 7b9add328ded48c12e8ddb704bf129205f3fa3f3.
+
+[CI run 37400249103](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37400249103) observed in_progress (Supply Chain pending) at implementation SHA. This execution stops at the known CI state, as authorized. Package status PARTIAL / in_progress / verified:false; general local typecheck remains an out-of-scope failure. Evidence-only follow-up commit may supersede the initial run; CI final result is not claimed.
+
+Next package: 3B — Billing Core, only in a new execution after 3A merge. Temporary PostgreSQL was stopped after verification.
