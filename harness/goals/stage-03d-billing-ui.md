@@ -1,6 +1,6 @@
 # GOAL — stage-03d-billing-ui: Billing UI
 
-Status: in_progress
+Status: done
 
 Owner: agent
 
@@ -22,9 +22,9 @@ Base main@7b802abd744fcd138a3ebadfdc043cddf34722f5; branch feat/stage-03d-billin
 
 ## Acceptance criteria
 
-- [ ] Admin+AAL2, RLS, paginação de 25 e DTO sem campos de provider.
-- [ ] Student somente própria assinatura, snapshot histórico e benefícios existentes.
-- [ ] Responsivo, acessível, read-only e Official CI verde.
+- [x] Admin+AAL2, RLS, paginação de 25 e DTO sem campos de provider.
+- [x] Student somente própria assinatura, snapshot histórico e benefícios existentes.
+- [x] Responsivo, acessível, read-only e Official CI verde.
 
 ## Allowed files / domains
 

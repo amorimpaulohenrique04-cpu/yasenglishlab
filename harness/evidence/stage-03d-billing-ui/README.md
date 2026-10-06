@@ -37,3 +37,5 @@ Cinco imagens revisadas visualmente: admin-desktop.png (1440), admin-tablet.png 
 Pendente. Único gate amplo. Nenhuma suíte local ampla executada.
 
 CI inicial 37534534349: TypeScript rejeitou apenas o adapter de teste novo (TS2339). Corrigido sem mudança de UI/read models; typecheck focado exit 0, ESLint do teste exit 0 e oito integration tests passaram. E2Es não repetidos porque a correção afetou somente o mock.
+
+[PR #45](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/45). O commit de fechamento altera somente Harness; seu [CI final](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/45/checks) deve concluir verde antes do merge. 3A–3C preservados; macro in_progress/verified:false; 3E não iniciado.
