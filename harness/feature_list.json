@@ -93,11 +93,14 @@
     {
       "id": "stage-03f-commercial-closure",
       "title": "stage-03f-commercial-closure",
-      "status": "planned",
+      "status": "in_progress",
       "verified": false,
       "dependencies": ["stage-03e-notification-delivery"],
-      "evidence": [],
-      "updated_at": "2026-10-05T22:45:00-03:00"
+      "evidence": [
+        "harness/goals/stage-03f-commercial-closure.md",
+        "harness/evidence/stage-03f-commercial-closure/README.md"
+      ],
+      "updated_at": "2026-10-06T23:21:20.0213706Z"
     },
     {
       "id": "admin-home-approved-design",
