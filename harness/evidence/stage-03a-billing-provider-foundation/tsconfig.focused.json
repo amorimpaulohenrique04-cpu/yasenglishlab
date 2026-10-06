@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../../src/modules/billing/**/*.ts",
+    "../../../src/server/billing/**/*.ts",
+    "../../../tests/helpers/fake-billing-provider.ts",
+    "../../../tests/integration/billing-provider.test.ts"
+  ]
+}

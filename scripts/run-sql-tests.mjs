@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 const suite = process.argv[2];
 const suites = {
   integration: [
+    "supabase/tests/billing_checkout.sql",
     "supabase/tests/domain_invariants.sql",
     "supabase/tests/vertical_slice_persistence.sql",
     "supabase/tests/practice_persistence.sql",
@@ -17,6 +18,7 @@ const suites = {
     "supabase/tests/placement.sql",
   ],
   rls: [
+    "supabase/tests/billing_checkout.sql",
     "supabase/tests/cohorts.sql",
     "supabase/tests/rls_permissions.sql",
     "supabase/tests/teacher_operations.sql",
@@ -30,6 +32,7 @@ const suites = {
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
   "admin-cohorts": ["supabase/tests/admin_cohorts.sql"],
   "admin-crm": ["supabase/tests/admin_crm.sql"],
+  "billing-checkout": ["supabase/tests/billing_checkout.sql"],
 };
 
 const files = suites[suite];

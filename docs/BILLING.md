@@ -24,7 +24,9 @@ Entitlements iniciais possíveis:
 - `weekly_conversation_labs`
 - `monthly_private_sessions`
 
-O provider definitivo permanece em [OPEN_QUESTIONS.md](./OPEN_QUESTIONS.md).
+O provider autorizado é **Asaas**, atrás de `BillingProvider` server-only, conforme [ADR 0013](./adr/0013-asaas-billing-provider.md). A fundação 3A cria checkout mensal BRL por cartão; Pix recorrente e boleto não são presumidos nesse endpoint.
+
+`billing_checkout_sessions` reserva uma intenção por Student e guarda snapshot histórico de Plan. O preço vem do banco; callbacks vêm do APP_URL do servidor. Concorrência retorna pending/reutiliza READY. Resultado incerto mantém CREATING para reconciliação e não reenvia POST. READY não confirma pagamento e não altera subscriptions/entitlements. Não há rota pública no 3A; webhook e fluxo público pertencem respectivamente ao 3B/3C.
 
 ## Invariantes
 - Nome do plano não é autorização espalhada pelo código.

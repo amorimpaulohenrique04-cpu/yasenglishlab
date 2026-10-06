@@ -589,3 +589,7 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Observed corrected-source counts: unit 99/99; integration 68 passed + 1 preexisting skip; critical E2E 30/30; accessibility 30/30; Storybook visual 7/7; product golden 3/3. Migration/upgrade, real DB/RLS, observability, persistence/analytics, build and security gates also passed.
 - The literal local `verify:full` wrapper was not re-invoked from this execution environment. The prior local red result is retained; its only blocker was the Teacher P21 desktop a11y 30-second budget, and the corrected constituent gate is green in Official CI. No false wrapper-pass claim is made.
 - Student Home is now `done / verified:true`. PR #35 remains open for review/merge. Admin design refactor is the next separate branch/task after refreshed main.
+
+## 2026-10-05 — Stage 03A
+
+Implemented only billing provider foundation on main@28efe6a: Asaas ADR/port/server-only adapter, fake, durable checkout reservation/snapshot and focused tests. 16 tests, lint, focused typecheck, SQL/RLS and 8-connection concurrency passed. General typecheck fails on existing generated .next-p18 artifacts; OUT_OF_SCOPE_EXISTING_FAILURE recorded. PR/CI pending; macro in_progress/verified:false; 3B–3F planned.
