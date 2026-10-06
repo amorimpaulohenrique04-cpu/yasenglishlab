@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "next-env.d.ts",
+    "src/server/billing/admin-billing.ts",
+    "src/server/billing/own-subscription.ts",
+    "src/server/billing/subscription-read-model.ts",
+    "src/modules/billing/ui/**/*",
+    "src/app/(protected)/(admin)/admin/billing/**/*.tsx",
+    "src/app/(protected)/profile/**/*.tsx",
+    "src/modules/admin-content/ui/admin-shell.tsx",
+    "tests/unit/billing-ui.test.ts",
+    "tests/integration/billing-ui.test.ts",
+    "tests/e2e/billing-ui.spec.ts"
+  ],
+  "exclude": ["node_modules", ".next", ".next-p18", ".next-p18-build"]
+}

@@ -1,10 +1,5 @@
-# Agent Plan
+# Plano — 3D Billing UI
 
-Verified task: stage-03c-public-commercial-flow; branch feat/stage-03c-public-commercial-flow.
-
-1. Preserve clean main@8199ff2 and 3A/3B; read minimal Auth/Billing/UI contracts and official signUp behavior.
-2. Add live public projection, public landing/signup, safe Student creation/continuation, existing checkout bridge and owned persisted return. Guard test-only local hosted provider.
-3. Run focused units/integration/typecheck/lint, one canonical E2E, scoped a11y and six responsive screenshots; record any unrelated blocker without scope expansion.
-4. Open PR, observe Official CI, close Harness after green, merge exact final head and update clean main. Stop before 3D.
-
-Implementation, focused checks, six inspected screenshots and Official CI complete. Only final Harness-head CI, authorized merge and clean main update remain. No 3D work.
+1. Concluído: read models authenticated/RLS bounded e snapshot server-only restrito aos registros autorizados.
+2. Concluído: Admin DataTable/mobile, três KPIs, filtros/paginação; Profile Student com benefícios compartilhados.
+3. Concluído: checks focados, dois E2Es, cinco screenshots/a11y e Official CI 37534982183 verde. Registry 3D done/verified:true; merge condicionado ao CI verde do fechamento Harness. Parar antes de 3E.

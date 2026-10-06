@@ -32,13 +32,29 @@ export async function publicPlans(
   if (error) throw new Error("Public plans unavailable");
   const plans = z.array(row).parse(data);
   if (!plans.length) return [];
+  const benefits = await planBenefits(
+    client,
+    plans.map((plan) => plan.id),
+  );
+  return plans.map((plan) => ({
+    code: plan.code,
+    name: plan.name,
+    description: plan.description ?? "",
+    amountCents: plan.amount_cents,
+    currency: plan.currency,
+    billingInterval: plan.billing_interval,
+    benefits: benefits.get(plan.id) ?? [],
+  }));
+}
+export async function planBenefits(
+  client: SupabaseClient,
+  planIds: readonly string[],
+): Promise<Map<string, string[]>> {
+  if (!planIds.length) return new Map();
   const { data: limits, error: limitsError } = await client
     .from("plan_entitlements")
     .select("plan_id,limit_value,cadence,effective_from,effective_to,entitlements(key,active)")
-    .in(
-      "plan_id",
-      plans.map((plan) => plan.id),
-    );
+    .in("plan_id", [...planIds]);
   if (limitsError) throw new Error("Public plan benefits unavailable");
   const parsed = z
     .array(
@@ -53,29 +69,29 @@ export async function publicPlans(
     )
     .parse(limits);
   const now = Date.now();
-  return plans.map((plan) => ({
-    code: plan.code,
-    name: plan.name,
-    description: plan.description ?? "",
-    amountCents: plan.amount_cents,
-    currency: plan.currency,
-    billingInterval: plan.billing_interval,
-    benefits: parsed
-      .filter(
-        (limit) =>
-          limit.plan_id === plan.id &&
-          limit.entitlements.active &&
-          limit.limit_value &&
-          Date.parse(limit.effective_from) <= now &&
-          (!limit.effective_to || Date.parse(limit.effective_to) > now) &&
-          ((limit.entitlements.key === "monthly_private_sessions" && limit.cadence === "MONTH") ||
-            (["weekly_core_classes", "weekly_conversation_labs"].includes(limit.entitlements.key) &&
-              limit.cadence === "WEEK")),
-      )
-      .map((limit) => labels[limit.entitlements.key]?.(limit.limit_value!) ?? "")
-      .filter(Boolean),
-  }));
+  return new Map(
+    planIds.map((planId) => [
+      planId,
+      parsed
+        .filter(
+          (limit) =>
+            limit.plan_id === planId &&
+            limit.entitlements.active &&
+            limit.limit_value &&
+            Date.parse(limit.effective_from) <= now &&
+            (!limit.effective_to || Date.parse(limit.effective_to) > now) &&
+            ((limit.entitlements.key === "monthly_private_sessions" && limit.cadence === "MONTH") ||
+              (["weekly_core_classes", "weekly_conversation_labs"].includes(
+                limit.entitlements.key,
+              ) &&
+                limit.cadence === "WEEK")),
+        )
+        .map((limit) => labels[limit.entitlements.key]?.(limit.limit_value!) ?? "")
+        .filter(Boolean),
+    ]),
+  );
 }
+
 export async function selectedPlan(code: string) {
   return (await publicPlans()).find((plan) => plan.code === code) ?? null;
 }
