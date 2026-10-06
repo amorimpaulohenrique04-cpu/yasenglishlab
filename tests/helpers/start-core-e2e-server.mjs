@@ -8,6 +8,8 @@ const port = process.env.PLAYWRIGHT_PORT ?? "3000";
 const env = { ...process.env };
 let fake;
 if (env.CANONICAL_E2E === "1") {
+  env.BILLING_PROVIDER = "FAKE";
+  env.ASAAS_WEBHOOK_TOKEN = "yas-commercial-local-webhook-test-only-token";
   const { privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
   Object.assign(env, {
     MUX_TOKEN_ID: "local-test",

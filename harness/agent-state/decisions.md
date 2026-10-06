@@ -86,3 +86,7 @@ P21 Windows verification also revealed missing Progresso win32 references: main 
 ## 2026-10-05 — Stage 03A
 
 Asaas authorized by master prompt; ADR 0013. Recurring hosted card checkout in BRL; no assumption of recurrent Pix/boleto support in this endpoint. Durable server-only reservation avoids duplicate POST; ambiguous outcomes stay CREATING until reconciliation. No public consumer before 3B/3C.
+
+## 2026-10-06 — Stage 03C commercial boundary
+
+Keep prices/benefits as server-only database projections; no public SELECT policies. Signup uses the normal SDK and existing Profile trigger. Fixed STUDENT assignment accepts only SDK-returned identity; role-write failure uses a short-lived signed HttpOnly retry capability, never arbitrary target/role input or account deletion. Return derives human state from owned persisted payment/subscription/Placement only. Missing Placement stays processing. Fake checkout is explicit local/test only and never confirms payment; the existing authenticated webhook is the sole activation path. Do not expand analytics, Billing UI or recovery policy in 3C.

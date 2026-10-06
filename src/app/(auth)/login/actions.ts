@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { resolveAuthDestination } from "@/modules/auth";
+import { resolveAuthDestination, sanitizeNextPath } from "@/modules/auth";
 import { SupabaseProductAnalytics } from "@/server/analytics/supabase-product-analytics";
 import { resolveAuthContextFromClient } from "@/server/auth/context";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -15,6 +15,10 @@ const loginSchema = z.object({
 });
 
 export async function loginAction(formData: FormData): Promise<never> {
+  const rawNext = formData.get("next");
+  const next = sanitizeNextPath(typeof rawNext === "string" ? rawNext : null, "");
+  const failurePath = (error: string) =>
+    `/login?error=${error}${next ? `&next=${encodeURIComponent(next)}` : ""}`;
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -22,7 +26,7 @@ export async function loginAction(formData: FormData): Promise<never> {
   });
 
   if (!parsed.success) {
-    redirect("/login?error=credentials");
+    redirect(failurePath("credentials"));
   }
 
   const supabase = await createSupabaseServerClient();
@@ -32,13 +36,13 @@ export async function loginAction(formData: FormData): Promise<never> {
   });
 
   if (error) {
-    redirect("/login?error=credentials");
+    redirect(failurePath("credentials"));
   }
 
   const context = await resolveAuthContextFromClient(supabase);
   if (!context) {
     await supabase.auth.signOut();
-    redirect("/login?error=session");
+    redirect(failurePath("session"));
   }
 
   await new SupabaseProductAnalytics(supabase).track({ event: "login_completed" });

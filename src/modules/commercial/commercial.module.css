@@ -1,0 +1,215 @@
+.shell {
+  max-width: 1160px;
+  margin: auto;
+  padding: 24px;
+  color: var(--yas-color-ink);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 8px 0 32px;
+}
+.brand {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--yas-color-purple-900);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.touchLink {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.nav a {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.nav a:not(:global(.yas-button)) {
+  color: var(--yas-color-purple-900);
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 56px 0 72px;
+}
+.eyebrow {
+  color: var(--yas-color-purple-700);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  margin: 16px 0 24px;
+}
+.lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 42rem;
+}
+.journey {
+  background: var(--yas-color-purple-900);
+  color: white;
+  padding: 36px;
+  border-radius: var(--yas-radius-xl);
+}
+.journey h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+}
+.journey ol {
+  padding-left: 22px;
+  display: grid;
+  gap: 24px;
+  line-height: 1.5;
+}
+.section {
+  padding: 48px 0;
+  scroll-margin-top: 24px;
+}
+.section h2 {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  list-style-position: inside;
+  padding: 0;
+}
+.steps li {
+  padding: 24px;
+  background: var(--yas-color-purple-50);
+  border-radius: var(--yas-radius-lg);
+  line-height: 1.5;
+}
+.plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.plan h3,
+.plan p {
+  margin: 0;
+}
+.plan h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.final h2 {
+  font-size: 1.8rem;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.final p {
+  margin-bottom: 20px;
+}
+.plan ul {
+  padding-left: 20px;
+  line-height: 1.8;
+  flex: 1;
+}
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--yas-color-purple-900);
+}
+.price small {
+  font-size: 1rem;
+  font-weight: 400;
+}
+.final {
+  padding: 40px;
+  background: var(--yas-color-purple-100);
+  border-radius: var(--yas-radius-xl);
+}
+.footer {
+  padding: 40px 0 8px;
+  color: var(--yas-color-muted);
+}
+.compact {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+.compact > a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.compact h1 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  line-height: 1.2;
+}
+.actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+@media (max-width: 64rem) {
+  .hero {
+    gap: 24px;
+  }
+  .header {
+    align-items: flex-start;
+  }
+  .nav {
+    gap: 16px;
+  }
+}
+@media (max-width: 48rem) {
+  .shell {
+    padding: 20px;
+  }
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nav {
+    gap: 16px;
+    font-size: 0.95rem;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 24px 0 40px;
+  }
+  .journey {
+    padding: 28px;
+  }
+  .plans,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .section {
+    padding: 28px 0;
+  }
+  .final {
+    padding: 24px;
+  }
+}

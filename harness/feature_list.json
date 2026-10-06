@@ -53,11 +53,14 @@
     {
       "id": "stage-03c-public-commercial-flow",
       "title": "stage-03c-public-commercial-flow",
-      "status": "planned",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["stage-03b-billing-core"],
-      "evidence": [],
-      "updated_at": "2026-10-05T22:45:00-03:00"
+      "evidence": [
+        "harness/goals/stage-03c-public-commercial-flow.md",
+        "harness/evidence/stage-03c-public-commercial-flow/README.md"
+      ],
+      "updated_at": "2026-10-06T16:37:30.0004573Z"
     },
     {
       "id": "stage-03d-billing-ui",

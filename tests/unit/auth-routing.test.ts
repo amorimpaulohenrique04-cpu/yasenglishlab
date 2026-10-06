@@ -2,6 +2,25 @@ import { describe, expect, it } from "vitest";
 import { authContinuePath, authorizedNextPath, resolveAuthDestination } from "@/modules/auth";
 
 describe("role-aware auth destination", () => {
+  it("preserves only exact student commercial destinations", () => {
+    for (const next of ["/checkout?plan=START", "/billing/return?session=123"]) {
+      expect(authorizedNextPath(["STUDENT"], next)).toBe(next);
+      expect(authorizedNextPath(["ADMIN"], next)).toBeNull();
+      expect(authorizedNextPath([], next)).toBeNull();
+    }
+    for (const next of [
+      "/checkout/evil",
+      "/checkoutXYZ",
+      "/billing",
+      "/billing/returnXYZ",
+      "/billing/admin",
+      "//evil.test/checkout",
+    ])
+      expect(authorizedNextPath(["STUDENT"], next)).toBeNull();
+    expect(
+      resolveAuthDestination({ roles: ["STUDENT", "ADMIN"], aal: "aal1" }, "/checkout?plan=START"),
+    ).toBe("/mfa?next=%2Fcheckout%3Fplan%3DSTART");
+  });
   it("routes each workspace and neutral accounts", () => {
     expect(resolveAuthDestination({ roles: ["STUDENT"], aal: "aal1" })).toBe("/home");
     expect(resolveAuthDestination({ roles: ["TEACHER"], aal: "aal2" })).toBe("/teacher");

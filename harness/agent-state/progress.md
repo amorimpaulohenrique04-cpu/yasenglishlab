@@ -605,3 +605,15 @@ Stage 03A closure: security PR #40 (source-map-js 1.2.1 to 1.2.2, lockfile only)
 Started separately from clean main@2afd4d1 on feat/stage-03b-billing-core. Authenticated Asaas normalization, atomic immutable-event/snapshot/Subscription reconciliation and shared private Placement initialization. 44 focused tests, focused typecheck/lint/security, real SQL/RLS, existing Placement/quota and three 8-connection concurrency scenarios passed. No public checkout/UI/notifications/dependency changes or broad local suites. 3B in_progress/verified:false pending Official CI; macro unchanged. Evidence: harness/evidence/stage-03b-billing-core/README.md.
 
 Stage 03B closure: PR #41 implementation SHA 615187b0223135c0c078c2aeae2932528f348eb9 passed all Official CI gates in run 37478655801, including Database and Preview. Evidence inspected; 3B done/verified:true, macro still in_progress/verified:false. This closure changes Harness records only. Merge after final required checks, update clean main, stop before 3C. Temporary PostgreSQL stopped.
+
+## 2026-10-06 — Stage 03C local implementation
+
+Started from clean main@8199ff2f3a7965ebc9ebf1184db30bd3b2af49c7 on feat/stage-03c-public-commercial-flow. Public server Plan projection, SDK signup/fixed Student role/retry capability, safe Auth continuation, protected existing checkout and owned persisted return implemented. 3A/3B untouched. Focused unit/integration, lint and typecheck passed; canonical browser evidence/Official CI remain pending. See stage-03c evidence for recorded corrections and the dev-cache ENOSPC interruption. 3D not started.
+
+## 2026-10-06 — Stage 03C focused validation passed
+
+29 focused unit/integration tests and one canonical commercial E2E passed. The E2E includes nine WCAG/responsive/44px checks, six inspected screenshots, real SDK signup, protected assets denied before payment, unconfirmed fake return, authenticated Asaas webhook 204, persisted ACTIVE/PAID and existing Placement onboarding. Focused TypeScript, touched ESLint/Prettier and diff check passed. No broad local suites. Registry stays in_progress/unverified until Official CI. PR pending.
+
+## 2026-10-06 — Stage 03C verified
+
+Official CI run 37492862994 passed every mandatory gate on eb4beabd31ef752cfb453da967464872c0105072 (PR #44). Updated 3C to done/verified:true with six visual artifacts and local/CI evidence. Initial CI failure was only this task's failure-record format, fixed without changing runtime; existing ratchet rejected it then passed. 3A/3B remain done/verified, commercial macro remains in_progress/unverified, 3D remains planned. Final Harness-only head will pass CI before authorized merge and clean main update.
