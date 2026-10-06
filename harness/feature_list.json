@@ -14,11 +14,17 @@
     {
       "id": "stage-03-commercial-saas",
       "title": "stage-03-commercial-saas",
-      "status": "in_progress",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["stage-02-1-operations-ux"],
-      "evidence": [],
-      "updated_at": "2026-10-05T22:45:00-03:00"
+      "evidence": [
+        "harness/goals/stage-03f-commercial-closure.md",
+        "harness/evidence/stage-03f-commercial-closure/README.md",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/47",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37546188382",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37543665364"
+      ],
+      "updated_at": "2026-10-06T23:38:53.3958065Z"
     },
     {
       "id": "stage-03a-billing-provider-foundation",
@@ -93,11 +99,17 @@
     {
       "id": "stage-03f-commercial-closure",
       "title": "stage-03f-commercial-closure",
-      "status": "planned",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["stage-03e-notification-delivery"],
-      "evidence": [],
-      "updated_at": "2026-10-05T22:45:00-03:00"
+      "evidence": [
+        "harness/goals/stage-03f-commercial-closure.md",
+        "harness/evidence/stage-03f-commercial-closure/README.md",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/47",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37546188382",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37543665364"
+      ],
+      "updated_at": "2026-10-06T23:38:53.3774019Z"
     },
     {
       "id": "admin-home-approved-design",
