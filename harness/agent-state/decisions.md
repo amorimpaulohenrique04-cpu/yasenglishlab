@@ -78,3 +78,7 @@ P21 Windows verification also revealed missing Progresso win32 references: main 
 - Official CI is blocked by GHSA-vfj7-8cjw-p6xm / CVE-2026-93687 in dev-only `braces@3.0.3`. No patched npm release exists as of 2026-10-03.
 - Do not downgrade Next/ESLint, lower `audit-level`, or hide the advisory. Until upstream publishes a fixed release, apply the narrow source backport derived from reviewed upstream PR micromatch/braces#72, verify exact Git blob provenance and the 100/101 depth boundary, require a clean production-dependency audit, and allow the full dev audit to pass only when every reported high finding belongs to that exact patched advisory chain.
 - Any new advisory, production-path finding, patch drift, upstream package-version drift or failed depth regression remains fail-closed.
+
+## 2026-10-05 — Stage 03A
+
+Asaas authorized by master prompt; ADR 0013. Recurring hosted card checkout in BRL; no assumption of recurrent Pix/boleto support in this endpoint. Durable server-only reservation avoids duplicate POST; ambiguous outcomes stay CREATING until reconciliation. No public consumer before 3B/3C.

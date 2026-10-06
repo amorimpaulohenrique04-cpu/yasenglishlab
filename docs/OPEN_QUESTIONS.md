@@ -3,7 +3,6 @@
 Este arquivo registra decisões ainda **não fechadas**. Coding agents não devem preenchê-las por inferência; uma decisão relevante deve ser confirmada e, quando estrutural, registrada em ADR.
 
 ## Providers / infraestrutura
-- Qual será o provider definitivo de billing recorrente?
 - Encontros ao vivo V1: Zoom, Google Meet ou outra solução?
 - Hosting/deploy definitivo: manter direção Vercel ou escolher alternativa?
 - Analytics de produto: PostHog ou alternativa?

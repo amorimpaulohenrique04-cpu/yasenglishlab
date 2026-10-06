@@ -589,3 +589,13 @@ User explicitly requested GitHub push, superseding the prior no-commit/push rest
 - Observed corrected-source counts: unit 99/99; integration 68 passed + 1 preexisting skip; critical E2E 30/30; accessibility 30/30; Storybook visual 7/7; product golden 3/3. Migration/upgrade, real DB/RLS, observability, persistence/analytics, build and security gates also passed.
 - The literal local `verify:full` wrapper was not re-invoked from this execution environment. The prior local red result is retained; its only blocker was the Teacher P21 desktop a11y 30-second budget, and the corrected constituent gate is green in Official CI. No false wrapper-pass claim is made.
 - Student Home is now `done / verified:true`. PR #35 remains open for review/merge. Admin design refactor is the next separate branch/task after refreshed main.
+
+## 2026-10-05 — Stage 03A
+
+Implemented only billing provider foundation on main@28efe6a: Asaas ADR/port/server-only adapter, fake, durable checkout reservation/snapshot and focused tests. 16 tests, lint, focused typecheck, SQL/RLS and 8-connection concurrency passed. General typecheck fails on existing generated .next-p18 artifacts; OUT_OF_SCOPE_EXISTING_FAILURE recorded. PR/CI pending; macro in_progress/verified:false; 3B–3F planned.
+
+Stage 03A publication: implementation commit 7b9add3 pushed; PR #39 opened. CI run 37400249103 observed in_progress. Status PARTIAL/in_progress/verified:false until required CI/typecheck evidence is sufficient. Execution stopped; no 3B work. Temporary PostgreSQL stopped.
+
+Stage 03A CI result correction: run 37400249103 completed failure in Supply Chain (source-map-js high finding GHSA-68fv-2mgg-jv7q). No dependency/lockfile diff against main base, so OUT_OF_SCOPE_EXISTING_FAILURE; no investigation or dependency fix. Package BLOCKED/verified:false, macro remains in_progress. PR #39 retained for review; next package awaits merge and new execution.
+
+Stage 03A closure: security PR #40 (source-map-js 1.2.1 to 1.2.2, lockfile only) merged to main@89317e0 after Official CI 37402365170 passed. 3A merged main at 7764114 with no implementation changes. Official CI 37403716495 passed every mandatory job, including clean typecheck, database and Preview. Evidence updated; 3A done/verified:true; macro in_progress/verified:false. PR #39 merge follows final required checks; stop before 3B.
