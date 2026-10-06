@@ -1,6 +1,6 @@
 # GOAL — stage-03a-billing-provider-foundation
 
-Status: blocked
+Status: done
 Owner: agent
 Created: 2026-10-05
 Updated: 2026-10-05

@@ -597,3 +597,5 @@ Implemented only billing provider foundation on main@28efe6a: Asaas ADR/port/ser
 Stage 03A publication: implementation commit 7b9add3 pushed; PR #39 opened. CI run 37400249103 observed in_progress. Status PARTIAL/in_progress/verified:false until required CI/typecheck evidence is sufficient. Execution stopped; no 3B work. Temporary PostgreSQL stopped.
 
 Stage 03A CI result correction: run 37400249103 completed failure in Supply Chain (source-map-js high finding GHSA-68fv-2mgg-jv7q). No dependency/lockfile diff against main base, so OUT_OF_SCOPE_EXISTING_FAILURE; no investigation or dependency fix. Package BLOCKED/verified:false, macro remains in_progress. PR #39 retained for review; next package awaits merge and new execution.
+
+Stage 03A closure: security PR #40 (source-map-js 1.2.1 to 1.2.2, lockfile only) merged to main@89317e0 after Official CI 37402365170 passed. 3A merged main at 7764114 with no implementation changes. Official CI 37403716495 passed every mandatory job, including clean typecheck, database and Preview. Evidence updated; 3A done/verified:true; macro in_progress/verified:false. PR #39 merge follows final required checks; stop before 3B.

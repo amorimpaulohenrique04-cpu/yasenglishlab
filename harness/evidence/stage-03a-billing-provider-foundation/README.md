@@ -1,5 +1,11 @@
 # Stage 03A — Billing Provider Foundation
 
+Status: **done / verified:true** following green Official CI [37403716495](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37403716495) at 7764114d0a2e54f4944f75fc959e4d14598a9281. Supply Chain, Quality (including clean typecheck, unit/integration/build), Database, Guardrail Simulations, Preview and CI Gate all passed. Stage 03 macro remains in_progress / verified:false; no 3B implementation.
+
+The independent security [PR #40](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/40) updated only package-lock.json (source-map-js 1.2.1 → 1.2.2), passed Official CI [37402365170](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37402365170), and merged to main at 89317e0782c6dfeb5c06c8058ff9323861c72ec6. The 3A branch then merged that main and pushed 7764114. `git diff fff5f2c..7764114 -- src supabase tests docs .env.example` is empty: Billing implementation unchanged.
+
+Local micro-PR checks passed: npm ci, verify:supply-chain, ci:policy, verify:dependency-patches and git diff --check. The existing braces patch was reapplied to node_modules after npm ci using the same prerequisite step as Official CI. No broad local suite was run. Historical local generated-file typecheck failure remains documented; clean Official CI typecheck passed and is the release authority. Earlier blocked state below is historical, superseded by this green run.
+
 Base: main@28efe6a0d94a875e8ad58299116997f49d9d761b; pulled once, already current; initial worktree clean.
 Branch: feat/stage-03a-billing-provider-foundation. Scope: 3A only.
 
@@ -28,6 +34,6 @@ No live Asaas credentials used and no real charges created. Sandbox live homolog
 
 [PR #39](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/39), opened and attached to this chat. Implementation commit: 7b9add328ded48c12e8ddb704bf129205f3fa3f3.
 
-[CI run 37400249103](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37400249103) completed **failure** at implementation SHA: Supply Chain reports a high-severity `source-map-js` finding, GHSA-68fv-2mgg-jv7q; dependent quality/database/simulation/preview jobs were skipped. CI Gate failed accordingly. `git diff 28efe6a..HEAD -- package.json package-lock.json` is empty: existing dependency issue has no direct causal relation to this slice. Recorded OUT_OF_SCOPE_EXISTING_FAILURE; no dependency changes, investigation or manual CI reruns. Package status BLOCKED / blocked / verified:false. General local typecheck also remains an out-of-scope failure. Evidence-only commits may supersede the original run; no passing CI result is claimed.
+[CI run 37400249103](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37400249103) originally completed **failure** at implementation SHA: Supply Chain reported the existing source-map-js high-severity finding GHSA-68fv-2mgg-jv7q and skipped dependent jobs. The original 3A diff did not change dependencies. That historical OUT_OF_SCOPE_EXISTING_FAILURE was resolved independently by PR #40; the green run above supersedes the blocked state. No implementation changes were made to obtain green.
 
 Next package: 3B — Billing Core, only in a new execution after 3A merge. Temporary PostgreSQL was stopped after verification.
