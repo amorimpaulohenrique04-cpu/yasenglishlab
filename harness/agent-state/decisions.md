@@ -1,5 +1,9 @@
 # Harness Decisions
 
+## 2026-10-06 — Stage 03B billing boundary
+
+Use documented Asaas authToken header, not a fabricated signature. Persist only normalized identifiers/financial values. Preserve billing_events identity: insert definitive history in the same atomic transaction, after effects or safe rejection. Service-only RPC uses system actor null and shared private Placement initialization, without Auth impersonation. Existing entitlement logic stays unchanged. No authoritative subscription periods in schemas: retain null bounds, provider-state access and dueDate only for cycle ordering; provider wall-clock projected uniformly for ordering only. Sandbox homologation required before rollout. No partial-refund/proration policy or 3C work.
+
 ## H-001 — AGENTS.md is a map, not a second manual
 
 Detailed product/engineering rules remain in `docs/`; `AGENTS.md` only routes an agent to the correct source and commands.

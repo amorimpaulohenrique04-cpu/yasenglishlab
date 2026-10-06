@@ -1,10 +1,10 @@
 # Agent Plan
 
-Active task: stage-03a-billing-provider-foundation; branch feat/stage-03a-billing-provider-foundation.
+Active task: stage-03b-billing-core; branch feat/stage-03b-billing-core.
 
-1. Record main baseline and short official Asaas verification.
-2. Add narrow provider port, server-only adapter/configuration, durable server-only checkout reservation with Plan snapshot, and fake.
-3. Run changed-file format/lint, typecheck, focused provider/application and SQL/RLS tests only.
-4. Record evidence/blockers, commit, push, open PR, observe CI. Stop before 3B.
+1. Preserve main@2afd4d1 and 3A; confirm minimal official webhook semantics.
+2. Add authenticated normalization, atomic RPC and shared private Placement initialization.
+3. Run focused Billing, SQL/RLS, Placement/quota, concurrency, touched format/lint/typecheck/security.
+4. Record evidence, open PR, observe CI, mark done after green, merge and update clean main. Stop before 3C.
 
-Closure: independent security PR #40 merged after green CI; 3A received main without implementation changes; Official CI 37403716495 passed. Update 3A evidence/status, merge PR #39 after its final required checks, then stop. Do not begin 3B.
+Closure: PR #41 implementation passed Official CI 37478655801. Record 3B done/verified:true; await required checks for this Harness-only commit, merge exact head, update clean main, and stop before 3C.

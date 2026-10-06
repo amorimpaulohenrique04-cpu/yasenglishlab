@@ -39,11 +39,16 @@
     {
       "id": "stage-03b-billing-core",
       "title": "stage-03b-billing-core",
-      "status": "planned",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": ["stage-03a-billing-provider-foundation"],
-      "evidence": [],
-      "updated_at": "2026-10-05T22:45:00-03:00"
+      "evidence": [
+        "harness/goals/stage-03b-billing-core.md",
+        "harness/evidence/stage-03b-billing-core/README.md",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/41",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/37478655801"
+      ],
+      "updated_at": "2026-10-06T14:40:53.923Z"
     },
     {
       "id": "stage-03c-public-commercial-flow",
