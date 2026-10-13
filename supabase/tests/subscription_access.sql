@@ -33,6 +33,11 @@ insert into public.teachers(id,user_id) values('9d100000-0000-4000-8000-00000000
 insert into public.enrollments(id,user_id,course_id,status)
 select ('9d200000-0000-4000-8000-00000000000'||n)::uuid, ('9d000000-0000-4000-8000-00000000000'||n)::uuid,
   '40000000-0000-4000-8000-000000000001','ACTIVE' from generate_series(1,6) n;
+-- Stage 06a: Students record progress only with an ACTIVE cohort membership.
+insert into public.cohorts(id,course_id,name,code,status,starts_at)
+ values('9d700000-0000-4000-8000-000000000001','40000000-0000-4000-8000-000000000001','Gate cohort','gate-cohort','ACTIVE',now()-interval '1 day');
+insert into public.cohort_memberships(cohort_id,user_id,enrollment_id)
+select '9d700000-0000-4000-8000-000000000001', ('9d000000-0000-4000-8000-00000000000'||n)::uuid, ('9d200000-0000-4000-8000-00000000000'||n)::uuid from generate_series(1,6) n;
 insert into public.subscriptions(id,user_id,plan_id,provider,status) values
  ('9d300000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000001','10000000-0000-0000-0000-000000000003','test','ACTIVE'),
  ('9d300000-0000-4000-8000-000000000002','9d000000-0000-4000-8000-000000000002','10000000-0000-0000-0000-000000000003','test','PAST_DUE'),

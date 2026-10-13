@@ -378,6 +378,45 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
     if (error) throw error;
   }
 }
+// Stage 06a: progress needs an ACTIVE cohort membership. Ana gets a dedicated cohort with no teacher,
+// sessions or placement settings so existing cohort/agenda/placement scenarios are unaffected.
+const anaCohortId = "9d200000-0000-4000-8000-000000000003";
+const { error: anaCohortError } = await admin.from("cohorts").upsert(
+  {
+    id: anaCohortId,
+    course_id: courseId,
+    name: "Canonical Ana",
+    code: "canonical-ana",
+    status: "ACTIVE",
+    timezone: "America/Recife",
+    starts_at: "2026-01-01T00:00:00-03:00",
+  },
+  { onConflict: "id" },
+);
+if (anaCohortError) throw anaCohortError;
+const { data: anaEnrollment, error: anaEnrollmentError } = await admin
+  .from("enrollments")
+  .select("id")
+  .eq("user_id", userId)
+  .eq("course_id", courseId)
+  .single();
+if (anaEnrollmentError) throw anaEnrollmentError;
+const { data: anaMembership, error: anaMembershipError } = await admin
+  .from("cohort_memberships")
+  .select("id")
+  .eq("cohort_id", anaCohortId)
+  .eq("user_id", userId)
+  .eq("status", "ACTIVE")
+  .maybeSingle();
+if (anaMembershipError) throw anaMembershipError;
+if (!anaMembership) {
+  const { error } = await admin.from("cohort_memberships").insert({
+    cohort_id: anaCohortId,
+    user_id: userId,
+    enrollment_id: anaEnrollment.id,
+  });
+  if (error) throw error;
+}
 const { error: cohortSettingsError } = await admin.from("cohort_placement_settings").upsert(
   [
     {

@@ -29,6 +29,7 @@ vi.mock("@/server/analytics/supabase-product-analytics", () => ({
 import { bookLiveSessionAction } from "@/app/(protected)/(student)/agenda/actions";
 import { startPracticeAction } from "@/app/(protected)/(student)/pratica/actions";
 import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
+import { NoActiveCohortError } from "@/modules/learning";
 import { ScheduleBookingError } from "@/modules/schedule";
 import { loadSubscriptionAccess } from "@/server/billing/subscription-access";
 import { SupabaseLearningRepository } from "@/server/learning/supabase-learning-repository";
@@ -56,6 +57,19 @@ describe("gate error mapping in repositories", () => {
         completionPercent: 10,
       }),
     ).rejects.toBeInstanceOf(SubscriptionSuspendedError);
+  });
+
+  it("record_lesson_progress with cohort gate -> NoActiveCohortError, not suspended, no SQL leak", async () => {
+    mocks.rpc.mockResolvedValue({
+      data: null,
+      error: { code: "42501", message: "active cohort membership required" },
+    });
+    const error = await new SupabaseLearningRepository(rpcClient)
+      .recordLessonProgress({ lessonId: id, completionPercent: 10 })
+      .catch((e) => e);
+    expect(error).toBeInstanceOf(NoActiveCohortError);
+    expect(error).not.toBeInstanceOf(SubscriptionSuspendedError);
+    expect(error.message).toBe("NO_ACTIVE_COHORT");
   });
 
   it("start/submit practice -> SubscriptionSuspendedError", async () => {

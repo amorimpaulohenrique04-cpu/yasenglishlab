@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { NoActiveCohortError } from "@/modules/learning";
 import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
 import {
   loadLearningAccess,
@@ -47,7 +48,7 @@ export async function lessonAssetAccessAction(assetId: string) {
   return createProtectedAssetSignedUrl({ kind: "lesson_asset", id });
 }
 
-export type VideoSuspended = { suspended: true };
+export type VideoSuspended = { suspended: true } | { noCohort: true };
 // A suspended subscription is a normal state, not a failure: the player stays unmounted and the caller
 // refreshes the page, which shows the suspension notice.
 export async function lessonVideoPlaybackAction(id: string) {
@@ -81,6 +82,7 @@ export async function checkpointVideoAction(
     });
   } catch (error) {
     if (error instanceof SubscriptionSuspendedError) return { suspended: true };
+    if (error instanceof NoActiveCohortError) return { noCohort: true };
     throw error;
   }
 }

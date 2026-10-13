@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
+import { NoCohortNotice } from "./no-cohort-notice";
 import type { VideoPlayback } from "@/modules/learning/application/video-provider";
 import {
   lessonVideoPlaybackAction,
@@ -28,6 +29,7 @@ export function LessonVideo({
   const router = useRouter();
   const [error, setError] = useState("");
   const [suspended, setSuspended] = useState(false);
+  const [noCohort, setNoCohort] = useState(false);
   const player = useRef<import("@mux/mux-player-react").MuxPlayerRefAttributes | null>(null);
   const pending = useRef<{ position: number; ended: boolean } | null>(null);
   const saving = useRef(false);
@@ -87,7 +89,12 @@ export function LessonVideo({
             checkpoint.position,
             checkpoint.ended,
           );
-          if (outcome?.suspended) {
+          if (outcome && "noCohort" in outcome) {
+            pending.current = null;
+            setNoCohort(true);
+            return;
+          }
+          if (outcome && "suspended" in outcome) {
             pending.current = null;
             setSuspended(true);
             router.refresh();
@@ -137,6 +144,7 @@ export function LessonVideo({
     );
   return (
     <div>
+      {noCohort && <NoCohortNotice />}
       <div role="status">{error}</div>
       {error && playback && <Button onClick={load}>Renovar acesso ao vídeo</Button>}
       {playback?.captions && (
