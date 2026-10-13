@@ -19,7 +19,7 @@ O aluno cancela pelo produto; o servidor cancela a assinatura no Asaas (sem reno
 ## Relevant context
 
 - `docs/adr/0016-access-suspension-on-payment-failure.md`
-- `supabase/migrations/20261013140000_stage_04d_subscription_cancellation.sql`
+- `supabase/migrations/20261013170000_stage_04d_subscription_cancellation.sql`
 - `supabase/tests/subscription_cancellation.sql` (`node scripts/run-sql-tests.mjs subscription-cancellation`)
 
 ## Acceptance criteria

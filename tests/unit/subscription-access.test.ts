@@ -92,7 +92,7 @@ describe("deriveSubscriptionAccess (ADR 0016)", () => {
   });
 });
 
-describe("CANCELLED with paid access left (migration 20261013140000)", () => {
+describe("CANCELLED with paid access left (migration 20261013170000)", () => {
   const now = new Date("2026-10-13T12:00:00Z");
   const cancelled = (periodEnd: string | null | undefined, startedAt?: string) => ({
     status: "CANCELLED" as const,

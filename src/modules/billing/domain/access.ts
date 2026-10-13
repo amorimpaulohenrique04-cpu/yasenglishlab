@@ -2,7 +2,7 @@
 // shared by server adapters, actions and tests. It mirrors private.has_paid_access (migration
 // 20261013130000): staff and users without any subscription are never suspended; everyone else needs at
 // least one ACTIVE/TRIALING subscription, or a CANCELLED one whose paid cycle has not ended yet
-// (current_period_end > now, migration 20261013140000). Nothing here mutates enrollments or progress.
+// (current_period_end > now, migration 20261013170000). Nothing here mutates enrollments or progress.
 
 export type AccessSubscriptionStatus = "ACTIVE" | "PAST_DUE" | "CANCELLED" | "EXPIRED" | "TRIALING";
 export type SuspensionReason = "PAST_DUE" | "EXPIRED" | "CANCELLED";
