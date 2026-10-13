@@ -1,6 +1,6 @@
 # Admin Content V1 — discovery evidence
 
-2026-10-01. Discovery started blocked. The product owner subsequently resolved that contract explicitly; the implementation below supersedes the blocked conclusion while preserving its historical evidence.
+2026-10-01. Discovery started blocked. The product owner subsequently resolved that contract explicitly; the implementation and focused local verification below supersede the blocked conclusion. Registry stays `in_progress/verified:false` only because Official CI evidence for the final head is not attached.
 
 Two read-only agents investigated content/Student contracts and Admin/auth/audit/tests. Principal reviewed schema, Student learning repository, content RLS, Admin guard/service and audit taxonomy. No runtime files changed.
 
@@ -56,6 +56,6 @@ The explicit owner decision is recorded in `docs/ADMIN_CONTENT.md` and ADR 0006:
 
 Desktop preview evidence is [module-draft-preview.png](../../../artifacts/prompt-18-admin-content/module-draft-preview.png); the Student publication/unpublication captures are adjacent.
 
-### Verification still delegated to the operator
+### Superseded note (reconciled 2026-10-12)
 
-The browser flow is covered by `tests/e2e/admin-content.spec.ts` and the Admin accessibility case in `tests/a11y/critical-flows.spec.ts`; execution is pending the isolated server's initial post-MFA compilation. It is not represented as a passing result. The full gates are intentionally not run in this turn at the operator's direction.
+The earlier "pending" statement about `tests/e2e/admin-content.spec.ts` and the Admin accessibility case in `tests/a11y/critical-flows.spec.ts` is superseded by the `admin-e2e` (1/1) and `admin-a11y` (2/2) local passes listed above. What remains is Official CI evidence (run link) before promotion to `done/verified`. The full gates are intentionally not run in this turn at the operator's direction.
