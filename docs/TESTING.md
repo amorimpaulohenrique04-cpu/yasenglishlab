@@ -210,3 +210,8 @@ A infraestrutura deve manter evidência de ao menos uma regressão deliberada de
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
 
+## Testes pulados e instáveis no CI
+
+Os jobs `Preview (e2e)` e `Preview (accessibility)` leem o relatório JSON do Playwright (`artifacts/e2e/results.json` e `artifacts/a11y/results.json`) com `scripts/ci/check-playwright-results.mjs`. O job reprova quando há teste pulado (esconde cobertura) ou teste que só passou depois de retry (instável), e escreve o resumo no job summary do GitHub. Retries continuam ativos no CI para absorver ruído de infraestrutura, mas deixam de mascarar a instabilidade.
+
+Para investigar um caso pontual, `YAS_ALLOW_FLAKY=1` ou `YAS_ALLOW_SKIPPED=1` desligam cada verificação; não use esses overrides para fechar uma tarefa. `npm run verify:ui` exige `CANONICAL_E2E=1`, porque sem ele os specs canônicos são pulados e a execução não prova nada.

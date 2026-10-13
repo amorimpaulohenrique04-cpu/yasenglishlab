@@ -1,4 +1,4 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices, type ReporterDescription } from "@playwright/test";
 
 const port = process.env.PLAYWRIGHT_PORT ?? "3000";
 const baseURL = `http://127.0.0.1:${port}`;
@@ -6,7 +6,10 @@ const baseURL = `http://127.0.0.1:${port}`;
 const ciOverrides = process.env.CI
   ? {
       retries: 2,
-      reporter: "github" as const,
+      reporter: [
+        ["github"],
+        ["json", { outputFile: "artifacts/e2e/results.json" }],
+      ] satisfies ReporterDescription[],
     }
   : {
       retries: 0,

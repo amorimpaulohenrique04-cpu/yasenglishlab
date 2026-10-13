@@ -11,6 +11,11 @@ function prepareCanonicalFixture() {
   run(process.execPath, ["scripts/setup-canonical-e2e.mjs"]);
 }
 
+assert(
+  canonicalE2e,
+  "verify:ui requires CANONICAL_E2E=1 (local Supabase): without it the canonical E2E specs skip and the run proves nothing.",
+);
+
 for (const screen of screens) {
   assert(
     exists(`docs/reference-ui/${screen}/reference.webp`),
