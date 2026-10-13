@@ -14,6 +14,7 @@ import { createSupabaseAdminClient } from "@/server/supabase/admin";
 import { startCheckout } from "@/modules/billing/application/checkout";
 import { SupabaseCheckoutRepository } from "@/server/billing/checkout-repository";
 import { commercialProvider } from "./provider";
+import { rateLimit } from "@/server/security/rate-limit";
 import { selectedPlan } from "./plans";
 
 export async function commercialStudent(next: string) {
@@ -44,6 +45,13 @@ export async function currentCommercialState(userId: string) {
 }
 export async function beginCommercialCheckout(planCode: string) {
   const auth = await assertRole("STUDENT");
+  const limit = await rateLimit({
+    bucket: "checkout_user",
+    subject: auth.userId,
+    limit: 20,
+    windowSeconds: 3600,
+  });
+  if (!limit.allowed) return { kind: "rate_limited" as const };
   const plan = await selectedPlan(planCode);
   if (!plan) return { kind: "invalid" as const };
   const state = await currentCommercialState(auth.userId);

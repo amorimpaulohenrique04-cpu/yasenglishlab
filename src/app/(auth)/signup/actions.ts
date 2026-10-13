@@ -1,5 +1,5 @@
 "use server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 import { createSupabaseAdminClient } from "@/server/supabase/admin";
@@ -9,13 +9,25 @@ import {
   readRegistrationRetry,
 } from "@/server/commercial/signup";
 import { selectedPlan } from "@/server/commercial/plans";
+import { clientIp, rateLimit } from "@/server/security/rate-limit";
 import { checkoutPath } from "@/modules/commercial/contracts";
 
 export type SignupState = {
-  status: "initial" | "invalid" | "email" | "retry" | "unavailable";
+  status: "initial" | "invalid" | "email" | "retry" | "unavailable" | "rate_limited";
   errors?: Record<string, string[] | undefined>;
 };
 export async function signupAction(_previous: SignupState, form: FormData): Promise<SignupState> {
+  const ip = clientIp(await headers());
+  const rawEmail = form.get("email");
+  const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase().slice(0, 254) : "";
+  const checks = [
+    ...(ip ? [{ bucket: "signup_ip", subject: ip, limit: 10 }] : []),
+    ...(email ? [{ bucket: "signup_email", subject: email, limit: 5 }] : []),
+  ];
+  for (const check of checks) {
+    if (!(await rateLimit({ ...check, windowSeconds: 3600 })).allowed)
+      return { status: "rate_limited" };
+  }
   let result: Awaited<ReturnType<typeof registerStudent>>;
   try {
     result = await registerStudent(

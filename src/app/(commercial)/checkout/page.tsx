@@ -55,7 +55,14 @@ export default async function CheckoutPage({
                 />
               ) : (
                 <>
-                  {params.state && (
+                  {params.state === "rate_limited" && (
+                    <Alert
+                      tone="error"
+                      title="Muitas tentativas"
+                      description="Muitas tentativas. Tente novamente em alguns minutos."
+                    />
+                  )}
+                  {params.state && params.state !== "rate_limited" && (
                     <Alert
                       tone="error"
                       title="Não foi possível continuar"
