@@ -44,6 +44,8 @@ O gráfico CEFR vem de avaliações, nunca do percentual do curso.
 
 O P19 executa somente semântica de avaliação explicitamente contratada. `MULTIPLE_CHOICE` usa resposta de opção única e score binário determinístico (0/1). `MANUAL_TEXT` registra a resposta e permanece pendente; Speaking e Pronunciation não recebem score automático no V1.
 
+Itens `MANUAL_TEXT` mantêm a tentativa em `SUBMITTED` por desenho no V1 (sem RPC de pontuação manual até a decisão de Speaking/Pronunciation em OPEN_QUESTIONS); o Placement usa a evidência da tentativa e a revisão do Teacher, não o score. O Placement reaproveita a avaliação inicial já existente do Student em vez de criar outra tentativa: não há segunda tentativa automática nem política de retake (ver `PLACEMENT.md` e `OPEN_QUESTIONS.md`).
+
 `SkillScore` guarda apenas métricas objetivas por habilidade com provenance do engine/fórmula/itens. `assessment_attempts.result_cefr` e `skill_scores.cefr_level` permanecem `NULL`, inclusive para score objetivo perfeito ou item com `cefr_target`. Nenhuma porcentagem é convertida em A1–C2.
 
 O Student recebe somente os campos públicos necessários para executar a versão publicada. `answer_key`, `rubric` e `scoring_config` ficam fora do acesso autenticado normal e são usados apenas no boundary server/database.
