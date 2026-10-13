@@ -12,6 +12,16 @@ import {
   Select,
 } from "@/components/ui";
 import { loadAdminBilling } from "@/server/billing/admin-billing";
+import { loadAdminBillingOperations } from "@/server/billing/admin-billing-operations";
+import {
+  NotificationFailuresTable,
+  OperationsUnavailable,
+  OperationsBlockHeader,
+  OperationsFilterLinks,
+  OperationsPagination,
+  RejectedEventsTable,
+  StuckCheckoutsTable,
+} from "@/modules/billing/ui/admin-operations";
 import {
   billingAmount,
   billingDate,
@@ -25,13 +35,29 @@ export default async function AdminBillingPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const model = await loadAdminBilling(await searchParams);
-  function pageHref(page: number) {
-    const params = new URLSearchParams({ page: String(page) });
-    if (model.filters.status) params.set("status", model.filters.status);
-    if (model.filters.plan) params.set("plan", model.filters.plan);
+  const query = await searchParams;
+  const [model, ops] = await Promise.all([
+    loadAdminBilling(query),
+    loadAdminBillingOperations(query),
+  ]);
+  function hrefWith(overrides: Record<string, string | null>) {
+    const params = new URLSearchParams();
+    const current: Record<string, string | null> = {
+      page: String(model.filters.page),
+      status: model.filters.status,
+      plan: model.filters.plan || null,
+      eventStatus: ops.filters.eventStatus,
+      emailStatus: ops.filters.emailStatus,
+      eventPage: String(ops.filters.eventPage),
+      checkoutPage: String(ops.filters.checkoutPage),
+      emailPage: String(ops.filters.emailPage),
+      ...overrides,
+    };
+    for (const [key, value] of Object.entries(current)) if (value) params.set(key, value);
     return `/admin/billing?${params}`;
   }
+  const pageHref = (page: number) => hrefWith({ page: String(page) });
+  const opsHref = (overrides: Record<string, string | null>) => `${hrefWith(overrides)}#operacao`;
   const rows = model.rows.map((row) => {
     const status = (
       <Badge tone={billingStatuses[row.status].tone}>{billingStatuses[row.status].label}</Badge>
@@ -185,6 +211,86 @@ export default async function AdminBillingPage({
           </div>
         </nav>
       </Card>
+      <section id="operacao" className={styles.page}>
+        <SectionHeader
+          title="Operação"
+          description="Itens que pedem atenção da equipe, em consulta somente leitura. Eventos obsoletos (STALE) não aparecem aqui, pois são registrados sem motivo de erro."
+        />
+        <Card>
+          <OperationsBlockHeader
+            title="Eventos rejeitados ou ignorados"
+            description="Eventos de pagamento que não puderam ser aplicados."
+            count={ops.events.rows.length}
+          />
+          <OperationsFilterLinks
+            label="Filtro de eventos"
+            current={ops.filters.eventStatus}
+            items={[
+              { label: "Todos", value: null },
+              { label: "Rejeitados", value: "REJECTED" },
+              { label: "Ignorados", value: "IGNORED" },
+            ]}
+            hrefFor={(value) => opsHref({ eventStatus: value, eventPage: "1" })}
+          />
+          {ops.events.unavailable ? (
+            <OperationsUnavailable />
+          ) : (
+            <RejectedEventsTable rows={ops.events.rows} />
+          )}
+          <OperationsPagination
+            label="Paginação de eventos"
+            page={ops.events.page}
+            hasNext={ops.events.hasNext}
+            hrefFor={(p) => opsHref({ eventPage: String(p) })}
+          />
+        </Card>
+        <Card>
+          <OperationsBlockHeader
+            title="Checkouts travados"
+            description="Checkouts que não concluíram e podem exigir contato com o aluno."
+            count={ops.checkouts.rows.length}
+          />
+          {ops.checkouts.unavailable ? (
+            <OperationsUnavailable />
+          ) : (
+            <StuckCheckoutsTable rows={ops.checkouts.rows} />
+          )}
+          <OperationsPagination
+            label="Paginação de checkouts"
+            page={ops.checkouts.page}
+            hasNext={ops.checkouts.hasNext}
+            hrefFor={(p) => opsHref({ checkoutPage: String(p) })}
+          />
+        </Card>
+        <Card>
+          <OperationsBlockHeader
+            title="E-mails com falha ou atrasados"
+            description="Notificações que falharam ou aguardam nova tentativa."
+            count={ops.emails.rows.length}
+          />
+          <OperationsFilterLinks
+            label="Filtro de e-mails"
+            current={ops.filters.emailStatus}
+            items={[
+              { label: "Todos", value: null },
+              { label: "Falhas", value: "FAILED" },
+              { label: "Atrasados", value: "PENDING" },
+            ]}
+            hrefFor={(value) => opsHref({ emailStatus: value, emailPage: "1" })}
+          />
+          {ops.emails.unavailable ? (
+            <OperationsUnavailable />
+          ) : (
+            <NotificationFailuresTable rows={ops.emails.rows} />
+          )}
+          <OperationsPagination
+            label="Paginação de e-mails"
+            page={ops.emails.page}
+            hasNext={ops.emails.hasNext}
+            hrefFor={(p) => opsHref({ emailPage: String(p) })}
+          />
+        </Card>
+      </section>
     </div>
   );
 }
