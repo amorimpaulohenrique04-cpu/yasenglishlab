@@ -34,6 +34,13 @@ export function SignupForm({ plan, retry }: { plan?: string | undefined; retry: 
     );
   return (
     <form action={action} className="yas-stack">
+      {state.status === "rate_limited" && (
+        <Alert
+          tone="error"
+          title="Muitas tentativas"
+          description="Muitas tentativas. Tente novamente em alguns minutos."
+        />
+      )}
       {state.status === "unavailable" && (
         <Alert
           tone="error"

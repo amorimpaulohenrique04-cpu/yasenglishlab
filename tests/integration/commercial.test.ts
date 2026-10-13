@@ -3,11 +3,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 vi.mock("server-only", () => ({}));
 const mocks = vi.hoisted(() => ({
   guard: vi.fn(),
+  rate: vi.fn(),
   admin: vi.fn(),
   plan: vi.fn(),
   checkout: vi.fn(),
   provider: vi.fn(),
 }));
+vi.mock("@/server/security/rate-limit", () => ({ rateLimit: mocks.rate }));
 vi.mock("@/server/auth/guards", () => ({ assertRole: mocks.guard }));
 vi.mock("@/server/supabase/admin", () => ({ createSupabaseAdminClient: mocks.admin }));
 vi.mock("@/server/commercial/plans", async (importOriginal) => ({
@@ -59,6 +61,7 @@ function auth(
 }
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.rate.mockResolvedValue({ allowed: true, retryAfterSeconds: 0 });
   for (const name of [
     "APP_URL",
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -145,6 +148,17 @@ describe("commercial checkout and owned return", () => {
     await expect(beginCommercialCheckout("START")).rejects.toThrow("FORBIDDEN");
     expect(mocks.guard).toHaveBeenCalledWith("STUDENT");
     expect(mocks.plan).not.toHaveBeenCalled();
+    expect(mocks.provider).not.toHaveBeenCalled();
+  });
+  it("returns rate_limited before touching plans, state or the provider", async () => {
+    mocks.rate.mockResolvedValueOnce({ allowed: false, retryAfterSeconds: 60 });
+    expect(await beginCommercialCheckout("START")).toEqual({ kind: "rate_limited" });
+    expect(mocks.rate).toHaveBeenCalledWith(
+      expect.objectContaining({ bucket: "checkout_user", subject: userId, limit: 20 }),
+    );
+    expect(mocks.plan).not.toHaveBeenCalled();
+    expect(mocks.admin).not.toHaveBeenCalled();
+    expect(mocks.checkout).not.toHaveBeenCalled();
     expect(mocks.provider).not.toHaveBeenCalled();
   });
   it("rejects an unavailable plan", async () => {
