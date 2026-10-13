@@ -15,8 +15,12 @@ const id = "10000000-0000-0000-0000-000000000001";
 
 describe("Admin billing operations UI", () => {
   it("shows a friendly empty state", () => {
-    for (const table of [RejectedEventsTable, StuckCheckoutsTable, NotificationFailuresTable]) {
-      const html = renderToStaticMarkup(createElement(table, { rows: [] }));
+    const htmls = [
+      renderToStaticMarkup(createElement(RejectedEventsTable, { rows: [] })),
+      renderToStaticMarkup(createElement(StuckCheckoutsTable, { rows: [] })),
+      renderToStaticMarkup(createElement(NotificationFailuresTable, { rows: [] })),
+    ];
+    for (const html of htmls) {
       expect(html).toContain("Nenhum item — tudo em ordem");
       expect(html).not.toContain("<table");
     }
