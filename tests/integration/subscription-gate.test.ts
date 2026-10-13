@@ -204,6 +204,29 @@ describe("loadSubscriptionAccess adapter", () => {
     });
   });
 
+  it("keeps access for a CANCELLED row whose paid cycle has not ended, suspends once it did", async () => {
+    const future = new Date(Date.now() + 86_400_000).toISOString();
+    const past = new Date(Date.now() - 86_400_000).toISOString();
+    await expect(
+      loadSubscriptionAccess(
+        fakeClient([
+          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: future },
+        ]).client,
+        id,
+        ["STUDENT"],
+      ),
+    ).resolves.toEqual({ kind: "ok" });
+    await expect(
+      loadSubscriptionAccess(
+        fakeClient([
+          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: past },
+        ]).client,
+        id,
+        ["STUDENT"],
+      ),
+    ).resolves.toMatchObject({ kind: "suspended", reason: "CANCELLED" });
+  });
+
   it("fails closed on read errors and malformed rows without leaking details", async () => {
     await expect(
       loadSubscriptionAccess(fakeClient([], { message: "secret sql" }).client, id, ["STUDENT"]),

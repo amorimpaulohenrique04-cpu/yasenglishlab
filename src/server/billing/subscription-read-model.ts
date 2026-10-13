@@ -2,6 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { deriveCancellationState, type CancellationState } from "@/modules/billing/domain/access";
 
 export const subscriptionStatus = z.enum([
   "ACTIVE",
@@ -34,6 +35,10 @@ export type SubscriptionSummary = Readonly<{
   startedAt: string;
   endedAt: string | null;
   cancelAtPeriodEnd: boolean;
+  // Paid access end (current_period_end) while a cancellation is requested/confirmed; null otherwise.
+  accessUntil: string | null;
+  // CANCEL_SCHEDULED: ACTIVE with the request marker. CANCELLED_WITH_ACCESS: CANCELLED, paid cycle not over.
+  cancellationState: CancellationState | null;
 }>;
 
 // authenticated cannot SELECT the checkout link or checkout table. Only IDs/owners
@@ -108,7 +113,10 @@ export function subscriptionSummary(
   row: SubscriptionRow,
   planName: string | null,
   snapshot?: { amount: number; name: string },
+  now: Date = new Date(),
 ): SubscriptionSummary {
+  const cancelling = row.cancel_at_period_end || row.status === "CANCELLED";
+  const accessUntil = cancelling ? row.current_period_end : null;
   return {
     planName: snapshot?.name ?? planName ?? "Plano indisponível",
     status: row.status,
@@ -118,5 +126,14 @@ export function subscriptionSummary(
     startedAt: row.started_at,
     endedAt: row.ended_at,
     cancelAtPeriodEnd: row.cancel_at_period_end,
+    accessUntil,
+    cancellationState: deriveCancellationState(
+      {
+        status: row.status,
+        cancelAtPeriodEnd: row.cancel_at_period_end,
+        accessUntil,
+      },
+      now,
+    ),
   };
 }

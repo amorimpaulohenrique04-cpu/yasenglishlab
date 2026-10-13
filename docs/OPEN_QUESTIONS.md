@@ -16,6 +16,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - O Yas aceitará menores de idade no MVP? Se sim, qual modelo de guardian/consentimento?
 - Quais recursos exatos diferenciam suporte/prioridade do Talk e Boost sem conflitar com os entitlements já definidos?
 - Aluno com assinatura `PAST_DUE` (acesso suspenso, ADR 0016): qual é o caminho oficial de regularização? Link de segunda via/pagamento do Asaas na área do aluno, ou orientação ao suporte? Enquanto não decidido, a UI mostra apenas orientação textual, sem URL.
+- Cancelamento pelo aluno (etapa 4d): (a) `DELETE /v3/subscriptions/{id}` retorna 404 para assinatura já removida e o adaptador trata como sucesso; confirmar em sandbox que 404 nunca ocorre por id de outro ambiente/conta. (b) Assinatura `ACTIVE` sem `provider_subscription_id` (seed/legado): hoje o servidor só grava o marcador e não chama o Asaas; qual a política (bloquear o cancelamento ou tratar como cancelamento local)? (c) Corrida rara: duas requisições simultâneas, a primeira falha no Asaas e reverte enquanto a segunda cancela com sucesso; o webhook então grava `CANCELLED` sem `current_period_end` (sem acesso residual). Aceitar o risco ou reforçar no banco?
 
 ## Operação / conteúdo
 - Teacher Operations V1 já cobre sessões próprias, roster mínimo e attendance. Quando entra o Teacher Portal amplo/autoria? Admin Content V1 foi autorizado explicitamente no P18 (ADR 0006); CMS genérico continua fora do escopo.

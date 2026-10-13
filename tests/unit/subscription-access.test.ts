@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   SubscriptionSuspendedError,
+  deriveCancellationState,
   deriveSubscriptionAccess,
   isSubscriptionGateError,
   type AccessSubscriptionStatus,
@@ -88,6 +89,62 @@ describe("deriveSubscriptionAccess (ADR 0016)", () => {
         kind: "suspended",
         reason: "CANCELLED",
       });
+  });
+});
+
+describe("CANCELLED with paid access left (migration 20261013140000)", () => {
+  const now = new Date("2026-10-13T12:00:00Z");
+  const cancelled = (periodEnd: string | null | undefined, startedAt?: string) => ({
+    status: "CANCELLED" as const,
+    startedAt,
+    periodEnd,
+  });
+  const access = (subscriptions: Parameters<typeof deriveSubscriptionAccess>[0]["subscriptions"]) =>
+    deriveSubscriptionAccess({ roles: student, subscriptions, now });
+
+  it("keeps access while current_period_end is in the future", () => {
+    expect(access([cancelled("2026-11-01T03:00:00Z")])).toEqual({ kind: "ok" });
+  });
+
+  it.each([
+    ["past", "2026-10-01T03:00:00Z"],
+    ["exactly now", "2026-10-13T12:00:00Z"],
+    ["null", null],
+    ["missing", undefined],
+    ["invalid", "not-a-date"],
+  ])("suspends when the paid end is %s", (_label, periodEnd) => {
+    expect(access([cancelled(periodEnd)])).toMatchObject({
+      kind: "suspended",
+      reason: "CANCELLED",
+      regularization: "NEW_CHECKOUT",
+    });
+  });
+
+  it("only CANCELLED rows are extended: PAST_DUE/EXPIRED with a future end stay suspended", () => {
+    for (const status of ["PAST_DUE", "EXPIRED"] as const)
+      expect(access([{ status, periodEnd: "2026-11-01T03:00:00Z" }])).toMatchObject({
+        kind: "suspended",
+      });
+  });
+
+  it("any granting row wins regardless of order, like private.has_paid_access", () => {
+    const rows = [{ status: "PAST_DUE" as const }, cancelled("2026-11-01T03:00:00Z")];
+    expect(access(rows)).toEqual({ kind: "ok" });
+    expect(access([...rows].reverse())).toEqual({ kind: "ok" });
+  });
+
+  it("derives the student-facing cancellation state", () => {
+    const state = (
+      status: Parameters<typeof deriveCancellationState>[0]["status"],
+      cancelAtPeriodEnd: boolean,
+      accessUntil: string | null,
+    ) => deriveCancellationState({ status, cancelAtPeriodEnd, accessUntil }, now);
+    expect(state("ACTIVE", true, "2026-11-01T03:00:00Z")).toBe("CANCEL_SCHEDULED");
+    expect(state("ACTIVE", false, "2026-11-01T03:00:00Z")).toBeNull();
+    expect(state("CANCELLED", false, "2026-11-01T03:00:00Z")).toBe("CANCELLED_WITH_ACCESS");
+    expect(state("CANCELLED", false, "2026-10-01T03:00:00Z")).toBeNull();
+    expect(state("CANCELLED", false, null)).toBeNull();
+    expect(state("EXPIRED", false, "2026-11-01T03:00:00Z")).toBeNull();
   });
 });
 
