@@ -1,5 +1,7 @@
 "use server";
 
+import { assertRole } from "@/server/auth/guards";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cohortCommandSchema } from "@/modules/cohorts";
@@ -19,6 +21,7 @@ function refreshTeachers() {
 }
 
 export async function provisionTeacherAction(form: FormData): Promise<never> {
+  await assertRole("ADMIN");
   let result: "invited" | "linked";
   try {
     const outcome = await provisionCurrentAdminTeacher(form.get("email"));
@@ -31,6 +34,7 @@ export async function provisionTeacherAction(form: FormData): Promise<never> {
 }
 
 export async function setTeacherActiveAction(form: FormData): Promise<never> {
+  await assertRole("ADMIN");
   const activeValue = form.get("active");
   if (activeValue !== "true" && activeValue !== "false") redirect("/admin/teachers?result=invalid");
   const active = activeValue === "true";
@@ -46,6 +50,7 @@ export async function setTeacherActiveAction(form: FormData): Promise<never> {
 }
 
 export async function setTeacherCourseAction(form: FormData): Promise<never> {
+  await assertRole("ADMIN");
   const enabledValue = form.get("enabled");
   if (enabledValue !== "true" && enabledValue !== "false")
     redirect("/admin/teachers?result=invalid");
@@ -60,6 +65,7 @@ export async function setTeacherCourseAction(form: FormData): Promise<never> {
 }
 
 export async function assignTeacherCohortAction(form: FormData): Promise<never> {
+  await assertRole("ADMIN");
   const command = cohortCommandSchema.safeParse({
     operation: "ADD_TEACHER",
     cohortId: form.get("cohortId"),

@@ -1,4 +1,6 @@
 "use server";
+
+import { assertRole } from "@/server/auth/guards";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
@@ -12,6 +14,7 @@ function minutes(value: FormDataEntryValue | null) {
   return h! * 60 + m!;
 }
 export async function configurePlacementCohortAction(form: FormData) {
+  await assertRole("ADMIN");
   try {
     await configureCurrentPlacementCohort({
       cohortId: form.get("cohortId"),
@@ -31,6 +34,7 @@ export async function configurePlacementCohortAction(form: FormData) {
   redirect("/admin/enrollments?result=configured");
 }
 export async function transferPlacementAction(form: FormData) {
+  await assertRole("ADMIN");
   try {
     await transferCurrentPlacement({
       caseId: form.get("caseId"),

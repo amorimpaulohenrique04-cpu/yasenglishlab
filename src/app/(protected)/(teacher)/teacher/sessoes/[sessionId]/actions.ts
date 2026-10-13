@@ -1,5 +1,7 @@
 "use server";
 
+import { assertRole } from "@/server/auth/guards";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -13,6 +15,7 @@ import { markCurrentTeacherAttendance } from "@/server/teacher-operations/teache
 const sessionIdSchema = z.string().uuid();
 
 export async function markAttendanceAction(formData: FormData): Promise<void> {
+  await assertRole("TEACHER");
   const sessionId = sessionIdSchema.parse(formData.get("sessionId"));
   const input = markTeacherAttendanceInputSchema.parse({
     sessionBookingId: formData.get("sessionBookingId"),

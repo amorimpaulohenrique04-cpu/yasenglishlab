@@ -1,4 +1,6 @@
 "use server";
+
+import { assertRole } from "@/server/auth/guards";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cohortCommandSchema } from "@/modules/cohorts";
@@ -19,6 +21,7 @@ function cohortReturnUrl(form: FormData, result: string) {
 }
 
 export async function manageCohortAction(form: FormData) {
+  await assertRole("ADMIN");
   const operation = String(form.get("operation"));
   const input =
     operation === "CREATE"
@@ -62,6 +65,7 @@ const timeToMinute = (value: FormDataEntryValue | null) => {
 };
 
 export async function configureCohortAction(form: FormData) {
+  await assertRole("ADMIN");
   const cohortId = uuid.safeParse(form.get("cohortId"));
   const capacity = z.coerce.number().int().min(1).max(6).safeParse(form.get("capacity"));
   const schedule: { weekday: number; startMinute: number; endMinute: number }[] = [];
@@ -99,6 +103,7 @@ export async function configureCohortAction(form: FormData) {
 }
 
 export async function setPrimaryTeacherAction(form: FormData) {
+  await assertRole("ADMIN");
   const cohortId = uuid.safeParse(form.get("cohortId"));
   const teacherId = uuid.safeParse(form.get("teacherId"));
   if (!cohortId.success || !teacherId.success) redirect(cohortReturnUrl(form, "invalid"));
