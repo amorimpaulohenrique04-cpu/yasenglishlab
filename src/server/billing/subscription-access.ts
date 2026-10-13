@@ -10,7 +10,13 @@ import {
 } from "@/modules/billing/domain/access";
 import { subscriptionStatus } from "./subscription-read-model";
 
-const rows = z.array(z.object({ status: subscriptionStatus, started_at: z.string().nullable() }));
+const rows = z.array(
+  z.object({
+    status: subscriptionStatus,
+    started_at: z.string().nullable(),
+    current_period_end: z.string().nullish(),
+  }),
+);
 const staff = new Set(["ADMIN", "TEACHER", "SUPPORT"]);
 
 // Reads the caller's own subscriptions under RLS (never the admin client) and applies the same rule as
@@ -23,16 +29,18 @@ export async function loadSubscriptionAccess(
   if (roles.some((role) => staff.has(role))) return { kind: "ok" };
   const { data, error } = await client
     .from("subscriptions")
-    .select("status,started_at")
+    .select("status,started_at,current_period_end")
     .eq("user_id", userId)
     .order("started_at", { ascending: false })
     .limit(100);
   if (error) throw new Error("Subscription access unavailable");
   return deriveSubscriptionAccess({
     roles,
-    subscriptions: rows
-      .parse(data ?? [])
-      .map((row) => ({ status: row.status, startedAt: row.started_at })),
+    subscriptions: rows.parse(data ?? []).map((row) => ({
+      status: row.status,
+      startedAt: row.started_at,
+      periodEnd: row.current_period_end,
+    })),
   });
 }
 
