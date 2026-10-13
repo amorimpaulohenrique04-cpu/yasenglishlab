@@ -33,3 +33,4 @@ Start new records from [TEMPLATE.md](./TEMPLATE.md). The required decision field
 - [0011 — Mux recorded course video](./0011-mux-recorded-course-video.md)
 - [0012 — Provider-neutral Live Operations and Meeting Access](./0012-provider-neutral-live-operations.md)
 - [0015 — Subscription lifecycle and learning access](./0015-subscription-lifecycle-and-access.md)
+- [0016 — Access suspension on payment failure](./0016-access-suspension-on-payment-failure.md)
