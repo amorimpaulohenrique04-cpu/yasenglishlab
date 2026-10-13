@@ -1,9 +1,12 @@
 "use server";
+
+import { assertRole } from "@/server/auth/guards";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { finalizeCurrentPlacementReview } from "@/server/placement/placement";
 export async function finalizePlacementReviewAction(form: FormData) {
+  await assertRole("TEACHER");
   const id = z.uuid().parse(form.get("caseId"));
   try {
     await finalizeCurrentPlacementReview({

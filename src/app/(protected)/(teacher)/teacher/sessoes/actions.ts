@@ -8,6 +8,7 @@ import { saveCurrentTeacherSession } from "@/server/teacher-operations/session-c
 import { getLiveSessionJoinAccess } from "@/server/schedule/meeting-access";
 
 export async function saveSessionAction(form: FormData) {
+  await assertRole("TEACHER");
   const id = String(form.get("id") || "") || null;
   const target = id ? `/teacher/sessoes/${z.uuid().parse(id)}` : "/teacher/sessoes/nova";
   let sessionId: string;

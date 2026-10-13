@@ -22,12 +22,20 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
             <p className="yas-auth-copy">Use pelo menos 12 caracteres.</p>
           </div>
 
-          {error && (
+          {error === "mfa" ? (
             <Alert
               tone="error"
-              title="Não foi possível alterar a senha"
-              description="Revise os campos e tente novamente."
+              title="Verificação em duas etapas necessária"
+              description="Contas de equipe precisam concluir a verificação em duas etapas em /mfa antes de alterar a senha. Depois, abra novamente esta página."
             />
+          ) : (
+            error && (
+              <Alert
+                tone="error"
+                title="Não foi possível alterar a senha"
+                description="Revise os campos e tente novamente."
+              />
+            )
           )}
 
           <form action={updatePasswordAction} className="yas-stack">

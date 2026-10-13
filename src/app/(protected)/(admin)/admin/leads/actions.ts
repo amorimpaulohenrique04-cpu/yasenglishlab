@@ -1,11 +1,14 @@
 "use server";
 
+import { assertRole } from "@/server/auth/guards";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { crmLeadCreateSchema } from "@/modules/crm";
 import { mutateAdminLead } from "@/server/crm/crm";
 
 export async function crmAction(form: FormData): Promise<never> {
+  await assertRole("ADMIN");
   const operation = String(form.get("operation") ?? "");
   const id = String(form.get("leadId") ?? "");
   const value = (name: string) => String(form.get(name) ?? "");

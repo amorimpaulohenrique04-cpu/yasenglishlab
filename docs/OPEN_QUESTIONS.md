@@ -28,6 +28,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Procedimento operacional de recuperação/break-glass para staff que perdeu o segundo fator, sem desabilitar a exigência AAL2 em runtime.
 - Política de retenção/deleção para gravações, avaliações e audit logs.
 - Classificação de dados e tempos de retenção por domínio.
+- Confirmar no Supabase hospedado se updateUser(password) exige aal2 quando há fator MFA inscrito.
 
 ## Regra
 Enquanto uma questão estiver aqui:
