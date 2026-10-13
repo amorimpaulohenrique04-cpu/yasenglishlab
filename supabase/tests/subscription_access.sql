@@ -44,8 +44,8 @@ insert into public.subscriptions(id,user_id,plan_id,provider,status) values
  ('9d300000-0000-4000-8000-000000000008','9d000000-0000-4000-8000-000000000008','10000000-0000-0000-0000-000000000003','test','EXPIRED');
 -- Joinable session (starts inside the join window) and a future one for booking; both without entitlement key.
 insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,status,meeting_provider,meeting_ref) values
- ('9d400000-0000-4000-8000-000000000001','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate join',now()+interval '5 minutes',now()+interval '65 minutes',10,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate'),
- ('9d400000-0000-4000-8000-000000000002','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate booking',now()+interval '2 days',now()+interval '2 days 1 hour',10,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate2');
+ ('9d400000-0000-4000-8000-000000000001','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate join',now()+interval '5 minutes',now()+interval '65 minutes',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate'),
+ ('9d400000-0000-4000-8000-000000000002','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate booking',now()+interval '2 days',now()+interval '2 days 1 hour',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate2');
 insert into public.session_bookings(live_session_id,user_id) values
  ('9d400000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000001'),
  ('9d400000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000002');
