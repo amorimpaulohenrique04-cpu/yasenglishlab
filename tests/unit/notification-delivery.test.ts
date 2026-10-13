@@ -29,6 +29,11 @@ describe("notification templates V1", () => {
       "Seu pagamento foi confirmado e sua assinatura Yas está ativa.",
     ],
     [
+      "PAYMENT_RENEWED",
+      "Pagamento da renovação confirmado",
+      "Recebemos o pagamento da renovação e sua assinatura Yas segue ativa.",
+    ],
+    [
       "PAYMENT_ISSUE",
       "Há uma pendência no seu pagamento",
       "Identificamos uma pendência na sua assinatura Yas.",

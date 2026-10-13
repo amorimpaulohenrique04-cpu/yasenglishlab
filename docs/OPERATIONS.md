@@ -54,3 +54,11 @@ Runbooks mínimos futuros:
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
 
+## Agendamento do processor de notificações
+
+O outbox de e-mails (`notification_deliveries`) só é drenado por `GET`/`POST /api/cron/notifications`. O host ainda é decisão aberta (ADR 0014, OPEN_QUESTIONS): qualquer agendador confiável serve, desde que respeite este contrato.
+
+- Defina `NOTIFICATIONS_CRON_SECRET` (aleatório, 32+ caracteres, distinto de todos os outros secrets) no ambiente server-only. Ausente, curto ou reutilizado, a rota responde `503` e não processa.
+- O agendador chama a rota a cada 1–5 minutos com `Authorization: Bearer <secret>`. Sem header válido: `401`.
+- Cada chamada processa um lote fixo (20); a resposta traz apenas contagens (`claimed/sent/pending/failed/lost`). Claim com lease torna chamadas concorrentes ou repetidas seguras; o backoff é persistido na delivery.
+- Não registre o secret em logs do agendador; rotacione trocando o valor no host e no agendador.

@@ -5,7 +5,8 @@
     "src/modules/notifications/**/*.ts",
     "src/server/notifications/**/*.ts",
     "tests/unit/notification-delivery.test.ts",
-    "tests/integration/notification-delivery.test.ts"
+    "tests/integration/notification-delivery.test.ts",
+    "tests/integration/notifications-cron.test.ts"
   ],
   "exclude": ["node_modules", ".next", ".next-p18", ".next-p18-build"]
 }

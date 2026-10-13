@@ -59,6 +59,10 @@ const templates = {
     subject: "Pagamento confirmado",
     text: "Seu pagamento foi confirmado e sua assinatura Yas está ativa.",
   },
+  PAYMENT_RENEWED: {
+    subject: "Pagamento da renovação confirmado",
+    text: "Recebemos o pagamento da renovação e sua assinatura Yas segue ativa.",
+  },
   PAYMENT_ISSUE: {
     subject: "Há uma pendência no seu pagamento",
     text: "Identificamos uma pendência na sua assinatura Yas.",
