@@ -46,6 +46,12 @@ limitado a 256 KiB. Token ausente/configuração inválida: 503; token inválido
 JSON/evento financeiro malformado: 400; corpo excessivo: 413. Falha de storage:
 503 para redelivery; resultado durável: 204, sem corpo ou logs de payload.
 
+Exceção transitória: evento só com `checkoutId` ainda não vinculado (webhook antes de `complete_billing_checkout`) faz o RPC levantar `PT503` / `BILLING_EVENT_RETRY` sem gravar evento; a rota responde 503 e o reenvio do mesmo evento é reprocessado. CREATING sem `provider_checkout_id` expira em 60 min na próxima reserva.
+
+A resposta 503 transitória inclui `Retry-After: 60`; falha de storage responde 503 sem o header. Evento de tipo não mapeado com envelope malformado responde 204 sem gravar; tipo mapeado com payload inválido continua 400.
+
+Valor: a mensalidade não tem juros nem multa, então a comparação estrita de valor com o snapshot do checkout (`AMOUNT_MISMATCH`) é intencional e não deve ser relaxada. Reajuste de preço de plano é decisão de produto separada.
+
 O normalizador server-only retém apenas provider/eventId/sourceType/occurredAt,
 efeito neutro, IDs de sessão/checkout/assinatura/pagamento, centavos, moeda e data
 de vencimento. A moeda é BRL pelo contrato monetário Asaas; não é um campo

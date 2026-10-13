@@ -32,7 +32,9 @@ export default async function ReturnPage({
                 ? "Pagamento confirmado."
                 : payment.kind === "failed"
                   ? "Não foi possível concluir este pagamento."
-                  : "Estamos confirmando seu pagamento."}
+                  : payment.kind === "expired"
+                    ? "Este pagamento não foi concluído a tempo."
+                    : "Estamos confirmando seu pagamento."}
           </h1>
           {payment && <p>Plano {payment.planName}</p>}
           {!payment ? (
@@ -48,6 +50,16 @@ export default async function ReturnPage({
             <Link className="yas-button yas-button--secondary" href="/checkout">
               Tentar novamente
             </Link>
+          ) : payment.kind === "expired" ? (
+            <>
+              <p>
+                O link de pagamento expirou antes da confirmação. Você pode iniciar um novo
+                pagamento. Se já pagou, não pague de novo e fale com o suporte da Yas English Lab.
+              </p>
+              <Link className="yas-button yas-button--secondary" href="/checkout">
+                Iniciar novo pagamento
+              </Link>
+            </>
           ) : (
             <>
               <p>Isso pode levar alguns instantes.</p>
