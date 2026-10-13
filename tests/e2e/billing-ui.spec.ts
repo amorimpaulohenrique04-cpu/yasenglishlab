@@ -172,7 +172,7 @@ test("Student profile owns its subscription and hides provider internals", async
   await expect(subscription.getByText("Assinatura ativa", { exact: true })).toBeVisible();
   await expect(subscription.getByText("Start contratado", { exact: true })).toBeVisible();
   await expect(subscription.getByText(/88,90/)).toBeVisible();
-  await expect(subscription.getByText("Cancelamento agendado", { exact: true })).toBeVisible();
+  await expect(subscription.getByText(/^Cancelamento agendado — acesso até /)).toBeVisible();
   await expect(subscription.getByText("1 aula por semana")).toBeVisible();
   expect(await page.content()).not.toMatch(
     /hidden-customer|hidden-sub-|provider_customer_id|provider_subscription_id|billing_checkout_session_id|processing_error/,
