@@ -39,8 +39,32 @@ describe("public commercial contracts", () => {
       kind: "confirmed",
       destination: "/home",
     });
-    expect(paymentState("EXPIRED", null, null).kind).toBe("failed");
+    expect(paymentState("EXPIRED", null, null).kind).toBe("expired");
     expect(paymentState("CANCELLED", null, null).kind).toBe("failed");
+  });
+  it("becomes terminal only after the checkout window, never confirmed by time", () => {
+    const now = new Date("2026-10-13T12:00:00.000Z");
+    const past = "2026-10-13T11:59:59.000Z";
+    const future = "2026-10-13T12:00:01.000Z";
+    for (const status of ["READY", "CREATING"]) {
+      expect(paymentState(status, null, null, { expiresAt: past, now }).kind).toBe("expired");
+      expect(paymentState(status, null, null, { expiresAt: future, now }).kind).toBe("processing");
+      expect(
+        paymentState(status, null, null, { createdAt: "2026-10-13T10:59:59.000Z", now }).kind,
+      ).toBe("expired");
+      expect(
+        paymentState(status, null, null, { createdAt: "2026-10-13T11:00:01.000Z", now }).kind,
+      ).toBe("processing");
+      expect(paymentState(status, null, null, { expiresAt: "garbage", now }).kind).toBe(
+        "processing",
+      );
+      expect(paymentState(status, null, null, { now }).kind).toBe("processing");
+    }
+    // Paid sessions are never downgraded by an elapsed window.
+    expect(paymentState("PAID", "ACTIVE", "ENROLLED", { expiresAt: past, now }).kind).toBe(
+      "confirmed",
+    );
+    expect(paymentState("PAID", null, null, { expiresAt: past, now }).kind).toBe("processing");
   });
   it("fails closed in production, missing config and nonlocal fake config", () => {
     const local = {

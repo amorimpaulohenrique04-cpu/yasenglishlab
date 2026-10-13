@@ -21,6 +21,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Teacher Operations V1 já cobre sessões próprias, roster mínimo e attendance. Quando entra o Teacher Portal amplo/autoria? Admin Content V1 foi autorizado explicitamente no P18 (ADR 0006); CMS genérico continua fora do escopo.
 - Quem pode publicar/editar uma versão de assessment?
 - Qual fluxo futuro de revisão pedagógica após Admin Content V1? No V1, ADMIN+AAL2 publica diretamente sem aprovação obrigatória (ADR 0006); esta evolução não bloqueia P18.
+- Qual é o canal oficial de suporte (e-mail/WhatsApp/URL) para alunos com pagamento expirado ou não confirmado em `/billing/return`? Até a decisão, a página só orienta a falar com o suporte, sem link inventado.
 
 ## Segurança
 - Procedimento operacional de recuperação/break-glass para staff que perdeu o segundo fator, sem desabilitar a exigência AAL2 em runtime.

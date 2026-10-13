@@ -4,6 +4,7 @@ vi.mock("server-only", () => ({}));
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { normalizeAsaasEvent } from "@/server/billing/asaas-events";
 import { handleAsaasWebhook } from "@/server/billing/asaas-webhook";
+import { BillingEventRetryError } from "@/modules/billing/application/billing-event";
 import { SupabaseBillingEventRepository } from "@/server/billing/event-repository";
 
 const token = "test-webhook-token-with-at-least-32-characters";
@@ -141,6 +142,38 @@ describe("webhook boundary, no real provider/network", () => {
     ).toBe(400);
     expect(factory).not.toHaveBeenCalled();
   });
+  it.each([
+    ["unmapped type without id/date", { event: "PAYMENT_CREATED" }],
+    ["unmapped type with invalid date", { id: "e", event: "PAYMENT_CREATED", dateCreated: "x" }],
+    ["unmapped type with prototype key", { id: "e", event: "toString", dateCreated: "x" }],
+  ])("acknowledges malformed non-applicable event (%s) without storing", async (_name, body) => {
+    const factory = vi.fn();
+    const response = await handleAsaasWebhook(request(body), factory, token);
+    expect(response.status).toBe(204);
+    expect(await response.text()).toBe("");
+    expect(factory).not.toHaveBeenCalled();
+  });
+  it.each([
+    ["mapped payment, invalid date", { ...confirmed, dateCreated: "nope" }],
+    [
+      "mapped subscription without body",
+      { id: "e", event: "SUBSCRIPTION_DELETED", dateCreated: "2026-10-06 10:00:00" },
+    ],
+    ["mapped payment without envelope id", { event: "PAYMENT_CONFIRMED", payment: {} }],
+    ["no event type at all", { id: "e" }],
+  ])("keeps 400 for malformed financial event (%s)", async (_name, body) => {
+    const factory = vi.fn();
+    expect((await handleAsaasWebhook(request(body), factory, token)).status).toBe(400);
+    expect(factory).not.toHaveBeenCalled();
+  });
+  it("normalizes unmapped valid events as IGNORED", () => {
+    const event = normalizeAsaasEvent({
+      id: "e1",
+      event: "toString",
+      dateCreated: "2026-10-06 10:00:00",
+    });
+    expect(event.action).toBe("IGNORED");
+  });
   it("limits streamed bodies even without content-length", async () => {
     const factory = vi.fn();
     expect((await handleAsaasWebhook(request("x".repeat(262145)), factory, token)).status).toBe(
@@ -168,6 +201,51 @@ describe("webhook boundary, no real provider/network", () => {
     );
     expect(response.status).toBe(503);
     expect(await response.text()).toBe("");
+  });
+  it("returns 503 with Retry-After only for the transient unlinked-checkout condition", async () => {
+    const response = await handleAsaasWebhook(
+      request(),
+      () => ({ reconcile: vi.fn().mockRejectedValue(new BillingEventRetryError()) }),
+      token,
+    );
+    expect(response.status).toBe(503);
+    expect(response.headers.get("retry-after")).toBe("60");
+    expect(await response.text()).toBe("");
+    const storage = await handleAsaasWebhook(
+      request(),
+      () => ({ reconcile: vi.fn().mockRejectedValue(new Error("down")) }),
+      token,
+    );
+    expect(storage.status).toBe(503);
+    expect(storage.headers.get("retry-after")).toBeNull();
+  });
+  it("maps only PT503/BILLING_EVENT_RETRY to the typed retry error", async () => {
+    const event = normalizeAsaasEvent(confirmed);
+    const repo = (error: { code: string; message: string; details?: string }) =>
+      new SupabaseBillingEventRepository({
+        rpc: vi.fn().mockResolvedValue({ data: null, error }),
+      } as unknown as SupabaseClient);
+    const retry = await repo({
+      code: "PT503",
+      message: "BILLING_EVENT_RETRY",
+      details: "CHECKOUT_NOT_LINKED",
+    })
+      .reconcile(event)
+      .catch((error: unknown) => error);
+    expect(retry).toBeInstanceOf(BillingEventRetryError);
+    expect((retry as Error).message).not.toContain(checkoutId);
+    for (const error of [
+      { code: "PT503", message: "other" },
+      { code: "XX000", message: "BILLING_EVENT_RETRY" },
+      { code: "08006", message: "connection secret-customer" },
+    ]) {
+      const failure = await repo(error)
+        .reconcile(event)
+        .catch((e: unknown) => e);
+      expect(failure).toBeInstanceOf(Error);
+      expect(failure).not.toBeInstanceOf(BillingEventRetryError);
+      expect((failure as Error).message).toBe("Billing reconciliation unavailable");
+    }
   });
   it("calls one RPC with only normalized input; rejects invalid RPC responses", async () => {
     const rpc = vi.fn().mockResolvedValue({ data: "APPLIED", error: null });

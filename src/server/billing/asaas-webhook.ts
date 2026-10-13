@@ -2,8 +2,11 @@ import "server-only";
 
 import { timingSafeEqual } from "node:crypto";
 
-import type { BillingEventRepository } from "@/modules/billing/application/billing-event";
-import { normalizeAsaasEvent } from "@/server/billing/asaas-events";
+import {
+  BillingEventRetryError,
+  type BillingEventRepository,
+} from "@/modules/billing/application/billing-event";
+import { isNonApplicableAsaasEvent, normalizeAsaasEvent } from "@/server/billing/asaas-events";
 
 const MAX_BYTES = 262144;
 
@@ -49,18 +52,31 @@ export async function handleAsaasWebhook(
   ) {
     return new Response(null, { status: 401 });
   }
-  let event;
+  let raw: unknown;
   try {
-    event = normalizeAsaasEvent(await boundedBody(request));
+    raw = await boundedBody(request);
   } catch (error) {
     return new Response(null, { status: error instanceof RangeError ? 413 : 400 });
+  }
+  let event;
+  try {
+    event = normalizeAsaasEvent(raw);
+  } catch {
+    // Malformed financial events stay 400 (never swallowed). Event types with
+    // no mapped effect cannot change state, so they are acknowledged unstored.
+    return new Response(null, { status: isNonApplicableAsaasEvent(raw) ? 204 : 400 });
   }
   try {
     await repository().reconcile(event);
     // Durable rejection/ignored/stale events are acknowledged; only storage
     // outages retry. No body, errors or credentials are echoed or logged.
     return new Response(null, { status: 204 });
-  } catch {
+  } catch (error) {
+    // Webhook ahead of the checkout link: nothing was stored; ask for a later
+    // retry. Fixed code only, never the payload or error text.
+    if (error instanceof BillingEventRetryError) {
+      return new Response(null, { status: 503, headers: { "Retry-After": "60" } });
+    }
     return new Response(null, { status: 503 });
   }
 }

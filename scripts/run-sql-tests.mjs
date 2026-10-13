@@ -93,5 +93,14 @@ if (suite === "integration") {
     },
   );
   if (notifications.status !== 0) process.exit(notifications.status ?? 1);
+  const billingWebhook = spawnSync(
+    process.execPath,
+    ["scripts/test-billing-webhook-concurrency.mjs"],
+    {
+      stdio: "inherit",
+      env: process.env,
+    },
+  );
+  if (billingWebhook.status !== 0) process.exit(billingWebhook.status ?? 1);
 }
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);
