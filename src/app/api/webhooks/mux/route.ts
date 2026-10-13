@@ -1,11 +1,33 @@
 import { muxClient, muxWebhookSecret } from "@/server/media/mux-provider";
 import { createSupabaseAdminClient } from "@/server/supabase/admin";
 export const runtime = "nodejs";
+const MAX_BYTES = 1048576;
+const UNKNOWN_ASSET_RETRY_WINDOW_MS = 24 * 60 * 60 * 1000;
+async function boundedText(request: Request): Promise<string | null> {
+  if (Number(request.headers.get("content-length")) > MAX_BYTES) return null;
+  const reader = request.body?.getReader();
+  if (!reader) return "";
+  const chunks: Uint8Array[] = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > MAX_BYTES) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
 export async function POST(request: Request) {
-  if (Number(request.headers.get("content-length") ?? 0) > 1048576)
-    return new Response(null, { status: 413 });
-  const raw = await request.text();
-  if (raw.length > 1048576) return new Response(null, { status: 413 });
+  const raw = await boundedText(request);
+  if (raw === null) return new Response(null, { status: 413 });
   let event;
   try {
     event = await muxClient().webhooks.unwrap(raw, request.headers, muxWebhookSecret());
@@ -36,7 +58,13 @@ export async function POST(request: Request) {
     query = query.eq("provider_upload_id", data.id);
   else query = query.eq("provider_asset_id", assetId);
   const { data: video, error } = await query.maybeSingle();
-  if (error || !video) return new Response(null, { status: 503 });
+  if (error) return new Response(null, { status: 503 });
+  if (!video) {
+    const created = Date.parse(String((event as { created_at?: unknown }).created_at ?? ""));
+    const recent =
+      Number.isFinite(created) && Date.now() - created <= UNKNOWN_ASSET_RETRY_WINDOW_MS;
+    return new Response(null, { status: recent ? 503 : 204 });
+  }
   const playbackIds = Array.isArray(data.playback_ids)
     ? (data.playback_ids as { id: string; policy: string }[])
     : [];
