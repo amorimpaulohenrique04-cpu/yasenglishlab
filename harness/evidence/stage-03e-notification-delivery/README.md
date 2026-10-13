@@ -55,3 +55,8 @@ The Harness closure commit is subject to the same [final-head PR checks](https:/
 ## Out of scope
 
 No existing failure identified. Production sender/domain verification, API key provisioning and trusted scheduled invocation remain deployment responsibilities under the open hosting decision; no production homologation is claimed.
+
+## Known gaps (diagnostic 2026-10-12)
+
+- `processPendingNotificationDeliveries` has no caller: no authenticated endpoint, cron or Supabase Cron drains the outbox, so queued emails stay PENDING in production. Scope of this stage is the library only.
+- The notification `dedupe_key` is derived from the `billing_events` id, not from the payment, so `PAYMENT_CONFIRMED` followed by `PAYMENT_RECEIVED` for one payment can queue two emails, and every renewal reuses the "assinatura ativa" copy. Fix is planned before enabling the scheduler.
