@@ -214,13 +214,54 @@ jobs:
           rm ci-secret-fixture.txt
           echo "✓ detectable secret was blocked"
 
-  preview:
-    name: Preview
-    needs: [quality, database]
+  changes:
+    name: Detect code changes
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect whether runtime code changed
+        id: detect
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          # Fail-closed: anything unexpected means "code changed" and the full Preview runs.
+          if [ "$EVENT" != "pull_request" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files="$(git diff --name-only "origin/$BASE_REF" HEAD)"
+          if [ -z "$files" ]; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if printf '%s\n' "$files" | grep -qvE '^(docs/.+|harness/.+\.(md|json)|(README|AGENTS|CLAUDE)\.md)$'; then
+            echo "code=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Only docs/harness records changed; Preview suites are not required."
+            echo "code=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  preview-suite:
+    name: Preview (${{ matrix.suite }})
+    needs: [changes, quality, database]
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment:
       name: preview
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [database-proofs, e2e, accessibility, visual]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -274,38 +315,45 @@ jobs:
             echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
           } >> "$GITHUB_ENV"
       - name: Prove real database integration and booking concurrency
+        if: matrix.suite == 'database-proofs'
         run: npm run test:integration:db
       - name: Prove RLS permissions
+        if: matrix.suite == 'database-proofs'
         run: npm run test:rls
       - name: Prove intentional error reaches observability
+        if: matrix.suite == 'database-proofs'
         env:
           OBSERVABILITY_LIVE_TEST: "1"
         run: npm run test:observability:live
       - name: Prepare canonical preview fixture
+        if: matrix.suite != 'database-proofs'
         run: node scripts/setup-canonical-e2e.mjs
       - name: Install Playwright Chromium
+        if: matrix.suite != 'database-proofs'
         run: npx playwright install chromium
       - name: Critical E2E
+        if: matrix.suite == 'e2e'
         run: npm run test:e2e
       - name: Assert persistence and analytics
+        if: matrix.suite == 'e2e'
         run: node scripts/assert-canonical-e2e.mjs
-      - name: Reset fixture for accessibility
-        run: node scripts/setup-canonical-e2e.mjs
       - name: Accessibility checks
+        if: matrix.suite == 'accessibility'
         run: npm run test:a11y
       - name: Build Storybook
+        if: matrix.suite == 'visual'
         run: npm run storybook:build
       - name: Design-system visual checks
+        if: matrix.suite == 'visual'
         run: npm run test:visual:storybook
-      - name: Reset fixture for golden visual checks
-        run: node scripts/setup-canonical-e2e.mjs
       - name: Product golden visual checks
+        if: matrix.suite == 'visual'
         run: npm run test:visual:golden
       - name: Upload preview evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: preview-evidence-${{ github.sha }}
+          name: preview-evidence-${{ matrix.suite }}-${{ github.sha }}
           path: |
             artifacts/
             test-results/
@@ -315,6 +363,24 @@ jobs:
       - name: Stop isolated preview database
         if: always()
         run: supabase stop --no-backup || true
+
+  preview:
+    name: Preview
+    needs: [changes, preview-suite]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every Preview suite
+        env:
+          CODE_CHANGED: ${{ needs.changes.outputs.code }}
+          SUITES: ${{ needs.preview-suite.result }}
+        run: |
+          if [ "$CODE_CHANGED" = "false" ] && [ "$SUITES" = "skipped" ]; then
+            echo "Docs/harness-only change: Preview suites are not required."
+            exit 0
+          fi
+          test "$SUITES" = "success"
 
   ci-gate:
     name: CI Gate
