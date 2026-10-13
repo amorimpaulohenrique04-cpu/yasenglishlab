@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
 import { startPracticeInputSchema, submitPracticeInputSchema } from "@/modules/practice";
 import {
   startCurrentStudentPractice,
@@ -28,7 +29,13 @@ export async function startPracticeAction(formData: FormData): Promise<void> {
     activityId: formData.get("activityId"),
     idempotencyKey: formData.get("idempotencyKey"),
   });
-  const attempt = await startCurrentStudentPractice(input);
+  let attempt: Awaited<ReturnType<typeof startCurrentStudentPractice>>;
+  try {
+    attempt = await startCurrentStudentPractice(input);
+  } catch (error) {
+    if (error instanceof SubscriptionSuspendedError) redirect("/pratica?suspended=1");
+    throw error;
+  }
 
   revalidatePath("/pratica");
   redirect(`/pratica?attempt=${attempt.id}`);
@@ -45,7 +52,12 @@ export async function submitPracticeAction(formData: FormData): Promise<void> {
     ...(typeof mediaId === "string" && mediaId ? { mediaId } : {}),
   });
 
-  await submitCurrentStudentPractice(input);
+  try {
+    await submitCurrentStudentPractice(input);
+  } catch (error) {
+    if (error instanceof SubscriptionSuspendedError) redirect("/pratica?suspended=1");
+    throw error;
+  }
   revalidatePath("/pratica");
   redirect(`/pratica?attempt=${input.attemptId}&completed=1`);
 }

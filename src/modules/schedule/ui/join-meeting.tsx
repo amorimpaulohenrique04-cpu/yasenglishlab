@@ -9,6 +9,8 @@ const labels = {
   MEETING_NOT_READY: "O professor ainda não disponibilizou a reunião.",
   SESSION_CLOSED: "Este encontro está encerrado.",
 };
+const suspendedLabel =
+  "Sua reserva está guardada, mas a entrada está em pausa até a assinatura ser regularizada.";
 export function JoinMeeting({
   sessionId,
   action,
@@ -46,7 +48,11 @@ export function JoinMeeting({
             Abrir reunião
           </a>
         ) : result ? (
-          labels[result.status]
+          result.status === "NOT_AUTHORIZED" && result.reason === "SUBSCRIPTION_SUSPENDED" ? (
+            suspendedLabel
+          ) : (
+            labels[result.status]
+          )
         ) : null}
       </div>
     </div>

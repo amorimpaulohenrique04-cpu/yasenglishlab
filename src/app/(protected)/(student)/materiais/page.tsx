@@ -19,6 +19,8 @@ import {
   type MaterialListItem,
   type MaterialsFilters,
 } from "@/modules/materials";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadMaterialsPage } from "@/server/materials/materials";
 
 import { setMaterialFavoriteAction } from "./actions";
@@ -118,6 +120,18 @@ function MaterialRow({
 
 export default async function MaterialsPage({ searchParams }: MaterialsPageProps) {
   const params = await searchParams;
+  const access = await loadCurrentSubscriptionAccess();
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-materials-page">
+        <PageHeader
+          title="Materiais"
+          description="Encontre, revise e abra os recursos do seu curso."
+        />
+        <SubscriptionSuspendedNotice access={access} context="materials" />
+      </div>
+    );
+  }
   const state = await loadMaterialsPage({
     query: firstValue(params.q),
     type: firstValue(params.type),

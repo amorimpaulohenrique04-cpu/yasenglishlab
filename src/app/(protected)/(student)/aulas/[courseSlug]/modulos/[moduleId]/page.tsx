@@ -2,7 +2,8 @@ import Link from "next/link";
 
 import { Badge, Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
 import { lessonCompletion, moduleCompletion } from "@/modules/learning";
-import { loadLearningModule } from "@/server/learning/canonical-slice";
+import { loadLearningAccess, loadLearningModule } from "@/server/learning/canonical-slice";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
 interface ModulePageProps {
   params: Promise<{ courseSlug: string; moduleId: string }>;
@@ -10,6 +11,18 @@ interface ModulePageProps {
 
 export default async function ModulePage({ params }: ModulePageProps) {
   const { courseSlug, moduleId } = await params;
+  const access = await loadLearningAccess();
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-learning-page">
+        <PageHeader
+          title="Módulo"
+          description="Suas aulas voltam assim que o acesso for regularizado."
+        />
+        <SubscriptionSuspendedNotice access={access} />
+      </div>
+    );
+  }
   const state = await loadLearningModule(courseSlug, moduleId);
 
   if (state.status !== "success") {

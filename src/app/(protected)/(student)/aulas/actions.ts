@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
 import { lessonProgressInputSchema } from "@/modules/learning";
 import {
   recordCurrentStudentLessonProgress,
@@ -15,7 +16,12 @@ export async function updateLessonProgressAction(formData: FormData): Promise<vo
     lastPositionSeconds: formData.get("lastPositionSeconds") || null,
   });
 
-  await recordCurrentStudentLessonProgress(input);
+  try {
+    await recordCurrentStudentLessonProgress(input);
+  } catch (error) {
+    // Suspended: nothing was written; the re-rendered page shows the suspension notice (loadLearningAccess).
+    if (!(error instanceof SubscriptionSuspendedError)) throw error;
+  }
   revalidatePath("/home");
   revalidatePath("/aulas", "layout");
 }

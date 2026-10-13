@@ -5,7 +5,8 @@ import {
   LessonProgressControls,
   LessonStartAnalytics,
 } from "@/modules/learning/ui/lesson-progress-controls";
-import { loadLearningLesson } from "@/server/learning/canonical-slice";
+import { loadLearningAccess, loadLearningLesson } from "@/server/learning/canonical-slice";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 import { LessonAssets } from "@/modules/learning/ui/lesson-assets";
 
 interface LessonPageProps {
@@ -14,6 +15,22 @@ interface LessonPageProps {
 
 export default async function LessonPage({ params }: LessonPageProps) {
   const { courseSlug, moduleId, lessonSlug } = await params;
+  // Blocks the player, assets and progress controls before any of them mounts (no generic failure state).
+  const access = await loadLearningAccess();
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-learning-page">
+        <PageHeader
+          title="Aula"
+          description="Seu progresso e seu ponto de retomada continuam guardados."
+        />
+        <SubscriptionSuspendedNotice access={access} />
+        <Link className="yas-learning-link yas-focusable" href="/aulas">
+          ← Voltar para Aulas
+        </Link>
+      </div>
+    );
+  }
   const state = await loadLearningLesson(courseSlug, moduleId, lessonSlug);
 
   if (state.status !== "success") {

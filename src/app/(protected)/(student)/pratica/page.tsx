@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import Link from "next/link";
 
 import {
+  Alert,
   Badge,
   Button,
   Card,
@@ -19,6 +20,8 @@ import {
   type PracticeAttemptView,
   type PracticeSkillCatalogItem,
 } from "@/modules/practice";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadPracticePage } from "@/server/practice/practice";
 
 import {
@@ -228,6 +231,16 @@ function formatHistoryDate(value: string): string {
 
 export default async function PracticePage({ searchParams }: PracticePageProps) {
   const params = await searchParams;
+  const access = await loadCurrentSubscriptionAccess();
+  // ?suspended=1 comes from an action that was refused mid-flow; the access state is the source of truth.
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-practice-page">
+        <PageHeader title="Prática" description="Treine um pouco todos os dias." />
+        <SubscriptionSuspendedNotice access={access} context="practice" />
+      </div>
+    );
+  }
   const state = await loadPracticePage({
     skill: firstValue(params.skill),
     attemptId: firstValue(params.attempt),
@@ -276,6 +289,14 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
         title="Prática"
         description="Treine um pouco todos os dias e ganhe mais confiança no inglês."
       />
+
+      {firstValue(params.suspended) === "1" && (
+        <Alert
+          tone="info"
+          title="Sua atividade não foi registrada"
+          description="O acesso estava em pausa naquele momento. Se o pagamento já foi confirmado, você pode praticar de novo agora."
+        />
+      )}
 
       {requestedAttempt && !selectedAttempt ? (
         <ErrorState
