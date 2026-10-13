@@ -59,3 +59,7 @@ Desktop preview evidence is [module-draft-preview.png](../../../artifacts/prompt
 ### Superseded note (reconciled 2026-10-12)
 
 The earlier "pending" statement about `tests/e2e/admin-content.spec.ts` and the Admin accessibility case in `tests/a11y/critical-flows.spec.ts` is superseded by the `admin-e2e` (1/1) and `admin-a11y` (2/2) local passes listed above. What remains is Official CI evidence (run link) before promotion to `done/verified`. The full gates are intentionally not run in this turn at the operator's direction.
+
+## Closure by Official CI (2026-10-13)
+
+Official CI run [38465500668](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/38465500668) on `main` passed every mandatory job: Supply Chain, Quality, Database, Guardrail Simulations and the four Preview suites. The Critical E2E suite passed 33/33 (it includes `tests/e2e/admin-content.spec.ts`), the Accessibility suite passed 30/30 (it includes the Admin Content cases at desktop and mobile) and the SQL suites include `supabase/tests/admin_content.sql`. No skipped or retried-until-green test is recorded in that run. This supersedes the earlier "pending Official CI" statement; the item is `done/verified`.
