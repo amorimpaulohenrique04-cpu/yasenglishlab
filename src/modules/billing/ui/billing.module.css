@@ -98,3 +98,7 @@
     align-items: flex-start;
   }
 }
+.cancelArea {
+  display: grid;
+  gap: var(--yas-space-3);
+}
