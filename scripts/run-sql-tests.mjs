@@ -19,6 +19,7 @@ const suites = {
     "supabase/tests/placement.sql",
     "supabase/tests/subscription_access.sql",
     "supabase/tests/enrollment_integrity.sql",
+    "supabase/tests/admin_billing_operations.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -31,6 +32,7 @@ const suites = {
     "supabase/tests/students_directory.sql",
     "supabase/tests/p21_core_experience.sql",
     "supabase/tests/placement.sql",
+    "supabase/tests/admin_billing_operations.sql",
   ],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
@@ -38,6 +40,7 @@ const suites = {
   "admin-crm": ["supabase/tests/admin_crm.sql"],
   "subscription-access": ["supabase/tests/subscription_access.sql"],
   "enrollment-integrity": ["supabase/tests/enrollment_integrity.sql"],
+  "admin-billing-operations": ["supabase/tests/admin_billing_operations.sql"],
   "billing-checkout": ["supabase/tests/billing_checkout.sql"],
   "notification-delivery": ["supabase/tests/notification_delivery.sql"],
 };
@@ -45,7 +48,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations>",
   );
   process.exit(2);
 }

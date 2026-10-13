@@ -130,7 +130,12 @@ test("Admin AAL2 billing filters, table and mobile list", async ({ page }) => {
         ? page.getByRole("list", { name: "Assinaturas e pagamentos — consulta somente leitura" })
         : page.getByRole("table");
     await expect(list.getByText(name, { exact: true })).toBeVisible();
-    if (width === 390) await expect(page.locator(".yas-data-table-frame")).toBeHidden();
+    if (width === 390) {
+      // Todas as tabelas (inclusive as da seção Operação) dão lugar à lista mobile.
+      for (const frame of await page.locator(".yas-data-table-frame").all()) {
+        await expect(frame).toBeHidden();
+      }
+    }
     await evidence(page, file);
   }
   await page.getByRole("button", { name: "Abrir navegação administrativa" }).click();
