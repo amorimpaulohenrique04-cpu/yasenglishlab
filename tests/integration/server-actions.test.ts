@@ -12,6 +12,7 @@ vi.mock("@/server/learning/canonical-slice", () => ({
   trackCurrentStudentLessonStarted: mocks.trackCurrentStudentLessonStarted,
 }));
 
+import { NoActiveCohortError } from "@/modules/learning";
 import {
   trackLessonStartedAction,
   updateLessonProgressAction,
@@ -38,6 +39,15 @@ describe("lesson server actions", () => {
     });
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/home");
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/aulas", "layout");
+  });
+
+  it("returns noCohort instead of throwing when the student has no active cohort", async () => {
+    mocks.recordCurrentStudentLessonProgress.mockRejectedValueOnce(new NoActiveCohortError());
+    const form = new FormData();
+    form.set("lessonId", lessonId);
+    form.set("completionPercent", "50");
+
+    await expect(updateLessonProgressAction(form)).resolves.toEqual({ noCohort: true });
   });
 
   it("rejects malformed lesson ids before crossing the application boundary", async () => {

@@ -6,6 +6,7 @@ import {
   SubscriptionSuspendedError,
   isSubscriptionGateError,
 } from "@/modules/billing/domain/access";
+import { NoActiveCohortError, isNoActiveCohortError } from "@/modules/learning/domain/errors";
 import type {
   LearningCourse,
   LearningLesson,
@@ -235,6 +236,7 @@ export class SupabaseLearningRepository implements LearningRepository {
     });
 
     if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (isNoActiveCohortError(error)) throw new NoActiveCohortError();
     if (error || !data) throw new Error("Unable to persist lesson progress.");
 
     const row = Array.isArray(data) ? data[0] : data;

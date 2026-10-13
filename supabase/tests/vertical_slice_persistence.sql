@@ -29,6 +29,16 @@ values
   )
 on conflict (id) do nothing;
 
+-- Stage 06a: progress needs an ACTIVE cohort membership; fixture removed again at the end of this file.
+insert into public.cohorts (id, course_id, name, code, status, starts_at)
+values ('83300000-0000-0000-0000-000000000001', '40000000-0000-4000-8000-000000000001', 'Slice cohort', 'slice-cohort', 'ACTIVE', now() - interval '1 day')
+on conflict (id) do nothing;
+insert into public.cohort_memberships (cohort_id, user_id, enrollment_id)
+select '83300000-0000-0000-0000-000000000001', e.user_id, e.id
+from public.enrollments e
+where e.id in ('83200000-0000-0000-0000-000000000001', '83200000-0000-0000-0000-000000000002')
+  and not exists (select 1 from public.cohort_memberships m where m.enrollment_id = e.id and m.status = 'ACTIVE');
+
 set role authenticated;
 
 select set_config('request.jwt.claim.sub', '83000000-0000-0000-0000-000000000001', false);
@@ -236,3 +246,7 @@ begin
   end if;
 end;
 $$;
+
+reset role;
+delete from public.cohort_memberships where cohort_id = '83300000-0000-0000-0000-000000000001';
+delete from public.cohorts where id = '83300000-0000-0000-0000-000000000001';

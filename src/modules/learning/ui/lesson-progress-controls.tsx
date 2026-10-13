@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui";
+import { NoCohortNotice } from "./no-cohort-notice";
 
 import {
   trackLessonStartedAction,
@@ -28,13 +29,21 @@ export function LessonProgressControls({
   estimatedMinutes: number | null;
   hasVideo?: boolean;
 }) {
+  const [noCohort, setNoCohort] = useState(false);
   const checkpoints = [25, 50, 75, 100] as const;
   const durationSeconds = Math.max((estimatedMinutes ?? 10) * 60, 1);
 
   return (
     <div className="yas-learning-checkpoints" aria-label="Atualizar progresso">
+      {noCohort && <NoCohortNotice />}
       {checkpoints.map((percent) => (
-        <form key={percent} action={updateLessonProgressAction}>
+        <form
+          key={percent}
+          action={async (formData: FormData) => {
+            const result = await updateLessonProgressAction(formData);
+            if (result?.noCohort) setNoCohort(true);
+          }}
+        >
           <input type="hidden" name="lessonId" value={lessonId} />
           <input type="hidden" name="completionPercent" value={percent} />
           <input

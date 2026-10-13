@@ -5,6 +5,7 @@ import {
   getLearningHome,
   markLessonStarted,
   recordLessonProgress,
+  NoActiveCohortError,
   type LearningCourse,
   type LearningRepository,
   type LessonProgressSnapshot,
@@ -157,5 +158,16 @@ describe("learning application integration", () => {
     await expect(
       markLessonStarted(repository, analytics, userId, "42000000-0000-4000-8000-000000000099"),
     ).rejects.toThrow("Lesson is not available");
+  });
+
+  it("propagates NoActiveCohortError without tracking analytics", async () => {
+    const repository = makeRepository([]);
+    vi.mocked(repository.recordLessonProgress).mockRejectedValueOnce(new NoActiveCohortError());
+    const analytics = makeAnalytics();
+
+    await expect(
+      recordLessonProgress(repository, analytics, userId, { lessonId, completionPercent: 50 }),
+    ).rejects.toBeInstanceOf(NoActiveCohortError);
+    expect(analytics.track).not.toHaveBeenCalled();
   });
 });
