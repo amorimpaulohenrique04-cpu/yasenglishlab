@@ -74,6 +74,22 @@ function rosterFromRow(row: Row): TeacherRosterRecord {
 
 function teacherError(error: { code?: string; message?: string }): TeacherOperationsError {
   if (error.code === "42501") return new TeacherOperationsError("FORBIDDEN");
+  const message = error.message?.toLowerCase() ?? "";
+  if (message.includes("before session start")) {
+    return new TeacherOperationsError("ATTENDANCE_TOO_EARLY");
+  }
+  if (message.includes("correction requires a reason")) {
+    return new TeacherOperationsError("REASON_REQUIRED");
+  }
+  if (message.includes("correction reason must have")) {
+    return new TeacherOperationsError("REASON_INVALID");
+  }
+  if (
+    message.includes("only scheduled sessions can be cancelled") ||
+    message.includes("recorded attendance cannot be cancelled")
+  ) {
+    return new TeacherOperationsError("SESSION_NOT_CANCELLABLE");
+  }
   if (error.code === "23514") return new TeacherOperationsError("INVALID_BOOKING");
   return new TeacherOperationsError("UNAVAILABLE");
 }
@@ -98,10 +114,12 @@ export class SupabaseTeacherOperationsRepository implements TeacherOperationsRep
   async markAttendance(
     sessionBookingId: string,
     status: TeacherAttendanceStatus,
+    reason?: string,
   ): Promise<TeacherAttendanceMutation> {
-    const { data, error } = await this.client.rpc("mark_teacher_attendance", {
+    const { data, error } = await this.client.rpc("mark_teacher_attendance_v2", {
       p_session_booking_id: sessionBookingId,
       p_status: status,
+      p_reason: reason ?? null,
     });
 
     if (error) throw teacherError(error);

@@ -12,8 +12,10 @@ import {
   PageHeader,
 } from "@/components/ui";
 import {
+  TEACHER_ATTENDANCE_ERROR_MESSAGES,
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
+  type TeacherOperationsErrorCode,
   teacherSessionTypeLabel,
   type TeacherAttendanceStatus,
   type TeacherSessionStatus,
@@ -141,7 +143,11 @@ export default async function TeacherSessionPage({
         <Alert
           tone="error"
           title="Não foi possível atualizar a presença"
-          description="A operação foi rejeitada ou não pôde ser persistida com segurança."
+          description={
+            TEACHER_ATTENDANCE_ERROR_MESSAGES[
+              (firstValue(query.code) as TeacherOperationsErrorCode | undefined) ?? "UNAVAILABLE"
+            ] ?? TEACHER_ATTENDANCE_ERROR_MESSAGES.UNAVAILABLE
+          }
         />
       )}
 
@@ -159,6 +165,13 @@ export default async function TeacherSessionPage({
           tone="error"
           title="Alteração rejeitada"
           description="Confira disponibilidade, vínculos e reservas existentes."
+        />
+      )}
+      {firstValue(query.save) === "not_cancellable" && (
+        <Alert
+          tone="error"
+          title="Encontro não cancelado"
+          description={TEACHER_ATTENDANCE_ERROR_MESSAGES.SESSION_NOT_CANCELLABLE}
         />
       )}
       {session.status === "SCHEDULED" && (
@@ -278,6 +291,16 @@ export default async function TeacherSessionPage({
                             value={participant.bookingId}
                           />
                           <input type="hidden" name="status" value="ATTENDED" />
+                          {participant.attendanceStatus !== null && (
+                            <Textarea
+                              label="Motivo da correção"
+                              name="reason"
+                              required
+                              minLength={3}
+                              maxLength={500}
+                              message="Obrigatório para corrigir uma presença já marcada (3 a 500 caracteres)."
+                            />
+                          )}
                           <Button
                             type="submit"
                             size="sm"
@@ -298,6 +321,16 @@ export default async function TeacherSessionPage({
                             value={participant.bookingId}
                           />
                           <input type="hidden" name="status" value="NO_SHOW" />
+                          {participant.attendanceStatus !== null && (
+                            <Textarea
+                              label="Motivo da correção"
+                              name="reason"
+                              required
+                              minLength={3}
+                              maxLength={500}
+                              message="Obrigatório para corrigir uma presença já marcada (3 a 500 caracteres)."
+                            />
+                          )}
                           <Button
                             type="submit"
                             size="sm"

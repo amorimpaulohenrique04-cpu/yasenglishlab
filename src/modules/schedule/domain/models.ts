@@ -53,7 +53,7 @@ export interface ScheduleSessionView extends ScheduleSessionRecord {
 }
 
 export type ScheduleBookingErrorCode =
-  "ENTITLEMENT_REQUIRED" | "QUOTA_EXCEEDED" | "FULL" | "CLOSED" | "UNAVAILABLE";
+  "ENTITLEMENT_REQUIRED" | "QUOTA_EXCEEDED" | "FULL" | "CLOSED" | "CANCEL_CLOSED" | "UNAVAILABLE";
 
 export class ScheduleBookingError extends Error {
   constructor(readonly code: ScheduleBookingErrorCode) {

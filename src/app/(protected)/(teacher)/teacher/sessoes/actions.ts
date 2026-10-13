@@ -34,7 +34,13 @@ export async function cancelTeacherSessionAction(form: FormData) {
   const id = z.uuid().parse(form.get("sessionId"));
   const client = await createSupabaseServerClient();
   const { error } = await client.rpc("cancel_teacher_live_session", { p_live_session_id: id });
-  if (error) redirect(`/teacher/sessoes/${id}?save=error`);
+  if (error) {
+    const message = (error.message ?? "").toLowerCase();
+    const notCancellable =
+      message.includes("only scheduled sessions can be cancelled") ||
+      message.includes("recorded attendance cannot be cancelled");
+    redirect(`/teacher/sessoes/${id}?save=${notCancellable ? "not_cancellable" : "error"}`);
+  }
   revalidatePath("/teacher");
   revalidatePath("/agenda");
   revalidatePath("/home");

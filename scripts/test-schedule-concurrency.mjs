@@ -268,7 +268,7 @@ const teacherAttendanceRace = await withBarrier(
 if (
   teacherAttendanceRace[0].code !== 0 ||
   (teacherAttendanceRace[1].code !== 0 &&
-    !teacherAttendanceRace[1].stderr.includes("active booked participant"))
+    !/active booked participant|before session start/.test(teacherAttendanceRace[1].stderr))
 )
   throw new Error(
     `Teacher cancellation/attendance race failed: ${JSON.stringify(teacherAttendanceRace)}`,

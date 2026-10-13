@@ -20,6 +20,7 @@ const suites = {
     "supabase/tests/subscription_access.sql",
     "supabase/tests/enrollment_integrity.sql",
     "supabase/tests/admin_billing_operations.sql",
+    "supabase/tests/live_booking_integrity.sql",
     "supabase/tests/subscription_cancellation.sql",
   ],
   rls: [
@@ -42,6 +43,7 @@ const suites = {
   "subscription-access": ["supabase/tests/subscription_access.sql"],
   "enrollment-integrity": ["supabase/tests/enrollment_integrity.sql"],
   "admin-billing-operations": ["supabase/tests/admin_billing_operations.sql"],
+  "live-booking-integrity": ["supabase/tests/live_booking_integrity.sql"],
   "subscription-cancellation": ["supabase/tests/subscription_cancellation.sql"],
   "billing-checkout": ["supabase/tests/billing_checkout.sql"],
   "notification-delivery": ["supabase/tests/notification_delivery.sql"],
@@ -50,7 +52,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity>",
   );
   process.exit(2);
 }

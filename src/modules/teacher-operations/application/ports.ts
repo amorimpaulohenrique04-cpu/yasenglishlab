@@ -11,5 +11,6 @@ export interface TeacherOperationsRepository {
   markAttendance(
     sessionBookingId: string,
     status: TeacherAttendanceStatus,
+    reason?: string,
   ): Promise<TeacherAttendanceMutation>;
 }

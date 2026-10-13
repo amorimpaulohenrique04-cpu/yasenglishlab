@@ -86,9 +86,7 @@ export function buildPracticeView(
 
 export function attendanceRatePercent(facts: readonly ProgressAttendanceFact[]): number | null {
   const marked = facts.filter(
-    (fact) =>
-      fact.bookingStatus === "BOOKED" &&
-      (fact.attendanceStatus === "ATTENDED" || fact.attendanceStatus === "NO_SHOW"),
+    (fact) => fact.attendanceStatus === "ATTENDED" || fact.attendanceStatus === "NO_SHOW",
   );
   if (marked.length === 0) return null;
 
@@ -109,10 +107,12 @@ export function buildAttendanceView(
           left.bookingId.localeCompare(right.bookingId),
       )
       .slice(0, 8),
-    attended: booked.filter((fact) => fact.attendanceStatus === "ATTENDED").length,
-    noShow: booked.filter((fact) => fact.attendanceStatus === "NO_SHOW").length,
+    attended: facts.filter((fact) => fact.attendanceStatus === "ATTENDED").length,
+    noShow: facts.filter((fact) => fact.attendanceStatus === "NO_SHOW").length,
     pending: booked.filter((fact) => fact.attendanceStatus === null).length,
-    cancelled: facts.filter((fact) => fact.bookingStatus !== "BOOKED").length,
+    cancelled: facts.filter(
+      (fact) => fact.bookingStatus !== "BOOKED" && fact.attendanceStatus === null,
+    ).length,
     attendanceRatePercent: attendanceRatePercent(facts),
   };
 }
@@ -206,6 +206,7 @@ export function buildHistory(input: {
       title: fact.attendanceStatus === "ATTENDED" ? "Presença registrada" : "Ausência registrada",
       detail: fact.title,
       occurredAt: fact.attendanceMarkedAt,
+      bookingId: fact.bookingId,
     });
   }
 
@@ -246,9 +247,7 @@ export function buildConsistency(
   const recentHistory = history.filter((event) => withinLastDays(event.occurredAt, now, 7));
   const attendedLast7Days = attendance.filter(
     (fact) =>
-      fact.bookingStatus === "BOOKED" &&
-      fact.attendanceStatus === "ATTENDED" &&
-      withinLastDays(fact.attendanceMarkedAt, now, 7),
+      fact.attendanceStatus === "ATTENDED" && withinLastDays(fact.attendanceMarkedAt, now, 7),
   ).length;
 
   const activeDays = new Set(
@@ -257,7 +256,10 @@ export function buildConsistency(
         if (event.kind === "attendance_marked") {
           return attendance.some(
             (fact) =>
-              fact.attendanceStatus === "ATTENDED" && fact.attendanceMarkedAt === event.occurredAt,
+              fact.attendanceStatus === "ATTENDED" &&
+              (event.bookingId
+                ? fact.bookingId === event.bookingId
+                : fact.attendanceMarkedAt === event.occurredAt),
           );
         }
         return event.kind === "lesson_completed" || event.kind === "practice_submitted";

@@ -568,8 +568,10 @@ const sessions = [
     teacher_id: teacherId,
     session_type: "CONVERSATION_LAB",
     title: "Teacher Ops · Conversation Practice",
-    starts_at: inDays(4),
-    ends_at: inDays(4, 60),
+    // Attendance is only accepted from the session start (stage 06b): this fixture has already started. The window
+    // sits between the Home fixtures so the Teacher overlap guard stays satisfied.
+    starts_at: inDays(0, -100),
+    ends_at: inDays(0, -60),
     capacity: 4,
     required_entitlement_key: null,
     status: "SCHEDULED",

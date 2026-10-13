@@ -80,8 +80,8 @@ values
     '89200000-0000-4000-8000-000000000001',
     'CONVERSATION_LAB',
     'Teacher A own session',
-    now() + interval '1 day',
-    now() + interval '1 day 1 hour',
+    now() - interval '2 hours',
+    now() - interval '1 hour',
     3,
     'SCHEDULED'
   ),
@@ -344,9 +344,20 @@ begin
     raise exception 'marked_by_user_id must derive from authenticated Teacher';
   end if;
 
-  perform public.mark_teacher_attendance(
+  begin
+    perform public.mark_teacher_attendance(
+      '89500000-0000-4000-8000-000000000001',
+      'NO_SHOW'
+    );
+    raise exception 'Attendance correction without reason must be rejected';
+  exception when check_violation then
+    if sqlerrm <> 'attendance correction requires a reason' then raise; end if;
+  end;
+
+  perform public.mark_teacher_attendance_v2(
     '89500000-0000-4000-8000-000000000001',
-    'NO_SHOW'
+    'NO_SHOW',
+    'Corrected after roster review'
   );
 
   select status into persisted_status
@@ -456,8 +467,10 @@ begin
   where action = 'attendance_marked'
     and data ->> 'session_booking_id' = '89500000-0000-4000-8000-000000000001';
 
-  if audit_count < 3 then
-    raise exception 'Attendance INSERT/retry/correction must create durable audit facts';
+  -- Lower bound on purpose: audit_logs is immutable and this file is not transactional, so rows from an earlier run in
+  -- the same database persist. The idempotent retry (stage 06b) no longer audits: INSERT + correction = at least 2.
+  if audit_count < 2 then
+    raise exception 'Attendance INSERT and correction must create durable audit facts';
   end if;
 
   select count(*) into expected_transition_count

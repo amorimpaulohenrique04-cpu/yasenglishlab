@@ -37,6 +37,18 @@ describe("teacher operations domain", () => {
     ).toThrow();
   });
 
+  it("accepts an optional trimmed correction reason of 3 to 500 chars", () => {
+    const base = { sessionBookingId: "89500000-0000-4000-8000-000000000001", status: "NO_SHOW" };
+    expect(markTeacherAttendanceInputSchema.parse(base).reason).toBeUndefined();
+    expect(markTeacherAttendanceInputSchema.parse({ ...base, reason: "  Erro  " }).reason).toBe(
+      "Erro",
+    );
+    expect(() => markTeacherAttendanceInputSchema.parse({ ...base, reason: "ab" })).toThrow();
+    expect(() =>
+      markTeacherAttendanceInputSchema.parse({ ...base, reason: "x".repeat(501) }),
+    ).toThrow();
+  });
+
   it("keeps session and attendance labels deterministic", () => {
     expect(teacherSessionTypeLabel("CORE_CLASS")).toBe("Core Class");
     expect(teacherSessionTypeLabel("PRIVATE_SESSION")).toBe("Sessão particular");

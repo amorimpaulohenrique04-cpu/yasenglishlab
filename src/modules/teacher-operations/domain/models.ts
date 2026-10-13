@@ -31,7 +31,24 @@ export interface TeacherAttendanceMutation {
   markedAt: string;
 }
 
-export type TeacherOperationsErrorCode = "FORBIDDEN" | "INVALID_BOOKING" | "UNAVAILABLE";
+export type TeacherOperationsErrorCode =
+  | "FORBIDDEN"
+  | "INVALID_BOOKING"
+  | "ATTENDANCE_TOO_EARLY"
+  | "REASON_REQUIRED"
+  | "REASON_INVALID"
+  | "SESSION_NOT_CANCELLABLE"
+  | "UNAVAILABLE";
+
+export const TEACHER_ATTENDANCE_ERROR_MESSAGES: Record<TeacherOperationsErrorCode, string> = {
+  FORBIDDEN: "Você não tem permissão para alterar esta presença.",
+  INVALID_BOOKING: "A reserva não está ativa para registrar presença.",
+  ATTENDANCE_TOO_EARLY: "A presença só pode ser marcada a partir do início da sessão.",
+  REASON_REQUIRED: "Informe o motivo da correção para alterar uma presença já marcada.",
+  REASON_INVALID: "O motivo da correção deve ter entre 3 e 500 caracteres.",
+  SESSION_NOT_CANCELLABLE: "Só é possível cancelar sessões agendadas e sem presença registrada.",
+  UNAVAILABLE: "A operação não pôde ser persistida com segurança. Tente novamente.",
+};
 
 export class TeacherOperationsError extends Error {
   constructor(readonly code: TeacherOperationsErrorCode) {
