@@ -179,7 +179,7 @@ select set_config('lbi.first_attendance', attendance_id::text, true), set_config
 select * from public.mark_teacher_attendance(pg_temp.booking_of('9e400000-0000-4000-8000-000000000002','9e000000-0000-4000-8000-000000000001'),'NO_SHOW');
 reset role;
 select pg_temp.assert_true(current_setting('lbi.first_status')='ATTENDED','first marking succeeds without a reason');
-select pg_temp.assert_true((select count(*) from public.attendance_revisions)=0,'first marking writes no revision');
+select pg_temp.assert_true((select count(*) from public.attendance_revisions r join public.session_bookings b on b.id=r.session_booking_id join public.live_sessions s on s.id=b.live_session_id where s.title like 'LBI %')=0,'first marking writes no revision');
 select pg_temp.assert_true((select count(*) from public.audit_logs where action='attendance_marked' and entity_id=current_setting('lbi.first_attendance')::uuid)=1,'first marking is audited');
 -- A started COMPLETED session still accepts attendance, but the Student can no longer cancel it.
 select pg_temp.login('9e000000-0000-4000-8000-000000000001','aal1');
@@ -201,7 +201,7 @@ select pg_temp.expect_fail($$select * from public.mark_teacher_attendance_v2(pg_
 select pg_temp.expect_fail($$select * from public.mark_teacher_attendance_v2(pg_temp.booking_of('9e400000-0000-4000-8000-000000000003','9e000000-0000-4000-8000-000000000001'),'LATE','valid reason')$$,'23514','unsupported attendance status');
 reset role;
 select pg_temp.assert_true((select status from public.attendance where id=current_setting('lbi.first_attendance')::uuid)='ATTENDED','rejected rectifications leave the attendance untouched');
-select pg_temp.assert_true((select count(*) from public.attendance_revisions)=0,'rejected rectifications write no revision');
+select pg_temp.assert_true((select count(*) from public.attendance_revisions r join public.session_bookings b on b.id=r.session_booking_id join public.live_sessions s on s.id=b.live_session_id where s.title like 'LBI %')=0,'rejected rectifications write no revision');
 -- Rectification with a reason writes a revision and keeps the audit trail.
 select pg_temp.login('9e000000-0000-4000-8000-000000000003','aal2');
 set local role authenticated;
@@ -254,7 +254,7 @@ select pg_temp.assert_true((select count(*) from public.attendance_revisions)=0,
 reset role;
 select pg_temp.login('9e000000-0000-4000-8000-000000000005','aal2');
 set local role authenticated;
-select pg_temp.assert_true((select count(*) from public.attendance_revisions)=1,'Admin at AAL2 reads the revision');
+select pg_temp.assert_true((select count(*) from public.attendance_revisions r join public.session_bookings b on b.id=r.session_booking_id join public.live_sessions s on s.id=b.live_session_id where s.title like 'LBI %')=1,'Admin at AAL2 reads the revision');
 reset role;
 -- A started SCHEDULED session with recorded attendance cannot be cancelled by the Teacher (quota must not be handed back).
 select pg_temp.login('9e000000-0000-4000-8000-000000000003','aal2');

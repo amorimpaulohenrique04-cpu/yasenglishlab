@@ -177,8 +177,11 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
       await page.goto(`/teacher/sessoes/${sessionId}`);
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Cohort Student A" })).toBeVisible();
+      // Stage 06b: attendance is refused before the session starts (this session is 40 days ahead).
       await page.getByRole("button", { name: "Marcar Cohort Student A como Presente" }).click();
-      await expect(page.getByText("Presença atualizada")).toBeVisible();
+      await expect(
+        page.getByText("A presença só pode ser marcada a partir do início da sessão."),
+      ).toBeVisible();
     } finally {
       await studentContext.close();
       await outsiderContext.close();
