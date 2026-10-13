@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import {
   checkoutInputSchema,
+  providerSubscriptionIdSchema,
   type BillingProvider,
   type CheckoutInput,
 } from "@/modules/billing/application/billing-provider";
@@ -86,5 +87,34 @@ export class AsaasBillingProvider implements BillingProvider {
       throw new Error("Billing checkout response invalid; reconciliation required");
     }
     return { checkoutId: id, url: this.checkoutUrl(id) };
+  }
+
+  // DELETE /v3/subscriptions/{id} (ADR 0013, "Cancel subscription"): stops recurrence. 404 means the
+  // subscription is already gone, which is the desired end state (idempotent). No automatic retries.
+  async cancelSubscription(providerSubscriptionId: string) {
+    const id = providerSubscriptionIdSchema.parse(providerSubscriptionId);
+    const { environment, apiKey } = billingConfiguration();
+    let response: Response;
+    try {
+      response = await this.request(
+        `https://${environment === "sandbox" ? "api-sandbox" : "api"}.asaas.com/v3/subscriptions/${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+          redirect: "error",
+          cache: "no-store",
+          signal: AbortSignal.timeout(15000),
+          headers: {
+            access_token: apiKey,
+            "Content-Type": "application/json",
+            "User-Agent": "YasEnglishLab/1.0",
+          },
+        },
+      );
+    } catch {
+      // Never leak transport errors (which may contain headers).
+      throw new Error("Billing subscription cancellation outcome unknown");
+    }
+    if (response.ok || response.status === 404) return;
+    throw new Error(`Billing subscription cancellation failed (${response.status})`);
   }
 }

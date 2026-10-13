@@ -47,8 +47,50 @@ describe("Billing UI projections", () => {
       "startedAt",
       "endedAt",
       "cancelAtPeriodEnd",
+      "accessUntil",
+      "cancellationState",
     ]);
     expect(subscriptionSummary(row, "Talk").amountCents).toBeNull();
+  });
+  it("derives the cancellation lifecycle from the row, never from the browser", () => {
+    const base = {
+      id: "10000000-0000-0000-0000-000000000001",
+      user_id: "10000000-0000-0000-0000-000000000002",
+      plan_id: "10000000-0000-0000-0000-000000000003",
+      current_period_start: null,
+      current_period_end: "2026-11-01T03:00:00Z",
+      cancel_at_period_end: false,
+      started_at: "2026-10-01T12:00:00Z",
+      ended_at: null,
+    };
+    const now = new Date("2026-10-13T12:00:00Z");
+    const summary = (patch: object) =>
+      subscriptionSummary(
+        subscriptionRow.parse({ ...base, status: "ACTIVE", ...patch }),
+        "Talk",
+        undefined,
+        now,
+      );
+    expect(summary({ cancel_at_period_end: true })).toMatchObject({
+      cancellationState: "CANCEL_SCHEDULED",
+      accessUntil: "2026-11-01T03:00:00Z",
+    });
+    expect(summary({ status: "CANCELLED", ended_at: "2026-10-13T11:00:00Z" })).toMatchObject({
+      cancellationState: "CANCELLED_WITH_ACCESS",
+      accessUntil: "2026-11-01T03:00:00Z",
+    });
+    expect(
+      summary({ status: "CANCELLED", current_period_end: "2026-10-01T03:00:00Z" }),
+    ).toMatchObject({ cancellationState: null, accessUntil: "2026-10-01T03:00:00Z" });
+    expect(summary({ status: "CANCELLED", current_period_end: null })).toMatchObject({
+      cancellationState: null,
+      accessUntil: null,
+    });
+    // A regular ACTIVE row never advertises its cycle end as cancellation access.
+    expect(summary({})).toMatchObject({ cancellationState: null, accessUntil: null });
+    expect(
+      summary({ status: "PAST_DUE", cancel_at_period_end: true }).cancellationState,
+    ).toBeNull();
   });
   it("never invents a billing period or historical amount", () => {
     expect(

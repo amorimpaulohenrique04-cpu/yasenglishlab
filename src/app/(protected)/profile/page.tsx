@@ -1,4 +1,5 @@
 import { StudentSubscription } from "@/modules/billing/ui/student-subscription";
+import { cancelSubscriptionAction } from "./subscription-actions";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadOwnSubscription } from "@/server/billing/own-subscription";
 import { Alert, Badge, Button, Card, Input } from "@/components/ui";
@@ -93,7 +94,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         </Card>
 
         {auth.roles.includes("STUDENT") && (
-          <StudentSubscription subscription={subscription} access={access} />
+          <StudentSubscription
+            subscription={subscription}
+            access={access}
+            cancelAction={cancelSubscriptionAction}
+          />
         )}
 
         <form action={logoutAction}>

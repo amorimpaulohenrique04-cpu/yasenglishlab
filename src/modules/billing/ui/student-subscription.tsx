@@ -4,14 +4,18 @@ import type { SubscriptionAccessState } from "@/modules/billing/domain/access";
 import type { loadOwnSubscription } from "@/server/billing/own-subscription";
 import { billingAmount, billingDate, billingPeriod, billingStatuses } from "./presentation";
 import { SubscriptionSuspendedNotice } from "./suspension-notice";
+import { CancelSubscription, type CancelSubscriptionResult } from "./cancel-subscription";
+import { CancellationNotice } from "./cancellation-notice";
 import styles from "./billing.module.css";
 
 export function StudentSubscription({
   subscription,
   access = { kind: "ok" },
+  cancelAction,
 }: {
   subscription: Awaited<ReturnType<typeof loadOwnSubscription>>;
   access?: SubscriptionAccessState;
+  cancelAction?: () => Promise<CancelSubscriptionResult>;
 }) {
   return (
     <Card className={styles.subscription} aria-label="Assinatura">
@@ -55,7 +59,17 @@ export function StudentSubscription({
               </div>
             )}
           </dl>
-          {subscription.cancelAtPeriodEnd && <Alert tone="info" title="Cancelamento agendado" />}
+          {subscription.status === "ACTIVE" && cancelAction ? (
+            <CancelSubscription
+              action={cancelAction}
+              scheduled={subscription.cancellationState !== null}
+              accessUntil={subscription.accessUntil}
+            />
+          ) : (
+            subscription.cancellationState !== null && (
+              <CancellationNotice accessUntil={subscription.accessUntil} />
+            )
+          )}
           {subscription.benefits.length > 0 && (
             <div>
               <h3>Benefícios do plano</h3>
