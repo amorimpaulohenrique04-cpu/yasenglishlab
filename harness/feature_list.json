@@ -84,7 +84,7 @@
     },
     {
       "id": "stage-03e-notification-delivery",
-      "title": "stage-03e-notification-delivery",
+      "title": "stage-03e-notification-delivery (library only; cron/endpoint pending)",
       "status": "done",
       "verified": true,
       "dependencies": ["stage-03d-billing-ui"],

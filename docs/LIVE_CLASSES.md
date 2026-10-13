@@ -42,7 +42,7 @@ O roster expõe booking, nome de exibição, status da reserva e attendance. Ele
 
 Attendance permanece entidade separada de booking. A escrita ocorre por RPC protegida, reutiliza `UNIQUE(session_booking_id)` e gera audit fact transacional. `NO_SHOW` não cria consequência comercial, crédito, multa, reposição ou cancelamento.
 
-Cancelamento/remarcação, meeting provider, disponibilidade editável e autoria continuam fora deste V1.
+> **Histórico (V1).** Cancelamento/remarcação, meeting provider, disponibilidade editável e autoria estavam fora do V1; disponibilidade, criação de sessão e cancelamento já existem na seção V2 abaixo, que é a fonte atual.
 
 ## Teacher Operations V2 / Student Agenda V2
 

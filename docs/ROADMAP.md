@@ -4,6 +4,10 @@
 
 Este arquivo é a fonte operacional da sequência de implementação do Yas English Lab. A ordem existe para reduzir retrabalho, fechar dependências antes das projeções e impedir que fases futuras antecipem decisões ainda abertas.
 
+## Nota de reconciliação (2026-10-12)
+
+O registro `harness/feature_list.json` é a fonte do que está concluído. Ele usa subfases fora da sequência P00–P26 abaixo: `P21.1–P21.6` (ver `P21_FOUNDATION.md` e `P21_CORE_EXPERIENCE.md`) e `stage-01` a `stage-03f` (Enrollment Core, Operations, billing Asaas, notificações e CRM). Billing (P22) e entrega de e-mail (parte de P24) já têm código parcial; em caso de divergência, vale o Harness.
+
 ## Roadmap operacional oficial
 
 - **P00 — visão, requisitos e direção arquitetural**
