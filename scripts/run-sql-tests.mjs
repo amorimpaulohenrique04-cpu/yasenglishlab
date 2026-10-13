@@ -23,6 +23,9 @@ const suites = {
     "supabase/tests/live_booking_integrity.sql",
     "supabase/tests/subscription_cancellation.sql",
     "supabase/tests/rate_limit.sql",
+    "supabase/tests/function_privileges.sql",
+    "supabase/tests/sensitive_tables_negative.sql",
+    "supabase/tests/record_immutability.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -37,6 +40,9 @@ const suites = {
     "supabase/tests/placement.sql",
     "supabase/tests/admin_billing_operations.sql",
     "supabase/tests/rate_limit.sql",
+    "supabase/tests/function_privileges.sql",
+    "supabase/tests/sensitive_tables_negative.sql",
+    "supabase/tests/record_immutability.sql",
   ],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
@@ -50,12 +56,15 @@ const suites = {
   "billing-checkout": ["supabase/tests/billing_checkout.sql"],
   "notification-delivery": ["supabase/tests/notification_delivery.sql"],
   "rate-limit": ["supabase/tests/rate_limit.sql"],
+  "function-privileges": ["supabase/tests/function_privileges.sql"],
+  "sensitive-tables-negative": ["supabase/tests/sensitive_tables_negative.sql"],
+  "record-immutability": ["supabase/tests/record_immutability.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability>",
   );
   process.exit(2);
 }
