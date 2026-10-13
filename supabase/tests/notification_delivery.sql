@@ -9,9 +9,9 @@ $$;
 -- SQL exercises Billing/outbox ownership; verified email belongs to Auth adapter tests.
 -- Use the minimal id-only Auth contract shared by real Supabase and CI's stub.
 insert into auth.users(id) values
- ('ae000000-0000-4000-8000-000000000001'),('ae000000-0000-4000-8000-000000000002');
+ ('ae000000-0000-4000-8000-000000000001'),('ae000000-0000-4000-8000-000000000002'),('ae000000-0000-4000-8000-000000000003');
 insert into public.user_roles(user_id,role) values
- ('ae000000-0000-4000-8000-000000000001','STUDENT'),('ae000000-0000-4000-8000-000000000002','STUDENT');
+ ('ae000000-0000-4000-8000-000000000001','STUDENT'),('ae000000-0000-4000-8000-000000000002','STUDENT'),('ae000000-0000-4000-8000-000000000003','STUDENT');
 
 do $$
 declare r jsonb; s uuid; price integer; e jsonb; before_count integer; sub uuid;
@@ -46,6 +46,30 @@ begin
    insert into public.notification_deliveries(notification_id) select id from public.notifications where user_id='ae000000-0000-4000-8000-000000000001' limit 1;
    raise exception 'duplicate email delivery accepted';
  exception when unique_violation then null; end;
+end $$;
+
+-- Payment-scoped dedupe: CONFIRMED + RECEIVED are the same Asaas payment (two eventIds, same action).
+do $$
+declare r jsonb; s uuid; price integer; first_event jsonb; u constant uuid := 'ae000000-0000-4000-8000-000000000003';
+begin
+ r:=public.reserve_billing_checkout(u,'START');
+ s:=(r->>'sessionId')::uuid; price:=(r->>'amountCents')::integer;
+ perform public.complete_billing_checkout(s,'ae000000-0000-4000-8000-000000000013');
+ first_event:=pg_temp.notification_event('renewal_confirmed','CONFIRMED',s,'sub_renewal',price)||'{"paymentId":"pay_cycle_1"}'::jsonb;
+ perform pg_temp.assert_notification(public.reconcile_billing_event(first_event)='APPLIED','first payment confirmation APPLIED');
+ perform pg_temp.assert_notification(public.reconcile_billing_event(first_event||'{"eventId":"renewal_received","occurredAt":"2026-10-06T10:00:05Z"}')='APPLIED','RECEIVED for the same payment is APPLIED, not STALE');
+ perform pg_temp.assert_notification((select count(*)=1 from public.notifications where user_id=u and notification_type='PAYMENT_CONFIRMED' and title='Pagamento confirmado'),'CONFIRMED + RECEIVED of one payment yield one first-confirmation notification');
+ perform pg_temp.assert_notification((select count(*)=1 from public.notification_deliveries d join public.notifications n on n.id=d.notification_id where n.user_id=u),'one email delivery for one payment');
+ perform pg_temp.assert_notification((select dedupe_key='billing:asaas:payment:pay_cycle_1:2026-10-06:payment_confirmed' from public.notifications where user_id=u),'dedupe key is payment+cycle+type, not event id');
+ -- Next cycle (new payment, later cycleDate): renewal copy, again exactly one notification for CONFIRMED + RECEIVED.
+ perform pg_temp.assert_notification(public.reconcile_billing_event(first_event||'{"eventId":"renewal_2_confirmed","paymentId":"pay_cycle_2","cycleDate":"2026-11-06","occurredAt":"2026-11-06T10:00:00Z"}')='APPLIED','renewal confirmation APPLIED');
+ perform pg_temp.assert_notification(public.reconcile_billing_event(first_event||'{"eventId":"renewal_2_received","paymentId":"pay_cycle_2","cycleDate":"2026-11-06","occurredAt":"2026-11-06T10:00:05Z"}')='APPLIED','renewal RECEIVED APPLIED');
+ perform pg_temp.assert_notification((select count(*)=1 from public.notifications where user_id=u and notification_type='PAYMENT_RENEWED'
+   and title='Pagamento da renovação confirmado' and body='Recebemos o pagamento da renovação e sua assinatura Yas segue ativa.' and data='{}'::jsonb),'next cycle uses renewal template once');
+ perform pg_temp.assert_notification((select count(*)=1 from public.notifications where user_id=u and notification_type='PAYMENT_CONFIRMED'),'renewal does not repeat first-confirmation copy');
+ perform pg_temp.assert_notification((select count(*)=2 from public.notification_deliveries d join public.notifications n on n.id=d.notification_id where n.user_id=u),'one delivery per payment');
+ perform pg_temp.assert_notification(public.reconcile_billing_event(first_event||'{"eventId":"renewal_late_dup","occurredAt":"2026-10-06T10:00:09Z"}')='STALE','older cycle replay is STALE');
+ perform pg_temp.assert_notification((select count(*)=2 from public.notifications where user_id=u),'stale replay creates nothing');
 end $$;
 
 -- A different owner's notification makes the own-notification RLS test non-vacuous.

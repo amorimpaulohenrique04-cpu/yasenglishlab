@@ -59,3 +59,17 @@ export function getNotificationDeliveryEnvironment():
     fromEmail: process.env.RESEND_FROM_EMAIL,
   };
 }
+
+// Bearer secret for the scheduled notification processor route. Distinct from every other
+// credential; absent/weak configuration disables the route (fail closed) instead of opening it.
+export function getNotificationsCronSecret(): string | null {
+  const secret = process.env.NOTIFICATIONS_CRON_SECRET;
+  if (!secret || !/^\S{32,255}$/.test(secret)) return null;
+  const reused = [
+    process.env.ASAAS_WEBHOOK_TOKEN,
+    process.env.ASAAS_API_KEY,
+    process.env.RESEND_API_KEY,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+  ];
+  return reused.includes(secret) ? null : secret;
+}
