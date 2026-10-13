@@ -467,8 +467,8 @@ begin
   where action = 'attendance_marked'
     and data ->> 'session_booking_id' = '89500000-0000-4000-8000-000000000001';
 
-  if audit_count < 3 then
-    raise exception 'Attendance INSERT/retry/correction must create durable audit facts';
+  if audit_count <> 2 then
+    raise exception 'Attendance INSERT and correction must create durable audit facts (an idempotent retry is a no-op)';
   end if;
 
   select count(*) into expected_transition_count

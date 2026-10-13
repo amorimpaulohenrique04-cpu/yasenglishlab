@@ -71,15 +71,23 @@ select public.mark_teacher_attendance((select id from public.session_bookings wh
 reset role;
 select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000001','weekly_core_classes',
  current_setting('bq.session1_starts_at')::timestamptz)->>'used'='1','NO_SHOW must retain commercial usage');
+-- Stage 06b: a session with recorded attendance (session 1 has the NO_SHOW above) cannot be cancelled by the Teacher.
 set local role authenticated;
-select public.cancel_teacher_live_session('9b200000-0000-0000-0000-000000000001');
+do $$ begin
+ begin perform public.cancel_teacher_live_session('9b200000-0000-0000-0000-000000000001');
+  raise exception 'Teacher cancelled a session with recorded attendance'; exception when check_violation then
+  if sqlerrm<>'session with recorded attendance cannot be cancelled' then raise; end if;
+ end;
+end $$;
 reset role;
-select pg_temp.assert_true((select status='TEACHER_CANCELLED' from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001'),'teacher cancellation must release booking');
-select set_config('request.jwt.claim.sub','9b000000-0000-0000-0000-000000000001',true);
-select set_config('request.jwt.claims','{"sub":"9b000000-0000-0000-0000-000000000001","aal":"aal1"}',true);
+select pg_temp.assert_true((select status='BOOKED' from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001'),'session with attendance keeps its booking');
+-- Teacher cancellation of a session without attendance (session 3) releases the booking and its commercial usage.
 set local role authenticated;
-select public.book_live_session('9b200000-0000-0000-0000-000000000002');
+select public.cancel_teacher_live_session('9b200000-0000-0000-0000-000000000003');
 reset role;
+select pg_temp.assert_true((select status='TEACHER_CANCELLED' from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000003' and user_id='9b000000-0000-0000-0000-000000000001'),'teacher cancellation must release booking');
+select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000001','weekly_core_classes',
+ (select starts_at from public.live_sessions where id='9b200000-0000-0000-0000-000000000003'))->>'used'='0','teacher cancellation releases commercial usage');
 select pg_temp.assert_true(not has_table_privilege('authenticated','public.session_bookings','UPDATE'),'booking DML remains denied');
 select pg_temp.assert_true(not has_column_privilege('authenticated','public.session_bookings','usage_limit','SELECT'),'commercial snapshot must not leak through Data API');
 select pg_temp.assert_true((select count(*) from public.attendance a join public.session_bookings b on b.id=a.session_booking_id where b.user_id='9b000000-0000-0000-0000-000000000001')=1,'attendance stays a separate unique fact');
