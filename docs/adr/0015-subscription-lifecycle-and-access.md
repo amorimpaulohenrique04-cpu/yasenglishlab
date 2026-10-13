@@ -2,7 +2,7 @@
 
 ## Status
 
-accepted
+accepted (decision 1 superseded by [ADR 0016](./0016-access-suspension-on-payment-failure.md))
 
 ## Date
 
