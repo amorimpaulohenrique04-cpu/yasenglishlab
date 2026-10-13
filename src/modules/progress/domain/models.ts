@@ -119,6 +119,8 @@ export interface ProgressHistoryEvent {
   title: string;
   detail: string;
   occurredAt: string;
+  /** Present for attendance_marked events; lets consistency match by booking. */
+  bookingId?: string;
 }
 
 export interface ProgressConsistencyView {

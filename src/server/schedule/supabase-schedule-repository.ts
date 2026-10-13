@@ -121,6 +121,21 @@ function bookingError(error: {
   return new ScheduleBookingError("UNAVAILABLE");
 }
 
+export function cancelBookingError(error: {
+  code?: string;
+  message?: string;
+}): ScheduleBookingError | SubscriptionSuspendedError {
+  const message = error.message?.toLowerCase() ?? "";
+  if (
+    message.includes("cancelled after session start") ||
+    message.includes("only scheduled sessions can be cancelled") ||
+    message.includes("attendance")
+  ) {
+    return new ScheduleBookingError("CANCEL_CLOSED");
+  }
+  return bookingError(error);
+}
+
 export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleHomeReadRepository {
   constructor(private readonly client: SupabaseClient) {}
 
@@ -161,6 +176,6 @@ export class SupabaseScheduleRepository implements ScheduleRepository, ScheduleH
     const { error } = await this.client.rpc("cancel_live_booking", {
       p_live_session_id: liveSessionId,
     });
-    if (error) throw bookingError(error);
+    if (error) throw cancelBookingError(error);
   }
 }

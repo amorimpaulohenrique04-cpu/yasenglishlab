@@ -56,13 +56,19 @@ select pg_temp.assert_true((select count(*) from public.audit_logs where actor_u
 select pg_temp.assert_true((select usage_window_start from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001') =
  date_trunc('week',(now() at time zone 'America/Recife')+interval '2 weeks') at time zone 'America/Recife','quota uses session window not booking time');
 
+-- Attendance is only accepted from session start (stage 06b): simulate the session having started while keeping the
+-- usage snapshot (usage_session_starts_at) untouched.
+select set_config('bq.session1_starts_at',(select starts_at::text from public.live_sessions where id='9b200000-0000-0000-0000-000000000001'),true);
+alter table public.live_sessions disable trigger reserved_session_guard;
+update public.live_sessions set starts_at=now()-interval '1 hour',ends_at=now()-interval '15 minutes' where id='9b200000-0000-0000-0000-000000000001';
+alter table public.live_sessions enable trigger reserved_session_guard;
 select set_config('request.jwt.claim.sub','9b000000-0000-0000-0000-000000000003',true);
 select set_config('request.jwt.claims','{"sub":"9b000000-0000-0000-0000-000000000003","aal":"aal2"}',true);
 set local role authenticated;
 select public.mark_teacher_attendance((select id from public.session_bookings where live_session_id='9b200000-0000-0000-0000-000000000001'),'NO_SHOW');
 reset role;
 select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000001','weekly_core_classes',
- (select starts_at from public.live_sessions where id='9b200000-0000-0000-0000-000000000001'))->>'used'='1','NO_SHOW must retain commercial usage');
+ current_setting('bq.session1_starts_at')::timestamptz)->>'used'='1','NO_SHOW must retain commercial usage');
 set local role authenticated;
 select public.cancel_teacher_live_session('9b200000-0000-0000-0000-000000000001');
 reset role;
@@ -86,8 +92,15 @@ insert into public.session_bookings(live_session_id,user_id) values('9b200000-00
 select set_config('request.jwt.claim.sub','9b000000-0000-0000-0000-000000000002',true);
 select set_config('request.jwt.claims','{"sub":"9b000000-0000-0000-0000-000000000002","aal":"aal1"}',true);
 set local role authenticated;
-select public.cancel_live_booking('9b200000-0000-0000-0000-000000000007');
+do $$ begin
+ begin perform public.cancel_live_booking('9b200000-0000-0000-0000-000000000007');
+  raise exception 'Student cancelled after session start'; exception when check_violation then
+  if sqlerrm<>'booking cannot be cancelled after session start' then raise; end if;
+ end;
+end $$;
 reset role;
+-- Historical late cancellation (cancelled_at >= session start) is only reachable through privileged history imports now.
+update public.session_bookings set status='CANCELLED' where live_session_id='9b200000-0000-0000-0000-000000000007';
 select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000002','weekly_core_classes',now()-interval '1 day')->>'used'='1','late Student cancellation must retain commercial usage');
 select pg_temp.assert_true(private.booking_quota('9b000000-0000-0000-0000-000000000002',null,now())->>'allowed'='true','no recurring key must remain uncapped');
 do $$ begin

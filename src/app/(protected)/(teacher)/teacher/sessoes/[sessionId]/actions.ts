@@ -17,13 +17,14 @@ export async function markAttendanceAction(formData: FormData): Promise<void> {
   const input = markTeacherAttendanceInputSchema.parse({
     sessionBookingId: formData.get("sessionBookingId"),
     status: formData.get("status"),
+    reason: String(formData.get("reason") ?? "").trim() || undefined,
   });
 
   try {
     await markCurrentTeacherAttendance(input);
   } catch (error) {
     if (error instanceof TeacherOperationsError) {
-      redirect("/teacher/sessoes/" + sessionId + "?attendance=error");
+      redirect("/teacher/sessoes/" + sessionId + "?attendance=error&code=" + error.code);
     }
     throw error;
   }

@@ -51,7 +51,15 @@ export async function cancelLiveSessionAction(formData: FormData): Promise<void>
   const input = bookScheduleSessionInputSchema.parse({
     liveSessionId: formData.get("liveSessionId"),
   });
-  await cancelCurrentStudentSession(input);
+  try {
+    await cancelCurrentStudentSession(input);
+  } catch (error) {
+    if (error instanceof ScheduleBookingError) {
+      const code = error.code === "CANCEL_CLOSED" ? "cancel_closed" : "cancel_error";
+      redirect(`/agenda?booking=${code}`);
+    }
+    throw error;
+  }
   revalidatePath("/agenda");
   revalidatePath("/home");
   redirect("/agenda?booking=cancelled");

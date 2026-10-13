@@ -79,7 +79,7 @@ describe("teacher operations application", () => {
       }),
     ).resolves.toMatchObject({ status: "ATTENDED" });
 
-    expect(repo.markAttendance).toHaveBeenCalledWith(roster.bookingId, "ATTENDED");
+    expect(repo.markAttendance).toHaveBeenCalledWith(roster.bookingId, "ATTENDED", undefined);
   });
 
   it("propagates persistence failures instead of producing false success", async () => {

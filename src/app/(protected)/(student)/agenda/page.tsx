@@ -67,6 +67,24 @@ function bookingAlert(code: string | undefined) {
         description="O crédito é liberado quando o cancelamento acontece antes do início da sessão."
       />
     );
+  if (code === "cancel_closed") {
+    return (
+      <Alert
+        tone="warning"
+        title="Esta reserva não pode mais ser cancelada"
+        description="O cancelamento não é permitido após o início da sessão ou depois de registrada a presença."
+      />
+    );
+  }
+  if (code === "cancel_error") {
+    return (
+      <Alert
+        tone="error"
+        title="Não foi possível cancelar a reserva"
+        description="Tente novamente em instantes."
+      />
+    );
+  }
   if (code === "success") {
     return (
       <Alert

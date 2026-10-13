@@ -5,6 +5,7 @@ import {
   attendanceRatePercent,
   buildAssessmentView,
   buildAttendanceView,
+  buildConsistency,
   buildCurriculumView,
   buildHistory,
   buildPracticeView,
@@ -206,7 +207,7 @@ describe("Progress projection", () => {
     expect(view).toMatchObject({ attended: 1, noShow: 1, pending: 1, cancelled: 1 });
   });
 
-  it("uses only ATTENDED + NO_SHOW marked active bookings in attendance rate", () => {
+  it("counts recorded ATTENDED + NO_SHOW regardless of booking status in attendance rate", () => {
     const facts = [
       attendance(),
       attendance({
@@ -225,7 +226,7 @@ describe("Progress projection", () => {
       }),
     ];
 
-    expect(attendanceRatePercent(facts)).toBe(50);
+    expect(attendanceRatePercent(facts)).toBe(33);
   });
 
   it("keeps an objective SkillScore as an objective score on its original scale", () => {
@@ -323,5 +324,42 @@ describe("Progress projection", () => {
       "2026-09-30T10:00:00Z",
       "2026-09-30T08:00:00Z",
     ]);
+  });
+  it("keeps recorded attendance counted when the booking status is not BOOKED", () => {
+    const view = buildAttendanceView([
+      attendance({ bookingStatus: "CANCELLED", attendanceStatus: "ATTENDED" }),
+      attendance({
+        bookingId: "85000000-0000-4000-8000-000000000009",
+        bookingStatus: "TEACHER_CANCELLED",
+        attendanceStatus: null,
+        attendanceMarkedAt: null,
+      }),
+    ]);
+
+    expect(view).toMatchObject({
+      attended: 1,
+      noShow: 0,
+      cancelled: 1,
+      attendanceRatePercent: 100,
+    });
+  });
+
+  it("matches weekly consistency attendance events by bookingId", () => {
+    const now = new Date("2026-10-01T12:00:00Z");
+    const fact = attendance({ attendanceMarkedAt: "2026-09-30T16:00:00Z" });
+    const history = buildHistory({
+      courses: [],
+      practice: [],
+      attendance: [fact],
+      assessments: [],
+    });
+    const event = history.find((item) => item.kind === "attendance_marked");
+    expect(event?.bookingId).toBe(fact.bookingId);
+
+    expect(buildConsistency(history, [fact], now).activeDaysLast7Days).toBe(1);
+    // Same timestamp on another booking must not validate the event.
+    const other = { ...fact, bookingId: "85000000-0000-4000-8000-000000000099" };
+    expect(buildConsistency(history, [other], now).activeDaysLast7Days).toBe(0);
+    expect(buildConsistency(history, [fact], now).attendedLast7Days).toBe(1);
   });
 });
