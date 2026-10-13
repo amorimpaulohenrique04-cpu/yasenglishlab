@@ -60,8 +60,10 @@ select pg_temp.assert_true((select usage_window_start from public.session_bookin
 -- usage snapshot (usage_session_starts_at) untouched.
 select set_config('bq.session1_starts_at',(select starts_at::text from public.live_sessions where id='9b200000-0000-0000-0000-000000000001'),true);
 alter table public.live_sessions disable trigger reserved_session_guard;
+alter table public.live_sessions disable trigger session_v2_contract;
 update public.live_sessions set starts_at=now()-interval '1 hour',ends_at=now()-interval '15 minutes' where id='9b200000-0000-0000-0000-000000000001';
 alter table public.live_sessions enable trigger reserved_session_guard;
+alter table public.live_sessions enable trigger session_v2_contract;
 select set_config('request.jwt.claim.sub','9b000000-0000-0000-0000-000000000003',true);
 select set_config('request.jwt.claims','{"sub":"9b000000-0000-0000-0000-000000000003","aal":"aal2"}',true);
 set local role authenticated;
