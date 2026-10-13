@@ -21,6 +21,11 @@ export class ManualExternalMeetingProvider implements MeetingProviderPort {
     const status = z
       .enum(["NOT_AUTHORIZED", "TOO_EARLY", "MEETING_NOT_READY", "SESSION_CLOSED"])
       .parse(data?.status);
+    if (status === "NOT_AUTHORIZED") {
+      // Unknown reasons are dropped (not echoed) so the SQL contract can grow without leaking details.
+      const reason = z.literal("SUBSCRIPTION_SUSPENDED").safeParse(data?.reason);
+      return reason.success ? { status, reason: reason.data } : { status };
+    }
     return { status };
   }
 }

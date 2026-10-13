@@ -3,6 +3,10 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
+  SubscriptionSuspendedError,
+  isSubscriptionGateError,
+} from "@/modules/billing/domain/access";
+import {
   ScheduleBookingError,
   type ScheduleBookingStatus,
   type ScheduleHomeReadRepository,
@@ -91,7 +95,11 @@ function ownBookingFromRow(row: Row): ScheduleOwnBookingFact {
   };
 }
 
-function bookingError(error: { code?: string; message?: string }): ScheduleBookingError {
+function bookingError(error: {
+  code?: string;
+  message?: string;
+}): ScheduleBookingError | SubscriptionSuspendedError {
+  if (isSubscriptionGateError(error)) return new SubscriptionSuspendedError();
   const message = error.message?.toLowerCase() ?? "";
 
   if (message.includes("required entitlement")) {

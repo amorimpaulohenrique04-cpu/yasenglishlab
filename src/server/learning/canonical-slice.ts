@@ -9,6 +9,7 @@ import {
   recordLessonProgress,
   type LessonProgressInput,
 } from "@/modules/learning";
+import { loadSubscriptionAccess } from "@/server/billing/subscription-access";
 import { SupabaseProductAnalytics } from "@/server/analytics/supabase-product-analytics";
 import { assertRole, requirePageAuth } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -20,9 +21,17 @@ async function context() {
   const client = await createSupabaseServerClient();
   return {
     auth,
+    client,
     repository: new SupabaseLearningRepository(client),
     analytics: new SupabaseProductAnalytics(client),
   };
+}
+
+// Enrollment rules are untouched (ACTIVE enrollments still list); this only explains a billing suspension
+// (ADR 0016) so the page can show the notice and the regularization path.
+export async function loadLearningAccess() {
+  const { auth, client } = await context();
+  return loadSubscriptionAccess(client, auth.userId, auth.roles);
 }
 
 export async function loadLearningHome() {

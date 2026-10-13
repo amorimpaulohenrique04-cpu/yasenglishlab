@@ -3,6 +3,10 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
+  SubscriptionSuspendedError,
+  isSubscriptionGateError,
+} from "@/modules/billing/domain/access";
+import {
   normalizePracticeSkill,
   parsePracticeContent,
   practiceAvailabilityForEvaluationMode,
@@ -252,6 +256,7 @@ export class SupabasePracticeRepository
       p_practice_activity_id: input.activityId,
       p_idempotency_key: input.idempotencyKey,
     });
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
     if (error || !data) throw new Error("Unable to start practice attempt.");
 
     const row = data as unknown as Row;
@@ -268,6 +273,7 @@ export class SupabasePracticeRepository
       p_practice_attempt_id: input.attemptId,
       p_response: input.response,
     });
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
     if (error || !data) throw new Error("Unable to submit practice attempt.");
     return resultFromRow(data as unknown as Row);
   }

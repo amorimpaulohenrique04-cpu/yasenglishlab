@@ -12,6 +12,8 @@ import {
 import { placementLabels } from "@/modules/placement";
 import { practiceSkillLabel } from "@/modules/practice";
 import { YAS_SCHEDULE_TIME_ZONE, scheduleSessionTypeLabel } from "@/modules/schedule";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadHomePage } from "@/server/home/home";
 import { loadStudentPlacement } from "@/server/placement/placement";
 
@@ -50,6 +52,15 @@ export default async function StudentHomePage() {
     );
   }
 
+  const access = await loadCurrentSubscriptionAccess();
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-home-page">
+        <PageHeader title="Início" description="Seu próximo passo no Yas English Lab." />
+        <SubscriptionSuspendedNotice access={access} />
+      </div>
+    );
+  }
   const state = await loadHomePage();
 
   if (state.status === "unauthorized") {

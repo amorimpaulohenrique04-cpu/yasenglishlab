@@ -6,6 +6,8 @@ import {
   type ScheduleAvailability,
   type ScheduleSessionView,
 } from "@/modules/schedule";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadSchedulePage } from "@/server/schedule/schedule";
 
 import { bookLiveSessionAction, cancelLiveSessionAction, joinLiveSessionAction } from "./actions";
@@ -133,10 +135,17 @@ function DateStrip({ sessions }: { sessions: ScheduleSessionView[] }) {
   );
 }
 
-function SessionCard({ session }: { session: ScheduleSessionView }) {
+function SessionCard({
+  session,
+  suspended = false,
+}: {
+  session: ScheduleSessionView;
+  suspended?: boolean;
+}) {
   const start = new Date(session.startsAt);
   const end = new Date(session.endsAt);
-  const canSubmit = session.availability === "AVAILABLE" && session.eligibility.canBook;
+  const canSubmit =
+    !suspended && session.availability === "AVAILABLE" && session.eligibility.canBook;
   const entitlementBlocked = session.eligibility.reason === "ENTITLEMENT_REQUIRED";
 
   return (
@@ -184,6 +193,11 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
         {session.eligibility.reason === "QUOTA_EXCEEDED" && (
           <span>Limite deste período atingido.</span>
         )}
+        {suspended && session.availability !== "BOOKED" && (
+          <span id={`suspended-${session.id}`}>
+            Reservas em pausa enquanto a assinatura é regularizada.
+          </span>
+        )}
         {session.eligibility.reason === "COHORT_REQUIRED" && (
           <span>Seu vínculo com esta turma não permite novas reservas.</span>
         )}
@@ -196,20 +210,25 @@ function SessionCard({ session }: { session: ScheduleSessionView }) {
           variant={canSubmit ? "primary" : "secondary"}
           size="sm"
           disabled={!canSubmit}
+          aria-describedby={
+            suspended && session.availability !== "BOOKED" ? `suspended-${session.id}` : undefined
+          }
         >
           {session.availability === "BOOKED"
             ? "Reservado"
-            : session.availability === "FULL"
-              ? "Lotado"
-              : session.availability === "CLOSED"
-                ? "Encerrado"
-                : entitlementBlocked
-                  ? "Acesso não disponível"
-                  : session.eligibility.reason === "QUOTA_EXCEEDED"
-                    ? "Quota esgotada"
-                    : session.ownBookingStatus === "CANCELLED"
-                      ? "Reservar novamente"
-                      : "Reservar"}
+            : suspended
+              ? "Reservas em pausa"
+              : session.availability === "FULL"
+                ? "Lotado"
+                : session.availability === "CLOSED"
+                  ? "Encerrado"
+                  : entitlementBlocked
+                    ? "Acesso não disponível"
+                    : session.eligibility.reason === "QUOTA_EXCEEDED"
+                      ? "Quota esgotada"
+                      : session.ownBookingStatus === "CANCELLED"
+                        ? "Reservar novamente"
+                        : "Reservar"}
         </Button>
       </form>
       {session.availability === "BOOKED" && (
@@ -268,7 +287,23 @@ function UpcomingBookings({ sessions }: { sessions: ScheduleSessionView[] }) {
 export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const params = await searchParams;
   const state = await loadSchedulePage();
-  const alert = bookingAlert(firstValue(params.booking));
+  const access = await loadCurrentSubscriptionAccess();
+  const suspended = access.kind === "suspended";
+  const bookingCode = firstValue(params.booking);
+  // The notice already explains the suspension; a stale ?booking=suspended after paying gets a soft hint.
+  const alert =
+    bookingCode === "suspended" ? (
+      suspended ? null : (
+        <Alert
+          tone="info"
+          title="Sua reserva não foi feita"
+          description="O acesso estava em pausa naquele momento. Se o pagamento já foi confirmado, você pode reservar de novo agora."
+        />
+      )
+    ) : (
+      bookingAlert(bookingCode)
+    );
+  const notice = <SubscriptionSuspendedNotice access={access} context="agenda" />;
 
   if (state.status === "unauthorized") {
     return (
@@ -286,6 +321,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     return (
       <div className={styles.page}>
         <PageHeader title="Agenda" description="Veja suas sessões e próximos compromissos." />
+        {notice}
         {alert}
         <EmptyState
           title="Nenhuma sessão futura"
@@ -304,6 +340,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         description="Veja suas sessões disponíveis e reservas confirmadas."
       />
 
+      {notice}
       {alert}
       <DateStrip sessions={sessions} />
 
@@ -318,7 +355,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
           <div className={styles.sessionGrid}>
             {sessions.map((session) => (
-              <SessionCard key={session.id} session={session} />
+              <SessionCard key={session.id} session={session} suspended={suspended} />
             ))}
           </div>
         </section>

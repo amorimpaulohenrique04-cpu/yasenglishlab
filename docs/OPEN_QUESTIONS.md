@@ -15,6 +15,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Há carry-over ou reposição excepcional de créditos além das janelas semanais/mensais aprovadas no P21.2? Essas extensões continuam fora do escopo.
 - O Yas aceitará menores de idade no MVP? Se sim, qual modelo de guardian/consentimento?
 - Quais recursos exatos diferenciam suporte/prioridade do Talk e Boost sem conflitar com os entitlements já definidos?
+- Aluno com assinatura `PAST_DUE` (acesso suspenso, ADR 0016): qual é o caminho oficial de regularização? Link de segunda via/pagamento do Asaas na área do aluno, ou orientação ao suporte? Enquanto não decidido, a UI mostra apenas orientação textual, sem URL.
 
 ## Operação / conteúdo
 - Teacher Operations V1 já cobre sessões próprias, roster mínimo e attendance. Quando entra o Teacher Portal amplo/autoria? Admin Content V1 foi autorizado explicitamente no P18 (ADR 0006); CMS genérico continua fora do escopo.

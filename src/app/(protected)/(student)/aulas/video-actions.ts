@@ -1,6 +1,10 @@
 "use server";
 import { z } from "zod";
-import { recordCurrentStudentLessonProgress } from "@/server/learning/canonical-slice";
+import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
+import {
+  loadLearningAccess,
+  recordCurrentStudentLessonProgress,
+} from "@/server/learning/canonical-slice";
 import { getLessonVideoPlayback } from "@/server/media/lesson-video";
 import { assertRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -43,11 +47,21 @@ export async function lessonAssetAccessAction(assetId: string) {
   return createProtectedAssetSignedUrl({ kind: "lesson_asset", id });
 }
 
+export type VideoSuspended = { suspended: true };
+// A suspended subscription is a normal state, not a failure: the player stays unmounted and the caller
+// refreshes the page, which shows the suspension notice.
 export async function lessonVideoPlaybackAction(id: string) {
+  const access = await loadLearningAccess();
+  if (access.kind === "suspended") return { suspended: true } as const;
   return getLessonVideoPlayback(id);
 }
-export async function checkpointVideoAction(lessonId: string, position: number, ended: boolean) {
+export async function checkpointVideoAction(
+  lessonId: string,
+  position: number,
+  ended: boolean,
+): Promise<VideoSuspended | undefined> {
   const actor = await assertRole("STUDENT");
+  if ((await loadLearningAccess()).kind === "suspended") return { suspended: true };
   const id = z.uuid().parse(lessonId);
   const seconds = z.number().int().nonnegative().parse(position);
   const complete = z.boolean().parse(ended);
@@ -59,9 +73,14 @@ export async function checkpointVideoAction(lessonId: string, position: number, 
     .eq("user_id", actor.userId)
     .maybeSingle();
   if (error) throw new Error("Progresso indisponível.");
-  await recordCurrentStudentLessonProgress({
-    lessonId: id,
-    completionPercent: complete ? 100 : Number(data?.completion_percent ?? 0),
-    lastPositionSeconds: seconds,
-  });
+  try {
+    await recordCurrentStudentLessonProgress({
+      lessonId: id,
+      completionPercent: complete ? 100 : Number(data?.completion_percent ?? 0),
+      lastPositionSeconds: seconds,
+    });
+  } catch (error) {
+    if (error instanceof SubscriptionSuspendedError) return { suspended: true };
+    throw error;
+  }
 }

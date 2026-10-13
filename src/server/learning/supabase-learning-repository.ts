@@ -2,6 +2,10 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import {
+  SubscriptionSuspendedError,
+  isSubscriptionGateError,
+} from "@/modules/billing/domain/access";
 import type {
   LearningCourse,
   LearningLesson,
@@ -230,6 +234,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       p_last_position_seconds: input.lastPositionSeconds ?? null,
     });
 
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
     if (error || !data) throw new Error("Unable to persist lesson progress.");
 
     const row = Array.isArray(data) ? data[0] : data;

@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 import type { VideoPlayback } from "@/modules/learning/application/video-provider";
@@ -24,7 +25,9 @@ export function LessonVideo({
   completionPercent: number;
 }) {
   const [playback, setPlayback] = useState<VideoPlayback | null>(null);
+  const router = useRouter();
   const [error, setError] = useState("");
+  const [suspended, setSuspended] = useState(false);
   const player = useRef<import("@mux/mux-player-react").MuxPlayerRefAttributes | null>(null);
   const pending = useRef<{ position: number; ended: boolean } | null>(null);
   const saving = useRef(false);
@@ -33,17 +36,27 @@ export function LessonVideo({
   const started = useRef(false);
   const load = useCallback(async () => {
     try {
-      setPlayback(await lessonVideoPlaybackAction(assetId));
+      const result = await lessonVideoPlaybackAction(assetId);
+      if ("suspended" in result) {
+        setSuspended(true);
+        router.refresh();
+        return;
+      }
+      setPlayback(result);
       setError("");
     } catch {
       setError("Vídeo indisponível. Tente novamente.");
     }
-  }, [assetId]);
+  }, [assetId, router]);
   useEffect(() => {
     let active = true;
     lessonVideoPlaybackAction(assetId)
       .then((result) => {
-        if (active) setPlayback(result);
+        if (!active) return;
+        if ("suspended" in result) {
+          setSuspended(true);
+          router.refresh();
+        } else setPlayback(result);
       })
       .catch(() => {
         if (active) setError("Vídeo indisponível.");
@@ -51,7 +64,7 @@ export function LessonVideo({
     return () => {
       active = false;
     };
-  }, [assetId]);
+  }, [assetId, router]);
   const flush = useCallback(
     async (ended = false) => {
       const seconds = player.current?.currentTime;
@@ -69,7 +82,17 @@ export function LessonVideo({
           const checkpoint = pending.current;
           pending.current = null;
           const wasCompleted = completed.current;
-          await checkpointVideoAction(lessonId, checkpoint.position, checkpoint.ended);
+          const outcome = await checkpointVideoAction(
+            lessonId,
+            checkpoint.position,
+            checkpoint.ended,
+          );
+          if (outcome?.suspended) {
+            pending.current = null;
+            setSuspended(true);
+            router.refresh();
+            return;
+          }
           saved.current = checkpoint.position;
           completed.current ||= checkpoint.ended;
           if (checkpoint.ended && !wasCompleted)
@@ -81,7 +104,7 @@ export function LessonVideo({
         saving.current = false;
       }
     },
-    [lessonId, assetId],
+    [lessonId, assetId, router],
   );
   useEffect(() => {
     const timer = setInterval(() => {
@@ -106,6 +129,12 @@ export function LessonVideo({
     );
     return () => clearTimeout(timer);
   }, [playback, load]);
+  if (suspended)
+    return (
+      <p role="status">
+        O acesso ao vídeo está em pausa por enquanto. Seu progresso continua guardado.
+      </p>
+    );
   return (
     <div>
       <div role="status">{error}</div>

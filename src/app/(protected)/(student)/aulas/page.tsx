@@ -2,9 +2,19 @@ import Link from "next/link";
 
 import { Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
 import { courseCompletion, moduleCompletion } from "@/modules/learning";
-import { loadLearningCourses } from "@/server/learning/canonical-slice";
+import { loadLearningAccess, loadLearningCourses } from "@/server/learning/canonical-slice";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
 export default async function LessonsPage() {
+  const access = await loadLearningAccess();
+  if (access.kind === "suspended") {
+    return (
+      <div className="yas-learning-page">
+        <PageHeader title="Aulas" description="Sua trilha de aprendizagem aparece aqui." />
+        <SubscriptionSuspendedNotice access={access} />
+      </div>
+    );
+  }
   const state = await loadLearningCourses();
 
   if (state.status === "unauthorized") {

@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { Alert, Badge, Card, SectionHeader } from "@/components/ui";
+import type { SubscriptionAccessState } from "@/modules/billing/domain/access";
 import type { loadOwnSubscription } from "@/server/billing/own-subscription";
 import { billingAmount, billingDate, billingPeriod, billingStatuses } from "./presentation";
+import { SubscriptionSuspendedNotice } from "./suspension-notice";
 import styles from "./billing.module.css";
 
 export function StudentSubscription({
   subscription,
+  access = { kind: "ok" },
 }: {
   subscription: Awaited<ReturnType<typeof loadOwnSubscription>>;
+  access?: SubscriptionAccessState;
 }) {
   return (
     <Card className={styles.subscription} aria-label="Assinatura">
@@ -23,7 +27,8 @@ export function StudentSubscription({
               {billingStatuses[subscription.status].student}
             </Badge>
           </div>
-          {subscription.status === "PAST_DUE" && (
+          <SubscriptionSuspendedNotice access={access} context="profile" headingLevel={3} />
+          {subscription.status === "PAST_DUE" && access.kind !== "suspended" && (
             <Alert
               tone="warning"
               title="Pagamento pendente"

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
 import { ScheduleBookingError, bookScheduleSessionInputSchema } from "@/modules/schedule";
 import { bookCurrentStudentSession, cancelCurrentStudentSession } from "@/server/schedule/schedule";
 import { assertRole } from "@/server/auth/guards";
@@ -34,6 +35,7 @@ export async function bookLiveSessionAction(formData: FormData): Promise<void> {
   try {
     await bookCurrentStudentSession(input);
   } catch (error) {
+    if (error instanceof SubscriptionSuspendedError) redirect("/agenda?booking=suspended");
     if (error instanceof ScheduleBookingError) {
       redirect(`/agenda?booking=${bookingResultCode(error)}`);
     }
