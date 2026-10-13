@@ -60,3 +60,7 @@ No existing failure identified. Production sender/domain verification, API key p
 
 - `processPendingNotificationDeliveries` has no caller: no authenticated endpoint, cron or Supabase Cron drains the outbox, so queued emails stay PENDING in production. Scope of this stage is the library only.
 - The notification `dedupe_key` is derived from the `billing_events` id, not from the payment, so `PAYMENT_CONFIRMED` followed by `PAYMENT_RECEIVED` for one payment can queue two emails, and every renewal reuses the "assinatura ativa" copy. Fix is planned before enabling the scheduler.
+
+## Update (2026-10-13)
+
+The two gaps listed above were addressed after this stage: the notification `dedupe_key` is now derived from payment + cycle (PAYMENT_CONFIRMED and PAYMENT_RECEIVED for one payment queue a single email, and renewals use their own copy), and `processPendingNotificationDeliveries` is called by an authenticated cron endpoint (`/api/cron/notifications`, Bearer secret, batch of 20). Production still needs the operator to set `NOTIFICATIONS_CRON_SECRET` and configure a scheduler (see `docs/OPERATIONS.md`).

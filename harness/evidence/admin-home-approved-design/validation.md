@@ -14,3 +14,7 @@ Implementation complete; focused validation complete; global UI gate blocked.
 - The separate combined Admin/Teacher accessibility attempt passed mobile and failed desktop later at the Teacher MFA redirect; focused Admin evidence above passed.
 - Final diff contains no Materials, Storage, fixtures, migrations, RLS or Auth changes. Protected asset failure requires a separate task; investigation stopped per user instruction.
 - Harness remains `in_progress / verified:false` because a required global gate is known to fail. No tests or product code were changed during closure.
+
+## Closure by Official CI (2026-10-13)
+
+The two blockers recorded above (`tests/e2e/materials.spec.ts`: protected asset 307 vs 404, and the combined Admin/Teacher accessibility desktop failure at the Teacher MFA redirect) no longer reproduce. Official CI run [38465500668](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/38465500668) on `main` passed every mandatory job, including Critical E2E 33/33, Accessibility 30/30, Storybook visual 7/7 and product goldens 3/3. The Admin Home implementation was merged earlier (PR #38). The item is `done/verified`; no product code changed in this closure.
