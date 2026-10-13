@@ -131,7 +131,7 @@ Fontes oficiais verificadas em 2026-10-06:
 
 ## Critérios de aceitação
 - Benefício comercial possui entitlement ou regra central equivalente.
-- Upgrade/downgrade/cancelamento dependem de estado confirmado. **Estado atual:** o único caminho de cancelamento é o evento `SUBSCRIPTION_DELETED` do Asaas; não há ação/UI de cancelamento pelo usuário nem upgrade/downgrade (lacuna rastreada no plano de correções, aguardando decisão de produto).
+- Upgrade/downgrade/cancelamento dependem de estado confirmado. **Estado atual:** o aluno cancela pelo perfil (`request_subscription_cancellation` + cancelamento no Asaas, com reversão se o provedor falhar); mantém acesso até o fim do ciclo pago (`current_period_end`) e depois o acesso suspende (ADR 0016). Upgrade/downgrade e desfazer o cancelamento não existem (fora do escopo).
 - Booking consulta entitlement durável.
 
 ## P21 foundation closure

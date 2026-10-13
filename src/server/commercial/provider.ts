@@ -1,8 +1,9 @@
 import "server-only";
 import { z } from "zod";
-import type {
-  BillingProvider,
-  CheckoutInput,
+import {
+  providerSubscriptionIdSchema,
+  type BillingProvider,
+  type CheckoutInput,
 } from "@/modules/billing/application/billing-provider";
 import { AsaasBillingProvider, billingConfiguration } from "@/server/billing/asaas-provider";
 
@@ -34,6 +35,9 @@ class LocalBillingProvider implements BillingProvider {
   }
   async createCheckout(input: CheckoutInput) {
     return { checkoutId: input.sessionId, url: this.checkoutUrl(input.sessionId) };
+  }
+  async cancelSubscription(providerSubscriptionId: string) {
+    providerSubscriptionIdSchema.parse(providerSubscriptionId);
   }
 }
 export function commercialProvider(): BillingProvider {
