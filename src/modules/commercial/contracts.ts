@@ -38,10 +38,27 @@ export function price(plan: PublicPlan) {
 export function commercialDestination(placement: string | null) {
   return placement === "ENROLLED" ? "/home" : placement ? "/onboarding" : null;
 }
+/** Hosted checkout sessions live 60 minutes (see checkout reservation). */
+export const CHECKOUT_WINDOW_MS = 60 * 60 * 1000;
+export type PaymentWindow = {
+  expiresAt?: string | null;
+  createdAt?: string | null;
+  now?: Date;
+};
+function windowElapsed({ expiresAt, createdAt, now = new Date() }: PaymentWindow) {
+  const limit = expiresAt
+    ? Date.parse(expiresAt)
+    : createdAt
+      ? Date.parse(createdAt) + CHECKOUT_WINDOW_MS
+      : Number.NaN;
+  // Unknown or unparseable timing never produces a terminal state.
+  return Number.isFinite(limit) && now.getTime() >= limit;
+}
 export function paymentState(
   status: string,
   subscription: string | null,
   placement: string | null,
+  window: PaymentWindow = {},
 ) {
   if (status === "PAID" && subscription === "ACTIVE") {
     const destination = commercialDestination(placement);
@@ -49,6 +66,12 @@ export function paymentState(
       ? { kind: "confirmed" as const, destination }
       : { kind: "processing" as const };
   }
-  if (["EXPIRED", "CANCELLED"].includes(status)) return { kind: "failed" as const };
+  if (status === "CANCELLED") return { kind: "failed" as const };
+  // Neither a redirect nor elapsed time proves payment; "expired" only stops
+  // promising a result and offers a new checkout.
+  if (status === "EXPIRED") return { kind: "expired" as const };
+  if (["READY", "CREATING"].includes(status) && windowElapsed(window)) {
+    return { kind: "expired" as const };
+  }
   return { kind: "processing" as const };
 }

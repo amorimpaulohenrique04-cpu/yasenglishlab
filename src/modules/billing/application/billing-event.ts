@@ -33,6 +33,19 @@ export type BillingEvent = z.infer<typeof billingEventSchema>;
 export const billingResultSchema = z.enum(["APPLIED", "DUPLICATE", "IGNORED", "STALE", "REJECTED"]);
 export type BillingResult = z.infer<typeof billingResultSchema>;
 
+/**
+ * Transient, expected condition: the provider event arrived before the
+ * checkout link existed. Nothing was stored, so the provider must retry.
+ * Carries no payload, identifier or provider detail by design.
+ */
+export class BillingEventRetryError extends Error {
+  readonly code = "BILLING_EVENT_RETRY" as const;
+  constructor() {
+    super("Billing event not yet linkable");
+    this.name = "BillingEventRetryError";
+  }
+}
+
 export interface BillingEventRepository {
   reconcile(event: BillingEvent): Promise<BillingResult>;
 }

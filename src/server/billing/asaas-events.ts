@@ -38,9 +38,19 @@ function occurredAt(value: string): string {
   return new Date(canonical).toISOString();
 }
 
+/**
+ * True only for a well-formed event type with no mapped effect. Such events
+ * never alter state, so a malformed one must not make the provider pause its
+ * queue. Bodies without a usable event type stay invalid.
+ */
+export function isNonApplicableAsaasEvent(raw: unknown): boolean {
+  const type = z.object({ event: id }).safeParse(raw);
+  return type.success && !Object.hasOwn(effects, type.data.event);
+}
+
 export function normalizeAsaasEvent(raw: unknown): BillingEvent {
   const base = envelope.parse(raw);
-  const action = effects[base.event] ?? "IGNORED";
+  const action = Object.hasOwn(effects, base.event) ? effects[base.event]! : "IGNORED";
   const event: BillingEvent = {
     provider: "ASAAS",
     eventId: base.id,
