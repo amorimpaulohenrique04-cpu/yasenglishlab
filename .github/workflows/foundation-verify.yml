@@ -334,12 +334,18 @@ jobs:
       - name: Critical E2E
         if: matrix.suite == 'e2e'
         run: npm run test:e2e
+      - name: Reject skipped or retried-until-green E2E tests
+        if: matrix.suite == 'e2e'
+        run: node scripts/ci/check-playwright-results.mjs artifacts/e2e/results.json "Critical E2E"
       - name: Assert persistence and analytics
         if: matrix.suite == 'e2e'
         run: node scripts/assert-canonical-e2e.mjs
       - name: Accessibility checks
         if: matrix.suite == 'accessibility'
         run: npm run test:a11y
+      - name: Reject skipped or retried-until-green accessibility tests
+        if: matrix.suite == 'accessibility'
+        run: node scripts/ci/check-playwright-results.mjs artifacts/a11y/results.json "Accessibility checks"
       - name: Build Storybook
         if: matrix.suite == 'visual'
         run: npm run storybook:build
