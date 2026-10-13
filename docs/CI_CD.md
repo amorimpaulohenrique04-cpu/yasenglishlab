@@ -165,3 +165,9 @@ Produção só é alcançável quando:
 - release usa exatamente o SHA aprovado pelo CI;
 - production tem gate próprio;
 - rollback está documentado sem prometer rollback destrutivo inseguro.
+
+## Preview paralelo e mudanças só de documentação
+
+O job `Preview` do Official CI agrega quatro suítes que rodam em paralelo, cada uma com seu próprio banco isolado: `database-proofs` (integração SQL, RLS e observabilidade), `e2e`, `accessibility` e `visual` (Storybook e goldens). O `CI Gate` continua exigindo `Preview` com sucesso; qualquer suíte vermelha ou ausente reprova o gate.
+
+O job `Detect code changes` só dispensa as suítes quando um pull request altera exclusivamente `docs/**`, `harness/**/*.md|json`, `README.md`, `AGENTS.md` ou `CLAUDE.md`. Supply Chain, Quality, Database e Guardrail Simulations continuam rodando. Qualquer outro arquivo (código, testes, migrations, scripts, workflows, dependências), diff vazio, push na `main` ou resultado inesperado executa o Preview completo.
