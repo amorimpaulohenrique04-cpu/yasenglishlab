@@ -89,6 +89,7 @@ export function RejectedEventsTable({ rows }: { rows: readonly RejectedEventRow[
   if (!rows.length) return <Empty what="eventos rejeitados ou ignorados" />;
   return (
     <DataTable
+      focusableFrame
       caption="Eventos de pagamento rejeitados ou ignorados"
       columns={[
         { id: "outcome", label: "Resultado" },
@@ -131,6 +132,7 @@ export function StuckCheckoutsTable({ rows }: { rows: readonly StuckCheckoutRow[
   if (!rows.length) return <Empty what="checkouts travados" />;
   return (
     <DataTable
+      focusableFrame
       caption="Checkouts travados"
       columns={[
         { id: "student", label: "Aluno" },
@@ -174,6 +176,7 @@ export function NotificationFailuresTable({ rows }: { rows: readonly Notificatio
   if (!rows.length) return <Empty what="e-mails com falha ou atrasados" />;
   return (
     <DataTable
+      focusableFrame
       caption="E-mails com falha ou atrasados"
       columns={[
         { id: "status", label: "Situação" },

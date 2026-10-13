@@ -212,14 +212,20 @@ export function DataTable({
   caption,
   columns,
   rows,
+  focusableFrame = false,
 }: {
   caption: string;
   columns: readonly DataTableColumn[];
   rows: readonly DataTableRow[];
+  /** Torna a moldura rolável alcançável por teclado quando a tabela não tem conteúdo focável. */
+  focusableFrame?: boolean;
 }) {
   return (
     <>
-      <div className="yas-data-table-frame">
+      <div
+        className={focusableFrame ? "yas-data-table-frame yas-focusable" : "yas-data-table-frame"}
+        {...(focusableFrame ? { tabIndex: 0, role: "region", "aria-label": caption } : {})}
+      >
         <table className="yas-data-table">
           <caption>{caption}</caption>
           <thead>
