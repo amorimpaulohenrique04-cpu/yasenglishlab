@@ -196,6 +196,28 @@ describe("commercial checkout and owned return", () => {
     expect(await ownedPayment(sessionId, userId)).toBeNull();
     expect(await ownedPayment("not-uuid", userId)).toBeNull();
   });
+  it.each([
+    ["EXPIRED", "2999-01-01T00:00:00Z", "expired"],
+    ["READY", "2000-01-01T00:00:00Z", "expired"],
+    ["CREATING", "2999-01-01T00:00:00Z", "processing"],
+  ])("projects %s with expiry %s as %s", async (status, expiresAt, kind) => {
+    mocks.admin.mockReturnValue(
+      database([
+        {
+          data: {
+            status,
+            plan_name: "Start",
+            expires_at: expiresAt,
+            created_at: "2000-01-01T00:00:00Z",
+          },
+          error: null,
+        },
+        { data: null, error: null },
+        { data: null, error: null },
+      ]).client,
+    );
+    expect(await ownedPayment(sessionId, userId)).toEqual({ planName: "Start", kind });
+  });
 });
 describe("public plan projection", () => {
   it("publishes monthly BRL plans and effective human benefits without DB identifiers", async () => {

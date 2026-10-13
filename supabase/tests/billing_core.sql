@@ -112,6 +112,82 @@ begin
   perform set_config('request.jwt.claims','{}',true);
 end $$;
 
+-- Transient vs terminal CHECKOUT_NOT_FOUND. A transient miss raises PT503 BILLING_EVENT_RETRY
+-- and stores NOTHING, so redelivery of the same event is evaluated again.
+insert into auth.users(id) values
+ ('ba000000-0000-4000-8000-000000000005'),('ba000000-0000-4000-8000-000000000006'),('ba000000-0000-4000-8000-000000000007');
+insert into public.user_roles(user_id,role) values
+ ('ba000000-0000-4000-8000-000000000005','STUDENT'),('ba000000-0000-4000-8000-000000000006','STUDENT'),('ba000000-0000-4000-8000-000000000007','STUDENT');
+
+do $$
+declare e jsonb; before_count bigint;
+begin
+  -- Terminal: no CREATING session could still be linked (age every unlinked one past the window), so an
+  -- unknown checkout-only event is a durable REJECTED, never an endless retry.
+  update public.billing_checkout_sessions set created_at=now()-interval '2 hours' where status='CREATING' and provider_checkout_id is null;
+  e := pg_temp.billing_event('evt_unknown_checkout','CONFIRMED',null,'sub_unknown_checkout',9990)||'{"checkoutId":"bb000000-0000-4000-8000-0000000000f1"}';
+  perform pg_temp.assert_true(public.reconcile_billing_event(e)='REJECTED','unknown checkout without pending link is terminal');
+  perform pg_temp.assert_true((select processing_error='CHECKOUT_NOT_FOUND' from public.billing_events where event_id='evt_unknown_checkout'),'terminal CHECKOUT_NOT_FOUND recorded');
+  perform pg_temp.assert_true(public.reconcile_billing_event(e)='DUPLICATE','terminal rejection stays immutable');
+end $$;
+
+do $$
+declare u constant uuid := 'ba000000-0000-4000-8000-000000000005'; r jsonb; s uuid; price integer; e jsonb;
+  c constant uuid := 'bb000000-0000-4000-8000-000000000005'; retried boolean := false; events_before bigint;
+begin
+  r := public.reserve_billing_checkout(u,'START'); s := (r->>'sessionId')::uuid; price := (r->>'amountCents')::integer;
+  e := pg_temp.billing_event('evt_transient','CONFIRMED',null,'sub_transient',price)||jsonb_build_object('checkoutId',c,'paymentId','pay_transient');
+  select count(*) into events_before from public.billing_events;
+  begin
+    perform public.reconcile_billing_event(e);
+  exception when sqlstate 'PT503' then
+    retried := true;
+    perform pg_temp.assert_true(sqlerrm='BILLING_EVENT_RETRY','stable retry message');
+  end;
+  perform pg_temp.assert_true(retried,'checkout not linked yet signals retry (PT503)');
+  perform pg_temp.assert_true((select count(*) from public.billing_events)=events_before,'transient event is not stored');
+  perform pg_temp.assert_true(not exists(select 1 from public.subscriptions where user_id=u),'transient event grants nothing');
+  perform pg_temp.assert_true((select status='CREATING' from public.billing_checkout_sessions where id=s),'session untouched by transient miss');
+  perform public.complete_billing_checkout(s,c);
+  perform pg_temp.assert_true(public.reconcile_billing_event(e)='APPLIED','same event is reprocessed after the link');
+  perform pg_temp.assert_true((select processing_error is null and subscription_id is not null from public.billing_events where event_id='evt_transient'),'applied, not rejected');
+  perform pg_temp.assert_true((select status='ACTIVE' from public.subscriptions where user_id=u),'ACTIVE after reprocess');
+  perform pg_temp.assert_true(public.reconcile_billing_event(e)='DUPLICATE','applied event idempotent');
+  perform pg_temp.assert_true((select count(*)=1 from public.notifications where user_id=u and notification_type in ('PAYMENT_CONFIRMED','PAYMENT_RENEWED')),'single notification');
+  -- A sessionId we never issued is terminal even while another checkout is pending (our own reference).
+  r := public.reserve_billing_checkout('ba000000-0000-4000-8000-000000000006','START');
+  perform pg_temp.assert_true(public.reconcile_billing_event(pg_temp.billing_event('evt_unknown_session','CONFIRMED','ba000000-0000-4000-8000-0000000000f2','sub_unknown_session',price))='REJECTED','unknown sessionId stays terminal');
+  -- Other domain errors stay terminal while a link is pending (amount comparison unchanged).
+  perform pg_temp.assert_true(public.reconcile_billing_event(pg_temp.billing_event('evt_terminal_amount','CONFIRMED',(r->>'sessionId')::uuid,'sub_terminal_amount',price+1))='REJECTED','amount mismatch stays terminal');
+end $$;
+
+-- Webhook that wins the race against complete_billing_checkout, and a payment arriving after the
+-- orphan CREATING expired: neither is lost; complete_billing_checkout is idempotent afterwards.
+do $$
+declare u constant uuid := 'ba000000-0000-4000-8000-000000000007'; r jsonb; old_s uuid; price integer; e jsonb;
+  c constant uuid := 'bb000000-0000-4000-8000-000000000007'; fresh jsonb;
+begin
+  r := public.reserve_billing_checkout(u,'START'); old_s := (r->>'sessionId')::uuid; price := (r->>'amountCents')::integer;
+  update public.billing_checkout_sessions set created_at=now()-interval '2 hours' where id=old_s;
+  fresh := public.reserve_billing_checkout(u,'START');
+  perform pg_temp.assert_true((fresh->>'claimed')::boolean and (select status='EXPIRED' from public.billing_checkout_sessions where id=old_s),'orphan expired and user released');
+  e := pg_temp.billing_event('evt_late_orphan','CONFIRMED',old_s,'sub_late_orphan',price)||jsonb_build_object('checkoutId',c,'paymentId','pay_late_orphan');
+  perform pg_temp.assert_true(public.reconcile_billing_event(e)='APPLIED','payment for an expired orphan session is applied, not lost');
+  perform pg_temp.assert_true((select status='PAID' and provider_checkout_id=c from public.billing_checkout_sessions where id=old_s),'expired orphan recovered to PAID');
+  perform pg_temp.assert_true((select status='ACTIVE' from public.subscriptions where user_id=u),'ACTIVE after late payment');
+  perform public.complete_billing_checkout(old_s,c);
+  begin
+    perform public.complete_billing_checkout(old_s,'bb000000-0000-4000-8000-0000000000f3');
+    raise exception 'foreign checkout completed a PAID session';
+  exception when raise_exception then
+    if sqlerrm<>'Checkout completion conflict' then raise; end if;
+  end;
+  -- A paid session can never be expired by a later reservation.
+  update public.billing_checkout_sessions set created_at=now()-interval '5 hours' where id=old_s;
+  perform public.reserve_billing_checkout(u,'START');
+  perform pg_temp.assert_true((select status='PAID' from public.billing_checkout_sessions where id=old_s),'PAID never expired');
+end $$;
+
 -- Grant checks plus actual role execution, not just structural assertions.
 select pg_temp.assert_true(not has_function_privilege('anon','public.reconcile_billing_event(jsonb)','EXECUTE'),'anon billing RPC denied');
 select pg_temp.assert_true(not has_function_privilege('authenticated','public.reconcile_billing_event(jsonb)','EXECUTE'),'authenticated billing RPC denied');

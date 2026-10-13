@@ -65,7 +65,7 @@ export async function ownedPayment(session: string, userId: string) {
   const client = createSupabaseAdminClient();
   const { data, error } = await client
     .from("billing_checkout_sessions")
-    .select("status,plan_name")
+    .select("status,plan_name,expires_at,created_at")
     .eq("id", parsed.data)
     .eq("user_id", userId)
     .maybeSingle();
@@ -86,7 +86,10 @@ export async function ownedPayment(session: string, userId: string) {
   if (placementError) throw new Error("Payment destination unavailable");
   return {
     planName: data.plan_name as string,
-    ...paymentState(data.status, subscription?.status ?? null, placement?.state ?? null),
+    ...paymentState(data.status, subscription?.status ?? null, placement?.state ?? null, {
+      expiresAt: data.expires_at as string | null,
+      createdAt: data.created_at as string | null,
+    }),
   };
 }
 export { checkoutPath };
