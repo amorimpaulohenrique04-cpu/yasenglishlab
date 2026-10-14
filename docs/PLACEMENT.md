@@ -15,3 +15,7 @@ Recommendation (immutable review), initial Student choice (immutable decision) a
 Case states: PAYMENT_CONFIRMED → ASSESSMENT_REQUIRED → IN_PROGRESS → REVIEW_PENDING → PLACEMENT_READY → STUDENT_DECISION → ENROLLED. The engine's completion trigger enters review even for fully objective attempts; no CEFR inference. Viewing options explicitly enters STUDENT_DECISION through a command. Case transitions are narrow, audited and validated. Home only projects pending case state. Admin queue composes safe Assessment summary, review, choice and membership; billing fields are absent.
 
 No notification delivery, billing provider, CEFR standard setting, retake policy or unrelated operation is added. OPEN_QUESTIONS remains binding.
+
+## Etapa 11 — confirmação com período pago (ADR 0017)
+
+`confirm_placement_choice` usa o mesmo predicado de acesso pago (`private.has_paid_access`). Um aluno `CANCELLED` com `current_period_end` futuro pode confirmar a turma até o fim do período pago. Matrículas `ACTIVE` sem turma ativa aparecem para o Admin em `/admin/enrollments` (`admin_enrollments_without_active_cohort`), substituindo a consulta SQL manual da etapa 6a.

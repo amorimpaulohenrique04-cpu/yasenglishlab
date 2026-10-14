@@ -37,3 +37,10 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Desktop/tablet/mobile revisados.
 - Evidência visual existe quando necessário.
 - Referência aprovada não sofre regressão não declarada.
+
+## Etapa 11 — estados de acesso
+
+- `/progresso` mostra o aviso de suspensão (`SubscriptionSuspendedNotice`) quando aplicável e mantém os dados visíveis: suspensão não altera progresso (ADR 0016, decisão 2).
+- Matrícula `COMPLETED`: Home e Progresso mostram "Curso concluído" no lugar da próxima aula.
+- `/support`: página protegida, somente com orientação textual. Sem e-mail, telefone, WhatsApp ou URL até a decisão do canal (OPEN_QUESTIONS). Avisos de suspensão e `/billing/return` apontam para ela.
+- `/pratica` sem matrícula: estado vazio explicativo, sem atividades.

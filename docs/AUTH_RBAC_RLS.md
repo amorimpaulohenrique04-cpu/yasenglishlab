@@ -129,3 +129,11 @@ Teacher operational context requires `TEACHER+AAL2`, derives the Teacher from `a
 
 CRM tables have RLS enabled and no direct table grants to `anon` or `authenticated`. `admin_crm_directory` and `admin_crm_mutate` repeat `ADMIN+AAL2` at the database boundary. Owner assignment accepts only existing Admin/Support identities, and linking accepts only an existing Student identity. No CRM operation creates Auth users or mutates roles, enrollment, subscription, or Placement. See [CRM Leads V1](./CRM.md).
 
+
+## Etapa 11 — gate de acesso e Prática (ADR 0017/0018)
+
+- O gate `private.has_paid_access` é fail-closed: sem assinatura válida nem concessão ativa, o aluno não lê conteúdo pago, não registra progresso, não inicia Prática e não reserva encontros.
+- `practice_activities`: SELECT exige ADMIN, ou conteúdo publicado e (TEACHER ou matrícula `ACTIVE`/`COMPLETED` no curso da atividade). `start_practice_attempt` aplica o mesmo helper (`private.can_view_practice_activity`).
+- `complimentary_access_grants`: RLS habilitada; leitura pelo ADMIN e pelo próprio aluno; sem DML direto. Escrita só pelas RPCs ADMIN + AAL2.
+- `admin_enrollments_without_active_cohort()`: ADMIN + AAL2, somente leitura.
+- Matrícula `COMPLETED` mantém as mesmas permissões de leitura e de progresso que `ACTIVE` (`private.has_course_enrollment`).

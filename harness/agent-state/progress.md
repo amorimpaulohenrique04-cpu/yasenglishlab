@@ -630,3 +630,15 @@ Official CI run 37492862994 passed every mandatory gate on eb4beabd31ef752cfb453
 3D Billing UI: base 7b802abd; Admin/Student read models e UI read-only implementados. 11 testes focados, dois E2Es, a11y e cinco screenshots revisados. Overflow local corrigido e protegido pelo E2E Admin. Official CI pendente; 3A–3C preservados e 3E não iniciado.
 
 3D done/verified:true após Official CI 37534982183 integralmente verde em ced59d1. PR #45 contém Admin Billing e Profile Student somente leitura, RLS/AAL2 e snapshot limitado. Fechamento Harness sem mudança de produto; merge condicionado ao CI do head final. Macro permanece in_progress/verified:false; 3E não iniciado.
+
+## 2026-10-14 - Etapa 11 (stage-11-flow-gap-closure)
+
+Branch fix/etapa-11-fechamento-fluxo from main@4621d9c. This is a single PR closing the 2026-10-13 audit gaps.
+
+Scope: fail-closed paid access with audited complimentary grants and legacy backfill; scheduled cancellation enforced; Practice scoped by enrollment (history kept); placement confirmation with a paid CANCELLED period; automatic COMPLETED enrollment; Admin grant/revoke and a no-cohort panel; /support; suspension notice on /progresso; notification scheduler workflow; ADRs 0017-0019.
+
+Local: 30/30 SQL suites, the concurrency scripts (including the new course completion one), and 490 vitest passed. Typecheck, lint, format and the harness validators also passed.
+
+Not run locally (no Docker/Supabase): E2E, a11y, visual and browser checks. They are left to the Official CI.
+
+Out-of-scope defect found: the rate-limit window collision at the top of the hour (separate task). Status stays in_progress/verified:false until the Official CI passes. Evidence: harness/evidence/stage-11-flow-gap-closure/README.md.

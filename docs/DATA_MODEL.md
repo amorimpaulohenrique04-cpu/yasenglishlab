@@ -182,3 +182,8 @@ A cadeia existente `Assessment → AssessmentVersion → AssessmentItem → Asse
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
 
+
+## Etapa 11 — concessão de acesso e conclusão de curso
+
+- **ComplimentaryAccessGrant** (`complimentary_access_grants`): uma linha por aluno (`user_id` pk), `reason` `ADMIN_GRANT`|`LEGACY_BACKFILL`, `note`, `granted_by`/`granted_at`, `expires_at` opcional, `revoked_at`/`revoked_by`. Ativa quando `revoked_at` é nulo e `expires_at` é nulo ou futuro (ADR 0017).
+- **Enrollment `COMPLETED`**: gravado automaticamente com `completed_at` quando todas as aulas publicadas do curso estão concluídas pelo aluno; conserva leitura e progresso; aulas publicadas depois não reabrem (ADR 0018). Transferência/reativação voltam para `ACTIVE` e limpam `completed_at`.

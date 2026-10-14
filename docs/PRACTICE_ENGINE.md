@@ -57,3 +57,9 @@ UX planejada:
 - Activity/attempt/result permanecem distinguíveis.
 - Resposta e resultado permanecem distinguíveis; somente tentativas do próprio aluno são visíveis para ele.
 - Recomendações não falsificam proficiência.
+
+## Etapa 11 — escopo por matrícula (ADR 0017)
+
+- A Prática não é um catálogo livre. O aluno vê e inicia apenas atividades do curso em que tem matrícula `ACTIVE`/`COMPLETED` (via `related_module_id`/`related_lesson_id`). Atividades sem vínculo exigem qualquer matrícula `ACTIVE`/`COMPLETED`.
+- O gate de pagamento (trigger em `practice_attempts`) continua valendo; o histórico de tentativas permanece legível para o aluno suspenso.
+- Sem matrícula, `/pratica` mostra um estado vazio orientando concluir a entrada no Yas.

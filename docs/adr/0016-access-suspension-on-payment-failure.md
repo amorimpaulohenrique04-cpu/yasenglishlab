@@ -2,7 +2,7 @@
 
 ## Status
 
-accepted (supersedes decision 1 of ADR 0015)
+accepted (supersedes decision 1 of ADR 0015; decision 5 superseded by ADR 0017)
 
 ## Date
 

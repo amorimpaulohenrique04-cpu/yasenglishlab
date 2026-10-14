@@ -94,3 +94,14 @@ Asaas authorized by master prompt; ADR 0013. Recurring hosted card checkout in B
 ## 2026-10-06 — Stage 03C commercial boundary
 
 Keep prices/benefits as server-only database projections; no public SELECT policies. Signup uses the normal SDK and existing Profile trigger. Fixed STUDENT assignment accepts only SDK-returned identity; role-write failure uses a short-lived signed HttpOnly retry capability, never arbitrary target/role input or account deletion. Return derives human state from owned persisted payment/subscription/Placement only. Missing Placement stays processing. Fake checkout is explicit local/test only and never confirms payment; the existing authenticated webhook is the sole activation path. Do not expand analytics, Billing UI or recovery policy in 3C.
+
+## 2026-10-13 - Etapa 11 (decisoes do usuario apos auditoria)
+
+- Pratica exige matricula ACTIVE/COMPLETED no curso da atividade; o gate de pagamento existente continua.
+- Acesso fail-closed: sem assinatura nao ha acesso, exceto com concessao explicita do Admin (`complimentary_access_grants`, ADMIN+AAL2, auditada). Backfill `LEGACY_BACKFILL` deterministico preserva somente STUDENT sem assinatura com matricula ACTIVE. Concessao nao gera entitlements de plano (questao registrada em OPEN_QUESTIONS).
+- ACTIVE com `cancel_at_period_end` e `current_period_end <= now()` nao concede acesso (webhook perdido nao mantem acesso indefinido).
+- CANCELLED com `current_period_end` futuro pode confirmar turma no Placement (remove OPEN_QUESTIONS correspondente).
+- Conclusao de curso: COMPLETED automatico quando todas as aulas publicadas do curso estao concluidas; leitura e progresso continuam para COMPLETED; aulas publicadas depois nao reabrem (questao registrada).
+- Notificacoes: agendador via GitHub Actions (`notifications-cron.yml`); host de deploy continua em aberto.
+- `/support`: pagina protegida apenas com orientacao textual, sem canal inventado.
+- Testes SQL/unitarios que afirmavam "sem assinatura => acesso" mudam por decisao aprovada, nao por diluicao.
