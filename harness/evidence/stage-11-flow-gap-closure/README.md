@@ -21,16 +21,16 @@ Goal: `harness/goals/stage-11-fechamento-fluxo.md`. Decisions: `harness/agent-st
 
 ## Local results (2026-10-14, Windows, temporary Postgres 127.0.0.1:54329, synthetic auth bootstrap from `scripts/ci/validate-migrations.sh`)
 
-| Check | Result |
-|---|---|
-| All migrations and seed on a clean DB, plus a seed replay | PASS |
-| Every `supabase/tests/*.sql` on a clean DB | 30/30 PASS |
-| `run-sql-tests.mjs` `rls`, `access-closure` (109 assertions), `subscription-access`, `subscription-cancellation`, `enrollment-integrity`, `function-privileges`, `sensitive-tables-negative`, `students-directory`, `admin-cohorts`, `admin-billing-operations`, `live-booking-integrity` | PASS |
-| Concurrency scripts: schedule, core-experience, placement, billing webhook, notification delivery, new course completion (3 runs) | PASS (see notes) |
-| `check-migrations.mjs` with `BASE_SHA=origin/main` | PASS (39 migrations) |
-| `vitest run tests/unit tests/integration` | 490 passed, 1 pre-existing skip |
-| `tsc --noEmit`, `eslint .`, Prettier on changed files | PASS |
-| `verify-harness`, `verify-ratchet`, `verify-db`, `check-repo-policy` | PASS |
+| Check                                                                                                                                                                                                                                                                                     | Result                          |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| All migrations and seed on a clean DB, plus a seed replay                                                                                                                                                                                                                                 | PASS                            |
+| Every `supabase/tests/*.sql` on a clean DB                                                                                                                                                                                                                                                | 30/30 PASS                      |
+| `run-sql-tests.mjs` `rls`, `access-closure` (109 assertions), `subscription-access`, `subscription-cancellation`, `enrollment-integrity`, `function-privileges`, `sensitive-tables-negative`, `students-directory`, `admin-cohorts`, `admin-billing-operations`, `live-booking-integrity` | PASS                            |
+| Concurrency scripts: schedule, core-experience, placement, billing webhook, notification delivery, new course completion (3 runs)                                                                                                                                                         | PASS (see notes)                |
+| `check-migrations.mjs` with `BASE_SHA=origin/main`                                                                                                                                                                                                                                        | PASS (39 migrations)            |
+| `vitest run tests/unit tests/integration`                                                                                                                                                                                                                                                 | 490 passed, 1 pre-existing skip |
+| `tsc --noEmit`, `eslint .`, Prettier on changed files                                                                                                                                                                                                                                     | PASS                            |
+| `verify-harness`, `verify-ratchet`, `verify-db`, `check-repo-policy`                                                                                                                                                                                                                      | PASS                            |
 
 Notes:
 
