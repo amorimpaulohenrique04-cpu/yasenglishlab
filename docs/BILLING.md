@@ -138,3 +138,10 @@ Fontes oficiais verificadas em 2026-10-06:
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
 
+
+## Etapa 11 — acesso fail-closed (ADR 0017)
+
+- `private.has_paid_access` não libera mais quem não tem assinatura. Acesso de aluno exige `ACTIVE`/`TRIALING` (exceto cancelamento agendado com `current_period_end` vencido), `CANCELLED` com `current_period_end` futuro ou concessão ativa em `complimentary_access_grants`.
+- Concessão (cortesia/bolsa/legado) só por `grant_complimentary_access` / `revoke_complimentary_access` (ADMIN + AAL2, auditadas); libera acesso base (conteúdo e encontros sem `required_entitlement_key`), nunca entitlements de plano.
+- Backfill `LEGACY_BACKFILL` na migração `20261014120000`: STUDENT sem assinatura e com matrícula `ACTIVE`.
+- A UI explica a negação com o motivo `NO_SUBSCRIPTION` (caminho: novo checkout).

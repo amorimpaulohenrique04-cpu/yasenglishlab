@@ -23,9 +23,9 @@ test.describe("canonical learning vertical slice", () => {
   test.skip(!enabled, "Requires the local Supabase E2E stack.");
   test.setTimeout(120_000);
 
-  test("a Student without curriculum or booking projects the real Practice fallback", async ({
-    page,
-  }) => {
+  // ADR 0017 (Etapa 11): an unpaid signup (no subscription, grant or enrollment) gets no Practice
+  // fallback; Home and Progresso explain the first checkout instead of offering paid activities.
+  test("an unpaid Student without curriculum is invited to a first checkout", async ({ page }) => {
     if (!password) throw new Error("CANONICAL_E2E_PASSWORD is required.");
 
     await page.goto("/login");
@@ -34,15 +34,24 @@ test.describe("canonical learning vertical slice", () => {
     await submitLogin(page);
 
     await expect(page).toHaveURL(/\/home$/);
-    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Praticar agora →" })).toBeVisible();
-    await expect(page.getByText("Welcome to Yas", { exact: true })).toHaveCount(0);
+    const homeNotice = page.getByRole("status", { name: "Estado da assinatura" });
+    await expect(homeNotice).toBeVisible();
+    await expect(
+      homeNotice.getByRole("heading", { name: "Escolha um plano para começar" }),
+    ).toBeVisible();
+    await expect(homeNotice.getByRole("link", { name: "Escolher plano" })).toHaveAttribute(
+      "href",
+      "/checkout",
+    );
+    await expect(page.getByRole("link", { name: "Praticar agora →" })).toHaveCount(0);
     await expect(page.getByRole("progressbar", { name: /Conclusão de/ })).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
-    await expect(page.getByText("Nenhuma reserva futura.")).toBeVisible();
+
+    await page.goto("/pratica");
+    await expect(page.getByRole("status", { name: "Estado da assinatura" })).toBeVisible();
 
     await page.goto("/progresso");
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
+    await expect(page.getByRole("status", { name: "Estado da assinatura" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Seu progresso começa aqui" })).toBeVisible();
     await expect(page.getByText("Nível CEFR ainda não disponível")).toHaveCount(0);
   });

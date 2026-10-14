@@ -62,7 +62,8 @@ select pg_temp.assert_true(not has_function_privilege('anon','private.has_paid_a
 select pg_temp.assert_true(private.has_paid_access('9e000000-0000-4000-8000-000000000001'),'ACTIVE has paid access');
 select pg_temp.assert_true(not private.has_paid_access('9e000000-0000-4000-8000-000000000005'),'PAST_DUE stays suspended even with a future period end');
 select pg_temp.assert_true(not private.has_paid_access('9e000000-0000-4000-8000-000000000006'),'CANCELLED without paid-until stays suspended');
-select pg_temp.assert_true(private.has_paid_access('9e000000-0000-4000-8000-000000000004'),'user without subscription is not gated');
+-- Stage 11 (ADR 0017): no subscription and no grant means no paid access; staff stay exempt.
+select pg_temp.assert_true(not private.has_paid_access('9e000000-0000-4000-8000-000000000004'),'user without subscription has NO paid access (fail-closed)');
 select pg_temp.assert_true(private.has_paid_access('9e000000-0000-4000-8000-000000000007'),'TEACHER is never gated');
 
 -- 3. C1 requests cancellation of its own subscription.

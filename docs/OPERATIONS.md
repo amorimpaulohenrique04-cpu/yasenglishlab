@@ -56,7 +56,15 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
 
 ## Agendamento do processor de notificações
 
-O outbox de e-mails (`notification_deliveries`) só é drenado por `GET`/`POST /api/cron/notifications`. O host ainda é decisão aberta (ADR 0014, OPEN_QUESTIONS): qualquer agendador confiável serve, desde que respeite este contrato.
+O outbox de e-mails (`notification_deliveries`) só é drenado por `GET`/`POST /api/cron/notifications`. O host de deploy ainda é decisão aberta (ADR 0014, OPEN_QUESTIONS); o agendador oficial é o workflow `.github/workflows/notifications-cron.yml` (ADR 0019), independente do host.
+
+Configuração obrigatória antes do lançamento (operador):
+
+1. No host, defina `NOTIFICATIONS_CRON_SECRET` (regras abaixo).
+2. No GitHub, crie o environment `notifications-cron` **sem required reviewers** e cadastre nele o secret `NOTIFICATIONS_CRON_SECRET` (mesmo valor) e a variável `PRODUCTION_APP_URL` (`https://…`, sem barra final). Não use o environment `production` do release: o gate de aprovação travaria cada execução.
+3. Rode o workflow uma vez por `workflow_dispatch` e confira `HTTP 200` e as contagens no log.
+
+O workflow roda a cada 5 minutos, falha visivelmente se a URL ou o secret faltarem (ou se a URL não for `https`) e nunca chama a rota sem autenticação. Limitações conhecidas do GitHub Actions: execuções agendadas podem atrasar em horários de pico, e o GitHub desativa workflows agendados após 60 dias sem atividade no repositório. Monitore falhas do workflow e reative-o se for desativado.
 
 - Defina `NOTIFICATIONS_CRON_SECRET` (aleatório, 32+ caracteres, distinto de todos os outros secrets) no ambiente server-only. Ausente, curto ou reutilizado, a rota responde `503` e não processa.
 - O agendador chama a rota a cada 1–5 minutos com `Authorization: Bearer <secret>`. Sem header válido: `401`.

@@ -1,0 +1,58 @@
+name: Notifications Cron
+
+# ADR 0019: drains the notification_deliveries outbox by calling the authenticated cron endpoint
+# (src/app/api/cron/notifications/route.ts). Host-neutral: it only needs the deployed URL and the
+# shared secret. Fails visibly when either is missing; never falls back to an unauthenticated call.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: notifications-cron
+  cancel-in-progress: false
+
+jobs:
+  drain-outbox:
+    name: Drain notification outbox
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Dedicated environment (no required reviewers) that holds only this job's URL and secret; it must
+    # not reuse the release "production" environment, whose approval gate would stall every run.
+    environment: notifications-cron
+
+    steps:
+      - name: Call the notifications endpoint
+        env:
+          APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+          CRON_SECRET: ${{ secrets.NOTIFICATIONS_CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APP_URL:-}" ]; then
+            echo "::error::Repository/environment variable PRODUCTION_APP_URL is not configured."
+            exit 1
+          fi
+          if [ -z "${CRON_SECRET:-}" ]; then
+            echo "::error::Secret NOTIFICATIONS_CRON_SECRET is not configured."
+            exit 1
+          fi
+          case "$APP_URL" in
+            https://*) ;;
+            *) echo "::error::PRODUCTION_APP_URL must use https."; exit 1 ;;
+          esac
+          status=$(curl --silent --show-error --output response.json --write-out '%{http_code}' \
+            --max-time 60 --retry 2 --retry-delay 10 --retry-all-errors \
+            --request POST \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            "${APP_URL%/}/api/cron/notifications")
+          echo "HTTP ${status}"
+          # The handler returns only aggregate counts, never recipient data.
+          cat response.json || true
+          echo
+          if [ "$status" != "200" ]; then
+            echo "::error::Notifications endpoint returned HTTP ${status}."
+            exit 1
+          fi

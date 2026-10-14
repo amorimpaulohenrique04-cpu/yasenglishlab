@@ -26,6 +26,7 @@ const suites = {
     "supabase/tests/function_privileges.sql",
     "supabase/tests/sensitive_tables_negative.sql",
     "supabase/tests/record_immutability.sql",
+    "supabase/tests/access_closure.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -43,6 +44,7 @@ const suites = {
     "supabase/tests/function_privileges.sql",
     "supabase/tests/sensitive_tables_negative.sql",
     "supabase/tests/record_immutability.sql",
+    "supabase/tests/access_closure.sql",
   ],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
@@ -59,12 +61,13 @@ const suites = {
   "function-privileges": ["supabase/tests/function_privileges.sql"],
   "sensitive-tables-negative": ["supabase/tests/sensitive_tables_negative.sql"],
   "record-immutability": ["supabase/tests/record_immutability.sql"],
+  "access-closure": ["supabase/tests/access_closure.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure>",
   );
   process.exit(2);
 }
@@ -123,5 +126,14 @@ if (suite === "integration") {
     },
   );
   if (billingWebhook.status !== 0) process.exit(billingWebhook.status ?? 1);
+  const courseCompletion = spawnSync(
+    process.execPath,
+    ["scripts/test-course-completion-concurrency.mjs"],
+    {
+      stdio: "inherit",
+      env: process.env,
+    },
+  );
+  if (courseCompletion.status !== 0) process.exit(courseCompletion.status ?? 1);
 }
 console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);

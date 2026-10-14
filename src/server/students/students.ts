@@ -192,7 +192,8 @@ export async function loadAdminStudent360(userId: string) {
   }
   const activeEnrollmentIds = new Set(
     (enrollments.data ?? [])
-      .filter((enrollment) => enrollment.status === "ACTIVE")
+      // ADR 0018: a COMPLETED enrollment keeps its ACTIVE cohort membership.
+      .filter((enrollment) => enrollment.status === "ACTIVE" || enrollment.status === "COMPLETED")
       .map((enrollment) => enrollment.id),
   );
   const activeMembership = (memberships.data ?? []).find(

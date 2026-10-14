@@ -264,7 +264,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
         <PageHeader title="Prática" description="Treine um pouco todos os dias." />
         <EmptyState
           title="Nenhuma prática disponível"
-          description="Atividades com conteúdo contratado aparecerão aqui quando forem publicadas."
+          description="As atividades acompanham o curso da sua matrícula e aparecem aqui quando estiverem publicadas. Sem matrícula ativa, conclua sua entrada no Yas para começar."
         />
       </div>
     );

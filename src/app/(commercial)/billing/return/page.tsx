@@ -59,6 +59,9 @@ export default async function ReturnPage({
               <Link className="yas-button yas-button--secondary" href="/checkout">
                 Iniciar novo pagamento
               </Link>
+              <Link className="yas-focusable" href="/support">
+                Como falar com o suporte
+              </Link>
             </>
           ) : (
             <>

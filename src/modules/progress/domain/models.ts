@@ -66,6 +66,8 @@ export interface ProgressCurriculumCourse {
   modulesCompleted: number;
   totalModules: number;
   lastActivityAt: string | null;
+  // ADR 0018: enrollments.completed_at once the course is concluded; null while ACTIVE.
+  completedAt: string | null;
 }
 
 export interface ProgressCurriculumView {

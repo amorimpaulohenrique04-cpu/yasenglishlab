@@ -88,14 +88,23 @@ export class SupabaseLearningRepository implements LearningRepository {
   async getActiveCoursesForStudent(userId: string): Promise<LearningCourse[]> {
     const { data: enrollmentRows, error: enrollmentError } = await this.client
       .from("enrollments")
-      .select("id, course_id")
+      .select("id, course_id, status, completed_at")
       .eq("user_id", userId)
-      .eq("status", "ACTIVE");
+      // ADR 0018: a COMPLETED enrollment keeps read access, so the course stays listed.
+      .in("status", ["ACTIVE", "COMPLETED"]);
 
     if (enrollmentError) throw new Error("Unable to load enrollments.");
     if (!enrollmentRows || enrollmentRows.length === 0) return [];
 
     const courseIds = enrollmentRows.map((row) => String(row.course_id));
+    const completedAtByCourse = new Map(
+      enrollmentRows.map((row) => [
+        String(row.course_id),
+        row.status === "COMPLETED" && typeof row.completed_at === "string"
+          ? row.completed_at
+          : null,
+      ]),
+    );
 
     const [{ data: courseRows, error: courseError }, { data: moduleRows, error: moduleError }] =
       await Promise.all([
@@ -190,6 +199,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       title: String(row.title),
       description: row.description ? String(row.description) : null,
       modules: (modulesByCourse.get(String(row.id)) ?? []).sort((a, b) => a.position - b.position),
+      completedAt: completedAtByCourse.get(String(row.id)) ?? null,
     }));
   }
 

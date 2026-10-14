@@ -12,6 +12,22 @@
   },
   "features": [
     {
+      "id": "stage-11-flow-gap-closure",
+      "title": "Etapa 11: fail-closed paid access, practice by enrollment, course completion, notification scheduler and flow gaps",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [
+        "stage-03-commercial-saas",
+        "stage-01-enrollment-core",
+        "prompt-15-practice-engine-v1"
+      ],
+      "evidence": [
+        "harness/goals/stage-11-fechamento-fluxo.md",
+        "harness/evidence/stage-11-flow-gap-closure/README.md"
+      ],
+      "updated_at": "2026-10-13T22:00:00Z"
+    },
+    {
       "id": "stage-03-commercial-saas",
       "title": "stage-03-commercial-saas",
       "status": "done",

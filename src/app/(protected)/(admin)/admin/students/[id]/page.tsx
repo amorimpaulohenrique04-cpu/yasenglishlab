@@ -2,9 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { Avatar, Badge, EmptyState, PageHeader, ProgressBar, Tabs } from "@/components/ui";
+import {
+  Alert,
+  Avatar,
+  Badge,
+  Button,
+  EmptyState,
+  Input,
+  PageHeader,
+  ProgressBar,
+  Tabs,
+} from "@/components/ui";
 import { placementLabels, type PlacementState } from "@/modules/placement";
+import {
+  loadComplimentaryGrant,
+  type ComplimentaryGrantView,
+} from "@/server/billing/complimentary-access";
 import { loadAdminStudent360 } from "@/server/students/students";
+import { grantComplimentaryAccessAction, revokeComplimentaryAccessAction } from "./actions";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -32,11 +47,96 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export default async function AdminStudent360Page({ params }: { params: Promise<{ id: string }> }) {
+const accessResults: Record<string, { tone: "success" | "error"; title: string }> = {
+  granted: { tone: "success", title: "Acesso concedido" },
+  revoked: { tone: "success", title: "Acesso revogado" },
+  invalid: { tone: "error", title: "Revise o motivo e a validade" },
+  error: { tone: "error", title: "Não foi possível alterar o acesso" },
+};
+
+// ADR 0017: access without a subscription only through an explicit, audited grant (ADMIN + AAL2 RPC).
+function ComplimentaryAccess({
+  userId,
+  grant,
+  result,
+}: {
+  userId: string;
+  grant: ComplimentaryGrantView | null;
+  result: string | undefined;
+}) {
+  const feedback = result ? accessResults[result] : undefined;
+  return (
+    <Section title="Acesso concedido">
+      {feedback && <Alert tone={feedback.tone} title={feedback.title} />}
+      <p>
+        Libera aulas, materiais, prática e encontros sem assinatura (cortesia, bolsa ou legado). Não
+        concede benefícios de plano: conteúdos e encontros que exigem um benefício específico
+        continuam indisponíveis.
+      </p>
+      {grant ? (
+        <div className="yas-row-summary">
+          <h3>
+            <Badge tone={grant.active ? "success" : "neutral"}>
+              {grant.active ? "Ativo" : grant.revokedAt ? "Revogado" : "Expirado"}
+            </Badge>
+          </h3>
+          <p>
+            {grant.reason === "LEGACY_BACKFILL"
+              ? "Aluno legado (migração)"
+              : "Concedido pelo Admin"}{" "}
+            · desde {date(grant.grantedAt)}
+            {grant.expiresAt ? ` · até ${date(grant.expiresAt)}` : ""}
+            {grant.revokedAt ? ` · revogado em ${date(grant.revokedAt)}` : ""}
+          </p>
+        </div>
+      ) : (
+        <p>Nenhuma concessão registrada.</p>
+      )}
+      {grant?.active ? (
+        <form action={revokeComplimentaryAccessAction} className="yas-stack">
+          <input type="hidden" name="userId" value={userId} />
+          <Input label="Motivo da revogação" name="note" required maxLength={500} />
+          <div>
+            <Button type="submit" variant="secondary">
+              Revogar acesso
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <form action={grantComplimentaryAccessAction} className="yas-stack">
+          <input type="hidden" name="userId" value={userId} />
+          <Input label="Motivo da concessão" name="note" required maxLength={500} />
+          <Input
+            label="Válido até (opcional)"
+            name="expiresOn"
+            type="date"
+            message="Sem data, o acesso vale até ser revogado."
+          />
+          <div>
+            <Button type="submit" variant="primary">
+              Conceder acesso
+            </Button>
+          </div>
+        </form>
+      )}
+    </Section>
+  );
+}
+
+export default async function AdminStudent360Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const { id } = await params;
   if (!uuidPattern.test(id)) notFound();
   const student = await loadAdminStudent360(id);
   if (!student.profile) notFound();
+  const query = await searchParams;
+  const accessResult = typeof query.access === "string" ? query.access : undefined;
+  const grant = await loadComplimentaryGrant(id);
 
   const name = student.profile.display_name;
   const activeCohort = student.activeMembership?.cohort?.[0];
@@ -377,25 +477,28 @@ export default async function AdminStudent360Page({ params }: { params: Promise<
             id: "commercial",
             label: "Comercial",
             content: (
-              <Section title="Assinatura local">
-                {student.subscriptions.length ? (
-                  student.subscriptions.map((subscription, index) => (
-                    <div
-                      className="yas-row-summary"
-                      key={subscription.status + subscription.started_at + index}
-                    >
-                      <h3>{subscription.status}</h3>
-                      <p>
-                        Período:{" "}
-                        {date(subscription.current_period_start ?? subscription.started_at)} ·{" "}
-                        {date(subscription.current_period_end ?? subscription.ended_at)}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p>Nenhum registro local de assinatura.</p>
-                )}
-              </Section>
+              <div className="yas-operational-surface">
+                <Section title="Assinatura local">
+                  {student.subscriptions.length ? (
+                    student.subscriptions.map((subscription, index) => (
+                      <div
+                        className="yas-row-summary"
+                        key={subscription.status + subscription.started_at + index}
+                      >
+                        <h3>{subscription.status}</h3>
+                        <p>
+                          Período:{" "}
+                          {date(subscription.current_period_start ?? subscription.started_at)} ·{" "}
+                          {date(subscription.current_period_end ?? subscription.ended_at)}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhum registro local de assinatura.</p>
+                  )}
+                </Section>
+                <ComplimentaryAccess userId={id} grant={grant} result={accessResult} />
+              </div>
             ),
           },
           {
@@ -408,7 +511,15 @@ export default async function AdminStudent360Page({ params }: { params: Promise<
                     student.enrollments.map((enrollment) => (
                       <div className="yas-row-summary" key={enrollment.id}>
                         <h3>{enrollment.course?.[0]?.title ?? "Curso"}</h3>
-                        <Badge tone={enrollment.status === "ACTIVE" ? "success" : "neutral"}>
+                        <Badge
+                          tone={
+                            enrollment.status === "ACTIVE"
+                              ? "success"
+                              : enrollment.status === "COMPLETED"
+                                ? "info"
+                                : "neutral"
+                          }
+                        >
                           {enrollment.status}
                         </Badge>
                         <p>

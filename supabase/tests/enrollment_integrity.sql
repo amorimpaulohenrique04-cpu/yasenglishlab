@@ -37,6 +37,10 @@ insert into public.cohort_placement_settings(cohort_id,capacity,schedule) values
 insert into public.subscriptions(id,user_id,plan_id,provider,provider_subscription_id,status) values
  ('9e300000-0000-4000-8000-000000000001','9e000000-0000-4000-8000-000000000001','10000000-0000-0000-0000-000000000001','test','ei-s','ACTIVE'),
  ('9e300000-0000-4000-8000-000000000003','9e000000-0000-4000-8000-000000000003','10000000-0000-0000-0000-000000000001','test','ei-r','ACTIVE');
+-- Stage 11 fixture: paid access is fail-closed. G is the legacy Student (ACTIVE enrollment, no subscription): the
+-- LEGACY_BACKFILL rule gives that Student a grant, so the cohort-membership gate (not the paid gate) is under test.
+insert into public.complimentary_access_grants(user_id,reason,note) values
+ ('9e000000-0000-4000-8000-000000000002','LEGACY_BACKFILL','fixture: legacy Student with ACTIVE enrollment and no subscription');
 insert into public.enrollments(id,user_id,course_id,status) values
  ('9e400000-0000-4000-8000-000000000001','9e000000-0000-4000-8000-000000000001','40000000-0000-4000-8000-000000000001','ACTIVE'),
  ('9e400000-0000-4000-8000-000000000002','9e000000-0000-4000-8000-000000000002','40000000-0000-4000-8000-000000000001','ACTIVE'),

@@ -31,13 +31,25 @@ describe("SubscriptionSuspendedNotice", () => {
     expect(render({ kind: "ok" })).toBe("");
   });
 
-  it("PAST_DUE explains pending payment, offers no invented link and no checkout CTA", () => {
+  // Etapa 11: the only link is the internal guidance-only /support page; no invented external channel.
+  it("PAST_DUE explains pending payment, links only to /support and offers no checkout CTA", () => {
     const html = render(pastDue);
     expect(html).toContain("Pagamento pendente");
     expect(html).toContain("suporte");
     expect(html).toContain("Nada foi apagado");
-    expect(html).not.toContain("<a ");
+    expect(html.match(/<a /g)).toHaveLength(1);
+    expect(html).toContain('href="/support"');
+    expect(html).not.toMatch(/https?:|mailto:|wa\.me|tel:/);
     expect(html).not.toContain("/checkout");
+  });
+
+  it("NO_SUBSCRIPTION invites a first checkout without implying a lost subscription", () => {
+    const html = render({ ...expired, reason: "NO_SUBSCRIPTION" });
+    expect(html).toContain("Escolha um plano para começar");
+    expect(html).toContain('href="/checkout"');
+    expect(html).toContain('data-suspension="NO_SUBSCRIPTION"');
+    expect(html).not.toContain("Nada foi apagado");
+    expect(html).not.toContain("cancelada");
   });
 
   it.each([
@@ -57,7 +69,12 @@ describe("SubscriptionSuspendedNotice", () => {
   });
 
   it("never mentions interest or blames the student", () => {
-    for (const access of [pastDue, expired, cancelled]) {
+    for (const access of [
+      pastDue,
+      expired,
+      cancelled,
+      { ...expired, reason: "NO_SUBSCRIPTION" } as const,
+    ]) {
       const copy = suspensionCopy(access);
       const text = `${copy.title} ${copy.description} ${copy.guidance}`.toLowerCase();
       expect(text).not.toMatch(/juros|multa|culpa|inadimpl/);

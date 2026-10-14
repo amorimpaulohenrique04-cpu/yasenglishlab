@@ -244,6 +244,27 @@ describe("P21 Home projection", () => {
     expect(state.data.learning.status).toBe("success");
     if (state.data.learning.status !== "success") throw new Error("Expected learning.");
     expect(state.data.learning.data.upcomingLessons).toEqual([]);
+    expect(state.data.learning.data.courseCompleted).toBe(false);
+  });
+
+  // ADR 0018: only a COMPLETED enrollment (completedAt) marks the course as concluded.
+  it("flags the focused course as concluded when its enrollment is COMPLETED", async () => {
+    const complete = lesson("complete", 1, progress("complete", 100, "2026-10-01T10:00:00Z"));
+    const state = await getHomeView(
+      repository({
+        loadLearning: vi.fn(async () => [
+          { ...course("course-1", [complete]), completedAt: "2026-10-01T10:00:00Z" },
+        ]),
+        loadPractice: vi.fn(async () => ({ activities: [], history: [], recentLessonId: null })),
+      }),
+      userId,
+      true,
+      now,
+    );
+
+    if (state.status !== "success" || state.data.learning.status !== "success")
+      throw new Error("Expected learning.");
+    expect(state.data.learning.data.courseCompleted).toBe(true);
   });
 
   it("does not invent a lesson when every applicable lesson is complete", async () => {

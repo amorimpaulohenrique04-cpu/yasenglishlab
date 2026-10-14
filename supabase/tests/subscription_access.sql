@@ -64,7 +64,8 @@ select pg_temp.assert_true(private.has_paid_access('9d000000-0000-4000-8000-0000
 select pg_temp.assert_true(not private.has_paid_access('9d000000-0000-4000-8000-000000000002'),'PAST_DUE has no paid access');
 select pg_temp.assert_true(not private.has_paid_access('9d000000-0000-4000-8000-000000000003'),'EXPIRED has no paid access');
 select pg_temp.assert_true(not private.has_paid_access('9d000000-0000-4000-8000-000000000004'),'CANCELLED has no paid access');
-select pg_temp.assert_true(private.has_paid_access('9d000000-0000-4000-8000-000000000005'),'user that never had a subscription is not gated');
+-- Stage 11 (ADR 0017): fail-closed. No subscription and no grant means no paid access.
+select pg_temp.assert_true(not private.has_paid_access('9d000000-0000-4000-8000-000000000005'),'user that never had a subscription has NO paid access (fail-closed)');
 select pg_temp.assert_true(private.has_paid_access('9d000000-0000-4000-8000-000000000007'),'TEACHER is never gated');
 select pg_temp.assert_true(private.has_paid_access('9d000000-0000-4000-8000-000000000008'),'ADMIN is never gated');
 select pg_temp.assert_true(not private.has_paid_access(null),'anonymous has no paid access');
@@ -164,13 +165,23 @@ set local role authenticated;
 select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'TRIALING reads lesson asset');
 reset role;
 
--- 7. Exempt users: legacy (no subscription) and staff keep today's behavior.
+-- 7. Stage 11: a Student without subscription is denied everywhere until an explicit grant exists; staff stay exempt.
 select pg_temp.login('9d000000-0000-4000-8000-000000000005');
 set local role authenticated;
-select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'legacy student without subscription reads material');
-select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'legacy student reads asset');
+select pg_temp.assert_true(not private.can_read_material('81710000-0000-4000-8000-000000000001'),'no-subscription student cannot read material');
+select pg_temp.assert_true(not private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'no-subscription student cannot read asset');
+select pg_temp.assert_true(pg_temp.denied('select public.record_lesson_progress(''42000000-0000-4000-8000-000000000001'',5,10)'),'no-subscription student cannot record progress');
+select pg_temp.assert_true(pg_temp.denied('select public.start_practice_attempt(''83000000-0000-4000-8000-000000000001'',gen_random_uuid())'),'no-subscription student cannot start practice');
+select pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d400000-0000-4000-8000-000000000002'')'),'no-subscription student cannot book');
+reset role;
+-- The Admin grant (or the legacy backfill) restores base access.
+insert into public.complimentary_access_grants(user_id,reason,note) values('9d000000-0000-4000-8000-000000000005','LEGACY_BACKFILL','fixture');
+select pg_temp.login('9d000000-0000-4000-8000-000000000005');
+set local role authenticated;
+select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'legacy student with grant reads material');
+select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'legacy student with grant reads asset');
 select public.record_lesson_progress('42000000-0000-4000-8000-000000000001',5,10);
-select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000002') is not null,'legacy student books');
+select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000002') is not null,'legacy student with grant books');
 reset role;
 select pg_temp.login('9d000000-0000-4000-8000-000000000007','aal2');
 set local role authenticated;

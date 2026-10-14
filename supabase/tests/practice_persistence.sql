@@ -12,6 +12,19 @@ values
   ('84100000-0000-0000-0000-000000000002', '84000000-0000-0000-0000-000000000002', 'STUDENT')
 on conflict (id) do nothing;
 
+-- Stage 11: Practice is scoped by enrollment and paid access is fail-closed: enrol both Students in the course of
+-- the seeded activities (module 41000000-...-01 belongs to course 40000000-...-01) and grant paid access.
+insert into public.enrollments (user_id, course_id, status)
+values
+  ('84000000-0000-0000-0000-000000000001', '40000000-0000-4000-8000-000000000001', 'ACTIVE'),
+  ('84000000-0000-0000-0000-000000000002', '40000000-0000-4000-8000-000000000001', 'ACTIVE')
+on conflict (user_id, course_id) do nothing;
+insert into public.complimentary_access_grants (user_id, reason, note)
+values
+  ('84000000-0000-0000-0000-000000000001', 'ADMIN_GRANT', 'fixture: paid access'),
+  ('84000000-0000-0000-0000-000000000002', 'ADMIN_GRANT', 'fixture: paid access')
+on conflict (user_id) do nothing;
+
 set role authenticated;
 select set_config('request.jwt.claim.sub', '84000000-0000-0000-0000-000000000001', false);
 select set_config('request.jwt.claims', '{"sub":"84000000-0000-0000-0000-000000000001","aal":"aal1"}', false);

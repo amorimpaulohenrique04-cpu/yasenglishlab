@@ -139,6 +139,16 @@ describe("Progress projection", () => {
     });
   });
 
+  // ADR 0018: completion is the enrollment fact, never inferred from the percentage.
+  it("passes the COMPLETED enrollment fact through without deriving it from the percentage", () => {
+    expect(buildCurriculumView([course()]).courses[0]?.completedAt).toBeNull();
+    const concluded = buildCurriculumView([{ ...course(), completedAt: "2026-10-01T10:00:00Z" }]);
+    expect(concluded.courses[0]).toMatchObject({
+      completedAt: "2026-10-01T10:00:00Z",
+      completionPercent: 50,
+    });
+  });
+
   it("keeps multiple courses separate instead of producing a global average", () => {
     const view = buildCurriculumView([
       course("40000000-0000-4000-8000-000000000001", 100),

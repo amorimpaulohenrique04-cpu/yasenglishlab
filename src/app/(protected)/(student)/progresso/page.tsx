@@ -20,6 +20,8 @@ import {
   type ProgressSection,
   type ProgressSkillSummary,
 } from "@/modules/progress";
+import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadProgressPage } from "@/server/progress/progress";
 
 const skillLabels: Record<ProgressSkillSummary["skill"], string> = {
@@ -76,6 +78,7 @@ function CurriculumSection({ section }: { section: ProgressSection<ProgressCurri
                   <div>
                     <span className="yas-progress-eyebrow">Curso</span>
                     <h3>{course.title}</h3>
+                    {course.completedAt && <Badge tone="success">Curso concluído</Badge>}
                   </div>
                   <strong>{course.completionPercent}%</strong>
                 </div>
@@ -332,6 +335,13 @@ function HistorySection({ section }: { section: ProgressSection<ProgressHistoryE
 
 export default async function ProgressPage() {
   const state = await loadProgressPage();
+  // ADR 0016 §2: suspension never hides or alters progress; the notice only explains paused access. A
+  // billing read failure must not break this page, so it simply omits the notice.
+  const access =
+    state.status === "unauthorized" || state.status === "error"
+      ? ({ kind: "ok" } as const)
+      : await loadCurrentSubscriptionAccess().catch(() => ({ kind: "ok" }) as const);
+  const notice = <SubscriptionSuspendedNotice access={access} context="progress" />;
 
   if (state.status === "unauthorized") {
     return (
@@ -361,6 +371,7 @@ export default async function ProgressPage() {
     return (
       <div className="yas-progress-page">
         <PageHeader title="Progresso" description="Entenda como sua jornada está avançando." />
+        {notice}
         <EmptyState
           title="Seu progresso começa aqui"
           description="Quando você tiver cursos, práticas, encontros ou avaliações registrados, os fatos aparecerão nesta página."
@@ -377,6 +388,8 @@ export default async function ProgressPage() {
         title="Progresso"
         description="Uma leitura dos fatos da sua jornada, sem misturar curso, prática, presença e proficiência."
       />
+
+      {notice}
 
       {state.status === "partial" && (
         <Alert

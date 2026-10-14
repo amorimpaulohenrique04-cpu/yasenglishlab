@@ -144,6 +144,8 @@ const cleanup = [
   admin.from("session_bookings").delete().eq("user_id", userId),
   admin.from("session_bookings").delete().eq("user_id", homeNowUser.id),
   admin.from("product_analytics_events").delete().eq("user_id", userId),
+  // ADR 0017: grants are re-created below only for the fixtures that model legacy Students.
+  admin.from("complimentary_access_grants").delete().in("user_id", canonicalUserIds),
 ];
 
 for (const operation of cleanup) {
@@ -261,6 +263,22 @@ for (const operation of operations) {
   const { error } = await operation;
   if (error) throw error;
 }
+
+// ADR 0017: paid access is fail-closed. The Home-now and Teacher-operations Students model legacy Students
+// without a subscription, so they get the explicit grant the Stage 11 backfill gives such Students.
+// progressEmptyUser intentionally stays without subscription or grant (an unpaid signup).
+const { error: legacyGrantError } = await admin.from("complimentary_access_grants").upsert(
+  [homeNowUser.id, teacherStudentUser.id].map((grantUserId) => ({
+    user_id: grantUserId,
+    reason: "LEGACY_BACKFILL",
+    note: "Canonical E2E legacy Student fixture",
+    revoked_at: null,
+    revoked_by: null,
+    expires_at: null,
+  })),
+  { onConflict: "user_id" },
+);
+if (legacyGrantError) throw legacyGrantError;
 
 const { error: p21AudioActivityError } = await admin.from("practice_activities").upsert(
   {

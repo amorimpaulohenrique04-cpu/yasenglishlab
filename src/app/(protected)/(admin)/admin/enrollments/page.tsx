@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { randomUUID } from "node:crypto";
 import {
   Alert,
@@ -15,6 +16,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import { placementLabels, placementStates, weekdays } from "@/modules/placement";
+import { loadEnrollmentsWithoutActiveCohort } from "@/server/billing/complimentary-access";
 import { loadPlacementQueue, loadPlacementCohortSettings } from "@/server/placement/placement";
 import { configurePlacementCohortAction, transferPlacementAction } from "./actions";
 export default async function EnrollmentsPage({
@@ -23,9 +25,11 @@ export default async function EnrollmentsPage({
   searchParams: Promise<{ state?: string; result?: string }>;
 }) {
   const { state, result } = await searchParams;
-  const [cases, cohorts] = await Promise.all([
+  const [cases, cohorts, withoutCohort] = await Promise.all([
     loadPlacementQueue("ADMIN", placementStates.some((s) => s === state) ? state : undefined),
     loadPlacementCohortSettings(),
+    // Advisory panel: its failure must not take down the placement queue.
+    loadEnrollmentsWithoutActiveCohort().catch(() => null),
   ]);
   return (
     <div className="yas-stack">
@@ -43,6 +47,61 @@ export default async function EnrollmentsPage({
               : "A alteração foi validada e auditada."
           }
         />
+      )}
+      {withoutCohort === null && (
+        <Alert
+          tone="warning"
+          title="Matrículas sem turma indisponíveis"
+          description="Não foi possível verificar agora as matrículas ativas sem turma. A fila abaixo continua válida."
+        />
+      )}
+      {withoutCohort && withoutCohort.length > 0 && (
+        // Stage 06a: an ACTIVE enrollment without an ACTIVE cohort cannot record lesson progress.
+        <Card className="yas-stack" variant="accent">
+          <Badge tone="warning">Ação necessária</Badge>
+          <h2>Matrículas sem turma ativa</h2>
+          <p>
+            Estes alunos têm matrícula ativa, mas não estão em nenhuma turma ativa do curso, por
+            isso não registram progresso nas aulas. Coloque cada um em uma turma para liberar.
+          </p>
+          <DataTable
+            caption="Matrículas ativas sem turma"
+            focusableFrame
+            columns={[
+              { id: "student", label: "Aluno" },
+              { id: "course", label: "Curso" },
+              { id: "since", label: "Matriculado em" },
+            ]}
+            rows={withoutCohort.map((row) => {
+              const name = row.displayName ?? "Aluno";
+              const since = new Date(row.enrolledAt).toLocaleDateString("pt-BR", {
+                timeZone: "America/Recife",
+              });
+              return {
+                id: row.enrollmentId,
+                cells: [
+                  <Link
+                    key="student"
+                    className="yas-focusable"
+                    href={`/admin/students/${row.userId}`}
+                  >
+                    {name}
+                  </Link>,
+                  row.courseTitle,
+                  since,
+                ],
+                mobile: (
+                  <p>
+                    <Link className="yas-focusable" href={`/admin/students/${row.userId}`}>
+                      {name}
+                    </Link>{" "}
+                    · {row.courseTitle} · {since}
+                  </p>
+                ),
+              };
+            })}
+          />
+        </Card>
       )}
       <FilterBar action="/admin/enrollments" aria-label="Filtrar matrículas">
         <Select
