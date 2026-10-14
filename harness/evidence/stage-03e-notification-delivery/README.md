@@ -64,3 +64,7 @@ No existing failure identified. Production sender/domain verification, API key p
 ## Update (2026-10-13)
 
 The two gaps listed above were addressed after this stage: the notification `dedupe_key` is now derived from payment + cycle (PAYMENT_CONFIRMED and PAYMENT_RECEIVED for one payment queue a single email, and renewals use their own copy), and `processPendingNotificationDeliveries` is called by an authenticated cron endpoint (`/api/cron/notifications`, Bearer secret, batch of 20). Production still needs the operator to set `NOTIFICATIONS_CRON_SECRET` and configure a scheduler (see `docs/OPERATIONS.md`).
+
+## Update (2026-10-13, Etapa 11)
+
+The scheduler now exists in the repository: `.github/workflows/notifications-cron.yml` calls `POST /api/cron/notifications` every 5 minutes from the dedicated `notifications-cron` environment (ADR 0019). The run fails visibly when `PRODUCTION_APP_URL` or `NOTIFICATIONS_CRON_SECRET` is missing. The known gap `processPendingNotificationDeliveries has no caller` is closed in code. Real production delivery stays unverified until the operator configures the environment and a `workflow_dispatch` run returns HTTP 200 (`docs/OPERATIONS.md`).
