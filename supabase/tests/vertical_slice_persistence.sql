@@ -29,6 +29,13 @@ values
   )
 on conflict (id) do nothing;
 
+-- Stage 11: paid access is fail-closed; the enrolled fixture Students get an explicit grant.
+insert into public.complimentary_access_grants (user_id, reason, note)
+values
+  ('83000000-0000-0000-0000-000000000001', 'ADMIN_GRANT', 'fixture: paid access'),
+  ('83000000-0000-0000-0000-000000000002', 'ADMIN_GRANT', 'fixture: paid access')
+on conflict (user_id) do nothing;
+
 -- Stage 06a: progress needs an ACTIVE cohort membership; fixture removed again at the end of this file.
 insert into public.cohorts (id, course_id, name, code, status, starts_at)
 values ('83300000-0000-0000-0000-000000000001', '40000000-0000-4000-8000-000000000001', 'Slice cohort', 'slice-cohort', 'ACTIVE', now() - interval '1 day')

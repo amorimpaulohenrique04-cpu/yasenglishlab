@@ -47,6 +47,8 @@ select pg_temp.assert_true((select count(*)=1 from public.admin_content_list('co
 
 reset role;
 insert into public.enrollments(user_id,course_id,status) select '98000000-0000-4000-8000-000000000002',id,'ACTIVE' from content_ids where kind='courses';
+-- Stage 11 fixture: paid access is fail-closed, so the enrolled content Student needs an explicit grant.
+insert into public.complimentary_access_grants(user_id,reason,note) values ('98000000-0000-4000-8000-000000000002','ADMIN_GRANT','fixture: paid access');
 insert into public.cohorts(id,course_id,name,code,status,starts_at) select '98700000-0000-4000-8000-000000000001',id,'P18 cohort','p18-cohort','ACTIVE',now()-interval '1 day' from content_ids where kind='courses';
 insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) select '98700000-0000-4000-8000-000000000001',user_id,id from public.enrollments where user_id='98000000-0000-4000-8000-000000000002';
 set local role authenticated;
