@@ -54,6 +54,7 @@ export function buildCurriculumView(courses: readonly LearningCourse[]): Progres
         modulesCompleted: applicableModules.filter(isModuleComplete).length,
         totalModules: applicableModules.length,
         lastActivityAt: newest(lessons.map((lesson) => lesson.progress?.lastAccessedAt ?? null)),
+        completedAt: course.completedAt ?? null,
       };
     }),
   };

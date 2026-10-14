@@ -275,7 +275,9 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
       const deniedContext = await browser.newContext();
       try {
         const denied = await deniedContext.newPage();
-        await loginStudent(denied, "canonical.progress-empty@example.test");
+        // Paid access (legacy grant, ADR 0017) but no enrollment in this course: denied by enrollment,
+        // not by billing, so the lesson-level denial is what this scenario exercises.
+        await loginStudent(denied, "canonical.home-now@example.test");
         await denied.goto(lessonUrl);
         await expect(denied.getByRole("heading", { name: "Aula não disponível" })).toBeVisible();
         await expect(denied.locator("mux-player")).toHaveCount(0);

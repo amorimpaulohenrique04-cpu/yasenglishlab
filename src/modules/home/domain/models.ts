@@ -30,6 +30,8 @@ export interface HomeLearningView {
   courseSlug: string;
   courseTitle: string;
   courseDescription: string | null;
+  // ADR 0018: the enrollment is COMPLETED (course concluded); read access is kept.
+  courseCompleted: boolean;
   completionPercent: number;
   lessonsCompleted: number;
   totalLessons: number;

@@ -38,8 +38,30 @@ describe("deriveSubscriptionAccess (ADR 0016)", () => {
     },
   );
 
-  it("student without any subscription (seed/legacy) is not suspended", () => {
-    expect(deriveSubscriptionAccess({ roles: student, subscriptions: [] })).toEqual({ kind: "ok" });
+  // ADR 0017 (fail-closed): no subscription is no access; only an explicit grant replaces it.
+  it("student without any subscription is suspended and starts a new checkout", () => {
+    expect(deriveSubscriptionAccess({ roles: student, subscriptions: [] })).toEqual({
+      kind: "suspended",
+      reason: "NO_SUBSCRIPTION",
+      canRegularize: true,
+      regularization: "NEW_CHECKOUT",
+    });
+  });
+
+  it("an active complimentary grant releases access with or without subscriptions", () => {
+    expect(
+      deriveSubscriptionAccess({ roles: student, subscriptions: [], hasActiveGrant: true }),
+    ).toEqual({ kind: "ok" });
+    expect(
+      deriveSubscriptionAccess({
+        roles: student,
+        subscriptions: [sub("PAST_DUE")],
+        hasActiveGrant: true,
+      }),
+    ).toEqual({ kind: "ok" });
+    expect(
+      deriveSubscriptionAccess({ roles: student, subscriptions: [], hasActiveGrant: false }),
+    ).toMatchObject({ kind: "suspended", reason: "NO_SUBSCRIPTION" });
   });
 
   it.each(["ADMIN", "TEACHER", "SUPPORT"])("%s is never subject to the gate", (role) => {
@@ -131,6 +153,27 @@ describe("CANCELLED with paid access left (migration 20261013170000)", () => {
     const rows = [{ status: "PAST_DUE" as const }, cancelled("2026-11-01T03:00:00Z")];
     expect(access(rows)).toEqual({ kind: "ok" });
     expect(access([...rows].reverse())).toEqual({ kind: "ok" });
+  });
+
+  it("ACTIVE with a scheduled cancellation keeps access only until current_period_end", () => {
+    const scheduled = (periodEnd: string | null) => ({
+      status: "ACTIVE" as const,
+      cancelAtPeriodEnd: true,
+      periodEnd,
+    });
+    expect(access([scheduled("2026-11-01T03:00:00Z")])).toEqual({ kind: "ok" });
+    // Webhook lost: the end was reached but the row is still ACTIVE.
+    expect(access([scheduled("2026-10-01T03:00:00Z")])).toMatchObject({
+      kind: "suspended",
+      reason: "CANCELLED",
+      regularization: "NEW_CHECKOUT",
+    });
+    expect(access([scheduled("2026-10-13T12:00:00Z")])).toMatchObject({ kind: "suspended" });
+    // No end recorded: the marker alone never cuts access.
+    expect(access([scheduled(null)])).toEqual({ kind: "ok" });
+    expect(
+      access([{ status: "ACTIVE", cancelAtPeriodEnd: false, periodEnd: "2026-10-01T03:00:00Z" }]),
+    ).toEqual({ kind: "ok" });
   });
 
   it("derives the student-facing cancellation state", () => {

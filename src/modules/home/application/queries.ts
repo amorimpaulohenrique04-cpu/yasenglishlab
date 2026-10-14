@@ -159,6 +159,7 @@ function learningSection(
       courseSlug: focus.course.slug,
       courseTitle: focus.course.title,
       courseDescription: focus.course.description,
+      courseCompleted: Boolean(focus.course.completedAt),
       completionPercent: focus.summary.completionPercent,
       lessonsCompleted: focus.summary.lessonsCompleted,
       totalLessons: focus.summary.totalLessons,

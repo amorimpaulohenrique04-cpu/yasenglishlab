@@ -177,21 +177,32 @@ describe("meeting access", () => {
 });
 
 describe("loadSubscriptionAccess adapter", () => {
-  function fakeClient(rows: unknown[], error: unknown = null) {
-    const calls: [string, unknown][] = [];
-    const chain = {
-      select: () => chain,
-      eq: (column: string, value: unknown) => {
-        calls.push([column, value]);
-        return chain;
-      },
-      order: () => chain,
-      limit: () => Promise.resolve({ data: rows, error }),
-    };
-    return { client: { from: vi.fn(() => chain) } as unknown as SupabaseClient, calls };
+  type Grant = { expires_at: string | null; revoked_at: string | null } | null;
+  function fakeClient(
+    rows: unknown[],
+    error: unknown = null,
+    grant: { data: Grant; error?: unknown } = { data: null },
+  ) {
+    const calls: [string, string, unknown][] = [];
+    const from = vi.fn((table: string) => {
+      const chain = {
+        select: () => chain,
+        eq: (column: string, value: unknown) => {
+          calls.push([table, column, value]);
+          return chain;
+        },
+        order: () => chain,
+        limit: () => Promise.resolve({ data: rows, error }),
+        maybeSingle: () => Promise.resolve({ data: grant.data, error: grant.error ?? null }),
+      };
+      return chain;
+    });
+    return { client: { from } as unknown as SupabaseClient, calls };
   }
+  const future = () => new Date(Date.now() + 86_400_000).toISOString();
+  const past = () => new Date(Date.now() - 86_400_000).toISOString();
 
-  it("scopes the query to the user and derives suspension", async () => {
+  it("scopes both queries to the user and derives suspension", async () => {
     const { client, calls } = fakeClient([
       { status: "PAST_DUE", started_at: "2026-10-01T00:00:00Z" },
     ]);
@@ -199,10 +210,12 @@ describe("loadSubscriptionAccess adapter", () => {
       kind: "suspended",
       reason: "PAST_DUE",
     });
-    expect(calls).toContainEqual(["user_id", id]);
+    expect(calls).toContainEqual(["subscriptions", "user_id", id]);
+    expect(calls).toContainEqual(["complimentary_access_grants", "user_id", id]);
   });
 
-  it("restores access when ACTIVE again, exempts no-subscription users and skips the query for staff", async () => {
+  // ADR 0017 (Etapa 11): no subscription is no longer an exemption.
+  it("restores access when ACTIVE again, suspends no-subscription users and skips staff", async () => {
     const active = fakeClient([{ status: "ACTIVE", started_at: "2026-10-01T00:00:00Z" }]);
     await expect(loadSubscriptionAccess(active.client, id, ["STUDENT"])).resolves.toEqual({
       kind: "ok",
@@ -214,17 +227,41 @@ describe("loadSubscriptionAccess adapter", () => {
     expect(staff.client.from).not.toHaveBeenCalled();
     const none = fakeClient([]);
     await expect(loadSubscriptionAccess(none.client, id, ["STUDENT"])).resolves.toEqual({
-      kind: "ok",
+      kind: "suspended",
+      reason: "NO_SUBSCRIPTION",
+      canRegularize: true,
+      regularization: "NEW_CHECKOUT",
     });
   });
 
+  it("an active complimentary grant releases access; expired or revoked grants do not", async () => {
+    const granted = fakeClient([], null, { data: { expires_at: null, revoked_at: null } });
+    await expect(loadSubscriptionAccess(granted.client, id, ["STUDENT"])).resolves.toEqual({
+      kind: "ok",
+    });
+    const notYetExpired = fakeClient([], null, {
+      data: { expires_at: future(), revoked_at: null },
+    });
+    await expect(loadSubscriptionAccess(notYetExpired.client, id, ["STUDENT"])).resolves.toEqual({
+      kind: "ok",
+    });
+    for (const data of [
+      { expires_at: past(), revoked_at: null },
+      { expires_at: null, revoked_at: past() },
+    ]) {
+      const lapsed = fakeClient([], null, { data });
+      await expect(loadSubscriptionAccess(lapsed.client, id, ["STUDENT"])).resolves.toMatchObject({
+        kind: "suspended",
+        reason: "NO_SUBSCRIPTION",
+      });
+    }
+  });
+
   it("keeps access for a CANCELLED row whose paid cycle has not ended, suspends once it did", async () => {
-    const future = new Date(Date.now() + 86_400_000).toISOString();
-    const past = new Date(Date.now() - 86_400_000).toISOString();
     await expect(
       loadSubscriptionAccess(
         fakeClient([
-          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: future },
+          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: future() },
         ]).client,
         id,
         ["STUDENT"],
@@ -233,7 +270,7 @@ describe("loadSubscriptionAccess adapter", () => {
     await expect(
       loadSubscriptionAccess(
         fakeClient([
-          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: past },
+          { status: "CANCELLED", started_at: "2026-10-01T00:00:00Z", current_period_end: past() },
         ]).client,
         id,
         ["STUDENT"],
@@ -241,9 +278,34 @@ describe("loadSubscriptionAccess adapter", () => {
     ).resolves.toMatchObject({ kind: "suspended", reason: "CANCELLED" });
   });
 
+  it("an ACTIVE row with a scheduled cancellation stops granting once its end is reached", async () => {
+    const row = (end: string) => ({
+      status: "ACTIVE",
+      started_at: "2026-10-01T00:00:00Z",
+      current_period_end: end,
+      cancel_at_period_end: true,
+    });
+    await expect(
+      loadSubscriptionAccess(fakeClient([row(future())]).client, id, ["STUDENT"]),
+    ).resolves.toEqual({ kind: "ok" });
+    await expect(
+      loadSubscriptionAccess(fakeClient([row(past())]).client, id, ["STUDENT"]),
+    ).resolves.toMatchObject({ kind: "suspended", reason: "CANCELLED" });
+  });
+
   it("fails closed on read errors and malformed rows without leaking details", async () => {
     await expect(
       loadSubscriptionAccess(fakeClient([], { message: "secret sql" }).client, id, ["STUDENT"]),
+    ).rejects.toThrow("Subscription access unavailable");
+    await expect(
+      loadSubscriptionAccess(
+        fakeClient([{ status: "ACTIVE", started_at: null }], null, {
+          data: null,
+          error: { message: "secret grant sql" },
+        }).client,
+        id,
+        ["STUDENT"],
+      ),
     ).rejects.toThrow("Subscription access unavailable");
     await expect(
       loadSubscriptionAccess(fakeClient([{ status: "WEIRD", started_at: null }]).client, id, [

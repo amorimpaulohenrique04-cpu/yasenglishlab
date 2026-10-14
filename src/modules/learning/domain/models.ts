@@ -37,6 +37,8 @@ export interface LearningCourse {
   title: string;
   description: string | null;
   modules: LearningModule[];
+  // enrollments.completed_at when the enrollment is COMPLETED (ADR 0018); null/absent while ACTIVE.
+  completedAt?: string | null;
 }
 
 export interface LessonTextContent {

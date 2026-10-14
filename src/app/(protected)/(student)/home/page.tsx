@@ -182,6 +182,14 @@ export default async function StudentHomePage() {
               </p>
             ) : learning.status === "empty" ? (
               <p className="yas-home-empty-copy">Nenhum curso ativo.</p>
+            ) : learning.data.courseCompleted ? (
+              <div className="yas-stack">
+                <Badge tone="success">Curso concluído</Badge>
+                <p className="yas-home-empty-copy">
+                  Você concluiu todas as aulas de {learning.data.courseTitle}. As aulas continuam
+                  disponíveis para revisão.
+                </p>
+              </div>
             ) : learning.data.upcomingLessons.length === 0 ? (
               <Badge tone="success">Todas as aulas disponíveis foram concluídas</Badge>
             ) : (
