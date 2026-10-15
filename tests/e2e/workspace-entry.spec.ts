@@ -13,6 +13,7 @@ test("multi-role requires a selector and allows only authorized choices", async 
     next: "",
     destination: /\/workspace$/,
     multi: true,
+    forceFresh: true,
   });
   await expect(page.getByRole("link", { name: "Professor", exact: true })).toHaveCount(0);
   const screenshot = await page.screenshot({
@@ -29,7 +30,7 @@ test("multi-role requires a selector and allows only authorized choices", async 
   await expect(page).toHaveURL(/\/workspace$/);
 });
 test("Teacher cannot refresh Student routes without STUDENT role", async ({ page }) => {
-  await loginCanonicalTeacher(page, password, { next: "" });
+  await loginCanonicalTeacher(page, password, { next: "", forceFresh: true });
   for (const path of ["/home", "/aulas", "/pratica", "/materiais", "/progresso", "/agenda"]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/profile\?auth=forbidden$/);

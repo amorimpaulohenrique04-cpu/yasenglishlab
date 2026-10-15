@@ -220,6 +220,8 @@ Para investigação isolada, o checker aceita `YAS_ALLOW_FLAKY=1` ou `YAS_ALLOW_
 
 As suítes de aplicação usam `next build` + `next start` em CI e nos verificadores oficiais (`YAS_E2E_PRODUCTION=1`). A execução direta de Playwright continua podendo usar `next dev` durante desenvolvimento. Ações têm limite de 10 segundos; operações comprovadamente mais longas possuem orçamento explícito. Um worker por suíte preserva o isolamento das fixtures.
 
+Os helpers de domínio reutilizam em memória a sessão real AAL2 obtida pela UI, por identidade e origem, dentro do worker. Os testes de entrada/autorização em `workspace-entry` usam `forceFresh` para repetir login/MFA; os demais continuam validando permissões reais nos seus próprios cenários. Não são gerados JWTs artificiais nem persistidos arquivos de sessão.
+
 Cada golden é um teste independente por tela e viewport. O E2E canônico conserva as provas de persistência, retomada, conclusão e navegação mobile; passeios de capturas repetidos foram consolidados nas suítes golden, a11y e responsivas. As referências HTML aprovadas estão versionadas em `artifacts/design-proposal/` e não são formatadas.
 
 Para executar sem disputar tipos ou build com um servidor dev aberto, defina `YAS_ISOLATED_VERIFY=1`; a verificação usa `tsconfig.verify.json` e `.next-p18-build`. `verify:full` aceita `YAS_SUPABASE_WORKDIR` apontando para uma stack de teste exclusiva; esse banco será resetado e parado ao final.

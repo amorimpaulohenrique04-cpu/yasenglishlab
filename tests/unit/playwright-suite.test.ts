@@ -17,7 +17,7 @@ describe("Playwright suite verification", () => {
     calls.report.mockReturnValue({ status: 0 });
   });
   it("removes stale evidence before the suite and enforces local report policy", () => {
-    runPlaywrightSuite("test:e2e", "report.json", { YAS_ALLOW_SKIPPED: "1" });
+    runPlaywrightSuite("test:e2e", "report.json", { ...process.env, YAS_ALLOW_SKIPPED: "1" });
     expect(calls.remove).toHaveBeenCalledWith("report.json", { force: true });
     expect(calls.remove.mock.invocationCallOrder[0]).toBeLessThan(
       calls.suite.mock.invocationCallOrder[0]!,
