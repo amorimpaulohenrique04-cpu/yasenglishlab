@@ -13,13 +13,16 @@ import {
   ProgressBar,
   Tabs,
 } from "@/components/ui";
+import { EnrollNextCourseForm } from "@/modules/admin-cohort-path/ui/enroll-next-course-form";
 import { placementLabels, type PlacementState } from "@/modules/placement";
+import { listEnrollTargets } from "@/server/admin-cohort-path/admin-cohort-path";
 import {
   loadComplimentaryGrant,
   type ComplimentaryGrantView,
 } from "@/server/billing/complimentary-access";
 import { loadAdminStudent360 } from "@/server/students/students";
 import { grantComplimentaryAccessAction, revokeComplimentaryAccessAction } from "./actions";
+import { enrollNextCourseAction } from "./enroll-actions";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -137,6 +140,7 @@ export default async function AdminStudent360Page({
   const query = await searchParams;
   const accessResult = typeof query.access === "string" ? query.access : undefined;
   const grant = await loadComplimentaryGrant(id);
+  const enrollTargets = await listEnrollTargets();
 
   const name = student.profile.display_name;
   const activeCohort = student.activeMembership?.cohort?.[0];
@@ -506,6 +510,14 @@ export default async function AdminStudent360Page({
             label: "Histórico",
             content: (
               <div className="yas-operational-surface">
+                <Section title="Matricular no próximo curso">
+                  <EnrollNextCourseForm
+                    userId={id}
+                    courses={enrollTargets.courses}
+                    cohorts={enrollTargets.cohorts}
+                    action={enrollNextCourseAction}
+                  />
+                </Section>
                 <Section title="Matrículas">
                   {student.enrollments.length ? (
                     student.enrollments.map((enrollment) => (

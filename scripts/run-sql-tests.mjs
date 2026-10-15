@@ -31,6 +31,7 @@ const suites = {
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
     "supabase/tests/cohort_path_admin.sql",
+    "supabase/tests/content_audience.sql",
     "supabase/tests/admin_course_enrollment.sql",
     "supabase/tests/plan_entitlement_admin.sql",
     "supabase/tests/operational_alerts.sql",
@@ -56,6 +57,7 @@ const suites = {
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
     "supabase/tests/cohort_path_admin.sql",
+    "supabase/tests/content_audience.sql",
     "supabase/tests/admin_course_enrollment.sql",
     "supabase/tests/plan_entitlement_admin.sql",
     "supabase/tests/operational_alerts.sql",
@@ -82,13 +84,14 @@ const suites = {
   "assessment-authoring": ["supabase/tests/assessment_authoring.sql"],
   "cohort-path": ["supabase/tests/cohort_path.sql"],
   "cohort-path-admin": ["supabase/tests/cohort_path_admin.sql"],
+  "content-audience": ["supabase/tests/content_audience.sql"],
   "admin-course-enrollment": ["supabase/tests/admin_course_enrollment.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|assessment-authoring|cohort-path|cohort-path-admin|admin-course-enrollment>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
   );
   process.exit(2);
 }

@@ -98,6 +98,7 @@ describe("Admin Content application boundary", () => {
       position: "2",
       title: "Unit 2",
       description: "Unit",
+      audience: "COURSE",
     });
     expect(
       adminContentFormToPayload(
@@ -116,6 +117,7 @@ describe("Admin Content application boundary", () => {
       slug: "lesson-one",
       title: "Lesson one",
       estimated_minutes: "10",
+      audience: "COURSE",
     });
     expect(
       adminContentFormToPayload(
@@ -162,6 +164,7 @@ describe("Admin Content application boundary", () => {
       metadata: {},
       active: true,
       required_entitlement_key: null,
+      audience: "COURSE",
     });
     expect(
       adminContentFormToPayload(

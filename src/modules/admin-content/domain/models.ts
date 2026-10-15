@@ -35,6 +35,7 @@ const nullableUrl = z.preprocess(
   safeUrl.nullable(),
 );
 const jsonObject = z.record(z.string(), z.unknown());
+const contentAudience = z.enum(["COURSE", "COHORTS"]);
 
 export const adminContentSaveSchemas = {
   courses: z
@@ -54,6 +55,7 @@ export const adminContentSaveSchemas = {
       position: positiveInt,
       title: z.string().trim().min(1).max(160),
       description: z.string().trim().max(4000).nullable(),
+      audience: contentAudience.optional(),
     })
     .strict(),
   lessons: z
@@ -66,6 +68,7 @@ export const adminContentSaveSchemas = {
         .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
       title: z.string().trim().min(1).max(160),
       estimated_minutes: nullablePositiveInt,
+      audience: contentAudience.optional(),
     })
     .strict(),
   lesson_assets: z
@@ -97,6 +100,7 @@ export const adminContentSaveSchemas = {
       metadata: jsonObject,
       active: z.boolean(),
       required_entitlement_key: z.string().trim().min(1).max(64).nullable().optional(),
+      audience: contentAudience.optional(),
     })
     .strict(),
   practice_activities: z

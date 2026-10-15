@@ -56,6 +56,9 @@ export default async function CohortsPage({
           Ocupação: {cohort.occupancy}
           {cohort.capacity ? ` de ${cohort.capacity}` : " · capacidade não configurada"}
         </p>
+        <p>
+          <Link href={`/admin/cohorts/${cohort.id}/trilha`}>Trilha da turma</Link>
+        </p>
         <section aria-label={`Horário recorrente de ${cohort.name}`}>
           <h3>Horário recorrente</h3>
           {slots.length ? (
