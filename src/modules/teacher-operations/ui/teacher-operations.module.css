@@ -230,3 +230,125 @@
     width: 100%;
   }
 }
+
+/* Practice builder (Stage 12A): tokens only, no new palette. */
+.builder,
+.builderStack {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.builderPanel {
+  display: grid;
+  gap: var(--yas-space-4);
+  padding: var(--yas-space-5);
+  border: 1px solid var(--yas-color-purple-200);
+  border-radius: var(--yas-radius-md);
+}
+
+.builderPanel h2,
+.builderSubheading {
+  margin: 0;
+  font-size: var(--yas-font-size-xl);
+}
+
+.builderSubheading {
+  font-size: var(--yas-font-size-lg);
+}
+
+.builderReset,
+.builderFieldset {
+  display: grid;
+  gap: var(--yas-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.builderFieldset legend {
+  padding: 0;
+  margin-block-end: var(--yas-space-2);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.builderStatus,
+.builderActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--yas-space-3);
+  margin: 0;
+}
+
+.builderList {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding-inline-start: var(--yas-space-5);
+}
+
+.builderRow {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: var(--yas-space-3);
+}
+
+.builderRow > :first-child {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--yas-space-3);
+}
+
+.typeCard {
+  display: grid;
+  gap: var(--yas-space-1);
+  padding: var(--yas-space-4);
+  border: 1px solid var(--yas-color-purple-200);
+  border-radius: var(--yas-radius-md);
+  cursor: pointer;
+}
+
+.typeCard[data-selected="true"] {
+  border-width: 2px;
+  border-color: var(--yas-color-purple-700);
+}
+
+.typeCard:focus-within {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.typeCardTitle {
+  font-weight: var(--yas-weight-semibold);
+}
+
+@media (max-width: 47.99rem) {
+  .builderPanel {
+    padding: var(--yas-space-3);
+  }
+
+  .stepper {
+    flex-direction: column;
+  }
+
+  .stepper > li > *,
+  .builderActions > * {
+    width: 100%;
+  }
+}

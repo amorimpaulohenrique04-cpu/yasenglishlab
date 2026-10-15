@@ -1,0 +1,627 @@
+BEGIN
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 4
+INSERT 0 4
+INSERT 0 1
+INSERT 0 2
+UPDATE 1
+ logout
+--------
+
+(1 row)
+
+SET
+ deny_all
+----------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ deny_all
+----------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ deny_all
+----------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ deny_all
+----------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ draft
+-------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+                                                    admin_assessment_save_draft
+-----------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "01909563-09ce-4dd8-b1ce-7ec2f289eb5d", "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 1}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+                                                    admin_assessment_save_draft
+-----------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "01909563-09ce-4dd8-b1ce-7ec2f289eb5d", "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 1}
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+ draft
+-------
+
+(1 row)
+
+DO
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+                                                                           admin_assessment_publish
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "01909563-09ce-4dd8-b1ce-7ec2f289eb5d", "isPlacement": false, "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 1, "retiredVersions": 0}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+INSERT 0 1
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+                                                    admin_assessment_save_draft
+-----------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "f834da0b-0444-46f5-8fd8-2224f1850d13", "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 2}
+(1 row)
+
+                                                                           admin_assessment_publish
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "f834da0b-0444-46f5-8fd8-2224f1850d13", "isPlacement": false, "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 2, "retiredVersions": 1}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+ login
+-------
+
+(1 row)
+
+SET
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+           begin_placement
+--------------------------------------
+ b7bb3f4d-e26d-4afd-a3d7-6b837ac4ce4b
+(1 row)
+
+      save_placement_preferences
+--------------------------------------
+ b7bb3f4d-e26d-4afd-a3d7-6b837ac4ce4b
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+ login
+-------
+
+(1 row)
+
+SET
+ draft
+-------
+
+(1 row)
+
+                                                                           admin_assessment_publish
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "d8a654ae-0284-41ac-accb-d3ae65eb9d0a", "isPlacement": true, "assessmentId": "dfacfcd8-fd39-4edc-9300-94189af60c6d", "versionNumber": 1, "retiredVersions": 0}
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+INSERT 0 1
+                                                                           admin_assessment_publish
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"versionId": "e5788495-48d2-4caf-b42b-dd2f722ea56b", "isPlacement": true, "assessmentId": "e77d3b4a-a0a4-4064-8ba2-6a435fba4ea2", "versionNumber": 3, "retiredVersions": 1}
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+UPDATE 1
+ login
+-------
+
+(1 row)
+
+SET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ admin_assessment_retire
+-------------------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+RESET
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+ assert_true
+-------------
+
+(1 row)
+
+DO
+ logout
+--------
+
+(1 row)
+
+ROLLBACK

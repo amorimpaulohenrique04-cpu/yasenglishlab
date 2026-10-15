@@ -1,0 +1,13 @@
+
+Running 4 tests using 1 worker
+
+(node:25900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:321:5 › Stage 12A practice builder preserves keyboard steps and accessible fields (11.0s)
+  ok 2 [desktop-a11y] › tests\a11y\critical-flows.spec.ts:339:5 › Stage 12B entry assessment editor preserves keyboard order and accessible fields (6.8s)
+(node:21276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:321:5 › Stage 12A practice builder preserves keyboard steps and accessible fields (11.3s)
+  ok 4 [mobile-a11y] › tests\a11y\critical-flows.spec.ts:339:5 › Stage 12B entry assessment editor preserves keyboard order and accessible fields (10.7s)
+
+  4 passed (53.7s)

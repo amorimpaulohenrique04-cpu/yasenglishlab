@@ -1,3 +1,5 @@
+import { loadOperationalAlerts } from "@/server/admin-overview/operational-alerts";
+import { OperationalAlerts } from "@/modules/admin-overview/ui/operational-alerts";
 import Link from "next/link";
 
 import { Badge, Card, PageHeader } from "@/components/ui";
@@ -21,11 +23,12 @@ function cappedCount(count: number, limit: number) {
 }
 
 export default async function AdminPage() {
-  const [reviewQueue, decisionQueue, newLeads, cohortPage] = await Promise.all([
+  const [reviewQueue, decisionQueue, newLeads, cohortPage, alerts] = await Promise.all([
     loadPlacementQueue("ADMIN", "REVIEW_PENDING"),
     loadPlacementQueue("ADMIN", "STUDENT_DECISION"),
     loadAdminLeads("", "NEW", 1),
     loadCohortAdministration("", 0),
+    loadOperationalAlerts(),
   ]);
   const activeCohorts = cohortPage.cohorts.filter((cohort) => cohort.status === "ACTIVE");
   const metrics = [
@@ -163,6 +166,7 @@ export default async function AdminPage() {
         </ol>
       </Card>
 
+      <OperationalAlerts data={alerts} />
       <div className={styles.mainGrid}>
         <Card className={styles.priorityPanel} aria-labelledby="priority-title">
           <div className={styles.panelHeading}>

@@ -1,0 +1,47 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+ ❯ tests/unit/admin-plans-alerts.test.ts (7 tests | 2 failed) 97ms
+   ❯ canonical legacy UUID contracts (2)
+     × reads and schedules seeded plan/entitlement IDs accepted by Postgres 37ms
+     × reads operational items containing canonical legacy cohort IDs 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/admin-plans-alerts.test.ts > canonical legacy UUID contracts > reads and schedules seeded plan/entitlement IDs accepted by Postgres
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/admin-plans-alerts.test.ts:116:453
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/admin-plans-alerts.test.ts > canonical legacy UUID contracts > reads operational items containing canonical legacy cohort IDs
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/admin-plans-alerts.test.ts:117:362
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 5 passed (7)
+   Start at  15:27:16
+   Duration  1.45s (import 58%, transform 23%, tests 15%, worker 4%)
+

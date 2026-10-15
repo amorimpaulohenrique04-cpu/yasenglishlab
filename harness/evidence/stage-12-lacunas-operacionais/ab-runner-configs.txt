@@ -1,0 +1,5 @@
+.stage12-e2e.config.ts
+import base from "./playwright.config"; export default {...base, webServer: undefined, reporter: [["list"], ["json", { outputFile: "harness/evidence/stage-12-lacunas-operacionais/ab-e2e-results.json" }]]};
+
+.stage12-a11y.config.ts
+import base from "./playwright.a11y.config"; export default {...base, webServer: undefined, reporter: [["list"], ["json", { outputFile: "harness/evidence/stage-12-lacunas-operacionais/ab-a11y-results.json" }]]};

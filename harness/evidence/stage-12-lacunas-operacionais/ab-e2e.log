@@ -1,0 +1,9 @@
+
+Running 2 tests using 1 worker
+
+(node:28156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\admin-assessments.spec.ts:11:7 › Stage 12B assessment authoring › Admin authors, publishes explicit entry test, versions and retires; Student starts the selected version (1.1m)
+  ok 2 [chromium] › tests\e2e\teacher-practices.spec.ts:16:7 › Stage 12A teacher practices › Teacher creates, previews, publishes and assigns; scoped Student answers; attempts force duplication (1.2m)
+
+  2 passed (2.4m)

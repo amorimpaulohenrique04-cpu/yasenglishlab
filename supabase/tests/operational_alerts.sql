@@ -1,0 +1,92 @@
+begin;
+create function pg_temp.id(n integer) returns uuid language sql immutable as $$select ('ff120000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid$$;
+create function pg_temp.ok(value boolean,message text) returns void language plpgsql as $$begin if value is distinct from true then raise exception 'operational alerts: %',message;end if;end$$;
+create function pg_temp.login(n integer,aal text default 'aal2') returns void language sql as $$select set_config('request.jwt.claim.sub',pg_temp.id(n)::text,true),set_config('request.jwt.claims',json_build_object('sub',pg_temp.id(n),'aal',aal)::text,true)$$;
+create function pg_temp.state(q text) returns text language plpgsql as $$begin execute q;return 'OK';exception when others then return sqlstate;end$$;
+create function pg_temp.item(doc jsonb,kind text,id uuid) returns jsonb language sql as $$select i from jsonb_array_elements(doc->'alerts') a cross join lateral jsonb_array_elements(a->'items') i where a->>'kind'=kind and i->>'id'=id::text$$;
+insert into auth.users(id,email) select pg_temp.id(n),'operational-alert-'||n||'@example.test' from generate_series(1,30)n;
+insert into public.user_roles(user_id,role) select pg_temp.id(n),case n when 20 then 'ADMIN' when 23 then 'TEACHER' when 24 then 'SUPPORT' else 'STUDENT' end from generate_series(1,30)n;
+insert into public.teachers(id,user_id) values(pg_temp.id(250),pg_temp.id(23));
+insert into public.teacher_student_assignments(teacher_id,student_user_id) select pg_temp.id(250),pg_temp.id(n) from generate_series(1,8)n;
+insert into public.subscriptions(user_id,plan_id,provider,provider_subscription_id,status)
+ select pg_temp.id(n),'10000000-0000-0000-0000-000000000001','test','alerts-'||n,'ACTIVE' from generate_series(1,8)n;
+insert into public.courses(id,slug,title,publication_status,published_at) select pg_temp.id(100+n),'alerts-course-'||n,'Alerts course '||n,'PUBLISHED',now() from generate_series(1,8)n;
+insert into public.cohorts(id,course_id,name,code,status,starts_at,created_at) select pg_temp.id(300+n),pg_temp.id(100+n),'Alerts cohort '||n,'alerts-cohort-'||n,'ACTIVE',now()-interval '1 day',now()-interval '90 days' from generate_series(2,6)n;
+insert into public.cohort_placement_settings(cohort_id,capacity,schedule) select pg_temp.id(300+n),1,'[{"weekday":1,"startMinute":540,"endMinute":600}]' from generate_series(3,6)n;
+insert into public.enrollments(id,user_id,course_id,status) values(pg_temp.id(500),pg_temp.id(30),pg_temp.id(103),'ACTIVE');
+insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) values(pg_temp.id(303),pg_temp.id(30),pg_temp.id(500));
+update public.assessments set is_placement=false where is_placement;
+insert into public.assessments(id,slug,title,purpose,is_placement) values(pg_temp.id(200),'alerts-entry','Alerts entry','Synthetic operational test',true);
+insert into public.assessment_versions(id,assessment_id,version_number,status,specification,scoring_config) values(pg_temp.id(201),pg_temp.id(200),1,'DRAFT','{}','{}');
+insert into public.assessment_items(id,assessment_version_id,position,skill,item_type,prompt,answer_key) values(pg_temp.id(202),pg_temp.id(201),1,'GRAMMAR','MULTIPLE_CHOICE','{"prompt":"Choose","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}','{"optionId":"a"}');
+update public.assessment_versions set status='PUBLISHED',published_at=now() where id=pg_temp.id(201);
+create temp table cases(n integer primary key,id uuid);
+grant select on cases to authenticated;
+do $$declare n integer;c uuid;a uuid;begin
+  for n in 1..8 loop
+    perform pg_temp.login(n,'aal1');
+    c:=public.begin_placement();insert into cases values(n,c);
+    perform public.save_placement_preferences('America/Recife',case when n=4 then 2 else 1 end,480,660);
+    a:=public.start_placement_assessment();
+    perform public.record_assessment_response(a,pg_temp.id(202),'{"optionId":"a"}');
+    perform public.complete_assessment_attempt(a);
+    if n<>7 then
+      perform pg_temp.login(23);
+      perform public.finalize_placement_review(c,pg_temp.id(100+n),'Human recommendation for operational fixture','HIGH');
+    end if;
+  end loop;
+end$$;
+select pg_temp.login(4,'aal1');select public.open_placement_decision();
+select set_config('request.jwt.claim.sub','',true),set_config('request.jwt.claims','{}',true);
+-- Same-state timestamp fixture, without disabling transition/security triggers.
+update public.placement_cases set state_changed_at=now()-interval '30 days' where id in(select id from cases);
+update public.placement_cases set state_changed_at=now()-interval '7 days' where id=(select id from cases where n=8);
+update public.placement_cases set state_changed_at=now()-interval '3 days' where id=(select id from cases where n=7);
+delete from public.student_schedule_preferences where placement_case_id=(select id from cases where n=6);
+update public.courses set publication_status='DRAFT',published_at=null where id=pg_temp.id(108);
+update public.courses set active=false where id=pg_temp.id(108);
+insert into public.enrollments(user_id,course_id,status,completed_at) values
+ (pg_temp.id(21),pg_temp.id(101),'COMPLETED',now()-interval '60 days'),
+ (pg_temp.id(22),pg_temp.id(101),'COMPLETED',now()-interval '60 days'),
+ (pg_temp.id(22),pg_temp.id(102),'ACTIVE',null);
+set local role authenticated;
+select pg_temp.login(1,'aal1');select pg_temp.ok(pg_temp.state('select public.admin_operational_alerts()')='42501','Student denied');
+select pg_temp.login(23);select pg_temp.ok(pg_temp.state('select public.admin_operational_alerts()')='42501','Teacher denied');
+select pg_temp.login(24);select pg_temp.ok(pg_temp.state('select public.admin_operational_alerts()')='42501','Support denied');
+select pg_temp.login(20,'aal1');select pg_temp.ok(pg_temp.state('select public.admin_operational_alerts()')='42501','Admin AAL1 denied');
+reset role;set local role anon;
+select pg_temp.ok(pg_temp.state('select public.admin_operational_alerts()')='42501','anonymous execute denied');
+reset role;
+insert into public.cohorts(id,course_id,name,code,status,starts_at) select pg_temp.id(1000+n),pg_temp.id(107),'Bounded cohort '||n,'alerts-bounded-'||n,'ACTIVE',now() from generate_series(1,12)n;
+create temp table before_audit as select count(*) total from public.audit_logs;
+select pg_temp.login(20);
+set local role authenticated;
+create temp table view as select public.admin_operational_alerts() doc;
+select pg_temp.ok(jsonb_array_length(doc->'alerts')=6,'six fixed operational categories') from view;
+select pg_temp.ok((select jsonb_array_length(a->'items')=10 and (a->>'count')::integer>=13 from jsonb_array_elements(doc->'alerts')a where a->>'kind'='COHORT_CONFIGURATION'),'count remains complete while details are capped at ten') from view;
+select pg_temp.ok(pg_temp.item(doc,'COHORT_CONFIGURATION',pg_temp.id(302))->>'reason'='MISSING_SETTINGS','missing cohort configuration') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=1))->>'reason'='NO_COHORT','course has no active cohort') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=2))->>'reason'='NO_SCHEDULE','cohort has no placement schedule') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=3))->>'reason'='NO_CAPACITY','compatible cohort full') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=4))->>'reason'='NO_COMPATIBILITY','availability mismatch') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=5)) is null,'eligible case is absent from alerts') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=6))->>'reason'='NO_AVAILABILITY','missing Student preference') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=8))->>'reason'='COURSE_UNAVAILABLE','unavailable course') from view;
+select pg_temp.ok(pg_temp.item(doc,'STALE_REVIEW',(select id from cases where n=7)) is null,'exact three-day boundary is not stale') from view;
+select pg_temp.ok(pg_temp.item(doc,'STALE_DECISION',(select id from cases where n=8)) is null,'exact seven-day boundary is not stale') from view;
+select pg_temp.ok(pg_temp.item(doc,'STALE_DECISION',(select id from cases where n=4)) is not null,'decision older than seven days') from view;
+select pg_temp.ok(pg_temp.item(doc,'STALE_DECISION',(select id from cases where n=2)) is not null,'ready case older than seven days') from view;
+select pg_temp.ok(pg_temp.item(doc,'COMPLETED_WITHOUT_NEXT',pg_temp.id(21)) is not null,'completed Student without next course') from view;
+select pg_temp.ok(pg_temp.item(doc,'COMPLETED_WITHOUT_NEXT',pg_temp.id(22)) is null,'next active enrollment suppresses completed warning') from view;
+select pg_temp.ok(not exists(select 1 from jsonb_array_elements(doc->'alerts')a where jsonb_array_length(a->'items')>10),'bounded detail rows') from view;
+select pg_temp.ok((select count(*) from public.get_placement_candidates((select id from cases where n=5)))>0,'same actual placement eligibility allows candidate');
+select pg_temp.ok((select count(*) from public.get_placement_candidates((select id from cases where n=3)))=0,'same actual placement eligibility rejects full candidate');
+reset role;
+select pg_temp.ok((select count(*)=(select total from before_audit) from public.audit_logs),'alert read has no write/audit side effect');
+update public.placement_cases set state_changed_at=now()-interval '3 days 1 second' where id=(select id from cases where n=7);
+update public.assessments set is_placement=false where id=pg_temp.id(200);
+set local role authenticated;
+create temp table next_view as select public.admin_operational_alerts() doc;
+select pg_temp.ok(pg_temp.item(doc,'STALE_REVIEW',(select id from cases where n=7)) is not null,'review beyond three days is stale') from next_view;
+select pg_temp.ok((select (a->>'count')::int=1 from jsonb_array_elements(doc->'alerts') a where a->>'kind'='PLACEMENT_UNPUBLISHED'),'missing entry publication has visible operational alert') from next_view;
+rollback;

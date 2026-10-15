@@ -21,6 +21,13 @@ export async function loadPracticePage(raw: { skill?: unknown; attemptId?: unkno
   return getPracticeView(repository, auth.userId, auth.roles.includes("STUDENT"), raw);
 }
 
+/** Assignments of the signed-in Student (no content, no answer key). */
+export async function listCurrentStudentAssignedPractices() {
+  await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  return new SupabasePracticeRepository(client).listAssignedPractices();
+}
+
 export async function startCurrentStudentPractice(input: StartPracticeInput) {
   await assertRole("STUDENT");
   const client = await createSupabaseServerClient();

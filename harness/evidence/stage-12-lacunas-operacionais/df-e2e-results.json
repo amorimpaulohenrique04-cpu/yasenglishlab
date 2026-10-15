@@ -1,0 +1,231 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "-c",
+      ".stage12-df.config.ts",
+      "tests/e2e/admin-plans-alerts.spec.ts",
+      "--workers=1"
+    ],
+    "configFile": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\.stage12-df.config.ts",
+    "rootDir": "C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/tests/e2e",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "harness/evidence/stage-12-lacunas-operacionais/df-e2e-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "admin-plans-alerts.spec.ts",
+      "file": "admin-plans-alerts.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Stage 12D/F Admin operations",
+          "file": "admin-plans-alerts.spec.ts",
+          "line": 53,
+          "column": 6,
+          "specs": [
+            {
+              "title": "schedules future rights, rejects past date and preserves price",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10021,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\nExpected substring: \u001b[32m\"Vigente: 1 · Por semana\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\nExpected substring: \u001b[32m\"Vigente: 1 · Por semana\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\u001b[22m\n\n    at C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts:115:24",
+                        "location": {
+                          "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                          "column": 24,
+                          "line": 115
+                        },
+                        "snippet": "  113 |     ).toBeVisible();\n  114 |     const plan = page.getByRole(\"region\", { name: planName, exact: true });\n> 115 |     await expect(plan).toContainText(\"Vigente: 1 · Por semana\");\n      |                        ^\n  116 |     await capture(page, \"d-plans\");\n  117 |     await page.setViewportSize({ width: 1440, height: 1000 });\n  118 |     await plan"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                            "column": 24,
+                            "line": 115
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\nExpected substring: \u001b[32m\"Vigente: 1 · Por semana\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })\u001b[22m\n\n\n  113 |     ).toBeVisible();\n  114 |     const plan = page.getByRole(\"region\", { name: planName, exact: true });\n> 115 |     await expect(plan).toContainText(\"Vigente: 1 · Por semana\");\n      |                        ^\n  116 |     await capture(page, \"d-plans\");\n  117 |     await page.setViewportSize({ width: 1440, height: 1000 });\n  118 |     await plan\n    at C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts:115:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-15T18:24:34.613Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\test-results\\admin-plans-alerts-Stage-1-f8d39-st-date-and-preserves-price-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\test-results\\admin-plans-alerts-Stage-1-f8d39-st-date-and-preserves-price-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                        "column": 24,
+                        "line": 115
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "c1c60cac3a73f5047df0-860ddb8275329d9f48a0",
+              "file": "admin-plans-alerts.spec.ts",
+              "line": 106,
+              "column": 3
+            },
+            {
+              "title": "overview exposes actionable alerts within the existing operation budget",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 5830,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\nExpected substring: \u001b[32m\"Turma sem entrada F E2E 1792088730213\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\nExpected substring: \u001b[32m\"Turma sem entrada F E2E 1792088730213\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\u001b[22m\n\n    at C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts:173:27",
+                        "location": {
+                          "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                          "column": 27,
+                          "line": 173
+                        },
+                        "snippet": "  171 |       exact: true,\n  172 |     });\n> 173 |     await expect(missing).toContainText(cohortName);\n      |                           ^\n  174 |     await expect(missing).toContainText(\"Turma sem capacidade e horários de entrada configurados.\");\n  175 |     await expect(\n  176 |       region.getByRole(\"heading\", { name: \"Teste de entrada não publicado\", exact: true }),"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                            "column": 27,
+                            "line": 173
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\nExpected substring: \u001b[32m\"Turma sem entrada F E2E 1792088730213\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true }) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })\u001b[22m\n\n\n  171 |       exact: true,\n  172 |     });\n> 173 |     await expect(missing).toContainText(cohortName);\n      |                           ^\n  174 |     await expect(missing).toContainText(\"Turma sem capacidade e horários de entrada configurados.\");\n  175 |     await expect(\n  176 |       region.getByRole(\"heading\", { name: \"Teste de entrada não publicado\", exact: true }),\n    at C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts:173:27"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-15T18:25:30.246Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\test-results\\admin-plans-alerts-Stage-1-bdf8c-e-existing-operation-budget-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\test-results\\admin-plans-alerts-Stage-1-bdf8c-e-existing-operation-budget-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\PAULO HENRIQUE\\Documents\\Projetos\\yasenglishlab\\tests\\e2e\\admin-plans-alerts.spec.ts",
+                        "column": 27,
+                        "line": 173
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "c1c60cac3a73f5047df0-ec44b559fd5269ef1138",
+              "file": "admin-plans-alerts.spec.ts",
+              "line": 164,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T18:24:32.047Z",
+    "duration": 69385.639,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

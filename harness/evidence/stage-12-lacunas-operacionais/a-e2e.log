@@ -1,0 +1,15 @@
+[WebServer] (node:21276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:21116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:27604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:27964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] {"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"0857e007-03c3-48ab-86fe-e670cef3a8ba","trace_id":"0857e007-03c3-48ab-86fe-e670cef3a8ba","span_id":"d384240a-7a37-43c6-8a4b-fc2ceb740127","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:49:26.636Z"}
+  x  1 [chromium] › tests\e2e\teacher-practices.spec.ts:16:7 › Stage 12A teacher practices › Teacher creates, previews, publishes and assigns; scoped Student answers; attempts force duplication (12.5s)

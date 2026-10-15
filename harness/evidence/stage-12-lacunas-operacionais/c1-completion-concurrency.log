@@ -1,0 +1,1 @@
+PASS Course completion real concurrency: two final lessons in parallel, no deadlock, exactly one COMPLETED and one audit row; progress after completion still allowed.

@@ -14,6 +14,7 @@ const navigation = [
   { id: "sessions", label: "Sessões", href: "/teacher/sessoes" },
   { id: "cohorts", label: "Turmas", href: "/teacher/turmas" },
   { id: "students", label: "Alunos", href: "/teacher/alunos" },
+  { id: "practices", label: "Práticas", href: "/teacher/praticas" },
   { id: "reviews", label: "Revisões", href: "/teacher/revisoes" },
   { id: "availability", label: "Disponibilidade", href: "/teacher/disponibilidade" },
 ] as const;

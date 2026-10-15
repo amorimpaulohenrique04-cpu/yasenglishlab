@@ -27,6 +27,13 @@ const suites = {
     "supabase/tests/sensitive_tables_negative.sql",
     "supabase/tests/record_immutability.sql",
     "supabase/tests/access_closure.sql",
+    "supabase/tests/practice_authoring.sql",
+    "supabase/tests/assessment_authoring.sql",
+    "supabase/tests/cohort_path.sql",
+    "supabase/tests/cohort_path_admin.sql",
+    "supabase/tests/admin_course_enrollment.sql",
+    "supabase/tests/plan_entitlement_admin.sql",
+    "supabase/tests/operational_alerts.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -45,7 +52,16 @@ const suites = {
     "supabase/tests/sensitive_tables_negative.sql",
     "supabase/tests/record_immutability.sql",
     "supabase/tests/access_closure.sql",
+    "supabase/tests/practice_authoring.sql",
+    "supabase/tests/assessment_authoring.sql",
+    "supabase/tests/cohort_path.sql",
+    "supabase/tests/cohort_path_admin.sql",
+    "supabase/tests/admin_course_enrollment.sql",
+    "supabase/tests/plan_entitlement_admin.sql",
+    "supabase/tests/operational_alerts.sql",
   ],
+  "plan-entitlement-admin": ["supabase/tests/plan_entitlement_admin.sql"],
+  "operational-alerts": ["supabase/tests/operational_alerts.sql"],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
   "admin-cohorts": ["supabase/tests/admin_cohorts.sql"],
@@ -62,12 +78,17 @@ const suites = {
   "sensitive-tables-negative": ["supabase/tests/sensitive_tables_negative.sql"],
   "record-immutability": ["supabase/tests/record_immutability.sql"],
   "access-closure": ["supabase/tests/access_closure.sql"],
+  "practice-authoring": ["supabase/tests/practice_authoring.sql"],
+  "assessment-authoring": ["supabase/tests/assessment_authoring.sql"],
+  "cohort-path": ["supabase/tests/cohort_path.sql"],
+  "cohort-path-admin": ["supabase/tests/cohort_path_admin.sql"],
+  "admin-course-enrollment": ["supabase/tests/admin_course_enrollment.sql"],
 };
 
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|assessment-authoring|cohort-path|cohort-path-admin|admin-course-enrollment>",
   );
   process.exit(2);
 }

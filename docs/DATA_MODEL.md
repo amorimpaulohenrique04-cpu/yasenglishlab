@@ -187,3 +187,9 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
 
 - **ComplimentaryAccessGrant** (`complimentary_access_grants`): uma linha por aluno (`user_id` pk), `reason` `ADMIN_GRANT`|`LEGACY_BACKFILL`, `note`, `granted_by`/`granted_at`, `expires_at` opcional, `revoked_at`/`revoked_by`. Ativa quando `revoked_at` é nulo e `expires_at` é nulo ou futuro (ADR 0017).
 - **Enrollment `COMPLETED`**: gravado automaticamente com `completed_at` quando todas as aulas publicadas do curso estão concluídas pelo aluno; conserva leitura e progresso; aulas publicadas depois não reabrem (ADR 0018). Transferência/reativação voltam para `ACTIVE` e limpam `completed_at`.
+
+## Etapa 12A/B — autoria operacional
+
+Práticas content v2 acrescentam autor, curso e audience a practice_activities. cohort_practice_assignments registra turmas e prazo; practice_activity_assets registra mídia protegida. PracticeAttempt/Response/Result permanecem separados; WRITTEN/SPOKEN produzem resultado humano sem score.
+
+assessments.is_placement seleciona explicitamente a avaliação de entrada com unicidade parcial. assessment_versions segue DRAFT → PUBLISHED → RETIRED; assessment_items guarda prompt, resposta privada e rubrica por versão. assessment_attempts mantém vínculo imutável à versão executada.

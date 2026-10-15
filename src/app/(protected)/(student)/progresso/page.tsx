@@ -24,13 +24,14 @@ import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-not
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadProgressPage } from "@/server/progress/progress";
 
-const skillLabels: Record<ProgressSkillSummary["skill"], string> = {
+const skillLabels: Record<ProgressSkillSummary["skill"] | "WRITING", string> = {
   READING: "Reading",
   LISTENING: "Listening",
   SPEAKING: "Speaking",
   VOCABULARY: "Vocabulário",
   GRAMMAR: "Gramática",
   PRONUNCIATION: "Pronúncia",
+  WRITING: "Escrita",
 };
 
 function formatDate(value: string): string {

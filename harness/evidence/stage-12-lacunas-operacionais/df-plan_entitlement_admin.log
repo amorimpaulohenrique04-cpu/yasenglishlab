@@ -1,0 +1,217 @@
+BEGIN
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 4
+INSERT 0 4
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+ login 
+-------
+ 
+(1 row)
+
+          book_live_session           
+--------------------------------------
+ 196f7013-cabd-401b-b3c3-faea75ebd071
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+RESET
+SELECT 1
+ ok 
+----
+ 
+(1 row)
+
+SET
+ ok 
+----
+ 
+(1 row)
+
+RESET
+SET
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+                       admin_plan_set_entitlement                       
+------------------------------------------------------------------------
+ {"changed": true, "versionId": "34496f89-796c-4c1d-b8e2-6043a2706662"}
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+                       admin_plan_set_entitlement                       
+------------------------------------------------------------------------
+ {"changed": true, "versionId": "41f51701-4779-45d4-ba2c-caa19a5bac63"}
+(1 row)
+
+                       admin_plan_set_entitlement                       
+------------------------------------------------------------------------
+ {"changed": true, "versionId": "c5f982bb-35c4-4fdb-bb55-6798a3462830"}
+(1 row)
+
+RESET
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+              set_config              |                            set_config                            
+--------------------------------------+------------------------------------------------------------------
+ dd120000-0000-4000-8000-000000000001 | {"sub" : "dd120000-0000-4000-8000-000000000001", "aal" : "aal2"}
+(1 row)
+
+SET
+ ok 
+----
+ 
+(1 row)
+
+ROLLBACK

@@ -317,3 +317,38 @@ test("P21 recorded-video Admin upload state is accessible before publication", a
   await expect(prepare).toBeFocused();
   await assertAxe(page);
 });
+
+test("Stage 12A practice builder preserves keyboard steps and accessible fields", async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await loginCanonicalTeacher(page, password!);
+  await page.goto("/teacher/praticas/nova");
+  const next = page.getByRole("button", { name: "3. Configuração e gabarito", exact: true });
+  await next.focus();
+  await expect(next).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("heading", { name: "Passo 3 de 6: Configuração e gabarito", exact: true }),
+  ).toBeFocused();
+  await expect(page.getByLabel("Enunciado *", { exact: true })).toBeVisible();
+  await assertAxe(page);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("Stage 12B entry assessment editor preserves keyboard order and accessible fields", async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await loginCanonicalAdmin(page, password!, {
+    next: "/admin/assessments/new",
+    destination: /\/admin\/assessments\/new$/,
+  });
+  const title = page.getByLabel("Título da avaliação *", { exact: true });
+  await title.focus();
+  await expect(title).toBeFocused();
+  await title.press("Tab");
+  await expect(page.getByLabel("Objetivo da avaliação *", { exact: true })).toBeFocused();
+  await assertAxe(page);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

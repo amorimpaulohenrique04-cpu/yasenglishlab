@@ -7,7 +7,13 @@ import { expect, test, type Page } from "@playwright/test";
 
 export const canonicalAdminEmail = "canonical.admin@example.test";
 
-const secretPath = join(tmpdir(), "yas-canonical-admin-totp.secret");
+const namespace = (process.env.CANONICAL_E2E_NAMESPACE ?? "")
+  .replace(/[^a-z0-9-]/gi, "")
+  .slice(0, 40);
+const secretPath = join(
+  tmpdir(),
+  `yas-canonical-admin${namespace ? `-${namespace}` : ""}-totp.secret`,
+);
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const lastSubmittedStep = new Map<string, number>();
 
@@ -100,7 +106,9 @@ export async function loginCanonicalAdmin(
     page.getByRole("heading", { name: "Verificação em duas etapas obrigatória" }),
   ).toBeVisible();
 
-  const totpPath = options.multi ? join(tmpdir(), "yas-canonical-multi-totp.secret") : secretPath;
+  const totpPath = options.multi
+    ? join(tmpdir(), `yas-canonical-multi${namespace ? `-${namespace}` : ""}-totp.secret`)
+    : secretPath;
   const secret = await resolveTotpSecret(page, totpPath);
   await page.getByLabel("Código do autenticador").fill(await freshTotp(secret, totpPath));
   await page.getByRole("button", { name: "Verificar código" }).click();

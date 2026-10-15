@@ -1,0 +1,4 @@
+✓ Ratchet contract valid: controlled red fixture rejected, green fixture accepted, 37 durable failure record(s) verified.
+✓ Engineering System 1.0 contract valid: docs, Harness state, registry, UI gates, RLS, CI/CD, observability and Ratchet surfaces are internally consistent.
+✓ Platform contract valid: red fixture rejected, shell-free Windows fixture accepted, 30 scripts audited, LF enforced.
+✓ Harness contract valid: 25 required paths, 39 registry entries.

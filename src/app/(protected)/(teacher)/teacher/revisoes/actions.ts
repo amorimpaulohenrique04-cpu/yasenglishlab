@@ -2,16 +2,19 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { RUBRIC_DIMENSIONS, RUBRIC_LEVELS } from "@/modules/practice/domain/rubric";
+import { PRACTICE_SKILLS } from "@/modules/domain";
+import { RUBRIC_LEVELS, rubricDimensionsFor } from "@/modules/practice/domain/rubric";
 import { assertRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 import { getPracticeAudioPlayback } from "@/server/practice/audio";
 export async function reviewPracticeAction(form: FormData) {
   await assertRole("TEACHER");
   const id = z.uuid().parse(form.get("attemptId"));
-  const skill = z.enum(["SPEAKING", "PRONUNCIATION"]).parse(form.get("skill"));
+  const skill = z.enum(PRACTICE_SKILLS).parse(form.get("skill"));
+  // Optional: v2 WRITTEN/SPOKEN reviews post the activity response type; the database re-validates the rubric.
+  const responseType = z.string().max(40).nullish().parse(form.get("responseType"));
   const ratings = Object.fromEntries(
-    RUBRIC_DIMENSIONS[skill].map((dimension) => [
+    rubricDimensionsFor(skill, responseType).map((dimension) => [
       dimension,
       z.enum(RUBRIC_LEVELS).parse(form.get(dimension)),
     ]),

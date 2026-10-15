@@ -1,3 +1,5 @@
+import { BillingTabs } from "@/modules/admin-plans/ui/billing-tabs";
+import { PlanAdministration } from "@/modules/admin-plans/ui/plan-administration";
 import Link from "next/link";
 import {
   Badge,
@@ -36,6 +38,17 @@ export default async function AdminBillingPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const query = await searchParams;
+  if (query.tab === "plans")
+    return (
+      <div className={styles.page}>
+        <PageHeader
+          title="Planos e direitos"
+          description="Consulte a vigência atual e agende mudanças de direitos."
+        />
+        <BillingTabs plans />
+        <PlanAdministration />
+      </div>
+    );
   const [model, ops] = await Promise.all([
     loadAdminBilling(query),
     loadAdminBillingOperations(query),
@@ -135,6 +148,7 @@ export default async function AdminBillingPage({
         title="Pagamentos"
         description="Acompanhe as assinaturas e os estados financeiros confirmados."
       />
+      <BillingTabs />
       <div className={styles.metrics}>
         <MetricCard label="Assinaturas ativas" value={model.counts.active} />
         <MetricCard label="Pagamentos pendentes" value={model.counts.pending} />

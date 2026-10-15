@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
 import { startPracticeInputSchema, submitPracticeInputSchema } from "@/modules/practice";
+import type { PracticePlayerOutcome } from "@/modules/practice/ui/practice-player";
 import {
   startCurrentStudentPractice,
   submitCurrentStudentPractice,
@@ -60,4 +61,26 @@ export async function submitPracticeAction(formData: FormData): Promise<void> {
   }
   revalidatePath("/pratica");
   redirect(`/pratica?attempt=${input.attemptId}&completed=1`);
+}
+
+/**
+ * Content v2 submit used by `PracticePlayer`: returns the grading outcome instead of redirecting, so the
+ * player shows the result in place. Validation and grading stay in `submit_practice_attempt`.
+ */
+export async function submitPracticeV2Action(
+  attemptId: string,
+  response: unknown,
+): Promise<PracticePlayerOutcome> {
+  const input = submitPracticeInputSchema.parse({
+    ...(typeof response === "object" && response !== null ? response : {}),
+    attemptId,
+  });
+  let result: Awaited<ReturnType<typeof submitCurrentStudentPractice>>;
+  try {
+    result = await submitCurrentStudentPractice(input);
+  } catch (error) {
+    if (error instanceof SubscriptionSuspendedError) redirect("/pratica?suspended=1");
+    throw error;
+  }
+  return { status: result.evaluationStatus, feedback: result.feedback };
 }

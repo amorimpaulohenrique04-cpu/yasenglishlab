@@ -1,5 +1,6 @@
 import "server-only";
 import { z } from "zod";
+import { PRACTICE_SKILLS } from "@/modules/domain";
 import { requirePageRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 const reviewSchema = z.object({
@@ -7,7 +8,9 @@ const reviewSchema = z.object({
   studentId: z.uuid(),
   studentName: z.string().nullable(),
   title: z.string(),
-  skill: z.enum(["SPEAKING", "PRONUNCIATION"]),
+  skill: z.enum(PRACTICE_SKILLS),
+  // Content v2 (WRITTEN/SPOKEN) or the legacy kind; absent on older payloads.
+  responseType: z.string().nullable().optional(),
   prompt: z.string(),
   response: z.record(z.string(), z.unknown()),
   submittedAt: z.string(),

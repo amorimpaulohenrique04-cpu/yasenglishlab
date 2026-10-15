@@ -22,8 +22,7 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - Cancelamento pelo aluno (etapa 4d): (a) `DELETE /v3/subscriptions/{id}` retorna 404 para assinatura já removida e o adaptador trata como sucesso; confirmar em sandbox que 404 nunca ocorre por id de outro ambiente/conta. (b) Assinatura `ACTIVE` sem `provider_subscription_id` (seed/legado): hoje o servidor só grava o marcador e não chama o Asaas; qual a política (bloquear o cancelamento ou tratar como cancelamento local)? (c) Corrida rara: duas requisições simultâneas, a primeira falha no Asaas e reverte enquanto a segunda cancela com sucesso; o webhook então grava `CANCELLED` sem `current_period_end` (sem acesso residual). Aceitar o risco ou reforçar no banco?
 
 ## Operação / conteúdo
-- Teacher Operations V1 já cobre sessões próprias, roster mínimo e attendance. Quando entra o Teacher Portal amplo/autoria? Admin Content V1 foi autorizado explicitamente no P18 (ADR 0006); CMS genérico continua fora do escopo.
-- Quem pode publicar/editar uma versão de assessment?
+- A autoria de práticas do professor foi autorizada na Etapa 12 (ADR 0020); sessões próprias, roster e attendance já existem. Quais funções adicionais comporão o Teacher Portal amplo? CMS genérico continua fora do escopo.
 - Qual fluxo futuro de revisão pedagógica após Admin Content V1? No V1, ADMIN+AAL2 publica diretamente sem aprovação obrigatória (ADR 0006); esta evolução não bloqueia P18.
 - Qual é o canal oficial de suporte (e-mail/WhatsApp/URL) para alunos com pagamento expirado ou não confirmado em `/billing/return`? Até a decisão, a página só orienta a falar com o suporte, sem link inventado.
 

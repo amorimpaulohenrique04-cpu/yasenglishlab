@@ -16,21 +16,26 @@ import {
 import {
   practiceHistoryStatus,
   practiceSkillLabel,
+  type AssignedPractice,
+  type AssignedPracticeStatus,
   type PracticeActivityItem,
   type PracticeAttemptView,
   type PracticeSkillCatalogItem,
 } from "@/modules/practice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
-import { loadPracticePage } from "@/server/practice/practice";
+import { getPracticeStimulusUrl } from "@/server/practice/assets";
+import { listCurrentStudentAssignedPractices, loadPracticePage } from "@/server/practice/practice";
 
 import {
   startPracticeAction,
   submitPracticeAction,
   uploadPracticeAudioAction,
   completePracticeAudioAction,
+  submitPracticeV2Action,
 } from "./actions";
 import { AudioResponse } from "@/modules/practice/ui/audio-response";
+import { PracticePlayer } from "@/modules/practice/ui/practice-player";
 import { loadCurrentStudentManualFeedback } from "@/server/practice/manual-feedback";
 import { RUBRIC_LABELS } from "@/modules/practice/domain/rubric";
 
@@ -160,6 +165,16 @@ async function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
     );
   }
 
+  const v2 = activity.content.kind === "V2" ? activity.content : null;
+  let stimulusUrl: string | null = null;
+  if (v2 && v2.stimulus.type !== "NONE" && v2.stimulus.type !== "TEXT") {
+    try {
+      stimulusUrl = await getPracticeStimulusUrl(v2.stimulus.assetId);
+    } catch {
+      stimulusUrl = null;
+    }
+  }
+
   return (
     <Card className="yas-practice-attempt" aria-labelledby="practice-attempt-title">
       <div className="yas-practice-attempt-heading">
@@ -177,49 +192,167 @@ async function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
         </Link>
       </div>
 
-      <form className="yas-practice-response-form" action={submitPracticeAction}>
-        <input type="hidden" name="attemptId" value={attempt.id} />
-        {activity.content.kind === "MULTIPLE_CHOICE" ? (
-          <fieldset>
-            <legend>Escolha uma resposta</legend>
-            {activity.content.options.map((option) => (
-              <Radio
-                key={option.id}
-                name="optionId"
-                value={option.id}
-                label={option.label}
+      {v2 ? (
+        <PracticePlayer
+          content={v2}
+          mode="live"
+          stimulusUrl={stimulusUrl}
+          onSubmit={submitPracticeV2Action.bind(null, attempt.id)}
+          spoken={{
+            attemptId: attempt.id,
+            upload: uploadPracticeAudioAction,
+            complete: completePracticeAudioAction,
+          }}
+          resultFooter={
+            <Link className="yas-practice-close yas-focusable" href="/pratica">
+              Voltar às práticas
+            </Link>
+          }
+        />
+      ) : (
+        <form className="yas-practice-response-form" action={submitPracticeAction}>
+          <input type="hidden" name="attemptId" value={attempt.id} />
+          {activity.content.kind === "MULTIPLE_CHOICE" ? (
+            <fieldset>
+              <legend>Escolha uma resposta</legend>
+              {activity.content.options.map((option) => (
+                <Radio
+                  key={option.id}
+                  name="optionId"
+                  value={option.id}
+                  label={option.label}
+                  required
+                />
+              ))}
+            </fieldset>
+          ) : activity.content.kind === "MANUAL_AUDIO" ? (
+            <>
+              <p>{activity.content.instructions}</p>
+              <AudioResponse
+                attemptId={attempt.id}
+                upload={uploadPracticeAudioAction}
+                complete={completePracticeAudioAction}
+              />
+            </>
+          ) : (
+            <>
+              <p className="yas-practice-manual-note">{activity.content.instructions}</p>
+              <Textarea
+                label="Seu registro da prática"
+                name="responseText"
+                rows={5}
+                maxLength={2000}
                 required
               />
-            ))}
-          </fieldset>
-        ) : activity.content.kind === "MANUAL_AUDIO" ? (
-          <>
-            <p>{activity.content.instructions}</p>
-            <AudioResponse
-              attemptId={attempt.id}
-              upload={uploadPracticeAudioAction}
-              complete={completePracticeAudioAction}
-            />
-          </>
-        ) : (
-          <>
-            <p className="yas-practice-manual-note">{activity.content.instructions}</p>
-            <Textarea
-              label="Seu registro da prática"
-              name="responseText"
-              rows={5}
-              maxLength={2000}
-              required
-            />
-          </>
-        )}
-        {activity.content.kind !== "MANUAL_AUDIO" && (
-          <Button type="submit" variant="primary">
-            Concluir prática
-          </Button>
-        )}
-      </form>
+            </>
+          )}
+          {activity.content.kind !== "MANUAL_AUDIO" && (
+            <Button type="submit" variant="primary">
+              Concluir prática
+            </Button>
+          )}
+        </form>
+      )}
     </Card>
+  );
+}
+
+const ASSIGNED_STATUS: Record<
+  AssignedPracticeStatus,
+  { label: string; tone: "info" | "neutral" | "success" | "error" }
+> = {
+  NEW: { label: "Nova", tone: "info" },
+  IN_PROGRESS: { label: "Em andamento", tone: "neutral" },
+  DONE: { label: "Concluída", tone: "success" },
+  OVERDUE: { label: "Atrasada", tone: "error" },
+};
+
+function formatDueDate(value: string): string {
+  return new Date(value).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Recife",
+  });
+}
+
+function AssignedPracticeCard({ item }: { item: AssignedPractice }) {
+  const status = ASSIGNED_STATUS[item.status];
+  return (
+    <li>
+      <Card className="yas-practice-assigned-card" data-status={item.status}>
+        <div className="yas-practice-assigned-header">
+          <Badge tone={status.tone}>{status.label}</Badge>
+          <Badge tone="neutral">{practiceSkillLabel(item.skill)}</Badge>
+        </div>
+        <h3>{item.title}</h3>
+        <div className="yas-practice-assigned-meta">
+          <span>Turma: {item.cohortName}</span>
+          <span>Tempo: {item.estimatedMinutes} min</span>
+          <span>
+            {item.dueAt
+              ? `${item.status === "OVERDUE" ? "Prazo vencido em" : "Prazo:"} ${formatDueDate(item.dueAt)}`
+              : "Sem prazo"}
+          </span>
+        </div>
+        {item.status === "DONE" ? (
+          item.attemptId ? (
+            <Link
+              className="yas-practice-close yas-focusable"
+              href={`/pratica?attempt=${item.attemptId}`}
+            >
+              Ver resultado
+            </Link>
+          ) : null
+        ) : item.status === "IN_PROGRESS" && item.attemptId ? (
+          <Link
+            className="yas-practice-close yas-focusable"
+            href={`/pratica?attempt=${item.attemptId}`}
+          >
+            Continuar →
+          </Link>
+        ) : (
+          <StartPracticeForm
+            activity={{ id: item.practiceActivityId }}
+            label={item.status === "OVERDUE" ? "Fazer agora" : "Começar"}
+          />
+        )}
+      </Card>
+    </li>
+  );
+}
+
+function AssignedPracticeSection({ assigned }: { assigned: AssignedPractice[] | null }) {
+  return (
+    <section aria-labelledby="practice-assigned-title">
+      <div className="yas-practice-section-heading">
+        <div>
+          <h2 id="practice-assigned-title">Atribuídas a você</h2>
+          <p>Práticas que seu professor indicou para a sua turma.</p>
+        </div>
+      </div>
+      {assigned === null ? (
+        <Alert
+          tone="warning"
+          title="Não foi possível carregar suas atribuições"
+          description="Recarregue a página para tentar de novo."
+        />
+      ) : assigned.length === 0 ? (
+        <Card>
+          <EmptyState
+            title="Nenhuma prática atribuída"
+            description="Quando seu professor atribuir uma prática à sua turma, ela aparece aqui com o prazo."
+          />
+        </Card>
+      ) : (
+        <ul className="yas-practice-assigned-list">
+          {assigned.map((item) => (
+            <AssignedPracticeCard key={`${item.practiceActivityId}:${item.cohortId}`} item={item} />
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -280,6 +413,9 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     selectedAttempt,
     selectedSkill,
   } = state.data;
+  const assigned: AssignedPractice[] | null = await listCurrentStudentAssignedPractices().catch(
+    () => null,
+  );
   const requestedAttempt = firstValue(params.attempt);
   const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
 
@@ -313,6 +449,8 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
           <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
         </Card>
       )}
+
+      <AssignedPracticeSection assigned={assigned} />
 
       <div className="yas-practice-top-grid">
         <Card className="yas-practice-hero" variant="accent">

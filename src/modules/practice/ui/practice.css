@@ -276,6 +276,155 @@
   font-weight: var(--yas-weight-semibold);
 }
 
+/* Practice player (content v2) and assigned practices. */
+.yas-practice-player {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+.yas-practice-stimulus {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface-soft);
+  padding: var(--yas-space-4);
+}
+.yas-practice-stimulus audio,
+.yas-practice-stimulus-media {
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--yas-radius-md);
+}
+.yas-practice-stimulus-media {
+  height: auto;
+}
+.yas-practice-stimulus-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.yas-practice-transcript summary {
+  cursor: pointer;
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-semibold);
+}
+.yas-practice-transcript p {
+  margin: var(--yas-space-2) 0 0;
+  white-space: pre-wrap;
+}
+.yas-practice-fieldset {
+  display: grid;
+  gap: var(--yas-space-2);
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.yas-practice-fieldset legend {
+  margin-bottom: var(--yas-space-2);
+  padding: 0;
+  font-weight: var(--yas-weight-bold);
+}
+.yas-practice-hint {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+.yas-practice-cloze {
+  margin: 0;
+  line-height: 2.6;
+}
+.yas-practice-cloze-input {
+  display: inline-block;
+  width: 9rem;
+  max-width: 100%;
+  margin-inline: var(--yas-space-1);
+  vertical-align: middle;
+}
+.yas-practice-ordering {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.yas-practice-ordering-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-3);
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  padding: var(--yas-space-2) var(--yas-space-3);
+}
+.yas-practice-ordering-position {
+  width: 2rem;
+  height: 2rem;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-800);
+  font-weight: var(--yas-weight-bold);
+}
+.yas-practice-ordering-actions {
+  display: inline-flex;
+  gap: var(--yas-space-2);
+}
+.yas-practice-written {
+  display: grid;
+  gap: var(--yas-space-2);
+}
+.yas-practice-result {
+  display: grid;
+  justify-items: start;
+  gap: var(--yas-space-3);
+}
+.yas-practice-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.yas-practice-assigned-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--yas-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.yas-practice-assigned-card {
+  display: grid;
+  align-content: start;
+  gap: var(--yas-space-2);
+  height: 100%;
+  padding: var(--yas-space-4);
+}
+.yas-practice-assigned-card h3,
+.yas-practice-assigned-card p {
+  margin: 0;
+}
+.yas-practice-assigned-card[data-status="OVERDUE"] {
+  border-color: var(--yas-color-error);
+}
+.yas-practice-assigned-meta {
+  display: grid;
+  gap: 0.15rem;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+}
+.yas-practice-assigned-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--yas-space-2);
+}
+
 @media (max-width: 74rem) {
   .yas-practice-skills {
     grid-template-columns: repeat(3, minmax(0, 1fr));

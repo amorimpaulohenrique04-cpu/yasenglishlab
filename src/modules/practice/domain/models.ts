@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { PRACTICE_SKILLS, type PracticeSkill } from "@/modules/domain";
 
+import { practiceContentV2StudentSchema, type PracticeContentV2Student } from "./content-v2";
+
 const optionSchema = z
   .object({
     id: z.string().min(1).max(80),
@@ -33,7 +35,16 @@ export const practiceContentSchema = z.discriminatedUnion("kind", [
   manualContentSchema.extend({ kind: z.literal("MANUAL_AUDIO") }),
 ]);
 
-export type PracticeContent = z.infer<typeof practiceContentSchema>;
+/** Legacy (kind-based) content. Admin content authoring still uses this schema only. */
+export type LegacyPracticeContent = z.infer<typeof practiceContentSchema>;
+
+/** Student-facing read schema: legacy kinds plus content v2 (never contains an answer key). */
+export const practiceReadContentSchema = z.union([
+  practiceContentSchema,
+  practiceContentV2StudentSchema,
+]);
+
+export type PracticeContent = LegacyPracticeContent | PracticeContentV2Student;
 export type EvaluationMode = PracticeContent["evaluationMode"];
 export type PracticeAvailability = "DETERMINISTIC" | "MANUAL_PENDING" | "UNSUPPORTED";
 
@@ -58,6 +69,8 @@ export interface PracticeRecommendationActivity {
   estimatedMinutes: number;
   relatedLessonId: string | null;
   evaluationMode: EvaluationMode;
+  /** Teacher assignment deadline (ISO). Present only for pending assigned practices. */
+  dueAt?: string | null | undefined;
 }
 
 export interface PracticeRecommendationHistoryItem {
@@ -155,6 +168,10 @@ const skillCopy: Record<PracticeSkill, { label: string; description: string }> =
     label: "Gramática",
     description: "Aplique estruturas com feedback objetivo.",
   },
+  WRITING: {
+    label: "Escrita",
+    description: "Produza textos revisados pelo professor, sem score automático.",
+  },
 };
 
 export function practiceSkillLabel(skill: PracticeSkill): string {
@@ -165,7 +182,11 @@ export function buildPracticeCatalog(
   activities: readonly PracticeActivityItem[],
   policy: PracticeEvaluationPolicyPort = CONTRACT_EVALUATION_POLICY,
 ): PracticeSkillCatalogItem[] {
-  return PRACTICE_SKILLS.map((skill) => {
+  // WRITING (Stage 12) only appears once a Teacher-authored activity exists; the original five always do.
+  const skills = PRACTICE_SKILLS.filter(
+    (skill) => skill !== "WRITING" || activities.some((activity) => activity.skill === "WRITING"),
+  );
+  return skills.map((skill) => {
     const skillActivities = activities.filter((activity) => activity.skill === skill);
     const availability = skillActivities.some(
       (activity) => policy.availabilityFor(activity.content) === "DETERMINISTIC",
@@ -187,7 +208,11 @@ export function buildPracticeCatalog(
 }
 
 export type RecommendationReason =
-  "RECENT_LESSON" | "LESS_PRACTICED" | "QUICK_DETERMINISTIC_START" | "MANUAL_PRACTICE";
+  | "ASSIGNED_DUE"
+  | "RECENT_LESSON"
+  | "LESS_PRACTICED"
+  | "QUICK_DETERMINISTIC_START"
+  | "MANUAL_PRACTICE";
 
 export interface PracticeRecommendation {
   activity: PracticeRecommendationActivity;
@@ -216,7 +241,18 @@ export function recommendPractice(input: {
     attemptCounts.set(attempt.activityId, (attemptCounts.get(attempt.activityId) ?? 0) + 1);
   }
 
+  const dueTime = (activity: PracticeRecommendationActivity): number => {
+    if (!activity.dueAt) return Number.POSITIVE_INFINITY;
+    const time = Date.parse(activity.dueAt);
+    return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
+  };
+
   const ranked = [...supported].sort((left, right) => {
+    // Teacher assignments with a deadline come first, earliest deadline first.
+    const leftDue = dueTime(left);
+    const rightDue = dueTime(right);
+    if (leftDue !== rightDue) return leftDue < rightDue ? -1 : 1;
+
     const leftMode =
       policy.availabilityForEvaluationMode(left.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
     const rightMode =
@@ -244,6 +280,13 @@ export function recommendPractice(input: {
   );
   const count = attemptCounts.get(activity.id) ?? 0;
 
+  if (Number.isFinite(dueTime(activity))) {
+    return {
+      activity,
+      reason: "ASSIGNED_DUE",
+      explanation: "Seu professor atribuiu esta prática com prazo; ela vem primeiro.",
+    };
+  }
   if (isRecentLesson) {
     return {
       activity,
@@ -273,7 +316,7 @@ export function recommendPractice(input: {
 }
 
 export function parsePracticeContent(value: unknown): PracticeContent {
-  return practiceContentSchema.parse(value);
+  return practiceReadContentSchema.parse(value);
 }
 
 export function practiceHistoryStatus(item: PracticeHistoryItem): string {

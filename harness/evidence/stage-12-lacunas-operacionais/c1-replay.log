@@ -1,0 +1,468 @@
+BEGIN
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+DROP FUNCTION
+psql:C:/Users/PAULO HENRIQUE/AppData/Local/Temp/yas-c1-replay.sql:244: NOTICE:  drop cascades to trigger cohort_path_item_valid on table cohort_path_items
+DROP FUNCTION
+DROP FUNCTION
+DROP FUNCTION
+DROP FUNCTION
+psql:C:/Users/PAULO HENRIQUE/AppData/Local/Temp/yas-c1-replay.sql:248: NOTICE:  drop cascades to 3 other objects
+DETAIL:  drop cascades to policy courses_authenticated_select on table courses
+drop cascades to policy modules_authenticated_select on table modules
+drop cascades to policy lessons_authenticated_select on table lessons
+DROP FUNCTION
+psql:C:/Users/PAULO HENRIQUE/AppData/Local/Temp/yas-c1-replay.sql:249: NOTICE:  drop cascades to 5 other objects
+DETAIL:  drop cascades to trigger cohort_path_reference_guard on table modules
+drop cascades to trigger cohort_path_reference_guard on table lessons
+drop cascades to trigger cohort_path_reference_guard on table materials
+drop cascades to trigger cohort_path_reference_guard on table practice_activities
+drop cascades to trigger cohort_path_reference_guard on table cohorts
+DROP FUNCTION
+DROP TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE POLICY
+CREATE POLICY
+CREATE POLICY
+psql:C:/Users/PAULO HENRIQUE/AppData/Local/Temp/yas-c1-replay.sql:258: NOTICE:  drop cascades to trigger cohort_membership_path_completion on table cohort_memberships
+DROP FUNCTION
+DROP FUNCTION
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+ALTER TABLE
+ALTER TABLE
+REVOKE
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+CREATE FUNCTION
+CREATE FUNCTION
+REVOKE
+CREATE TRIGGER
+CREATE FUNCTION
+REVOKE
+GRANT
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+CREATE FUNCTION
+REVOKE
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 6
+INSERT 0 6
+INSERT 0 2
+INSERT 0 2
+INSERT 0 4
+INSERT 0 4
+UPDATE 4
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+INSERT 0 4
+INSERT 0 2
+INSERT 0 5
+SET CONSTRAINTS
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+UPDATE 1
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+                                                                                                                                          record_lesson_progress
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (432ea78c-6393-4821-87a2-7a1957323f68,cd000000-0000-4000-8000-000000000501,cd000000-0000-4000-8000-000000000301,COMPLETED,100.00,"2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00",cd000000-0000-4000-8000-000000000001,0,"2026-10-15 16:03:23.537922+00")
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ ok
+----
+
+(1 row)
+
+SET
+                                                                                                                                          record_lesson_progress
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (4f38be78-5daa-4c13-bdaa-d5e9b023706b,cd000000-0000-4000-8000-000000000501,cd000000-0000-4000-8000-000000000303,COMPLETED,100.00,"2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00",cd000000-0000-4000-8000-000000000001,0,"2026-10-15 16:03:23.537922+00")
+(1 row)
+
+RESET
+ ok
+----
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+INSERT 0 2
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+UPDATE 1
+INSERT 0 1
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+                                                                                                                                          record_lesson_progress
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ (0267b00c-7a71-43ad-9bd0-34a8bbd324a3,cd000000-0000-4000-8000-000000000502,cd000000-0000-4000-8000-000000000301,COMPLETED,100.00,"2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00","2026-10-15 16:03:23.537922+00",cd000000-0000-4000-8000-000000000002,0,"2026-10-15 16:03:23.537922+00")
+(1 row)
+
+RESET
+ ok
+----
+
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+UPDATE 1
+INSERT 0 1
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+SET
+INSERT 0 1
+INSERT 0 1
+SET
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+RESET
+ login
+-------
+
+(1 row)
+
+SET
+ ok
+----
+
+(1 row)
+
+RESET
+SET
+ ok
+----
+
+(1 row)
+
+ ok
+----
+
+(1 row)
+
+RESET
+ROLLBACK

@@ -14,6 +14,14 @@ function actor(user, sql, aal = "aal1") {
 function scalar(sql) {
   return runAdmin(sql).split(/\r?\n/).filter(Boolean).at(-1);
 }
+// The entry assessment is explicit and unique (ADR 0021): remember the current one, take over, restore at the end.
+const uuidLine = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const previousPlacement = runAdmin(
+  "update public.assessments set is_placement=false where is_placement and active returning id",
+)
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter((line) => uuidLine.test(line));
 runAdmin(`insert into auth.users(id) values('${students[0]}'),('${students[1]}'),('${teacherUser}');
 insert into public.user_roles(user_id,role) values('${students[0]}','STUDENT'),('${students[1]}','STUDENT'),('${teacherUser}','TEACHER'),('${teacherUser}','ADMIN');
 insert into public.teachers(id,user_id) values('${teacher}','${teacherUser}');
@@ -21,7 +29,7 @@ insert into public.teacher_student_assignments(teacher_id,student_user_id) value
 insert into public.subscriptions(user_id,plan_id,provider,provider_subscription_id,status) values('${students[0]}','10000000-0000-0000-0000-000000000001','test','${students[0]}','ACTIVE'),('${students[1]}','10000000-0000-0000-0000-000000000001','test','${students[1]}','ACTIVE');
 insert into public.cohorts(id,course_id,name,code,status,starts_at) values('${cohort}','${course}','Last seat','${cohort}','ACTIVE',now()-interval '1 day');
 insert into public.cohort_placement_settings(cohort_id,capacity,schedule) values('${cohort}',1,'[{"weekday":1,"startMinute":1140,"endMinute":1200}]');
-insert into public.assessments(id,slug,title,purpose) values('${assessment}','${assessment}','Race fixture','Synthetic');
+insert into public.assessments(id,slug,title,purpose,is_placement) values('${assessment}','${assessment}','Race fixture','Synthetic',true);
 insert into public.assessment_versions(id,assessment_id,version_number,status,specification,scoring_config) values('${version}','${assessment}',1,'DRAFT','{}','{}');
 insert into public.assessment_items(id,assessment_version_id,position,skill,item_type,prompt,answer_key) values('${item}','${version}',1,'GRAMMAR','MULTIPLE_CHOICE','{"prompt":"Choose","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}','{"optionId":"a"}');
 update public.assessment_versions set status='PUBLISHED',published_at=now()+interval '2 hours' where id='${version}';`);
@@ -95,4 +103,6 @@ console.log(
 );
 
 // Retain evidence rows while excluding this synthetic version from later UI discovery.
-runAdmin(`update public.assessments set active=false where id='${assessment}'`);
+runAdmin(`update public.assessments set active=false,is_placement=false where id='${assessment}'`);
+for (const id of previousPlacement)
+  runAdmin(`update public.assessments set is_placement=true where id='${id}'`);

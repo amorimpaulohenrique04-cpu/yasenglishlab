@@ -11,6 +11,23 @@ export const RUBRIC_DIMENSIONS = {
   ],
   PRONUNCIATION: ["intelligibility", "target_sounds", "word_stress", "sentence_stress_rhythm"],
 } as const;
+const WRITTEN_DIMENSIONS = [
+  "task_completion",
+  "comprehensibility",
+  "language_accuracy",
+  "vocabulary_use",
+] as const;
+
+/** Mirrors finalize_practice_review: WRITTEN -> 4 written dimensions; PRONUNCIATION -> 4; otherwise the 6 speaking ones. */
+export function rubricDimensionsFor(
+  skill: string,
+  responseType?: string | null,
+): readonly string[] {
+  if (responseType === "WRITTEN") return WRITTEN_DIMENSIONS;
+  if (skill === "PRONUNCIATION") return RUBRIC_DIMENSIONS.PRONUNCIATION;
+  return RUBRIC_DIMENSIONS.SPEAKING;
+}
+
 export const RUBRIC_LABELS: Record<string, string> = {
   task_completion: "Realização da tarefa",
   comprehensibility: "Compreensibilidade",
