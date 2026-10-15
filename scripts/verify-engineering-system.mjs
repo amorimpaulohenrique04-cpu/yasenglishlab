@@ -47,7 +47,11 @@ function uiVerifierErrors(source) {
   ];
 
   return requiredScripts
-    .filter((script) => !source.includes(`["run", "${script}"]`))
+    .filter(
+      (script) =>
+        !source.includes(`["run", "${script}"]`) &&
+        !source.includes(`runPlaywrightSuite("${script}",`),
+    )
     .map((script) => `verify:ui is missing ${script}`);
 }
 
@@ -91,6 +95,19 @@ const controlledBadUi =
   'run(npm, ["run", "test:e2e"]); run(npm, ["run", "test:visual:storybook"]);';
 const controlledGoodUi =
   'run(npm, ["run", "storybook:build"]); run(npm, ["run", "test:e2e"]); run(npm, ["run", "test:a11y"]); run(npm, ["run", "test:visual:storybook"]); run(npm, ["run", "test:visual:golden"]);';
+
+const reportCheckedUi =
+  'runNpm(["run", "storybook:build"]); runPlaywrightSuite("test:e2e", "e2e.json"); runPlaywrightSuite("test:a11y", "a11y.json"); runPlaywrightSuite("test:visual:storybook", "storybook.json"); runPlaywrightSuite("test:visual:golden", "golden.json");';
+assert(
+  uiVerifierErrors(reportCheckedUi).length === 0,
+  "Report-checked UI suites must be recognized.",
+);
+assert(
+  uiVerifierErrors(
+    reportCheckedUi.replace('runPlaywrightSuite("test:a11y",', 'missing("test:a11y",'),
+  ).length === 1,
+  "Removing accessibility from the report-checked runner must still fail.",
+);
 
 assert(
   uiVerifierErrors(controlledBadUi).some((error) => error.includes("test:a11y")) &&
