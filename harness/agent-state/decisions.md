@@ -141,3 +141,7 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 - Perfil e Suporte passaram para o grupo de rotas `(account)` com layout que escolhe o shell pelo papel (URLs inalteradas), para não perder a navegação.
 - Rótulos acessíveis usados pelos testes (incluindo setas "→" em links) foram mantidos.
 - Onboarding/placement/assessment herdam o visual pelos primitivos; não receberam recomposição dedicada nesta fase.
+
+## 2026-10-15 — PR 74: gates do redesign
+
+Testar build de produção em CI e nos verificadores oficiais, mantendo next dev disponível para execução direta durante desenvolvimento. Manter todas as suítes obrigatórias e eliminar retries e capturas genéricas duplicadas. Versionar HTMLs aprovados byte a byte; revisar e atualizar PNGs por plataforma sem aumentar tolerância. Formatar arquivos versionados para não reescrever ferramentas locais. Liberar apenas horários pertencentes às fixtures antes de reposicioná-las. Gates de relatório locais/CI continuam fail-closed.

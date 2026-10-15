@@ -706,3 +706,7 @@ PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de t
 
 - Tabela, kanban, cartões de linha, leads e indicadores restilizados em `operations.css` (vale para todas as telas admin); paginação e ações soltas viraram botões.
 - Pendente antes de marcar verificado: regenerar goldens (win32 e linux), rodar e2e/a11y e `verify:ui`/`verify:full`; resolver o "Teacher session overlap" do `setup-canonical-e2e.mjs` na base local; recomposições dedicadas ainda não feitas: onboarding/placement, detalhe de sessão do professor, construtor de práticas, conteúdos/turmas/matrículas do admin (hoje só herdam os primitivos).
+
+## PR 74 gates — in_progress (2026-10-15)
+
+Correções publicadas em aa13835 e 67abaa7. Visual Linux e database-proofs passaram no CI; seletores finais de módulo recolhido/feedback passaram localmente (2/2). Windows goldens, verify:agent/ui/full e CI final pendentes. Evidência em harness/evidence/pr74-gates/README.md; não concluir enquanto houver gate obrigatório vermelho.

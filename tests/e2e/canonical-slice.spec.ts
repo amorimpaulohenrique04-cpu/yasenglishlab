@@ -286,7 +286,7 @@ test.describe("canonical learning vertical slice", () => {
     // A completed module is collapsed; open its summary before following its link.
     const firstModule = page
       .locator("details")
-      .filter({ has: page.getByRole("link", { name: "Abrir módulo →" }) })
+      .filter({ has: page.getByRole("link", { name: "Abrir módulo →", includeHidden: true }) })
       .first();
     if ((await firstModule.getAttribute("open")) === null)
       await firstModule.locator("summary").click();
@@ -367,7 +367,7 @@ test.describe("canonical learning vertical slice", () => {
     await page.goto("/aulas");
     const completedModule = page
       .locator("details")
-      .filter({ has: page.getByRole("link", { name: "Abrir módulo →" }) })
+      .filter({ has: page.getByRole("link", { name: "Abrir módulo →", includeHidden: true }) })
       .first();
     await expect(completedModule).not.toHaveAttribute("open", "");
     await completedModule.locator("summary").click();

@@ -11,7 +11,7 @@ export function runPlaywrightSuite(script, report, env = process.env) {
   const gate = spawnSync(
     process.execPath,
     ["scripts/ci/check-playwright-results.mjs", report, script],
-    { stdio: "inherit" },
+    { env: { ...env, YAS_ALLOW_FLAKY: "0", YAS_ALLOW_SKIPPED: "0" }, stdio: "inherit" },
   );
   console.log(`${script}: ${((Date.now() - started) / 1000).toFixed(1)} s`);
   if (suite.status !== 0 || gate.status !== 0) {

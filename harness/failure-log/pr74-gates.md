@@ -1,0 +1,45 @@
+# Failure — redesign sem sincronização dos contratos de teste
+
+Classification: test gap
+Status: open
+Repeatable: yes
+Date: 2026-10-15
+PR/commit related: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/74
+
+## Symptom
+
+O redesign quebrou contraste/reflow e deixou expectativas de texto, headings e navegação incompatíveis com os novos componentes. Retries repetiam timeouts longos e alteravam dados compartilhados.
+
+## Evidence
+
+Run 38816615381: E2E 8 failed/29 passed (1265 s), a11y 5 failed/1 flaky/28 passed (299 s), goldens interrompidos no login em três viewports. Evidência adicional e resultados locais: `harness/evidence/pr74-gates/README.md`.
+
+## Root cause
+
+Os testes supunham links sempre expostos, módulos como headings e classificações em um único nó de texto. Botões não permitiam quebra de linha e o token muted ficava abaixo de AA sobre lilás. A preparação movia sessões relativas ao relógio antes de liberar os horários antigos. O harness reconhecia apenas chamadas diretas de npm, rejeitando o novo executor que inspeciona relatórios.
+
+## Responsible layer
+
+UI, fixtures de teste, orquestração Playwright e harness.
+
+## Immediate fix
+
+Ajustar contraste, grids e botões; aguardar hidratação no formulário controlado; interagir com summary e drawer; verificar classificação dentro do critério correspondente; preparar dados repetíveis e liberar somente sessões pertencentes à fixture. Usar build de produção e retirar retries e passeios de captura repetidos.
+
+## Permanent protection
+
+Goldens independentes por tela/viewport; asserções de reflow explicam os elementos que transbordam; provas de publicação/progresso/feedback continuam obrigatórias. Todos os verificadores oficiais inspecionam relatórios frescos mesmo após falha do subprocesso, sem aceitar overrides de skip/flaky. A formatação considera apenas arquivos versionados e preserva referências HTML byte a byte.
+
+## Test/eval created
+
+`tests/unit/check-format.test.ts`, `tests/unit/ci-gate-results.test.ts`, `tests/unit/playwright-suite.test.ts`, casos ampliados de `check-playwright-results.test.ts` e provas vermelha/verde em `verify-engineering-system.mjs`. E2E canônico prova o módulo concluído recolhido e a retomada mobile. Suites de a11y, publicação, vídeo, feedback e goldens protegem o comportamento observado.
+
+## Reproduction
+
+Executar as suítes da PR original e comparar com o run 38816615381. Para o overlap, repetir a preparação canônica após a mudança do relógio relativo às sessões existentes. A stack de teste deve ser local e exclusiva.
+
+## Before/after proof
+
+Before: run 38816615381 e reprodução local do overflow e do overlap. O novo agregador também rejeitou corretamente o run 38824369808 quando Quality falhou.
+
+After: controles locais 18/18 passaram; publicação, planos, cobrança, placement, vídeo e superfícies do professor passaram no build de produção; retomada e feedback passaram na execução corrigida (2/2, 1.3 min). O run 38824978174 passou visual e database-proofs; validação integral e CI do commit final ainda pendentes.

@@ -188,11 +188,11 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       await expect(feedbackResult.getByText(feedback, { exact: true })).toBeVisible();
       const task = feedbackResult
         .getByRole("listitem")
-        .filter({ has: feedbackResult.getByText("Realização da tarefa", { exact: true }) });
+        .filter({ has: page.getByText("Realização da tarefa", { exact: true }) });
       await expect(task.getByText("Consistente", { exact: true })).toBeVisible();
       const fluency = feedbackResult
         .getByRole("listitem")
-        .filter({ has: feedbackResult.getByText("Fluência", { exact: true }) });
+        .filter({ has: page.getByText("Fluência", { exact: true }) });
       await expect(fluency.getByText("Consistente", { exact: true })).toBeVisible();
       await expect(feedbackResult.getByText(/score automático/i)).toHaveCount(0);
       await expect(feedbackResult.getByRole("progressbar")).toHaveCount(0);
