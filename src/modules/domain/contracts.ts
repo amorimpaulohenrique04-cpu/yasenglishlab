@@ -220,6 +220,7 @@ export const PRACTICE_SKILLS = [
   "PRONUNCIATION",
   "VOCABULARY",
   "GRAMMAR",
+  "WRITING",
 ] as const;
 export const practiceSkillSchema = z.enum(PRACTICE_SKILLS);
 export type PracticeSkill = z.infer<typeof practiceSkillSchema>;

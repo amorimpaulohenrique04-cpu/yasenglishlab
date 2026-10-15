@@ -33,6 +33,34 @@ export default async function ContentItemPage({ params, searchParams }: ContentI
   const kind: AdminContentKind = requestedKind;
   const record = await loadAdminContentItem(kind, id);
   if (!record) notFound();
+  if (
+    kind === "practice_activities" &&
+    record.content &&
+    typeof record.content === "object" &&
+    "version" in record.content &&
+    record.content.version === 2
+  ) {
+    return (
+      <div className={styles.page}>
+        <Link className={styles.backLink} href="/admin/content?kind=practice_activities">
+          ← Voltar para práticas
+        </Link>
+        <PageHeader
+          title={String(record.title)}
+          description="Prática do professor · somente leitura"
+        />
+        <Alert
+          tone="info"
+          title="Autoria pelo professor"
+          description="Esta prática usa o construtor do professor. Alterações e atribuições são feitas no escopo de autoria; práticas com tentativas só podem ser duplicadas."
+        />
+        <Card>
+          <p>Estado: {record.publication_status === "PUBLISHED" ? "Publicada" : "Rascunho"}</p>
+          <p>Habilidade: {String(record.skill)}</p>
+        </Card>
+      </div>
+    );
+  }
   const video =
     kind === "lesson_assets" && record.asset_type === "VIDEO"
       ? await getAdminVideoStatus(id)

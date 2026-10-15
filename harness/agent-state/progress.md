@@ -642,3 +642,40 @@ Local: 30/30 SQL suites, the concurrency scripts (including the new course compl
 Not run locally (no Docker/Supabase): E2E, a11y, visual and browser checks. They are left to the Official CI.
 
 Out-of-scope defect found: the rate-limit window collision at the top of the hour (separate task). Status stays in_progress/verified:false until the Official CI passes. Evidence: harness/evidence/stage-11-flow-gap-closure/README.md.
+
+## 2026-10-15 — Etapa 12 C1 (sessao isolada)
+
+Implementados `20261015120000_stage_12c1_cohort_path_model.sql`, `cohort_path.sql` transacional e registro em integration/rls/cohort-path. Modelo DEFAULT/CUSTOM, audience (preserva ASSIGNED), pais/mesmo curso, metadados fechados por matricula/trilha, assets/materiais/praticas/progresso por data/sequencia. Conclusao conta aulas da trilha e recalcula imediatamente em transferencia para trilha ja concluida; preserva lock FOR NO KEY UPDATE, idempotencia e audit. C2 deve usar complete_path_enrollment apos alterar trilhas.
+
+Somente stack yastest12/55422: replay integral final + teste em transacao/rollback, cohort-path, practice-authoring, access-closure, function-privileges, assessment-authoring, sensitive-tables-negative, placement, cohorts, admin_content e assessment_engine passaram. Concorrencia real de conclusao passou (duas aulas finais, sem deadlock, uma conclusao/audit); script existente deixa fixture aleatoria na stack isolada, que sera resetada nos gates. Typecheck, ESLint e Vitest completos passaram: 64 arquivos/532 testes, 1 ignorado. verify-db/security/harness passaram.
+
+Pendencias: schedule_booking falha na protecao de sessao reservada; mesmo erro comprovado sem C1 em transacao. eval-agent inclui Etapa 11 contra origin/main e nao enxerga C1 nao commitado; achados registrados, sem afrouxar regras. npm/npx globais quebrados: ferramentas locais rodadas via Node. verify:agent/ui/full e reset integral adiados conforme handoff e proibicao de build. Sem commit, sem alteracao em migrations anteriores, banco dev ou artifacts. Etapa 12 continua in_progress/verified:false. Proxima sessao: C2 SQL; audience no editor/content_fields segue sessao 4.
+
+Evidencia: `harness/evidence/stage-12-lacunas-operacionais/README.md`.
+Pendencias: `harness/failure-log/2026-10-15-stage-12c1-local-validation.md`.
+
+## 2026-10-15 — Etapa 12 C2 (sessao isolada)
+
+Entregues `20261015130000_stage_12c2_cohort_path_admin.sql`, `cohort_path_admin.sql` independente/transacional e alias/registro integration+rls; contrato `docs/COHORT_PATH.md` indexado em docs/README. Admin get/save exige ADMIN+AAL2, lock da turma, validacao de itens/pais/curso, substituicao atomica, copia do curso e audit; recalcula conclusao usando helper C1. FOR SHARE nos itens protege referencias contra moves/deletes concorrentes. RPC get_student_learning_path usa ator/matricula proprios, ordem e estados AVAILABLE/LOCKED_DATE/LOCKED_SEQUENCE com data herdada; nao expoe conteudo/gabaritos/URLs e preserva direitos de material.
+
+Stack 55422 somente: migration e replay integral final/teste em ROLLBACK passaram; cohort-path-admin, cohort-path, practice-authoring, assessment-authoring, access-closure, function-privileges, sensitive-tables-negative, cohorts, admin_content, placement e assessment_engine passaram. Provas de concorrencia reais passaram: duas gravacoes aguardam lock da mesma turma; save aguarda lock do modulo fonte; todas as operacoes revertidas e sem alteracao de configuracao/audit persistente. Teste de falha tardia comprova rollback da substituicao, conclusao e audit.
+
+Typecheck, ESLint e Vitest completos passaram: 64 arquivos/532 testes, 1 ignorado. verify-db/security/harness passaram. eval-agent segue com 3 achados da comparacao origin/main...HEAD (Etapa 11, sem ler C2 nao commitado); log c2-eval-agent.log, sem enfraquecer regras. Pendencias da stack/agenda e gates finais seguem no registro C1. Sem commit, build, subagentes ou banco dev. Etapa 12 permanece in_progress/verified:false. Proxima sessao: E SQL (admin_enroll_in_course); telas e integracao Learning continuam nas sessoes 4–6.
+
+Evidencia: `harness/evidence/stage-12-lacunas-operacionais/README.md` (secao C2).
+
+## 2026-10-15 — Etapa 12 E SQL (sessao isolada)
+
+Entregues `20261015140000_stage_12e_admin_enroll_next_course.sql`, `admin_course_enrollment.sql` transacional independente, registro integration/rls/alias e contrato em docs/PLACEMENT.md. admin_enroll_in_course exige ADMIN+AAL2, STUDENT, curso ativo/publicado, turma ativa compativel/nao encerrada, capacidade configurada/vaga. Preserva outros enrollments/memberships e progresso; rejeita destino COMPLETED; usa activate_enrollment para ACTIVE/CANCELLED. Recibo imutavel com RLS, idempotencia por operation_id/ator/parametros normalizados, audit e rollback integral em erro tardio. Reserva da chave unica aluno/curso evita upsert reabrindo destino concluido em disputa de criacao. Nao concede acesso pago/entitlements.
+
+Stack 55422 somente: migration, replay integral final + teste em ROLLBACK e 11 suites SQL focadas passaram (novo E, trilhas C1/C2, autoria, access-closure, enrollment-integrity, privilegios, negativos, imutabilidade, cohorts, placement). Provas de concorrencia passaram: lock do operation_id e disputa por matricula aluno/curso inexistente, sem deadlock; fixtures/operacoes revertidas e contagens de registros/audit preservadas. Typecheck, ESLint e Vitest completos passaram: 64 arquivos/532 testes, 1 ignorado. verify-db/security/harness passaram; eval-agent segue com 3 achados anteriores de origin/main...HEAD, sem cobrir trabalho nao commitado. Logs e limites em harness/evidence/stage-12-lacunas-operacionais/README.md, secao E SQL.
+
+Sem commit/build/subagentes, sem banco dev, migrations anteriores ou UI. Aviso ao aluno/formulario Admin continuam nas sessoes 5–6. Etapa 12 permanece in_progress/verified:false e gates finais pendentes conforme handoff. Proxima sessao: 4 — UI Admin teste de entrada + audience + remover LISTENING invalido.
+
+## 2026-10-15 — fechamento A/B local concluído
+
+Implementado app Admin do teste de entrada (rotas, editor, comandos, menu, publicação explícita, nova versão, aposentadoria). Editor legado protege prática v2 e não oferece Listening legado. Corrigidos contrato de prompt Admin→Student e preservação do passo de publicação/atribuição no construtor. Docs A/B atualizados e perguntas já decididas removidas, sem decidir questões futuras.
+
+SQL A/B/placement/engine/privilégios passou; unit completo 544 passou/1 ignorado; typecheck, lint, format e verify-db/security/harness passaram. E2E final A/B exit 0: 2/2; a11y desktop/mobile exit 0: 4/4; gates JSON sem skipped/flaky/falhas. Screenshots dos três viewports inspecionadas. A confirma aluno responder, isolamento de outra turma/professor e duplicação após tentativa; B confirma execução Student na versão2 selecionada. Ambiente isolado recuperado, sem banco dev/commit/build; discos e processos monitorados. Evidência em harness/evidence/stage-12-lacunas-operacionais/README.md.
+
+A/B entregues localmente. Sem commit/build/deploy. Próximo escopo macro: UI C/E, integração Learning e gates finais da Etapa 12; D/F adiados. Não marcar o macro done/verified antes de verify:full e revisão independente conforme handoff.

@@ -14,7 +14,8 @@ insert into public.user_roles(user_id,role) values
 insert into public.teachers(id,user_id) values('99010000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000003'),('99010000-0000-4000-8000-000000000002','99000000-0000-4000-8000-000000000004');
 insert into public.teacher_student_assignments(teacher_id,student_user_id) values('99010000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000001');
 insert into public.subscriptions(user_id,plan_id,provider,provider_subscription_id,status) values('99000000-0000-4000-8000-000000000001','10000000-0000-0000-0000-000000000001','test','placement-test-a','ACTIVE');
-insert into public.assessments(id,slug,title,purpose) values('99020000-0000-4000-8000-000000000001','placement-fixture','Placement fixture','Synthetic evidence; no CEFR');
+update public.assessments set is_placement=false where is_placement;
+insert into public.assessments(id,slug,title,purpose,is_placement) values('99020000-0000-4000-8000-000000000001','placement-fixture','Placement fixture','Synthetic evidence; no CEFR',true);
 insert into public.assessment_versions(id,assessment_id,version_number,status,specification,scoring_config) values('99030000-0000-4000-8000-000000000001','99020000-0000-4000-8000-000000000001',1,'DRAFT','{}','{"private":true}');
 insert into public.assessment_items(id,assessment_version_id,position,skill,item_type,prompt,answer_key,rubric) values
  ('99040000-0000-4000-8000-000000000001','99030000-0000-4000-8000-000000000001',1,'GRAMMAR','MULTIPLE_CHOICE','{"prompt":"Choose","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}','{"optionId":"a"}','{}'),

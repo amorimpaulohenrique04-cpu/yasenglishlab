@@ -1,0 +1,6 @@
+INSERT 0 0
+INSERT 0 0
+INSERT 0 1
+INSERT 0 3
+psql:supabase/tests/schedule_booking.sql:107: ERROR:  reserved session identity and usage schedule are immutable
+CONTEXT:  PL/pgSQL function private.protect_reserved_session() line 5 at RAISE

@@ -3,6 +3,9 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
 export default function nextConfig(phase: string): NextConfig {
   return {
+    ...(process.env.YAS_ISOLATED_VERIFY === "1"
+      ? { experimental: { turbopackFileSystemCacheForDev: false } }
+      : {}),
     distDir:
       process.env.YAS_ISOLATED_VERIFY === "1"
         ? phase === PHASE_DEVELOPMENT_SERVER

@@ -24,7 +24,7 @@ const materialTypes = [
   "WORKSHEET",
   "ANSWER_KEY",
 ];
-const skills = ["SPEAKING", "LISTENING", "PRONUNCIATION", "VOCABULARY", "GRAMMAR"];
+const skills = ["SPEAKING", "PRONUNCIATION", "VOCABULARY", "GRAMMAR"];
 const cefr = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
 function value(record: AdminContentRecord | null, key: string, fallback = ""): string {

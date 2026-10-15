@@ -63,3 +63,13 @@ UX planejada:
 - A Prática não é um catálogo livre. O aluno vê e inicia apenas atividades do curso em que tem matrícula `ACTIVE`/`COMPLETED` (via `related_module_id`/`related_lesson_id`). Atividades sem vínculo exigem qualquer matrícula `ACTIVE`/`COMPLETED`.
 - O gate de pagamento (trigger em `practice_attempts`) continua valendo; o histórico de tentativas permanece legível para o aluno suspenso.
 - Sem matrícula, `/pratica` mostra um estado vazio orientando concluir a entrada no Yas.
+
+## Etapa 12A — autoria do professor (content v2)
+
+Professor com AAL2 cria em /teacher/praticas um rascunho no seu escopo de curso, configura em seis passos, testa no mesmo player do aluno, publica diretamente e atribui a uma ou mais turmas próprias, com prazo opcional. A atribuição é por turma. Outro professor não edita a autoria alheia. Práticas com tentativas exigem duplicação para edição.
+
+O formato v2 combina estímulo NONE/TEXT/IMAGE/AUDIO/VIDEO com resposta CHOICE_SINGLE/CHOICE_MULTI/TRUE_FALSE/CLOZE/ORDERING/WRITTEN/SPOKEN. Os cinco formatos objetivos são corrigidos no banco com gabarito privado. WRITTEN e SPOKEN seguem para revisão humana, sem score ou max_score. Listening v2 possui suporte; a limitação UNSUPPORTED descrita acima refere-se ao formato legado.
+
+Uploads de imagem, áudio e vídeo usam armazenamento privado e autorização por prática antes da emissão de URL assinada. Vídeo de prática usa arquivo protegido sem transcodificação (ADR 0020). O fluxo Mux das aulas permanece separado. Pré-visualização do professor não cria tentativa nem resultado.
+
+O aluno vê as práticas atribuídas à sua turma em /pratica; prazo, matrícula, entitlement e escopo continuam aplicados no servidor/banco. Revisão humana e desempenho de prática não alteram progresso de curso nem proficiência CEFR.

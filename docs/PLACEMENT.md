@@ -19,3 +19,55 @@ No notification delivery, billing provider, CEFR standard setting, retake policy
 ## Etapa 11 — confirmação com período pago (ADR 0017)
 
 `confirm_placement_choice` usa o mesmo predicado de acesso pago (`private.has_paid_access`). Um aluno `CANCELLED` com `current_period_end` futuro pode confirmar a turma até o fim do período pago. Matrículas `ACTIVE` sem turma ativa aparecem para o Admin em `/admin/enrollments` (`admin_enrollments_without_active_cohort`), substituindo a consulta SQL manual da etapa 6a.
+
+## Etapa 12 E — matricula administrativa no proximo curso (ADR 0023)
+
+`admin_enroll_in_course(p_user_id uuid, p_course_id uuid, p_cohort_id uuid,
+p_operation_id uuid, p_reason text, p_context jsonb = {}) -> jsonb`
+
+O RPC exige ADMIN+AAL2 e um alvo com role STUDENT. O curso de destino deve estar ativo/publicado;
+a turma deve pertencer a ele, estar ACTIVE, nao ter terminado e ter capacidade configurada em
+`cohort_placement_settings`. A vaga e verificada sob o mesmo lock da turma usado por
+`placement_capacity_guard`. Sem configuracao, a operacao falha em vez de inferir uma capacidade.
+O Admin escolhe a turma explicitamente; este comando nao executa matching de horario nem altera
+review, decision, placement_case ou referencias historicas do placement inicial.
+
+O comando nao encerra outras matriculas ou memberships: COMPLETED e ACTIVE podem coexistir,
+e uma matricula ACTIVE em outro curso tambem e preservada. Um destino ja COMPLETED e rejeitado;
+este RPC de proximo curso nao reabre cursos concluidos. Um destino CANCELLED pode ser reativado
+por `private.activate_enrollment`, mantendo o mesmo enrollment_id e sua auditoria existente.
+Uma membership LEFT e preservada e uma nova e criada; uma membership ACTIVE efetiva na mesma turma
+e reaproveitada, inclusive quando a turma esta cheia. Uma membership ACTIVE fora de seu periodo
+exige reconciliacao explicita; o comando nao altera silenciosamente sua identidade ou datas.
+
+Para evitar reabrir um destino concluido numa disputa de criacao, o RPC reserva a chave unica
+aluno/curso com INSERT ON CONFLICT DO NOTHING e verifica a linha sob FOR UPDATE antes de chamar
+`activate_enrollment`. Isso nao bloqueia a linha de Auth do aluno contra seus checkpoints de progresso.
+O helper de conclusao da trilha pode concluir imediatamente uma matricula reativada cujas aulas ja foram feitas.
+
+`operation_id` e obrigatorio. A tabela `admin_course_enrollment_operations` guarda um recibo imutavel,
+com RLS e sem leitura/DML direto por anon/authenticated. Um advisory lock por operation_id serializa
+chamadas concorrentes, inclusive com parametros diferentes. O mesmo id retorna exatamente o recibo
+original se ator, aluno, curso, turma e motivo normalizado por btrim forem iguais; qualquer diferenca falha.
+O contexto tecnico pode variar no retry. A autorizacao Admin+AAL2 sempre e refeita; a elegibilidade
+mutavel de curso/turma nao e reexecutada ao devolver um recibo de operacao ja concluida.
+
+Resposta: operationId, userId, courseId, cohortId, enrollmentId, membershipId,
+enrollmentStatus e reusedMembership. A resposta e um retrato da execucao, nao uma consulta do estado atual.
+Uma nova operacao para uma membership ja existente registra um novo recibo/audit sem duplicar a membership.
+
+O motivo deve ter entre 1 e 1000 caracteres apos btrim. A auditoria `admin_course_enrolled` registra
+o ator autenticado, IDs do resultado e motivo; p_context fornece request_id, environment e version,
+sem definir o ator. Matricula, membership, recibo e auditoria sao atomicos: qualquer erro, inclusive tardio,
+desfaz tambem a reativacao e seus audits. Nenhuma assinatura, cortesia ou entitlement e criado;
+a matricula administrativa nao dispensa os guards de pagamento/entitlements na leitura de assets.
+
+Banco: `20261015140000_stage_12e_admin_enroll_next_course.sql`.
+Teste transacional: `supabase/tests/admin_course_enrollment.sql`, registrado em integration/rls
+e alias admin-course-enrollment. Formulario Admin e aviso ao aluno permanecem nas sessoes de app da Etapa 12.
+
+## Etapa 12B — avaliação de entrada explícita
+
+O Admin com AAL2 cria e publica avaliações em /admin/assessments (ADR 0021). Somente a avaliação marcada is_placement é escolhida para novas tentativas de entrada. O índice parcial mantém seleção única; publicar como entrada troca a seleção atomicamente. Não há escolha implícita por data de criação.
+
+Cada tentativa guarda assessment_version_id. Publicações futuras preservam o conteúdo e as respostas das tentativas existentes. O Admin cria nova versão para alterar conteúdo publicado e não pode aposentar a única versão publicada da avaliação de entrada. Questões humanas seguem revisão pedagógica e não atribuem automaticamente CEFR.

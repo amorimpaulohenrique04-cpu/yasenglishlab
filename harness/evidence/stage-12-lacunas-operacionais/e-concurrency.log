@@ -1,0 +1,3 @@
+PASS: two enrollment commands waited on the shared operation-id advisory lock; both completed and rolled back.
+PASS: different operation ids/cohorts contended on creation of the same absent student/course enrollment; no deadlock; both rolled back.
+PASS: enrollment, membership, operation and audit counts unchanged; temporary cohorts/settings rolled back.

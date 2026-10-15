@@ -39,3 +39,7 @@ Start new records from [TEMPLATE.md](./TEMPLATE.md). The required decision field
 - [0017 — Fail-closed paid access and complimentary grants](./0017-fail-closed-paid-access-and-complimentary-grants.md)
 - [0018 — Automatic course completion](./0018-automatic-course-completion.md)
 - [0019 — Notification scheduler via GitHub Actions](./0019-notification-scheduler-github-actions.md)
+- [0020 — Teacher practice authoring and cohort assignment](./0020-teacher-practice-authoring-and-cohort-assignment.md)
+- [0021 — Placement assessment authoring](./0021-placement-assessment-authoring.md)
+- [0022 — Cohort learning path](./0022-cohort-learning-path.md)
+- [0023 — Admin course enrollment and plan entitlements](./0023-admin-course-enrollment-and-plan-entitlements.md)

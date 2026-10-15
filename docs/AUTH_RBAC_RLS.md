@@ -137,3 +137,7 @@ CRM tables have RLS enabled and no direct table grants to `anon` or `authenticat
 - `complimentary_access_grants`: RLS habilitada; leitura pelo ADMIN e pelo próprio aluno; sem DML direto. Escrita só pelas RPCs ADMIN + AAL2.
 - `admin_enrollments_without_active_cohort()`: ADMIN + AAL2, somente leitura.
 - Matrícula `COMPLETED` mantém as mesmas permissões de leitura e de progresso que `ACTIVE` (`private.has_course_enrollment`).
+
+## Etapa 12A/B — autoria
+
+teacher_practice_* exige TEACHER+AAL2, autoria e escopo de curso/turma; atribuições não concedem acesso a alunos de outra turma. authorize_practice_asset valida o leitor antes de disponibilizar mídia privada. admin_assessment_* exige ADMIN+AAL2 e mantém gabaritos fora do contrato do aluno. As ações de servidor repetem a autorização; esconder um botão não constitui autorização. Publicações e comandos são auditados sem conteúdo sensível.

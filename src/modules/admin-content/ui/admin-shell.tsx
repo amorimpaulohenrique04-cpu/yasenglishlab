@@ -75,6 +75,12 @@ export function AdminShell({
       href: contentHref,
       active: pathname.startsWith("/admin/content"),
     },
+    {
+      id: "assessments",
+      label: "Teste de entrada",
+      href: "/admin/assessments",
+      active: pathname.startsWith("/admin/assessments"),
+    },
   ];
 
   return (

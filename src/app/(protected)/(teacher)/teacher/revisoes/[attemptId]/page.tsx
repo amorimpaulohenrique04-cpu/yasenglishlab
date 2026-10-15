@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import { Alert, Button, Card, PageHeader } from "@/components/ui";
-import { RUBRIC_DIMENSIONS, RUBRIC_LABELS, RUBRIC_LEVELS } from "@/modules/practice/domain/rubric";
+import {
+  RUBRIC_LABELS,
+  RUBRIC_LEVELS,
+  rubricDimensionsFor,
+} from "@/modules/practice/domain/rubric";
 import { AudioPlayback } from "@/modules/practice/ui/audio-playback";
 import { loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
@@ -37,7 +41,7 @@ export default async function ReviewPage({
           <form action={reviewPracticeAction} className={styles.operationForm}>
             <input type="hidden" name="attemptId" value={item.id} />
             <input type="hidden" name="skill" value={item.skill} />
-            {RUBRIC_DIMENSIONS[item.skill].map((dimension) => (
+            {rubricDimensionsFor(item.skill, item.responseType).map((dimension) => (
               <label key={dimension}>
                 {RUBRIC_LABELS[dimension]}
                 <select name={dimension} required defaultValue="">

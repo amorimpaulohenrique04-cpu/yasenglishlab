@@ -1,0 +1,3 @@
+PASS: two Admin saves waited on the same cohort row, then completed without deadlock; both rolled back.
+PASS: Admin save waited on the source module row lock before creating its path reference; rolled back.
+PASS: configuration and audit count unchanged after all concurrent operations.

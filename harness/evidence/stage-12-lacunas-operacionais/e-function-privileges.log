@@ -1,0 +1,7 @@
+
+▶ psql supabase/tests/function_privileges.sql
+BEGIN
+DO
+ROLLBACK
+
+✓ function-privileges SQL suite passed (1 file(s)).

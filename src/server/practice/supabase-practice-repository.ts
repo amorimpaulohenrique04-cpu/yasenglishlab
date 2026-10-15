@@ -7,7 +7,10 @@ import {
   isSubscriptionGateError,
 } from "@/modules/billing/domain/access";
 import {
+  assignedPracticeFromRow,
   normalizePracticeSkill,
+  type AssignedPractice,
+  type PracticeAssignmentRepository,
   parsePracticeContent,
   practiceAvailabilityForEvaluationMode,
   type PracticeActivityItem,
@@ -97,7 +100,7 @@ function attemptStatus(value: unknown): PracticeAttemptView["status"] {
 }
 
 export class SupabasePracticeRepository
-  implements PracticeRepository, PracticeRecommendationRepository
+  implements PracticeRepository, PracticeRecommendationRepository, PracticeAssignmentRepository
 {
   constructor(private readonly client: SupabaseClient) {}
 
@@ -114,6 +117,13 @@ export class SupabasePracticeRepository
 
     if (error) throw new Error("Unable to load practice activities.");
     return (data ?? []).map((row) => activityFromRow(row as Row));
+  }
+
+  /** Assignments of the signed-in Student; the RPC returns no content and no answer key. */
+  async listAssignedPractices(): Promise<AssignedPractice[]> {
+    const { data, error } = await this.client.rpc("student_assigned_practices");
+    if (error || !Array.isArray(data)) throw new Error("Unable to load assigned practices.");
+    return data.map((row) => assignedPracticeFromRow(row));
   }
 
   async listRecommendationActivities(): Promise<PracticeRecommendationActivity[]> {

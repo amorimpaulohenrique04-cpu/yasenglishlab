@@ -832,7 +832,8 @@ const placementAssessmentId = "9a200000-0000-4000-8000-000000000001",
   placementVersionId = "9a300000-0000-4000-8000-000000000001";
 const placementObjectiveId = "9a400000-0000-4000-8000-000000000001",
   placementManualId = "9a400000-0000-4000-8000-000000000002";
-runAdmin(`insert into public.assessments(id,slug,title,purpose) values('${placementAssessmentId}','canonical-placement','Canonical Placement','Synthetic initial journey, no validated CEFR') on conflict(id) do nothing;
+runAdmin(`update public.assessments set is_placement=false where is_placement and active and id<>'${placementAssessmentId}';
+ insert into public.assessments(id,slug,title,purpose,is_placement) values('${placementAssessmentId}','canonical-placement','Canonical Placement','Synthetic initial journey, no validated CEFR',true) on conflict(id) do update set is_placement=true,active=true;
  insert into public.assessment_versions(id,assessment_id,version_number,status,specification,scoring_config) values('${placementVersionId}','${placementAssessmentId}',1,'DRAFT','{}','{"private":true}') on conflict(id) do nothing;
  do $$begin if (select status from public.assessment_versions where id='${placementVersionId}')='DRAFT' then
  insert into public.assessment_items(id,assessment_version_id,position,skill,item_type,prompt,answer_key,rubric) values

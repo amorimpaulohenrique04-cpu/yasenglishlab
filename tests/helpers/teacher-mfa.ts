@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { expect, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 export const canonicalTeacherEmail = "canonical.teacher@example.test";
 export const canonicalOtherTeacherEmail = "canonical.teacher-b@example.test";
@@ -11,10 +11,31 @@ export const canonicalOtherTeacherSessionId = "88200000-0000-4000-8000-000000000
 export const canonicalTeacherSessionId = "88200000-0000-4000-8000-000000000001";
 
 function secretPathFor(email: string): string {
-  if (email === canonicalTeacherEmail) return join(tmpdir(), "yas-canonical-teacher-totp.secret");
-  return join(tmpdir(), `yas-${email.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-totp.secret`);
+  const namespace = (process.env.CANONICAL_E2E_NAMESPACE ?? "")
+    .replace(/[^a-z0-9-]/gi, "")
+    .slice(0, 40);
+  const suffix = namespace ? `-${namespace}` : "";
+  if (email === canonicalTeacherEmail)
+    return join(tmpdir(), `yas-canonical-teacher${suffix}-totp.secret`);
+  return join(
+    tmpdir(),
+    `yas-${email.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}${suffix}-totp.secret`,
+  );
 }
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const lastSubmittedStep = new Map<string, number>();
+
+async function freshTotp(secret: string, email: string): Promise<string> {
+  let now = Date.now();
+  if (Math.floor(now / 30_000) <= (lastSubmittedStep.get(email) ?? -1)) {
+    const waitMs = 30_000 - (now % 30_000) + 100;
+    test.info().setTimeout(test.info().timeout + waitMs);
+    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    now = Date.now();
+  }
+  lastSubmittedStep.set(email, Math.floor(now / 30_000));
+  return totp(secret, now);
+}
 
 function decodeBase32(value: string): Buffer {
   const normalized = value.toUpperCase().replace(/[^A-Z2-7]/g, "");
@@ -90,11 +111,13 @@ async function loginTeacherAccount(page: Page, email: string, password: string):
   const protectedResponse = await page.request.get("/teacher", { maxRedirects: 0 });
   expect(protectedResponse.status()).toBe(307);
   expect(protectedResponse.headers().location).toContain("/mfa");
-  await page.getByLabel("Código do autenticador").fill(totp(secret));
+  await page.getByLabel("Código do autenticador").fill(await freshTotp(secret, email));
   await page.getByRole("button", { name: "Verificar código" }).click();
 
-  await expect(page).toHaveURL(/\/teacher$/);
-  await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible();
+  await expect(page).toHaveURL(/\/teacher$/, { timeout: 30000 });
+  await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible({
+    timeout: 30000,
+  });
 }
 
 export async function loginCanonicalTeacher(

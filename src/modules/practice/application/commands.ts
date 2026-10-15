@@ -15,11 +15,26 @@ export const submitPracticeInputSchema = z
     optionId: z.string().trim().min(1).max(80).optional(),
     text: z.string().trim().min(1).max(2000).optional(),
     mediaId: z.uuid().optional(),
+    // Content v2 response shapes (see submit_practice_attempt).
+    optionIds: z.array(z.string().trim().min(1).max(80)).min(1).max(6).optional(),
+    value: z.boolean().optional(),
+    blanks: z.record(z.string().regex(/^[0-9]{1,2}$/), z.string().max(200)).optional(),
+    order: z.array(z.string().trim().min(1).max(80)).min(2).max(10).optional(),
   })
   .strict()
-  .refine((input) => [input.optionId, input.text, input.mediaId].filter(Boolean).length === 1, {
-    message: "Provide exactly one practice response.",
-  });
+  .refine(
+    (input) =>
+      [
+        input.optionId,
+        input.text,
+        input.mediaId,
+        input.optionIds,
+        input.value,
+        input.blanks,
+        input.order,
+      ].filter((field) => field !== undefined && field !== "").length === 1,
+    { message: "Provide exactly one practice response." },
+  );
 
 export type StartPracticeInput = z.infer<typeof startPracticeInputSchema>;
 export type SubmitPracticeInput = z.infer<typeof submitPracticeInputSchema>;
@@ -48,11 +63,20 @@ export async function submitPractice(
   rawInput: SubmitPracticeInput,
 ) {
   const input = submitPracticeInputSchema.parse(rawInput);
-  const response = input.optionId
-    ? { optionId: input.optionId }
-    : input.mediaId
-      ? { mediaId: input.mediaId }
-      : { text: input.text };
+  const response: Record<string, unknown> =
+    input.optionIds !== undefined
+      ? { optionIds: input.optionIds }
+      : input.value !== undefined
+        ? { value: input.value }
+        : input.blanks !== undefined
+          ? { blanks: input.blanks }
+          : input.order !== undefined
+            ? { order: input.order }
+            : input.optionId
+              ? { optionId: input.optionId }
+              : input.mediaId
+                ? { mediaId: input.mediaId }
+                : { text: input.text };
   const result = await repository.submitAttempt({ attemptId: input.attemptId, response });
   const attempt = await repository.getAttempt(userId, input.attemptId);
 

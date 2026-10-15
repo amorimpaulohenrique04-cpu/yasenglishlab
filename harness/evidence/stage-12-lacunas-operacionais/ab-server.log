@@ -1,0 +1,309 @@
+▲ Next.js 16.3.8 (Turbopack)
+- Local:         http://127.0.0.1:3100
+- Network:       http://127.0.0.1:3100
+- Environments: .env.local
+✓ Ready in 1691ms
+✓ Running next.config.ts took 78ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForDev
+
+○ Compiling /login ...
+ GET /login?next=%2Fadmin%2Fassessments 200 in 19.2s (next.js: 18.4s, application-code: 863ms)
+ GET /mfa?next=%2Fadmin%2Fassessments 200 in 2.8s (next.js: 2.5s, application-code: 337ms)
+ POST /login?next=%2Fadmin%2Fassessments 200 in 3.6s (next.js: 11ms, application-code: 3.6s)
+  └─ ƒ loginAction({}) in 760ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments 307 in 2.7s (next.js: 2.5s, application-code: 209ms)
+ GET /admin/assessments 200 in 2.8s (next.js: 1683ms, application-code: 1149ms)
+ GET /admin/assessments/new 200 in 1928ms (next.js: 1815ms, application-code: 113ms)
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=dacd96e7-2ed4-439b-8c22-53c7930e52c1&saved=1 200 in 4.1s (next.js: 3.7s, application-code: 420ms)
+ POST /admin/assessments/new 200 in 4.4s (next.js: 27ms, application-code: 4.3s)
+  └─ ƒ saveAssessmentAction({}, {}) in 163ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?changed=1 200 in 664ms (next.js: 28ms, application-code: 636ms)
+ POST /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=dacd96e7-2ed4-439b-8c22-53c7930e52c1&saved=1 200 in 986ms (next.js: 46ms, application-code: 940ms)
+  └─ ƒ changeAssessmentAction({}) in 223ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=eed2b42d-0058-498a-963b-28deaeaccc36&changed=1 200 in 685ms (next.js: 9ms, application-code: 675ms)
+ POST /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?changed=1 200 in 852ms (next.js: 10ms, application-code: 842ms)
+  └─ ƒ changeAssessmentAction({}) in 117ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=eed2b42d-0058-498a-963b-28deaeaccc36&saved=1 200 in 724ms (next.js: 52ms, application-code: 672ms)
+ POST /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=eed2b42d-0058-498a-963b-28deaeaccc36&changed=1 200 in 1120ms (next.js: 59ms, application-code: 1061ms)
+  └─ ƒ saveAssessmentAction({}, {}) in 286ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?changed=1 200 in 604ms (next.js: 11ms, application-code: 593ms)
+ POST /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=eed2b42d-0058-498a-963b-28deaeaccc36&saved=1 200 in 800ms (next.js: 35ms, application-code: 765ms)
+  └─ ƒ changeAssessmentAction({}) in 113ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?error=retire 200 in 486ms (next.js: 12ms, application-code: 474ms)
+ POST /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?changed=1 200 in 658ms (next.js: 30ms, application-code: 628ms)
+  └─ ƒ changeAssessmentAction({}) in 96ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef?version=dacd96e7-2ed4-439b-8c22-53c7930e52c1 200 in 1004ms (next.js: 28ms, application-code: 976ms)
+ GET /admin/assessments/new 200 in 892ms (next.js: 28ms, application-code: 865ms)
+ GET /admin/assessments/8063377e-0482-444f-8c98-3db4eb5692eb?version=4970a76b-d3ef-40de-9e71-4b9d14996e9d&saved=1 200 in 601ms (next.js: 15ms, application-code: 586ms)
+ POST /admin/assessments/new 200 in 1141ms (next.js: 56ms, application-code: 1085ms)
+  └─ ƒ saveAssessmentAction({}, {}) in 437ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/8063377e-0482-444f-8c98-3db4eb5692eb?changed=1 200 in 761ms (next.js: 10ms, application-code: 751ms)
+ POST /admin/assessments/8063377e-0482-444f-8c98-3db4eb5692eb?version=4970a76b-d3ef-40de-9e71-4b9d14996e9d&saved=1 200 in 1144ms (next.js: 43ms, application-code: 1101ms)
+  └─ ƒ changeAssessmentAction({}) in 300ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/8063377e-0482-444f-8c98-3db4eb5692eb?changed=1 200 in 618ms (next.js: 10ms, application-code: 608ms)
+ POST /admin/assessments/8063377e-0482-444f-8c98-3db4eb5692eb?changed=1 200 in 840ms (next.js: 21ms, application-code: 819ms)
+  └─ ƒ changeAssessmentAction({}) in 134ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /login 200 in 197ms (next.js: 7ms, application-code: 190ms)
+ GET /home 200 in 1994ms (next.js: 1184ms, application-code: 810ms)
+ POST /login 200 in 2.3s (next.js: 6ms, application-code: 2.3s)
+  └─ ƒ loginAction({}) in 320ms src/app/(auth)/login/actions.ts
+ GET /onboarding 200 in 1166ms (next.js: 695ms, application-code: 471ms)
+ GET /onboarding 200 in 405ms (next.js: 6ms, application-code: 399ms)
+ POST /onboarding 200 in 572ms (next.js: 7ms, application-code: 565ms)
+  └─ ƒ beginOnboardingAction() in 119ms src/app/(protected)/(student)/onboarding/actions.ts
+ GET /onboarding?result=saved 200 in 570ms (next.js: 8ms, application-code: 562ms)
+ POST /onboarding 200 in 840ms (next.js: 14ms, application-code: 827ms)
+  └─ ƒ savePreferencesAction({}) in 232ms src/app/(protected)/(student)/onboarding/actions.ts
+ GET /onboarding/assessment 200 in 1220ms (next.js: 699ms, application-code: 521ms)
+ GET /onboarding/assessment 200 in 735ms (next.js: 14ms, application-code: 721ms)
+ POST /onboarding/assessment 200 in 927ms (next.js: 8ms, application-code: 919ms)
+  └─ ƒ startPlacementAssessmentAction() in 151ms src/app/(protected)/(student)/onboarding/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"cd324143-7201-4320-82c2-cd0003bdc195","trace_id":"cd324143-7201-4320-82c2-cd0003bdc195","span_id":"2d748f49-2c1c-45be-a3d1-39e7dd8b8bc5","user_id":"e09e3ce9-cd2c-424c-9171-8209b9b5c175","environment":"local","version":"0cec27e","stage":"authorization.role_check","impact":"user_blocked","message":"FORBIDDEN","metadata":{"required_roles":["ADMIN"],"actual_roles":["STUDENT"]},"occurred_at":"2026-10-15T17:52:23.968Z"}
+⨯ Error [AuthorizationError]: FORBIDDEN
+    at assertRole (src\server\auth\guards.ts:53:19)
+    at async client (src\server\admin-assessments\admin-assessments.ts:13:3)
+    at async getAdminAssessment (src\server\admin-assessments\admin-assessments.ts:23:14)
+    at async AssessmentPage (src\app\(protected)\(admin)\admin\assessments\[id]\page.tsx:20:18)
+  51 |
+  52 |   if (!allowed.some((role) => context.roles.includes(role))) {
+> 53 |     const error = new AuthorizationError("FORBIDDEN");
+     |                   ^
+  54 |     await reportTechnicalError(error, {
+  55 |       code: "permission_denied",
+  56 |       stage: "authorization.role_check", {
+  code: 'FORBIDDEN',
+  digest: '4038043735'
+}
+ GET /admin/assessments/9d807d50-59d4-4d5f-8580-bf6502e7ffef 307 in 556ms (next.js: 17ms, application-code: 539ms)
+ GET /profile?auth=forbidden 200 in 1729ms (next.js: 1012ms, application-code: 718ms)
+ GET /login?next=%2Fteacher 200 in 152ms (next.js: 6ms, application-code: 146ms)
+ GET /mfa?next=%2Fteacher 200 in 238ms (next.js: 8ms, application-code: 231ms)
+ POST /login?next=%2Fteacher 200 in 1155ms (next.js: 8ms, application-code: 1148ms)
+  └─ ƒ loginAction({}) in 878ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"ad2dcf22-a2b4-46ab-92e2-823c1075ba1a","trace_id":"ad2dcf22-a2b4-46ab-92e2-823c1075ba1a","span_id":"8b9ea018-dc58-4330-a5b8-ec175a278699","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:52:30.532Z"}
+ GET /teacher 307 in 1621ms (next.js: 1195ms, application-code: 426ms)
+ GET /auth/continue?next=%2Fteacher 307 in 148ms (next.js: 5ms, application-code: 143ms)
+ GET /teacher 200 in 1203ms (next.js: 10ms, application-code: 1193ms)
+ GET /teacher/praticas/nova 200 in 2.8s (next.js: 1503ms, application-code: 1268ms)
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.save","request_id":"82ea2f15-c94c-4ed1-8d3b-02927c38ede1","trace_id":"82ea2f15-c94c-4ed1-8d3b-02927c38ede1","span_id":"88183959-4333-4a58-842d-20c02f7e447e","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":null,"response_type":"CHOICE_SINGLE"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.save","request_id":"82ea2f15-c94c-4ed1-8d3b-02927c38ede1","trace_id":"82ea2f15-c94c-4ed1-8d3b-02927c38ede1","span_id":"88183959-4333-4a58-842d-20c02f7e447e","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":36,"metadata":{"practice_id":null,"response_type":"CHOICE_SINGLE"}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"fcd47ed1-cda1-4bd9-9d55-f42b7621c6b4","trace_id":"fcd47ed1-cda1-4bd9-9d55-f42b7621c6b4","span_id":"ba836d4b-c554-4060-894e-a35dc8ad95ce","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"fcd47ed1-cda1-4bd9-9d55-f42b7621c6b4","trace_id":"fcd47ed1-cda1-4bd9-9d55-f42b7621c6b4","span_id":"ba836d4b-c554-4060-894e-a35dc8ad95ce","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":183,"metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+ GET /teacher/praticas/35b8affa-ddf1-4649-adc9-8ca731859768?save=success 200 in 4.6s (next.js: 3.2s, application-code: 1390ms)
+ POST /teacher/praticas/nova 200 in 4.7s (next.js: 7ms, application-code: 4.7s)
+  └─ ƒ savePracticeAction({}) in 103ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.publish","request_id":"616d0589-1084-4937-9807-5c68f7e69511","trace_id":"616d0589-1084-4937-9807-5c68f7e69511","span_id":"4d942d6c-0e31-459d-a3db-137b1fc2c7bf","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.publish","request_id":"616d0589-1084-4937-9807-5c68f7e69511","trace_id":"616d0589-1084-4937-9807-5c68f7e69511","span_id":"4d942d6c-0e31-459d-a3db-137b1fc2c7bf","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":173,"metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"e4a01654-0cd1-4f10-842e-f0661e763440","trace_id":"e4a01654-0cd1-4f10-842e-f0661e763440","span_id":"51872f01-5a45-4ada-8ef6-a92ed35d3bf4","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"e4a01654-0cd1-4f10-842e-f0661e763440","trace_id":"e4a01654-0cd1-4f10-842e-f0661e763440","span_id":"51872f01-5a45-4ada-8ef6-a92ed35d3bf4","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":197,"metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+ GET /teacher/praticas/35b8affa-ddf1-4649-adc9-8ca731859768?save=success 200 in 1591ms (next.js: 26ms, application-code: 1565ms)
+ POST /teacher/praticas/35b8affa-ddf1-4649-adc9-8ca731859768?save=success 200 in 2.1s (next.js: 43ms, application-code: 2.0s)
+  └─ ƒ publishPracticeAction({}) in 362ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.assign","request_id":"b6db3ff4-56ac-49f8-b109-b341fd19cc06","trace_id":"b6db3ff4-56ac-49f8-b109-b341fd19cc06","span_id":"7c84e093-9913-440d-9d65-40547aa4ae76","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768","cohort_count":1}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.assign","request_id":"b6db3ff4-56ac-49f8-b109-b341fd19cc06","trace_id":"b6db3ff4-56ac-49f8-b109-b341fd19cc06","span_id":"7c84e093-9913-440d-9d65-40547aa4ae76","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":171,"metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768","cohort_count":1}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"2fb6bddd-adbe-489b-9500-654c9ec9b9bf","trace_id":"2fb6bddd-adbe-489b-9500-654c9ec9b9bf","span_id":"ec5773fa-108a-4c41-be51-ea21a5da89e1","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"2fb6bddd-adbe-489b-9500-654c9ec9b9bf","trace_id":"2fb6bddd-adbe-489b-9500-654c9ec9b9bf","span_id":"ec5773fa-108a-4c41-be51-ea21a5da89e1","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":423,"metadata":{"practice_id":"35b8affa-ddf1-4649-adc9-8ca731859768"}}
+ GET /teacher/praticas/35b8affa-ddf1-4649-adc9-8ca731859768?save=success 200 in 2.6s (next.js: 12ms, application-code: 2.6s)
+ POST /teacher/praticas/35b8affa-ddf1-4649-adc9-8ca731859768?save=success 200 in 3.1s (next.js: 52ms, application-code: 3.0s)
+  └─ ƒ assignPracticeAction({}) in 362ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+ GET /login 200 in 244ms (next.js: 16ms, application-code: 229ms)
+ GET /home 200 in 1884ms (next.js: 18ms, application-code: 1867ms)
+ POST /login 200 in 2.4s (next.js: 9ms, application-code: 2.4s)
+  └─ ƒ loginAction({}) in 474ms src/app/(auth)/login/actions.ts
+ GET /pratica 200 in 7.1s (next.js: 2.1s, application-code: 5.0s)
+ GET /login?next=%2Fadmin%2Fassessments 200 in 235ms (next.js: 9ms, application-code: 226ms)
+ GET /mfa?next=%2Fadmin%2Fassessments 200 in 630ms (next.js: 64ms, application-code: 567ms)
+ POST /login?next=%2Fadmin%2Fassessments 200 in 2.0s (next.js: 24ms, application-code: 2000ms)
+  └─ ƒ loginAction({}) in 1334ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments 307 in 186ms (next.js: 14ms, application-code: 172ms)
+ GET /admin/assessments 200 in 1611ms (next.js: 9ms, application-code: 1602ms)
+ GET /admin/assessments/new 200 in 101ms (next.js: 19ms, application-code: 82ms)
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=91f05873-9f58-47dc-95d7-7eef08ef4267&saved=1 200 in 1052ms (next.js: 118ms, application-code: 934ms)
+ POST /admin/assessments/new 200 in 1566ms (next.js: 131ms, application-code: 1436ms)
+  └─ ƒ saveAssessmentAction({}, {}) in 260ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?changed=1 200 in 831ms (next.js: 10ms, application-code: 821ms)
+ POST /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=91f05873-9f58-47dc-95d7-7eef08ef4267&saved=1 200 in 1222ms (next.js: 74ms, application-code: 1149ms)
+  └─ ƒ changeAssessmentAction({}) in 239ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=06d9b52a-bf23-48c1-8397-586541b2296e&changed=1 200 in 1093ms (next.js: 15ms, application-code: 1078ms)
+ POST /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?changed=1 200 in 1722ms (next.js: 13ms, application-code: 1710ms)
+  └─ ƒ changeAssessmentAction({}) in 562ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=06d9b52a-bf23-48c1-8397-586541b2296e&saved=1 200 in 890ms (next.js: 87ms, application-code: 803ms)
+ POST /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=06d9b52a-bf23-48c1-8397-586541b2296e&changed=1 200 in 2.2s (next.js: 152ms, application-code: 2.1s)
+  └─ ƒ saveAssessmentAction({}, {}) in 979ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?changed=1 200 in 851ms (next.js: 46ms, application-code: 805ms)
+ POST /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=06d9b52a-bf23-48c1-8397-586541b2296e&saved=1 200 in 1206ms (next.js: 105ms, application-code: 1101ms)
+  └─ ƒ changeAssessmentAction({}) in 170ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?error=retire 200 in 832ms (next.js: 20ms, application-code: 812ms)
+ POST /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?changed=1 200 in 1227ms (next.js: 20ms, application-code: 1206ms)
+  └─ ƒ changeAssessmentAction({}) in 317ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc?version=91f05873-9f58-47dc-95d7-7eef08ef4267 200 in 1129ms (next.js: 47ms, application-code: 1082ms)
+ GET /admin/assessments/new 200 in 1022ms (next.js: 27ms, application-code: 994ms)
+ GET /admin/assessments/96a4ab85-40fe-456a-9a23-e9e7abf52b6e?version=1b838bf6-dddb-4bdf-b0e2-7451fde64a89&saved=1 200 in 1717ms (next.js: 18ms, application-code: 1699ms)
+ POST /admin/assessments/new 200 in 2.3s (next.js: 16ms, application-code: 2.3s)
+  └─ ƒ saveAssessmentAction({}, {}) in 486ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/96a4ab85-40fe-456a-9a23-e9e7abf52b6e?changed=1 200 in 567ms (next.js: 13ms, application-code: 554ms)
+ POST /admin/assessments/96a4ab85-40fe-456a-9a23-e9e7abf52b6e?version=1b838bf6-dddb-4bdf-b0e2-7451fde64a89&saved=1 200 in 953ms (next.js: 33ms, application-code: 920ms)
+  └─ ƒ changeAssessmentAction({}) in 299ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /admin/assessments/96a4ab85-40fe-456a-9a23-e9e7abf52b6e?changed=1 200 in 673ms (next.js: 10ms, application-code: 664ms)
+ POST /admin/assessments/96a4ab85-40fe-456a-9a23-e9e7abf52b6e?changed=1 200 in 887ms (next.js: 25ms, application-code: 861ms)
+  └─ ƒ changeAssessmentAction({}) in 104ms src/app/(protected)/(admin)/admin/assessments/actions.ts
+ GET /login 200 in 300ms (next.js: 15ms, application-code: 285ms)
+ GET /home 200 in 1424ms (next.js: 28ms, application-code: 1396ms)
+ POST /login 200 in 2.4s (next.js: 93ms, application-code: 2.3s)
+  └─ ƒ loginAction({}) in 821ms src/app/(auth)/login/actions.ts
+ GET /onboarding 200 in 673ms (next.js: 9ms, application-code: 663ms)
+ GET /onboarding 200 in 1196ms (next.js: 15ms, application-code: 1181ms)
+ POST /onboarding 200 in 1440ms (next.js: 15ms, application-code: 1425ms)
+  └─ ƒ beginOnboardingAction() in 177ms src/app/(protected)/(student)/onboarding/actions.ts
+ GET /onboarding?result=saved 200 in 680ms (next.js: 39ms, application-code: 641ms)
+ POST /onboarding 200 in 1206ms (next.js: 14ms, application-code: 1191ms)
+  └─ ƒ savePreferencesAction({}) in 465ms src/app/(protected)/(student)/onboarding/actions.ts
+ GET /onboarding/assessment 200 in 698ms (next.js: 24ms, application-code: 674ms)
+ GET /onboarding/assessment 200 in 790ms (next.js: 9ms, application-code: 781ms)
+ POST /onboarding/assessment 200 in 1078ms (next.js: 30ms, application-code: 1048ms)
+  └─ ƒ startPlacementAssessmentAction() in 202ms src/app/(protected)/(student)/onboarding/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"4a8f9418-e5ec-4c9f-bb02-a8414c78c286","trace_id":"4a8f9418-e5ec-4c9f-bb02-a8414c78c286","span_id":"8f7801b4-6286-44df-b18c-08e0114685a2","user_id":"f20b0132-de97-45ff-b9c7-2061d19a7de8","environment":"local","version":"0cec27e","stage":"authorization.role_check","impact":"user_blocked","message":"FORBIDDEN","metadata":{"required_roles":["ADMIN"],"actual_roles":["STUDENT"]},"occurred_at":"2026-10-15T17:55:40.051Z"}
+⨯ Error [AuthorizationError]: FORBIDDEN
+    at assertRole (src\server\auth\guards.ts:53:19)
+    at async client (src\server\admin-assessments\admin-assessments.ts:13:3)
+    at async getAdminAssessment (src\server\admin-assessments\admin-assessments.ts:23:14)
+    at async AssessmentPage (src\app\(protected)\(admin)\admin\assessments\[id]\page.tsx:20:18)
+  51 |
+  52 |   if (!allowed.some((role) => context.roles.includes(role))) {
+> 53 |     const error = new AuthorizationError("FORBIDDEN");
+     |                   ^
+  54 |     await reportTechnicalError(error, {
+  55 |       code: "permission_denied",
+  56 |       stage: "authorization.role_check", {
+  code: 'FORBIDDEN',
+  digest: '4038043735'
+}
+ GET /admin/assessments/98c34acc-45bc-4fd6-87cc-a014fa6c28cc 307 in 1608ms (next.js: 39ms, application-code: 1568ms)
+ GET /profile?auth=forbidden 200 in 2.2s (next.js: 99ms, application-code: 2.1s)
+ GET /login?next=%2Fteacher 200 in 243ms (next.js: 8ms, application-code: 235ms)
+ GET /mfa?next=%2Fteacher 200 in 286ms (next.js: 10ms, application-code: 276ms)
+ POST /login?next=%2Fteacher 200 in 960ms (next.js: 9ms, application-code: 951ms)
+  └─ ƒ loginAction({}) in 636ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"385a1fe2-5e6f-4c04-ac6b-f4eb4e10f84d","trace_id":"385a1fe2-5e6f-4c04-ac6b-f4eb4e10f84d","span_id":"b37a38cb-6a8e-45ae-b45a-8fa838c34622","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:55:47.184Z"}
+ GET /teacher 307 in 964ms (next.js: 10ms, application-code: 954ms)
+ GET /auth/continue?next=%2Fteacher 307 in 248ms (next.js: 9ms, application-code: 239ms)
+ GET /teacher 200 in 1504ms (next.js: 8ms, application-code: 1496ms)
+ GET /teacher/praticas/nova 200 in 1343ms (next.js: 35ms, application-code: 1309ms)
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.save","request_id":"a420b494-039a-410b-addb-7a0251354155","trace_id":"a420b494-039a-410b-addb-7a0251354155","span_id":"3884e6a8-3f47-4187-b1a9-213ceb0c63e9","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":null,"response_type":"CHOICE_SINGLE"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.save","request_id":"a420b494-039a-410b-addb-7a0251354155","trace_id":"a420b494-039a-410b-addb-7a0251354155","span_id":"3884e6a8-3f47-4187-b1a9-213ceb0c63e9","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":66,"metadata":{"practice_id":null,"response_type":"CHOICE_SINGLE"}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"5872d2e8-ef00-4af4-bbdd-a3249f0bf355","trace_id":"5872d2e8-ef00-4af4-bbdd-a3249f0bf355","span_id":"6289ac9c-d8e6-47c1-8296-08871095a054","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"5872d2e8-ef00-4af4-bbdd-a3249f0bf355","trace_id":"5872d2e8-ef00-4af4-bbdd-a3249f0bf355","span_id":"6289ac9c-d8e6-47c1-8296-08871095a054","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":125,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+ GET /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1293ms (next.js: 35ms, application-code: 1259ms)
+ POST /teacher/praticas/nova 200 in 1468ms (next.js: 8ms, application-code: 1460ms)
+  └─ ƒ savePracticeAction({}) in 132ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.publish","request_id":"5f7518fd-db40-4918-9b66-e2ab27ab3158","trace_id":"5f7518fd-db40-4918-9b66-e2ab27ab3158","span_id":"bc18ae8f-8fb8-433d-aa94-05d6d24a8327","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.publish","request_id":"5f7518fd-db40-4918-9b66-e2ab27ab3158","trace_id":"5f7518fd-db40-4918-9b66-e2ab27ab3158","span_id":"bc18ae8f-8fb8-433d-aa94-05d6d24a8327","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":310,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"e81fa5bf-04de-4586-ada9-ed9ef340c0c3","trace_id":"e81fa5bf-04de-4586-ada9-ed9ef340c0c3","span_id":"60b384f5-b070-428a-928e-cc8b7c54bc5d","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"e81fa5bf-04de-4586-ada9-ed9ef340c0c3","trace_id":"e81fa5bf-04de-4586-ada9-ed9ef340c0c3","span_id":"60b384f5-b070-428a-928e-cc8b7c54bc5d","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":82,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+ GET /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1396ms (next.js: 26ms, application-code: 1370ms)
+ POST /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1848ms (next.js: 29ms, application-code: 1819ms)
+  └─ ƒ publishPracticeAction({}) in 381ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.assign","request_id":"409125bb-5870-4399-8d49-4e10061f4e72","trace_id":"409125bb-5870-4399-8d49-4e10061f4e72","span_id":"2cfccf2c-1e8f-46e3-be3f-4bdc92cba17a","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7","cohort_count":1}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.assign","request_id":"409125bb-5870-4399-8d49-4e10061f4e72","trace_id":"409125bb-5870-4399-8d49-4e10061f4e72","span_id":"2cfccf2c-1e8f-46e3-be3f-4bdc92cba17a","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":162,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7","cohort_count":1}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"373384be-7501-45db-932a-75d53c8cfab1","trace_id":"373384be-7501-45db-932a-75d53c8cfab1","span_id":"25bff4d7-661d-4866-ae84-0e74ddb610bf","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"373384be-7501-45db-932a-75d53c8cfab1","trace_id":"373384be-7501-45db-932a-75d53c8cfab1","span_id":"25bff4d7-661d-4866-ae84-0e74ddb610bf","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":287,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+ GET /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1805ms (next.js: 39ms, application-code: 1767ms)
+ POST /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 2.3s (next.js: 130ms, application-code: 2.2s)
+  └─ ƒ assignPracticeAction({}) in 353ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+ GET /login 200 in 596ms (next.js: 24ms, application-code: 573ms)
+ GET /home 200 in 3.0s (next.js: 209ms, application-code: 2.8s)
+ POST /login 200 in 4.2s (next.js: 12ms, application-code: 4.2s)
+  └─ ƒ loginAction({}) in 1101ms src/app/(auth)/login/actions.ts
+ GET /pratica 200 in 4.6s (next.js: 113ms, application-code: 4.5s)
+ GET /pratica?attempt=d8eb495a-f23b-4867-bbfb-b8cd9ce9538e 200 in 3.4s (next.js: 13ms, application-code: 3.4s)
+ POST /pratica 200 in 3.9s (next.js: 42ms, application-code: 3.8s)
+  └─ ƒ startPracticeAction({}) in 369ms src/app/(protected)/(student)/pratica/actions.ts
+ POST /pratica?attempt=d8eb495a-f23b-4867-bbfb-b8cd9ce9538e 200 in 692ms (next.js: 48ms, application-code: 644ms)
+  └─ ƒ submitPracticeV2Action("d8eb495a-f23b-4867-bbfb-b8cd9ce9538e", {"optionId":"a"}) in 615ms src/app/(protected)/(student)/pratica/actions.ts
+ GET /login 200 in 236ms (next.js: 12ms, application-code: 224ms)
+ GET /home 200 in 2.5s (next.js: 13ms, application-code: 2.5s)
+ POST /login 200 in 3.7s (next.js: 20ms, application-code: 3.7s)
+  └─ ƒ loginAction({}) in 900ms src/app/(auth)/login/actions.ts
+ GET /pratica 200 in 3.7s (next.js: 183ms, application-code: 3.5s)
+ GET /login?next=%2Fteacher 200 in 374ms (next.js: 9ms, application-code: 365ms)
+ GET /mfa?next=%2Fteacher 200 in 232ms (next.js: 13ms, application-code: 220ms)
+ POST /login?next=%2Fteacher 200 in 761ms (next.js: 14ms, application-code: 747ms)
+  └─ ƒ loginAction({}) in 462ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"073aad11-d678-44e8-a1bf-93a1f50c3446","trace_id":"073aad11-d678-44e8-a1bf-93a1f50c3446","span_id":"900fae9d-67c6-4f64-8a46-2bb5b05618f2","user_id":"8a790db7-807f-471d-88c2-180ca14c50fa","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:56:43.026Z"}
+ GET /teacher 307 in 904ms (next.js: 11ms, application-code: 893ms)
+ GET /auth/continue?next=%2Fteacher 307 in 234ms (next.js: 7ms, application-code: 227ms)
+ GET /teacher 200 in 1379ms (next.js: 32ms, application-code: 1347ms)
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"b50df85a-b0fa-4024-80f1-76210815407b","trace_id":"b50df85a-b0fa-4024-80f1-76210815407b","span_id":"3e3c6e4f-979e-4623-aaa6-15fdc9b10f00","user_id":"8a790db7-807f-471d-88c2-180ca14c50fa","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"error","error_code":"database_error","request_id":"b50df85a-b0fa-4024-80f1-76210815407b","trace_id":"b50df85a-b0fa-4024-80f1-76210815407b","span_id":"3e3c6e4f-979e-4623-aaa6-15fdc9b10f00","user_id":"8a790db7-807f-471d-88c2-180ca14c50fa","environment":"local","version":"0cec27e","stage":"teacher.practice.command","impact":"request_failed","message":"Você não tem permissão para esta prática ou curso.","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7","duration_ms":194,"span_name":"teacher.practice.get"},"occurred_at":"2026-10-15T17:56:46.744Z"}
+ GET /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1290ms (next.js: 37ms, application-code: 1253ms)
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"b4800508-2d34-4536-a01e-cc7521909ffc","trace_id":"b4800508-2d34-4536-a01e-cc7521909ffc","span_id":"68595b84-de31-47b3-b973-c8b8786ddbe2","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"b4800508-2d34-4536-a01e-cc7521909ffc","trace_id":"b4800508-2d34-4536-a01e-cc7521909ffc","span_id":"68595b84-de31-47b3-b973-c8b8786ddbe2","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":206,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+ GET /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 2.2s (next.js: 15ms, application-code: 2.2s)
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.duplicate","request_id":"ef02d99b-fdce-4888-b24e-123a748e7d64","trace_id":"ef02d99b-fdce-4888-b24e-123a748e7d64","span_id":"1bdaa947-dedc-45f4-a41f-c629340a09ab","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.duplicate","request_id":"ef02d99b-fdce-4888-b24e-123a748e7d64","trace_id":"ef02d99b-fdce-4888-b24e-123a748e7d64","span_id":"1bdaa947-dedc-45f4-a41f-c629340a09ab","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":305,"metadata":{"practice_id":"2ab828c7-67ef-41e6-9f86-34c5b51364e7"}}
+{"log_schema":"yas.technical.v1","event_name":"span_started","span_name":"teacher.practice.get","request_id":"534997a6-40b9-456b-b52e-12730791a7e2","trace_id":"534997a6-40b9-456b-b52e-12730791a7e2","span_id":"3182e69d-e5d5-4cfb-81ea-54b22e942059","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","metadata":{"practice_id":"966484c5-0bd5-4bc5-bedd-27fdc34f53ef"}}
+{"log_schema":"yas.technical.v1","event_name":"span_completed","span_name":"teacher.practice.get","request_id":"534997a6-40b9-456b-b52e-12730791a7e2","trace_id":"534997a6-40b9-456b-b52e-12730791a7e2","span_id":"3182e69d-e5d5-4cfb-81ea-54b22e942059","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"teacher.practice.command","duration_ms":162,"metadata":{"practice_id":"966484c5-0bd5-4bc5-bedd-27fdc34f53ef"}}
+ GET /teacher/praticas/966484c5-0bd5-4bc5-bedd-27fdc34f53ef?save=success 200 in 1438ms (next.js: 24ms, application-code: 1414ms)
+ POST /teacher/praticas/2ab828c7-67ef-41e6-9f86-34c5b51364e7?save=success 200 in 1984ms (next.js: 28ms, application-code: 1955ms)
+  └─ ƒ duplicatePracticeAction({}) in 467ms src/app/(protected)/(teacher)/teacher/praticas/actions.ts
+ GET /login?next=%2Fteacher 200 in 239ms (next.js: 20ms, application-code: 219ms)
+ GET /mfa?next=%2Fteacher 200 in 218ms (next.js: 9ms, application-code: 209ms)
+ POST /login?next=%2Fteacher 200 in 846ms (next.js: 19ms, application-code: 827ms)
+  └─ ƒ loginAction({}) in 576ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"ce441dfd-126d-4cbe-b2d4-030772b5801c","trace_id":"ce441dfd-126d-4cbe-b2d4-030772b5801c","span_id":"957eb269-c2a8-403a-b253-c6f339d58b69","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:57:27.445Z"}
+ GET /teacher 307 in 711ms (next.js: 13ms, application-code: 697ms)
+ GET /auth/continue?next=%2Fteacher 307 in 173ms (next.js: 5ms, application-code: 168ms)
+ GET /teacher 200 in 1148ms (next.js: 25ms, application-code: 1123ms)
+ GET /teacher/praticas/nova 200 in 1392ms (next.js: 13ms, application-code: 1379ms)
+ GET /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 328ms (next.js: 10ms, application-code: 318ms)
+ GET /mfa?next=%2Fadmin%2Fassessments%2Fnew 200 in 145ms (next.js: 7ms, application-code: 138ms)
+ POST /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 386ms (next.js: 6ms, application-code: 379ms)
+  └─ ƒ loginAction({}) in 201ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments%2Fnew 307 in 93ms (next.js: 4ms, application-code: 89ms)
+ GET /admin/assessments/new 200 in 382ms (next.js: 9ms, application-code: 373ms)
+ GET /login?next=%2Fteacher 200 in 195ms (next.js: 14ms, application-code: 181ms)
+ GET /mfa?next=%2Fteacher 200 in 115ms (next.js: 6ms, application-code: 110ms)
+ POST /login?next=%2Fteacher 200 in 397ms (next.js: 7ms, application-code: 390ms)
+  └─ ƒ loginAction({}) in 254ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"44600200-94a2-4e7f-a538-02e727906ba9","trace_id":"44600200-94a2-4e7f-a538-02e727906ba9","span_id":"fbe85200-8cf6-4c18-b1d0-13c3ab5cd45e","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:57:48.384Z"}
+ GET /teacher 307 in 689ms (next.js: 13ms, application-code: 676ms)
+ GET /auth/continue?next=%2Fteacher 307 in 96ms (next.js: 4ms, application-code: 92ms)
+ GET /teacher 200 in 708ms (next.js: 5ms, application-code: 703ms)
+ GET /teacher/praticas/nova 200 in 849ms (next.js: 17ms, application-code: 831ms)
+ GET /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 143ms (next.js: 7ms, application-code: 137ms)
+ GET /mfa?next=%2Fadmin%2Fassessments%2Fnew 200 in 153ms (next.js: 6ms, application-code: 147ms)
+ POST /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 429ms (next.js: 7ms, application-code: 422ms)
+  └─ ƒ loginAction({}) in 245ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments%2Fnew 307 in 106ms (next.js: 4ms, application-code: 102ms)
+ GET /admin/assessments/new 200 in 387ms (next.js: 10ms, application-code: 378ms)
+ GET /login?next=%2Fteacher 200 in 211ms (next.js: 10ms, application-code: 201ms)
+ GET /mfa?next=%2Fteacher 200 in 251ms (next.js: 9ms, application-code: 242ms)
+ POST /login?next=%2Fteacher 200 in 789ms (next.js: 9ms, application-code: 780ms)
+  └─ ƒ loginAction({}) in 474ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"b09636db-e6d9-422c-b0d1-abdd4b7af145","trace_id":"b09636db-e6d9-422c-b0d1-abdd4b7af145","span_id":"747c35a1-8146-48af-ac8c-99ec3cd8c26d","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:59:05.761Z"}
+ GET /teacher 307 in 545ms (next.js: 8ms, application-code: 537ms)
+ GET /auth/continue?next=%2Fteacher 307 in 115ms (next.js: 5ms, application-code: 110ms)
+ GET /teacher 200 in 1345ms (next.js: 12ms, application-code: 1333ms)
+ GET /teacher/praticas/nova 200 in 1573ms (next.js: 11ms, application-code: 1563ms)
+ GET /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 214ms (next.js: 9ms, application-code: 206ms)
+ GET /mfa?next=%2Fadmin%2Fassessments%2Fnew 200 in 178ms (next.js: 8ms, application-code: 170ms)
+ POST /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 737ms (next.js: 13ms, application-code: 724ms)
+  └─ ƒ loginAction({}) in 522ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments%2Fnew 307 in 93ms (next.js: 5ms, application-code: 88ms)
+ GET /admin/assessments/new 200 in 479ms (next.js: 7ms, application-code: 473ms)
+ GET /login?next=%2Fteacher 200 in 351ms (next.js: 8ms, application-code: 344ms)
+ GET /mfa?next=%2Fteacher 200 in 231ms (next.js: 8ms, application-code: 222ms)
+ POST /login?next=%2Fteacher 200 in 780ms (next.js: 8ms, application-code: 772ms)
+  └─ ƒ loginAction({}) in 507ms src/app/(auth)/login/actions.ts
+{"log_schema":"yas.technical.v1","event_name":"technical_error","severity":"warning","error_code":"permission_denied","request_id":"2f1d3ffe-05f1-4d7c-8400-3dbaa44b3b84","trace_id":"2f1d3ffe-05f1-4d7c-8400-3dbaa44b3b84","span_id":"08239c89-a754-4a85-b062-218dda90ae8e","user_id":"6aa37f21-b8e1-4ba2-993e-0ad47d6aea59","environment":"local","version":"0cec27e","stage":"authorization.mfa","impact":"user_blocked","message":"MFA_REQUIRED","metadata":{"reason":"mfa_required"},"occurred_at":"2026-10-15T17:59:31.558Z"}
+ GET /teacher 307 in 870ms (next.js: 20ms, application-code: 849ms)
+ GET /auth/continue?next=%2Fteacher 307 in 340ms (next.js: 8ms, application-code: 332ms)
+ GET /teacher 200 in 1237ms (next.js: 14ms, application-code: 1223ms)
+ GET /teacher/praticas/nova 200 in 1302ms (next.js: 9ms, application-code: 1293ms)
+ GET /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 308ms (next.js: 12ms, application-code: 296ms)
+ GET /mfa?next=%2Fadmin%2Fassessments%2Fnew 200 in 1029ms (next.js: 127ms, application-code: 901ms)
+ POST /login?next=%2Fadmin%2Fassessments%2Fnew 200 in 2.2s (next.js: 14ms, application-code: 2.2s)
+  └─ ƒ loginAction({}) in 1159ms src/app/(auth)/login/actions.ts
+ GET /auth/continue?next=%2Fadmin%2Fassessments%2Fnew 307 in 387ms (next.js: 35ms, application-code: 352ms)
+ GET /admin/assessments/new 200 in 1230ms (next.js: 35ms, application-code: 1196ms)

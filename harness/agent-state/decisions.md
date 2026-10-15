@@ -105,3 +105,17 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 - Notificacoes: agendador via GitHub Actions (`notifications-cron.yml`); host de deploy continua em aberto.
 - `/support`: pagina protegida apenas com orientacao textual, sem canal inventado.
 - Testes SQL/unitarios que afirmavam "sem assinatura => acesso" mudam por decisao aprovada, nao por diluicao.
+
+## 2026-10-15 - Etapa 12 (decisoes do usuario)
+
+- Conteudo por turma: varias turmas por item; o Admin controla ordem, liberacao por data e progressao sequencial por turma (trilha da turma). Itens exclusivos via `audience`.`audience`.
+- Teste de entrada: um para todos, escolhido explicitamente (`assessments.is_placement`). Autoria e publicacao por ADMIN+AAL2 (pergunta de OPEN_QUESTIONS fechada; aguarda confirmacao do usuario na revisao da PR).
+- Planos: o Admin edita apenas direitos (limites e cadencia com vigencia futura); preco permanece fora (reajuste e decisao separada).
+- Proximo nivel: Admin matricula em outro curso e turma; aluno concluido ve aviso e /support.
+- Pratica: professor publica direto no proprio escopo (substitui, so para praticas, a regra de que Teacher nao tem direito editorial); atribuicao somente por turma, com prazo opcional; formatos = estimulo (texto, imagem, audio, video) x resposta (escolha unica, varias, verdadeiro/falso, lacunas, ordenar, escrever, falar). Escrever/falar vao para revisao humana, sem nota (ADR 0010).
+- Fora de escopo: host de deploy, plataforma de aula ao vivo, canal de suporte, LGPD, recuperacao de MFA, troca de plano, remarcacao.
+- Custo/tempo (2026-10-15): por pedido do usuario, esta PR entrega A, B, C e E; D (direitos de plano) e F (alertas) adiados para PR seguinte. Verificacao por bloco e direcionada; gates pesados uma vez no fim.
+
+
+- A/B: prompts de avaliação reutilizam schemas executáveis do motor Student; instruções opcionais apenas em resposta humana. Nenhum afrouxamento da leitura do aluno.
+- Validação isolada: cache persistente do Turbopack desativado apenas em YAS_ISOLATED_VERIFY após os112; configuração normal preservada. Servidor de testes controlado único evita órfãos de interrupção no Windows. Sem build Next.
