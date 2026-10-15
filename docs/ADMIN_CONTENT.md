@@ -18,6 +18,6 @@ Práticas content v2 aparecem no editor legado de conteúdo em somente leitura; 
 
 ## Etapa 12C — público do conteúdo e trilha da turma
 
-Módulos, aulas e materiais têm `audience` (`COURSE` ou `COHORTS`); práticas aceitam os mesmos valores pelo Admin, e `ASSIGNED` continua exclusivo do professor (ADR 0020). O editor mostra «Quem vê este conteúdo». `COHORTS` esconde o item de todas as turmas, exceto das que o incluírem na trilha (ADR 0022).
+Módulos, aulas e materiais têm `audience` (`COURSE` ou `COHORTS`) editável pelo Admin. O `audience` de práticas não é editável pelo Admin: `ASSIGNED` é do professor (ADR 0020) e o Admin não pode expor uma prática atribuída a todo o curso. O editor mostra «Quem vê este conteúdo». `COHORTS` esconde o item de todas as turmas, exceto das que o incluírem na trilha (ADR 0022).
 
 A trilha de cada turma é editada em `/admin/cohorts/[id]/trilha` por ADMIN com AAL2: modo padrão ou próprio, progressão sequencial, inclusão, ordem, liberação por data (America/Recife) e cópia do curso. O contrato dos RPCs está em `docs/COHORT_PATH.md`. Aulas bloqueadas aparecem ao aluno com o motivo; o título não é segredo para quem tem matrícula no curso, mas nenhum asset, material ou progresso é liberado fora da trilha.

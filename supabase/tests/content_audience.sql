@@ -41,5 +41,6 @@ select pg_temp.assert_true((select audience='COURSE' from public.modules where i
 set local role authenticated;
 select pg_temp.denied($q$select public.admin_content_save('modules',(select id from aud_ids where kind='modules'),'{"audience":"SPECIAL"}')$q$);
 select pg_temp.denied($q$select public.admin_content_save('lessons',(select id from aud_ids where kind='lessons'),'{"audience":"ASSIGNED"}')$q$);
+select pg_temp.denied($q$select public.admin_content_save('practice_activities',null,'{"audience":"COURSE"}')$q$);
 select pg_temp.denied($q$select public.admin_content_save('courses',(select id from aud_ids where kind='courses'),'{"audience":"COHORTS"}')$q$);
 rollback;
