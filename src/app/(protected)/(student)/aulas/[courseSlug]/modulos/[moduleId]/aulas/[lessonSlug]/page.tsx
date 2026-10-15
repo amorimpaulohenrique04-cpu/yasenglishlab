@@ -7,6 +7,7 @@ import {
 } from "@/modules/learning/ui/lesson-progress-controls";
 import { loadLearningAccess, loadLearningLesson } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
+import { lessonLockMessage } from "@/modules/learning";
 import { LessonAssets } from "@/modules/learning/ui/lesson-assets";
 
 interface LessonPageProps {
@@ -43,6 +44,27 @@ export default async function LessonPage({ params }: LessonPageProps) {
   }
 
   const { course, module, lesson, content, previousLesson, nextLesson } = state.data;
+  const lockMessage = lessonLockMessage(lesson);
+  if (lockMessage) {
+    return (
+      <div className="yas-learning-page">
+        <PageHeader title={lesson.title} description={module.title} />
+        <Card>
+          <p className="yas-learning-card-title" role="status">
+            <span aria-hidden="true">🔒 </span>
+            Aula bloqueada
+          </p>
+          <p className="yas-learning-card-copy">{lockMessage}</p>
+        </Card>
+        <Link
+          className="yas-learning-link yas-focusable"
+          href={`/aulas/${course.slug}/modulos/${module.id}`}
+        >
+          ← Voltar ao módulo
+        </Link>
+      </div>
+    );
+  }
   const currentPercent = lesson.progress?.completionPercent ?? 0;
   const lessonHref = (candidate: typeof lesson) =>
     `/aulas/${course.slug}/modulos/${candidate.moduleId}/aulas/${candidate.slug}`;
@@ -142,7 +164,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
           )}
         </div>
         <div>
-          {nextLesson ? (
+          {nextLesson && lessonLockMessage(nextLesson) ? (
+            <span aria-disabled="true">
+              <span aria-hidden="true">🔒 </span>
+              Próxima aula: {nextLesson.title}. {lessonLockMessage(nextLesson)}
+            </span>
+          ) : nextLesson ? (
             <Link
               className="yas-learning-link yas-focusable"
               href={lessonHref(nextLesson)}

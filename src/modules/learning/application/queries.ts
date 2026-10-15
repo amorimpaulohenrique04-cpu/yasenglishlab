@@ -1,5 +1,6 @@
 import type { LearningRepository } from "./ports";
 import type { LearningCourse, LearningModule, LearningState, LessonDetail } from "../domain/models";
+import { isLessonLocked } from "../domain/access";
 import { adjacentLessons, courseCompletion, nextLesson } from "../domain/progress";
 
 export interface LearningHomeView {
@@ -17,7 +18,8 @@ export async function getLearningHome(
   if (!isStudent) return { status: "unauthorized" };
 
   const courses = await repository.getActiveCoursesForStudent(userId);
-  const course = courses[0];
+  // ADR 0018/0023: prefer an ACTIVE course (no completedAt) over a COMPLETED one.
+  const course = courses.find((candidate) => !candidate.completedAt) ?? courses[0];
   if (!course) return { status: "empty" };
 
   const lesson = nextLesson(course);
@@ -81,6 +83,15 @@ export async function getLessonView(
 
   if (!course || !courseModule || !lesson) return { status: "unauthorized" };
 
+  const navigation = adjacentLessons(course, lesson.id);
+  if (isLessonLocked(lesson)) {
+    // Locked by the cohort path: never read content/assets, the page shows the reason instead.
+    return {
+      status: "success",
+      data: { course, module: courseModule, lesson, content: null, assets: [], ...navigation },
+    };
+  }
+
   const assets = repository.getLessonAssetsForStudent
     ? await repository.getLessonAssetsForStudent(userId, lesson.id)
     : [];
@@ -90,7 +101,6 @@ export async function getLessonView(
       ? firstText.content
       : null
     : await repository.getLessonContentForStudent(userId, lesson.id);
-  const navigation = adjacentLessons(course, lesson.id);
   return {
     status: "success",
     data: { course, module: courseModule, lesson, content, assets, ...navigation },

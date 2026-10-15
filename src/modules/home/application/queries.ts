@@ -1,5 +1,6 @@
 import {
   isLessonComplete,
+  isLessonLocked,
   orderedCourseLessons,
   type LearningCourse,
   type LearningLesson,
@@ -57,7 +58,9 @@ function orderedSelections(courses: readonly LearningCourse[]): LearningSelectio
 }
 
 export function selectLearningAction(courses: readonly LearningCourse[]): LearningSelection | null {
-  const incomplete = orderedSelections(courses).filter(({ lesson }) => !isLessonComplete(lesson));
+  const incomplete = orderedSelections(courses).filter(
+    ({ lesson }) => !isLessonComplete(lesson) && !isLessonLocked(lesson),
+  );
 
   let resumed: LearningSelection | null = null;
   for (const candidate of incomplete) {
@@ -86,8 +89,14 @@ function selectFocusCourse(
   courses: readonly LearningCourse[],
   selection: LearningSelection | null,
 ): FocusCourse | null {
-  const curriculum = buildCurriculumView(courses).courses;
-  if (curriculum.length === 0) return null;
+  const allCurriculum = buildCurriculumView(courses).courses;
+  if (allCurriculum.length === 0) return null;
+  // ADR 0018/0023: an ACTIVE enrollment always wins over a COMPLETED one as the current course.
+  const completedIds = new Set(
+    courses.filter((course) => Boolean(course.completedAt)).map((course) => course.id),
+  );
+  const activeCurriculum = allCurriculum.filter((item) => !completedIds.has(item.id));
+  const curriculum = activeCurriculum.length > 0 ? activeCurriculum : allCurriculum;
 
   if (selection) {
     const summary = curriculum.find((item) => item.id === selection.course.id);
@@ -133,7 +142,7 @@ function upcomingLearningLessons(
   selection: LearningSelection | null,
 ): HomeLearningLesson[] {
   const incomplete = orderedCourseLessons(focus.course).filter(
-    (lesson) => !isLessonComplete(lesson),
+    (lesson) => !isLessonComplete(lesson) && !isLessonLocked(lesson),
   );
   const selectedId =
     selection && selection.course.id === focus.course.id ? selection.lesson.id : null;

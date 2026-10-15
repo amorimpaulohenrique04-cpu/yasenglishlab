@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { isLessonLocked } from "./access";
 import type {
   LearningCourse,
   LearningLesson,
@@ -42,7 +43,11 @@ export function courseCompletion(course: LearningCourse): number {
 }
 
 export function nextLesson(course: LearningCourse): LearningLesson | null {
-  return orderedCourseLessons(course).find((lesson) => !isLessonComplete(lesson)) ?? null;
+  return (
+    orderedCourseLessons(course).find(
+      (lesson) => !isLessonComplete(lesson) && !isLessonLocked(lesson),
+    ) ?? null
+  );
 }
 
 export function orderedCourseLessons(course: LearningCourse): LearningLesson[] {
