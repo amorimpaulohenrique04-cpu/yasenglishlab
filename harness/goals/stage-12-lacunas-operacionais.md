@@ -1,8 +1,8 @@
 # GOAL — stage-12-lacunas-operacionais: lacunas operacionais do SaaS
 
-Status: in_progress  
-Owner: agent  
-Created: 2026-10-15  
+Status: in_progress
+Owner: agent
+Created: 2026-10-15
 Updated: 2026-10-15
 
 ## Objective

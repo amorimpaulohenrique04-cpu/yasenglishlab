@@ -1,9 +1,9 @@
 # Failure — authored assessment prompt must execute for Student
 
-Classification: test gap  
-Status: resolved  
-Repeatable: yes  
-Date: 2026-10-15  
+Classification: test gap
+Status: resolved
+Repeatable: yes
+Date: 2026-10-15
 PR/commit related: current change, stage-12-lacunas-operacionais
 
 ## Symptom

@@ -1,9 +1,9 @@
 # Failure — Stage 12 A/B validation boundaries
 
-Classification: environment  
-Status: accepted-risk  
-Repeatable: yes  
-Date: 2026-10-15  
+Classification: environment
+Status: accepted-risk
+Repeatable: yes
+Date: 2026-10-15
 PR/commit related: current change, stage-12-lacunas-operacionais
 
 ## Symptom

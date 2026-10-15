@@ -10,261 +10,261 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 3
 SET
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-          book_live_session           
+          book_live_session
 --------------------------------------
  ed2384d7-dfc1-4289-8085-82e2a1646df6
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000002
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000002","aal":"aal1"}
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal1"}
 (1 row)
 
 DO
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000001
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000001","aal":"aal1"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-         cancel_live_booking          
+         cancel_live_booking
 --------------------------------------
  ed2384d7-dfc1-4289-8085-82e2a1646df6
 (1 row)
 
 DO
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000003
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000003","aal":"aal2"}
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
 INSERT 0 1
 SET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-              set_config              
+              set_config
 --------------------------------------
  9c000000-0000-0000-0000-000000000005
 (1 row)
 
-                         set_config                          
+                         set_config
 -------------------------------------------------------------
  {"sub":"9c000000-0000-0000-0000-000000000005","aal":"aal2"}
 (1 row)
 
 SET
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  9c200000-0000-0000-0000-000000000001
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 DO
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
-            manage_cohort             
+            manage_cohort
 --------------------------------------
  674b110e-4bd7-422c-86fd-da7afda6660e
 (1 row)
 
 RESET
- check_cohort 
+ check_cohort
 --------------
- 
+
 (1 row)
 
 ROLLBACK

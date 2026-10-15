@@ -29,13 +29,13 @@ INSERT 0 10
 INSERT 0 5
 INSERT 0 4
 INSERT 0 1
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-                                                                                                                                          record_lesson_progress                                                                                                                                          
+                                                                                                                                          record_lesson_progress
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (b320c4ad-9636-435d-aa9b-f819bfd6fc30,ef000000-0000-4000-8000-000000000505,ef000000-0000-4000-8000-000000000300,COMPLETED,100.00,"2026-10-15 16:52:00.139084+00","2026-10-15 16:52:00.139084+00","2026-10-15 16:52:00.139084+00",ef000000-0000-4000-8000-000000000005,0,"2026-10-15 16:52:00.139084+00")
 (1 row)
@@ -45,357 +45,357 @@ CREATE TABLE
 GRANT
 INSERT 0 1
 INSERT 0 1
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
 DO
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 INSERT 0 1
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
 UPDATE 1
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
- set_config | set_config 
+ set_config | set_config
 ------------+------------
             | {}
 (1 row)
 
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET
 SET
- ok 
+ ok
 ----
- 
+
 (1 row)
 
- ok 
+ ok
 ----
- 
+
 (1 row)
 
 RESET

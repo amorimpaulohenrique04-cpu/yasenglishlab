@@ -19,297 +19,297 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 2
 SET
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-                                                                                                                           record_lesson_progress                                                                                                                            
+                                                                                                                           record_lesson_progress
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (19467199-aff6-4dd4-a8f9-847a0f56a099,9e400000-0000-4000-8000-000000000001,42000000-0000-4000-8000-000000000001,IN_PROGRESS,40.00,"2026-10-15 16:56:00.875131+00",,"2026-10-15 16:56:00.875131+00",9e000000-0000-4000-8000-000000000001,60,"2026-10-15 16:56:00.875131+00")
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-              set_config              
+              set_config
 --------------------------------------
  fe3e4f3e-3875-4022-a6e7-506b3867c2cb
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-              set_config              
+              set_config
 --------------------------------------
  f5882233-d93c-47fb-be94-1b24a7500a62
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-      transfer_placement_cohort       
+      transfer_placement_cohort
 --------------------------------------
  128a2777-e382-4f04-9a54-0b6d98e8a9d3
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-                                                                                                                           record_lesson_progress                                                                                                                            
+                                                                                                                           record_lesson_progress
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (19467199-aff6-4dd4-a8f9-847a0f56a099,9e400000-0000-4000-8000-000000000001,42000000-0000-4000-8000-000000000001,IN_PROGRESS,60.00,"2026-10-15 16:56:00.875131+00",,"2026-10-15 16:56:00.875131+00",9e000000-0000-4000-8000-000000000001,80,"2026-10-15 16:56:00.875131+00")
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-              set_config              
+              set_config
 --------------------------------------
  8a905d12-109e-492b-a138-cd05c0182541
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 INSERT 0 1
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
-                                                                                                                           record_lesson_progress                                                                                                                           
+                                                                                                                           record_lesson_progress
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  (aa215013-45f1-4211-8df6-04497dbd7830,9e400000-0000-4000-8000-000000000002,42000000-0000-4000-8000-000000000001,IN_PROGRESS,10.00,"2026-10-15 16:56:00.875131+00",,"2026-10-15 16:56:00.875131+00",9e000000-0000-4000-8000-000000000002,5,"2026-10-15 16:56:00.875131+00")
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 ROLLBACK

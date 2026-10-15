@@ -20,166 +20,166 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 DO
- logout 
+ logout
 --------
- 
+
 (1 row)
 
 SET
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
 RESET
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
- check_table 
+ check_table
 -------------
- 
+
 (1 row)
 
 RESET
- login 
+ login
 -------
- 
+
 (1 row)
 
 SET
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
- assert_true 
+ assert_true
 -------------
- 
+
 (1 row)
 
 RESET
- logout 
+ logout
 --------
- 
+
 (1 row)
 
 ROLLBACK
