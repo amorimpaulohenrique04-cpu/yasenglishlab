@@ -145,3 +145,7 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
 - Concessão (cortesia/bolsa/legado) só por `grant_complimentary_access` / `revoke_complimentary_access` (ADMIN + AAL2, auditadas); libera acesso base (conteúdo e encontros sem `required_entitlement_key`), nunca entitlements de plano.
 - Backfill `LEGACY_BACKFILL` na migração `20261014120000`: STUDENT sem assinatura e com matrícula `ACTIVE`.
 - A UI explica a negação com o motivo `NO_SUBSCRIPTION` (caminho: novo checkout).
+
+## Direitos de plano editáveis (Etapa 12D)
+
+ADMIN com AAL2 agenda mudança de limite e cadência de um direito de plano em `/admin/billing?tab=plans`, sempre com vigência futura (`admin_plan_set_entitlement`). A linha vigente é fechada e a nova entra na data; reservas já feitas mantêm o snapshot do direito usado. Preço e reajuste continuam fora desta tela (decisão separada, ver `OPEN_QUESTIONS.md`). Atenção: `supabase db reset` reaplica `seed.sql` (`on conflict … do update`) e desfaz edições locais de direitos.

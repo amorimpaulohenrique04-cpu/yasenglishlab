@@ -186,3 +186,24 @@ O disco ficou sem espaço por cache persistente e processos Next órfãos após 
 Limites: verify:ui/full e reset completo continuam reservados ao fechamento macro (handoff sessões 9–10); não executados aqui. Três achados globais conhecidos do eval-agent origin/main...HEAD e agenda/resíduos constam no registro C1. Macro permanece in_progress/verified:false. A/B não representam a conclusão de C/E nem de toda a Etapa 12.
 
 A/B concluídos e comprovados localmente. Relatórios JSON: E2E 2/2 em 144.9s; a11y 4/4 em 53.7s, todos sem retries/skips. Configurações transitórias preservadas em ab-runner-configs.txt e removidas da raiz. Servidor isolado encerrado após validação. Feature macro continua não verificada; gates finais e UI C/E permanecem pendentes.
+
+## Fechamento C/E, D/F e conclusao (2026-10-15)
+
+PR 72 (A, B, C1/C2, E SQL, D, F) foi mergeada na `main` (4e5ca4e) com o CI verde: Quality, Database, Guardrail Simulations, Supply Chain, Preview (e2e, accessibility, visual, database-proofs). A branch `feat/etapa-12-conclusao` acrescenta a UI de C/E, o seletor de publico (C3) e as docs.
+
+| Verificacao                                                                          | Resultado                                                                                      |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `test:integration:db` (31 suites) e `test:rls` (23) em stack `yastest12` resetada    | PASS (executado antes da PR 72; D/F e C3 incluidos)                                            |
+| `content-audience` (C3), `function-privileges`, `cohort-path-admin`, `admin_content` | PASS na stack isolada                                                                          |
+| `typecheck`, `eslint src tests --quiet`, `prettier --check src tests docs harness`   | PASS                                                                                           |
+| `vitest run tests/unit tests/integration`                                            | PASS: 74 arquivos, 583 testes, 1 ignorado                                                      |
+| `verify:harness`                                                                     | PASS                                                                                           |
+| `eval:agent`                                                                         | escopo corrigido (GOAL ganhou admin-cohort-path e admin-overview); regra visual tratada abaixo |
+
+NAO EXECUTADO (decisao de custo do usuario: sem testes pesados locais):
+
+- e2e e a11y das telas novas de C/E (`/admin/cohorts/[id]/trilha`, matricula em `/admin/students/[id]`, lista de aulas com bloqueio, aviso de curso concluido). Dois specs escritos por um agente foram retirados do repositorio por nunca terem sido executados.
+- screenshots desktop/tablet/mobile dessas telas.
+- `verify:ui`, `verify:full` e `verify:db` locais. O CI da PR e o gate de release; ele nao cobre os fluxos novos de C/E.
+
+Por isso a Etapa 12 permanece `in_progress` e `verified: false`. Pendencias para marcar `done`: e2e/a11y/screenshots de C/E e `verify:full`.

@@ -141,3 +141,7 @@ CRM tables have RLS enabled and no direct table grants to `anon` or `authenticat
 ## Etapa 12A/B — autoria
 
 teacher_practice_* exige TEACHER+AAL2, autoria e escopo de curso/turma; atribuições não concedem acesso a alunos de outra turma. authorize_practice_asset valida o leitor antes de disponibilizar mídia privada. admin_assessment_* exige ADMIN+AAL2 e mantém gabaritos fora do contrato do aluno. As ações de servidor repetem a autorização; esconder um botão não constitui autorização. Publicações e comandos são auditados sem conteúdo sensível.
+
+## Etapa 12C–F — trilha, matrícula, direitos e alertas
+
+`admin_cohort_path_get/save`, `admin_enroll_in_course`, `admin_plan_list`, `admin_plan_set_entitlement` e `admin_operational_alerts` exigem ADMIN com AAL2 (`private.assert_content_admin` ou equivalente), são `security definer` com `search_path = ''`, revogadas de `public`, `anon` e `authenticated` e liberadas explicitamente. `get_student_learning_path(course)` é do aluno com matrícula e devolve só a trilha dele. O fechamento da leitura aberta de títulos substitui as policies de `courses/modules/lessons`: aluno só lê o curso em que está matriculado e o que a trilha inclui; TEACHER e ADMIN não mudam. Nenhuma regra de RLS ou AAL2 foi afrouxada.

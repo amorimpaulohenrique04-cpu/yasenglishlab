@@ -25,6 +25,10 @@ Este arquivo registra decisões ainda **não fechadas**. Coding agents não deve
 - A autoria de práticas do professor foi autorizada na Etapa 12 (ADR 0020); sessões próprias, roster e attendance já existem. Quais funções adicionais comporão o Teacher Portal amplo? CMS genérico continua fora do escopo.
 - Qual fluxo futuro de revisão pedagógica após Admin Content V1? No V1, ADMIN+AAL2 publica diretamente sem aprovação obrigatória (ADR 0006); esta evolução não bloqueia P18.
 - Qual é o canal oficial de suporte (e-mail/WhatsApp/URL) para alunos com pagamento expirado ou não confirmado em `/billing/return`? Até a decisão, a página só orienta a falar com o suporte, sem link inventado.
+- Etapa 12: o aluno deve receber e-mail quando uma prática é atribuída à turma ou quando o prazo se aproxima? Hoje a atribuição aparece só em «Atribuídas a você» (sem notificação).
+- Etapa 12: vídeo como estímulo de prática usa arquivo protegido com URL assinada, sem transcodificação nem legenda automática (ADR 0020). Quando generalizar o pipeline de vídeo das aulas?
+- Etapa 12: reajuste de preço de plano continua fora do Admin (`docs/BILLING.md`); quem aprova e como o histórico de preço é preservado?
+- Etapa 12: a trilha própria da turma aplica a ordem das aulas; a ordem dos módulos da trilha ainda não muda a ordem exibida ao aluno. Deve mudar?
 
 ## Segurança
 - Procedimento operacional de recuperação/break-glass para staff que perdeu o segundo fator, sem desabilitar a exigência AAL2 em runtime.

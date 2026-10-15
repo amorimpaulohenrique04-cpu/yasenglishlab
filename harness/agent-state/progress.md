@@ -679,3 +679,7 @@ Implementado app Admin do teste de entrada (rotas, editor, comandos, menu, publi
 SQL A/B/placement/engine/privilégios passou; unit completo 544 passou/1 ignorado; typecheck, lint, format e verify-db/security/harness passaram. E2E final A/B exit 0: 2/2; a11y desktop/mobile exit 0: 4/4; gates JSON sem skipped/flaky/falhas. Screenshots dos três viewports inspecionadas. A confirma aluno responder, isolamento de outra turma/professor e duplicação após tentativa; B confirma execução Student na versão2 selecionada. Ambiente isolado recuperado, sem banco dev/commit/build; discos e processos monitorados. Evidência em harness/evidence/stage-12-lacunas-operacionais/README.md.
 
 A/B entregues localmente. Sem commit/build/deploy. Próximo escopo macro: UI C/E, integração Learning e gates finais da Etapa 12; D/F adiados. Não marcar o macro done/verified antes de verify:full e revisão independente conforme handoff.
+
+## 2026-10-15 — conclusao da Etapa 12 (branch feat/etapa-12-conclusao)
+
+PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de trilha da turma e matricula no proximo curso, seletor de publico (C3), app do aluno com aulas bloqueadas e aviso de curso concluido, docs de C/D/E/F. Checagens baratas passaram (typecheck, lint, 583 testes, verify:harness). e2e/a11y/screenshots de C/E e verify:full NAO foram executados por decisao de custo; Etapa 12 segue in_progress/verified:false.
