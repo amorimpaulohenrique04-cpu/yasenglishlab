@@ -581,7 +581,7 @@
       "verified": false,
       "dependencies": ["stage-11-flow-gap-closure"],
       "evidence": ["harness/evidence/stage-12-lacunas-operacionais/README.md"],
-      "updated_at": "2026-10-15T18:01:23.953Z"
+      "updated_at": "2026-10-15T21:30:00.000Z"
     }
   ]
 }

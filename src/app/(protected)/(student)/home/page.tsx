@@ -189,6 +189,12 @@ export default async function StudentHomePage() {
                   Você concluiu todas as aulas de {learning.data.courseTitle}. As aulas continuam
                   disponíveis para revisão.
                 </p>
+                <p className="yas-home-empty-copy" role="status">
+                  Curso concluído. A equipe vai indicar seu próximo passo.{" "}
+                  <Link className="yas-focusable" href="/support">
+                    Falar com o suporte
+                  </Link>
+                </p>
               </div>
             ) : learning.data.upcomingLessons.length === 0 ? (
               <Badge tone="success">Todas as aulas disponíveis foram concluídas</Badge>

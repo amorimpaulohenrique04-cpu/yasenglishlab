@@ -121,3 +121,5 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 
 - 2026-10-15: usuário pediu commit e PR, e autorizou implementar D (direitos de plano) e F (alertas) agora. Revoga o adiamento D/F apenas; preços, regras futuras e demais restrições continuam fora do escopo.
 - Escopo (2026-10-15, apos sessao Codex): D e F ja implementados e testados; ficam nesta PR (supersede o adiamento anterior).
+
+- Conclusao (2026-10-15): por custo, sem e2e/a11y/verify:full locais; specs de C/E nao verificados foram retirados do repositorio. Escopo do GOAL passou a listar um padrao por modulo (o verificador nao expande chaves) e incluiu admin-cohort-path e admin-overview.

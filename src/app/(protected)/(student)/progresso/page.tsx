@@ -113,6 +113,16 @@ function CurriculumSection({ section }: { section: ProgressSection<ProgressCurri
               </div>
             </Card>
           ))}
+          {section.data.courses.every((course) => Boolean(course.completedAt)) && (
+            <Card>
+              <p role="status">
+                Curso concluído. A equipe vai indicar seu próximo passo.{" "}
+                <Link className="yas-progress-link yas-focusable" href="/support">
+                  Falar com o suporte
+                </Link>
+              </p>
+            </Card>
+          )}
         </div>
       )}
     </section>

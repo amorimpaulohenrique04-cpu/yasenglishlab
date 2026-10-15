@@ -41,8 +41,8 @@ Fechar, numa unica PR empilhada sobre a Etapa 11, as lacunas que impedem operar 
 ## Allowed files / domains
 
 - `supabase/migrations/20261015*` (novas), `supabase/tests/*`, `scripts/run-sql-tests.mjs`, `scripts/setup-canonical-e2e.mjs`, `scripts/assert-canonical-e2e.mjs`.
-- `src/modules/{practice,teacher-operations,admin-content,admin-assessments,admin-plans,cohorts,learning,progress,home,placement,billing}/**`, `src/server/**`, `src/components/ui/**` (somente extensoes necessarias), `src/app/(protected)/**`.
-- `tests/unit/**`, `tests/integration/**`, `tests/e2e/**`, `tests/a11y/**`.
+- `src/modules/practice/**`, `src/modules/teacher-operations/**`, `src/modules/admin-content/**`, `src/modules/admin-assessments/**`, `src/modules/admin-plans/**`, `src/modules/admin-cohort-path/**`, `src/modules/admin-overview/**`, `src/modules/cohorts/**`, `src/modules/learning/**`, `src/modules/progress/**`, `src/modules/home/**`, `src/modules/placement/**`, `src/modules/billing/**`, `src/server/**`, `src/components/ui/**` (somente extensoes necessarias), `src/app/(protected)/**`.
+- `tests/unit/**`, `tests/integration/**`, `tests/e2e/**`, `tests/a11y/**`. `playwright.config.ts` (somente `reducedMotion`, ver failure-log 2026-10-15-e2e-axe-transition-flake).
 - `docs/**`, `harness/**`.
 
 ## Forbidden areas

@@ -12,7 +12,15 @@ export interface LessonProgressSnapshot {
   updatedAt: string;
 }
 
+export interface LessonAccess {
+  state: "AVAILABLE" | "LOCKED_DATE" | "LOCKED_SEQUENCE";
+  // Effective release instant (ISO) for LOCKED_DATE; null otherwise.
+  availableFrom: string | null;
+}
+
 export interface LearningLesson {
+  // Absent = no cohort path, everything available (backward compatible).
+  access?: LessonAccess;
   id: string;
   moduleId: string;
   position: number;

@@ -7,6 +7,7 @@ import {
   isSubscriptionGateError,
 } from "@/modules/billing/domain/access";
 import { NoActiveCohortError, isNoActiveCohortError } from "@/modules/learning/domain/errors";
+import { parseLessonPath, type LessonPathEntry } from "@/modules/learning/domain/access";
 import type {
   LearningCourse,
   LearningLesson,
@@ -155,10 +156,43 @@ export class SupabaseLearningRepository implements LearningRepository {
       (progressRows ?? []).map((row) => [String(row.lesson_id), progressFromRow(row)]),
     );
 
+    // One path RPC per course, in parallel. The path decides which lessons the student sees,
+    // their cohort order and why a lesson is locked (state + effective release date).
+    const visibleCourseIds = (courseRows ?? []).map((row) => String(row.id));
+    const pathResults = await Promise.all(
+      visibleCourseIds.map(async (courseId) => {
+        const { data, error } = await this.client.rpc("get_student_learning_path", {
+          p_course_id: courseId,
+        });
+        if (error) throw new Error("Unable to load learning path.");
+        return parseLessonPath(data);
+      }),
+    );
+    const pathByLesson = new Map<string, LessonPathEntry>();
+    for (const entries of pathResults)
+      for (const [id, entry] of entries) pathByLesson.set(id, entry);
+    const coursesWithPath = new Set(
+      visibleCourseIds.filter((_, index) => (pathResults[index]?.size ?? 0) > 0),
+    );
+    const courseByModule = new Map(
+      (moduleRows ?? []).map((row) => [String(row.id), String(row.course_id)]),
+    );
+    const hasPathFor = (moduleId: string) =>
+      coursesWithPath.has(courseByModule.get(moduleId) ?? "");
+
     const lessonsByModule = new Map<string, LearningLesson[]>();
-    for (const row of lessonRows) {
+    const orderedRows = lessonRows
+      .filter((row) => !hasPathFor(String(row.module_id)) || pathByLesson.has(String(row.id)))
+      .sort((a, b) => {
+        const pa = pathByLesson.get(String(a.id))?.position;
+        const pb = pathByLesson.get(String(b.id))?.position;
+        return pa !== undefined && pb !== undefined ? pa - pb : 0;
+      });
+    for (const row of orderedRows) {
       const moduleId = String(row.module_id);
+      const access = pathByLesson.get(String(row.id))?.access;
       const lesson: LearningLesson = {
+        ...(access ? { access } : {}),
         id: String(row.id),
         moduleId,
         position: Number(row.position),
@@ -184,9 +218,15 @@ export class SupabaseLearningRepository implements LearningRepository {
         position: Number(row.position),
         title: String(row.title),
         description: row.description ? String(row.description) : null,
-        lessons: (lessonsByModule.get(String(row.id)) ?? []).sort(
-          (a, b) => a.position - b.position,
-        ),
+        // Path order already applied above; keep module-local order for courses without a path.
+        // With a cohort path the order is the path order; renumber so every position-based sort
+        // downstream (home, progress, navigation) keeps the cohort order.
+        lessons: hasPathFor(String(row.id))
+          ? (lessonsByModule.get(String(row.id)) ?? []).map((lesson, index) => ({
+              ...lesson,
+              position: index + 1,
+            }))
+          : (lessonsByModule.get(String(row.id)) ?? []).sort((a, b) => a.position - b.position),
       };
       const current = modulesByCourse.get(courseId) ?? [];
       current.push(courseModule);

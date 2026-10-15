@@ -44,6 +44,20 @@ function options(records: AdminContentRecord[] | undefined) {
   }));
 }
 
+function AudienceSelect({ record }: { record: AdminContentRecord | null }) {
+  return (
+    <Select
+      label="Quem vê este conteúdo"
+      name="audience"
+      defaultValue={value(record, "audience", "COURSE")}
+      options={[
+        { value: "COURSE", label: "Todas as turmas do curso" },
+        { value: "COHORTS", label: "Somente turmas que incluírem na trilha" },
+      ]}
+    />
+  );
+}
+
 function ParentSelect({
   label,
   name,
@@ -160,6 +174,7 @@ export function ContentEditor({
                 rows={4}
                 maxLength={4000}
               />
+              <AudienceSelect record={record} />
             </>
           )}
 
@@ -200,6 +215,7 @@ export function ContentEditor({
                 min={1}
                 defaultValue={value(record, "estimated_minutes")}
               />
+              <AudienceSelect record={record} />
             </>
           )}
 
@@ -327,6 +343,7 @@ export function ContentEditor({
                   nesta tela.
                 </p>
               )}
+              <AudienceSelect record={record} />
             </>
           )}
 

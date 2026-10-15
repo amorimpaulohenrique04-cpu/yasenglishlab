@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Badge, Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
-import { lessonCompletion, moduleCompletion } from "@/modules/learning";
+import { lessonCompletion, lessonLockMessage, moduleCompletion } from "@/modules/learning";
 import { loadLearningAccess, loadLearningModule } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
@@ -57,6 +57,29 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <ol className="yas-learning-lesson-list" aria-label="Aulas em ordem">
               {module.lessons.map((lesson) => {
                 const percent = lessonCompletion(lesson);
+                const lockMessage = lessonLockMessage(lesson);
+                if (lockMessage) {
+                  return (
+                    <li key={lesson.id} aria-disabled="true">
+                      <Card variant="soft">
+                        <div className="yas-learning-lesson-row">
+                          <div>
+                            <p className="yas-learning-kicker">Aula {lesson.position}</p>
+                            <h2 className="yas-learning-card-title">{lesson.title}</h2>
+                            <div className="yas-learning-meta">
+                              <span>{lesson.estimatedMinutes ?? 10} min</span>
+                              <span>
+                                <span aria-hidden="true">🔒 </span>
+                                Bloqueada
+                              </span>
+                            </div>
+                            <p className="yas-learning-card-copy">{lockMessage}</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </li>
+                  );
+                }
                 return (
                   <li key={lesson.id}>
                     <Card variant={percent > 0 ? "accent" : "soft"}>

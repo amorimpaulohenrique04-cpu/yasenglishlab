@@ -193,3 +193,12 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
 Práticas content v2 acrescentam autor, curso e audience a practice_activities. cohort_practice_assignments registra turmas e prazo; practice_activity_assets registra mídia protegida. PracticeAttempt/Response/Result permanecem separados; WRITTEN/SPOKEN produzem resultado humano sem score.
 
 assessments.is_placement seleciona explicitamente a avaliação de entrada com unicidade parcial. assessment_versions segue DRAFT → PUBLISHED → RETIRED; assessment_items guarda prompt, resposta privada e rubrica por versão. assessment_attempts mantém vínculo imutável à versão executada.
+
+## Etapa 12C–F — trilha, matrícula administrativa, direitos e alertas
+
+- `cohort_paths(cohort_id, mode DEFAULT|CUSTOM, sequential)` e `cohort_path_items(cohort_id, content_kind, content_id, position, available_from)`: sem DML direto; escrita só por `admin_cohort_path_save`. Gatilhos validam que o item é do mesmo curso da turma e que a aula implica o módulo pai.
+- `modules`, `lessons`, `materials` ganham `audience COURSE|COHORTS`; `practice_activities.audience` passa a aceitar `COURSE|COHORTS|ASSIGNED`.
+- Predicados privados `student_path_includes` e `student_path_available` alimentam leitura de aula, material, prática, progresso e as policies de `courses/modules/lessons`; a conclusão automática (ADR 0018) conta só as aulas da trilha do aluno.
+- `admin_course_enrollment_operations`: recibo imutável e idempotente de `admin_enroll_in_course` (ADR 0023). Matrícula `COMPLETED` e `ACTIVE` coexistem.
+- `plan_entitlements` ganha versões agendadas por `admin_plan_set_entitlement` (vigência futura); reservas guardam o direito usado e não mudam.
+- `admin_operational_alerts()` é somente leitura e não cria tabelas.

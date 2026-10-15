@@ -32,6 +32,7 @@ export function adminContentFormToPayload(
         position: one(formData, "position"),
         title: one(formData, "title"),
         description: nullable(one(formData, "description")),
+        audience: one(formData, "audience") || "COURSE",
       };
     case "lessons":
       return {
@@ -40,6 +41,7 @@ export function adminContentFormToPayload(
         slug: one(formData, "slug"),
         title: one(formData, "title"),
         estimated_minutes: one(formData, "estimated_minutes"),
+        audience: one(formData, "audience") || "COURSE",
       };
     case "lesson_assets":
       return {
@@ -61,6 +63,7 @@ export function adminContentFormToPayload(
         metadata: parseJson(one(formData, "metadata_json")) ?? {},
         active: one(formData, "active") === "true",
         required_entitlement_key: nullable(one(formData, "required_entitlement_key")),
+        audience: one(formData, "audience") || "COURSE",
       };
     case "practice_activities":
       return {
