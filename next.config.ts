@@ -4,7 +4,10 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 export default function nextConfig(phase: string): NextConfig {
   return {
     ...(process.env.YAS_ISOLATED_VERIFY === "1"
-      ? { experimental: { turbopackFileSystemCacheForDev: false } }
+      ? {
+          experimental: { turbopackFileSystemCacheForDev: false },
+          typescript: { tsconfigPath: "tsconfig.verify.json" },
+        }
       : {}),
     distDir:
       process.env.YAS_ISOLATED_VERIFY === "1"

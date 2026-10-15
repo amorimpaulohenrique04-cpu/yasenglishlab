@@ -1,0 +1,1314 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yas Aluno · Proposta v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ Tokens (medidos nas referências aprovadas em docs/reference-ui) ============ */
+:root{
+  --sb:#461d82;            /* sidebar (medido #451b84–#461d81) */
+  --sb-active:#6132ad;     /* item ativo (medido) */
+  --violet:#6024f7;        /* pílula/ação primária (medido #6024f7) */
+  --violet-700:#4f17d6;
+  --purple-200:#ddd0ff;--purple-100:#eee8ff;--purple-50:#f7f4ff;
+  --hero-a:#3d1a8c;--hero-b:#5527ad;  /* fundo dos heros (medido nos recortes ~#5326a8) */
+  --yellow:#f9c933;--yellow-hover:#fbd54f;--yellow-soft:#fff4cf;   /* medido #f9ce34 */
+  --ink:#1f1146;--ink-2:#3b2d63;--muted:#6f6880;--line:#ebe5f7;
+  --surface:#fff;--canvas:#f3effd;
+  --t-lilac:#efe9ff;--t-lilac-ink:#6a3fe0;
+  --t-blue:#e6f0ff;--t-blue-ink:#2f6fe4;
+  --t-yellow:#fff3d6;--t-yellow-ink:#d99a00;
+  --t-green:#e5f7ea;--t-green-ink:#1f9a50;
+  --t-pink:#fde8f6;--t-pink-ink:#c03aa0;
+  --t-red:#ffe9e7;--t-red-ink:#d93a2b;
+  --success:#1f9a50;--success-soft:#e5f7ea;
+  --r-sm:10px;--r-md:14px;--r-lg:18px;--r-xl:22px;--pill:999px;
+  --shadow:0 1px 2px rgba(37,16,67,.04),0 8px 24px rgba(66,29,119,.07);
+  --shadow-hover:0 2px 4px rgba(37,16,67,.05),0 16px 36px rgba(66,29,119,.13);
+  --shadow-pop:0 24px 60px rgba(31,13,57,.25);
+  --ring:0 0 0 3px rgba(96,36,247,.28);
+  --display:"Montserrat","Segoe UI",sans-serif;
+  --sans:Inter,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --sidebar:16rem;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--canvas);line-height:1.45;-webkit-font-smoothing:antialiased;font-size:15px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+img{display:block;max-width:100%}
+:focus-visible{outline:none;box-shadow:var(--ring);border-radius:var(--r-sm)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.h-display{font-family:var(--display);font-weight:800;letter-spacing:-.025em}
+
+/* ============ Shell ============ */
+.app{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--sb);color:#fff;display:flex;flex-direction:column;padding:22px 18px 18px;overflow:hidden;z-index:20}
+.sidebar .logo{width:150px;margin:0 0 30px 6px}
+.nav{display:flex;flex-direction:column;gap:6px;position:relative;z-index:1}
+.nav a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r-md);font-weight:600;font-size:15.5px;color:#f1ebff;transition:background .2s var(--ease)}
+.nav a svg.i{width:22px;height:22px}
+.nav a:hover{background:rgba(255,255,255,.08)}
+.nav a[aria-current="page"]{background:var(--sb-active);color:#fff;box-shadow:0 6px 18px rgba(16,4,46,.25)}
+.nav a .lock{margin-left:auto;width:16px;height:16px;opacity:.6;display:none}
+body.gated .nav a[data-paid] .lock{display:block}
+.sb-wave{position:absolute;left:-10px;right:-10px;bottom:84px;height:150px;pointer-events:none}
+.help{position:relative;z-index:1;margin-top:auto;display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);transition:background .2s}
+.help:hover{background:rgba(255,255,255,.16)}
+.help b{display:block;font-size:13.5px}
+.help small{font-size:12px;opacity:.8}
+
+.main{min-width:0;position:relative;isolation:isolate}
+.bg-deco{position:absolute;inset:0 0 auto 0;width:100%;height:340px;z-index:-1;pointer-events:none}
+.topbar{display:flex;align-items:center;gap:14px;padding:18px clamp(18px,2.6vw,38px) 0}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--pill);padding:0 16px;height:44px;width:min(360px,100%);box-shadow:var(--shadow);color:var(--muted)}
+.search input{border:0;outline:0;background:none;font:inherit;color:var(--ink);width:100%}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.bell{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;color:var(--ink-2)}
+.bell:hover{background:rgba(255,255,255,.7)}
+.bell::after{content:"";position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:#ef3b4b;border:2px solid var(--canvas)}
+.me{display:flex;align-items:center;gap:10px;font-weight:700;padding:4px 6px 4px 4px;border-radius:var(--pill)}
+.me:hover{background:rgba(255,255,255,.7)}
+.me img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+.page{padding:6px clamp(18px,2.6vw,38px) 48px;max-width:1440px}
+.page-head{position:relative;display:flex;align-items:flex-end;gap:20px;margin:18px 0 20px;min-height:92px}
+.page-head h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:clamp(2.1rem,3.4vw,3rem);line-height:1.02;margin:0}
+.page-head p{margin:6px 0 0;font-size:1.06rem;color:var(--ink-2)}
+.tagline{position:absolute;right:4px;top:-18px;width:150px;transform:rotate(-2deg);pointer-events:none}
+
+/* ============ Primitivos ============ */
+.card{background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:22px;position:relative}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.card-h h2,.sec-h h2{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;margin:0}
+.more{display:inline-flex;align-items:center;gap:6px;color:var(--violet);font-weight:600;font-size:13.5px;white-space:nowrap}
+.more svg.i{width:16px;height:16px;transition:transform .2s var(--ease)}
+.more:hover svg.i,.lift:hover .go svg.i{transform:translateX(3px)}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:46px;padding:0 22px;border-radius:var(--r-md);font-weight:700;font-size:15px;white-space:nowrap;transition:transform .15s var(--ease),background .2s,box-shadow .2s}
+.btn:active{transform:scale(.98)}
+.btn svg.i{width:19px;height:19px}
+.btn-y{background:var(--yellow);color:#1d1040;box-shadow:0 6px 16px rgba(249,201,51,.35)}
+.btn-y:hover{background:var(--yellow-hover);box-shadow:0 10px 22px rgba(249,201,51,.45)}
+.btn-v{background:var(--violet);color:#fff;box-shadow:0 6px 16px rgba(96,36,247,.28)}
+.btn-v:hover{background:var(--violet-700)}
+.btn-soft{background:var(--purple-50);color:var(--violet)}
+.btn-soft:hover{background:var(--purple-100)}
+.btn-line{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.btn-line:hover{border-color:var(--purple-200)}
+.btn-sm{height:36px;padding:0 14px;font-size:13.5px;border-radius:var(--r-sm)}
+.btn-lg{height:52px;padding:0 26px;font-size:16px}
+.btn[disabled]{opacity:.55;cursor:not-allowed;box-shadow:none}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.pill{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--shadow);font-weight:600;font-size:14px;color:var(--ink-2);transition:all .2s var(--ease)}
+.pill svg.i{width:18px;height:18px}
+.pill:hover{color:var(--violet)}
+.pill[aria-pressed="true"],.pill[aria-selected="true"]{background:var(--violet);color:#fff;box-shadow:0 8px 18px rgba(96,36,247,.3)}
+.tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--pill);font-size:12px;font-weight:600;white-space:nowrap}
+.tag svg.i{width:13px;height:13px}
+.tag.lilac{background:var(--t-lilac);color:var(--t-lilac-ink)}
+.tag.blue{background:var(--t-blue);color:var(--t-blue-ink)}
+.tag.yellow{background:var(--t-yellow);color:#a86f00}
+.tag.green{background:var(--t-green);color:var(--t-green-ink)}
+.tag.pink{background:var(--t-pink);color:var(--t-pink-ink)}
+.tag.red{background:var(--t-red);color:var(--t-red-ink)}
+.tag.grey{background:#f1eff5;color:var(--muted)}
+.ico{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ico.sq{border-radius:var(--r-md)}
+.ico svg.i{width:22px;height:22px}
+.ico.lilac{background:var(--t-lilac);color:var(--t-lilac-ink)}
+.ico.blue{background:var(--t-blue);color:var(--t-blue-ink)}
+.ico.yellow{background:var(--t-yellow);color:var(--t-yellow-ink)}
+.ico.green{background:var(--t-green);color:var(--t-green-ink)}
+.ico.pink{background:var(--t-pink);color:var(--t-pink-ink)}
+.ico.red{background:var(--t-red);color:var(--t-red-ink)}
+.bar{height:10px;border-radius:var(--pill);background:#ece8f4;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;border-radius:inherit;background:var(--violet);transition:width 1.1s var(--ease)}
+.bar.y>i{background:var(--yellow)}
+.go{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f3f0fa;color:var(--ink-2);flex:none;transition:background .2s,color .2s}
+.go svg.i{width:16px;height:16px;transition:transform .2s var(--ease)}
+.lift{transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.lift:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.lift:hover .go{background:var(--purple-100);color:var(--violet)}
+.muted{color:var(--muted)}
+.grid{display:grid;gap:18px}
+
+/* reveal escalonado ao entrar na tela */
+.screen{display:none}
+.screen.active{display:block}
+.screen.active .rv{animation:rv .55s var(--ease) both;animation-delay:calc(var(--i,0) * 60ms)}
+@keyframes rv{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ============ Hero (padrão das referências: foto recortada + traços amarelos) ============ */
+.hero{position:relative;overflow:hidden;border-radius:var(--r-xl);color:#fff;padding:26px 28px;min-height:244px;display:flex;flex-direction:column;justify-content:center;
+  background:radial-gradient(120% 140% at 100% 0%,#6a33d8 0%,transparent 55%),linear-gradient(110deg,var(--hero-a) 0%,var(--hero-b) 100%);box-shadow:0 14px 34px rgba(61,26,140,.28)}
+.hero-copy{position:relative;z-index:2;max-width:58%}
+.hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.92}
+.hero .kicker svg.i{width:18px;height:18px}
+.hero h2{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,2.3vw,2rem);line-height:1.08;letter-spacing:-.02em;margin:10px 0 12px}
+.hero .meta{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-direction:column;gap:6px;font-size:14px;opacity:.95}
+.hero .meta li{display:flex;align-items:center;gap:9px}
+.hero .meta svg.i{width:17px;height:17px;opacity:.9}
+.hero .photo{position:absolute;right:0;bottom:0;height:100%;width:46%;object-fit:cover;object-position:left bottom;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%);mask-image:linear-gradient(90deg,transparent 0,#000 34%)}
+.hero .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.hero .chips span{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:var(--r-sm);background:rgba(255,255,255,.14);font-size:13px;font-weight:600}
+.hero .chips svg.i{width:15px;height:15px}
+.hero .prog{display:flex;align-items:center;gap:14px;margin:6px 0 18px;max-width:340px}
+.hero .prog .bar{flex:1;background:rgba(255,255,255,.22)}
+.hero .prog .bar>i{background:var(--yellow)}
+.hero .prog b{font-size:14px}
+
+/* ============ Início ============ */
+.row1{grid-template-columns:minmax(0,1.5fr) minmax(0,1.05fr) minmax(0,.8fr)}
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
+.ring{--p:0;--c:var(--yellow);width:118px;height:118px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:conic-gradient(var(--c) calc(var(--p) * 1%),#eeeaf5 0);transition:--p 1.2s var(--ease)}
+.ring>div{width:88px;height:88px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}
+.ring b{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;line-height:1}
+.ring small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.prog-card{display:flex;gap:20px;align-items:center}
+.level{display:inline-flex;align-items:center;gap:8px;margin-top:4px}
+.level b{font-family:var(--display);font-weight:800;font-size:26px;color:var(--ink)}
+.flame{width:64px;height:64px;border-radius:50%;background:var(--yellow-soft);display:grid;place-items:center;font-size:30px;flex:none}
+.streak-n{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:-.02em;line-height:1}
+.dots{display:flex;justify-content:space-between;margin-top:22px}
+.dots div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+.dots i{width:22px;height:22px;border-radius:50%;background:#ece8f4;transform:scale(.4);opacity:0}
+.dots i.on{background:var(--yellow);box-shadow:0 3px 8px rgba(249,201,51,.45)}
+.dots i.today{outline:2px solid var(--violet);outline-offset:2px}
+.screen.active .dots i{animation:pop .45s var(--spring) forwards;animation-delay:calc(300ms + var(--d) * 70ms)}
+@keyframes pop{to{transform:scale(1);opacity:1}}
+.row2{grid-template-columns:minmax(0,2.35fr) minmax(0,1fr);align-items:start}
+.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tile{display:flex;align-items:center;gap:14px;padding:18px}
+.tile h3{font-size:15.5px;margin:0 0 3px;font-family:var(--display);font-weight:700}
+.tile p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.35}
+.tile .go{margin-left:auto}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.list li:last-child{border:0}
+.list .t{flex:1;min-width:0}
+.list .t b{display:block;font-size:14.5px}
+.list .t small{color:var(--muted);font-size:12.5px}
+.list a.row{display:flex;align-items:center;gap:14px;width:100%;border-radius:var(--r-sm)}
+.list a.row:hover .go{background:var(--purple-100);color:var(--violet)}
+.week-strip{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin:8px 0 10px}
+.week-strip small{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+.week-strip button{display:grid;place-items:center;width:34px;height:34px;margin:6px auto 0;border-radius:50%;font-weight:600;font-size:14px;transition:background .2s;position:relative}
+.week-strip button:hover{background:var(--purple-50)}
+.week-strip button[aria-pressed="true"]{background:var(--violet);color:#fff;box-shadow:0 6px 14px rgba(96,36,247,.35)}
+.week-strip button.has::after{content:"";position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--violet)}
+.week-strip button[aria-pressed="true"].has::after{background:#fff}
+.tl{list-style:none;margin:0;padding:0 0 0 16px;position:relative}
+.tl::before{content:"";position:absolute;left:4px;top:14px;bottom:14px;width:2px;background:#ece8f4}
+.tl li{position:relative;display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.tl li:last-child{border:0}
+.tl li::before{content:"";position:absolute;left:-16px;width:10px;height:10px;border-radius:50%;background:var(--purple-200);border:2px solid #fff}
+.tl li.now::before{background:var(--violet)}
+.tl time{font-size:12.5px;color:var(--muted);line-height:1.3}
+.tl b{font-size:14px;display:block}
+.tl small{color:var(--muted);font-size:12.5px}
+
+/* ============ Aulas ============ */
+.aulas-top{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+.live-card{display:flex;align-items:center;gap:16px}
+.rhythm{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.rhythm>div{display:flex;align-items:center;gap:10px}
+.rhythm b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em;display:block;line-height:1}
+.rhythm small{font-size:12px;color:var(--muted)}
+.mods{display:flex;flex-direction:column;gap:10px}
+.mod{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;border:1px solid transparent;transition:border-color .2s}
+.mod.open{border-color:var(--purple-200)}
+.mod-h{display:flex;align-items:center;gap:14px;width:100%;padding:14px 18px;text-align:left}
+.mod-h:hover{background:#fbfaff}
+.mod.open .mod-h{background:var(--purple-50)}
+.mod-h .chev{transition:transform .3s var(--ease);color:var(--muted)}
+.mod.open .mod-h .chev{transform:rotate(90deg)}
+.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none;background:#8e86a6;color:#fff}
+.num.done{background:var(--success)}
+.num.now{background:var(--violet)}
+.mod-h .title{flex:1;font-weight:700;font-size:15px}
+.mod-h .count{color:var(--muted);font-size:13.5px;min-width:80px}
+.mod-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.mod.open .mod-b{grid-template-rows:1fr}
+.mod-b>div{overflow:hidden}
+.lessons{list-style:none;margin:0;padding:6px 18px 14px 58px;position:relative}
+.lessons::before{content:"";position:absolute;left:33px;top:16px;bottom:24px;width:2px;background:repeating-linear-gradient(var(--purple-200) 0 4px,transparent 4px 8px)}
+.lessons li{display:grid;grid-template-columns:24px 28px minmax(0,1fr) 90px 130px 150px;gap:10px;align-items:center;padding:8px 10px;border-radius:var(--r-sm);font-size:14px}
+.lessons li.cur{background:var(--purple-50);font-weight:700}
+.lessons .st{display:grid}
+.lessons .st svg.i{width:20px;height:20px}
+.lessons .st.ok{color:var(--success)}
+.lessons .st.cur{color:var(--violet)}
+.lessons .st.lock{color:var(--muted)}
+.lessons .n{color:var(--muted);font-variant-numeric:tabular-nums}
+.lessons .d{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:500;font-size:13px}
+.lessons .d svg.i{width:15px;height:15px}
+
+/* Aula (drill-in) */
+.lesson-grid{grid-template-columns:minmax(0,1fr) 340px;align-items:start}
+.player{position:relative;aspect-ratio:16/9;border-radius:var(--r-xl);overflow:hidden;background:#140a2e;box-shadow:0 18px 40px rgba(31,13,57,.25)}
+.player img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.player .playbtn{position:absolute;inset:0;margin:auto;width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--violet);display:grid;place-items:center;box-shadow:0 0 0 12px rgba(255,255,255,.18);transition:transform .2s var(--spring)}
+.player .playbtn:hover{transform:scale(1.07)}
+.player .playbtn svg{width:30px;height:30px;fill:currentColor;margin-left:4px}
+.player .ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:16px 20px;color:#fff;font-size:13px;background:linear-gradient(transparent,rgba(10,4,26,.75))}
+.player .ctrl .bar{flex:1;height:6px;background:rgba(255,255,255,.25)}
+.player .ctrl .bar>i{background:var(--yellow)}
+.player .cc{padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.18);font-weight:700;font-size:11.5px}
+.tabs-line{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:0 0 16px}
+.tabs-line button{padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs-line button[aria-selected="true"]{color:var(--violet);border-color:var(--violet)}
+.trans p{display:flex;gap:16px;margin:0 0 4px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;transition:background .2s}
+.trans p:hover{background:#faf8ff}
+.trans p.on{background:var(--purple-50)}
+.trans time{color:var(--violet);font-weight:700;font-size:13px;min-width:38px;font-variant-numeric:tabular-nums}
+.side-lessons{list-style:none;margin:0;padding:0}
+.side-lessons li button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px;border-radius:var(--r-md);transition:background .2s}
+.side-lessons li button:hover{background:#faf8ff}
+.side-lessons li.cur button{background:var(--purple-50)}
+.side-lessons img{width:64px;height:40px;border-radius:8px;object-fit:cover;flex:none}
+.side-lessons b{display:block;font-size:13.5px}
+.side-lessons small{color:var(--muted);font-size:12px}
+.done-banner{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;margin-top:18px;padding:16px 18px;border-radius:var(--r-lg);background:linear-gradient(100deg,var(--yellow-soft),#fff 70%);border:1px solid #f6e3a6;transition:background .3s,border-color .3s}
+
+/* ============ Prática ============ */
+.prat-top{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.week-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ws{background:#faf8ff;border-radius:var(--r-lg);padding:16px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ws b{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.02em;line-height:1}
+.ws small{font-size:12.5px;color:var(--muted);line-height:1.2}
+.ws .tag{margin-top:4px}
+.skills4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.skill{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:var(--r-lg);text-align:left;transition:transform .25s var(--ease),box-shadow .25s}
+.skill:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.skill h3{display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:700;font-size:15px;margin:2px 0 4px}
+.skill h3 svg.i{width:16px;height:16px;transition:transform .2s}
+.skill:hover h3 svg.i{transform:translateX(3px)}
+.skill p{margin:0;font-size:12.5px;color:var(--ink-2);opacity:.85;line-height:1.35}
+.skill.lilac{background:var(--t-lilac)}.skill.blue{background:var(--t-blue)}.skill.yellow{background:var(--t-yellow)}.skill.green{background:var(--t-green)}
+.skill .ico{background:#fff}
+.skill>span:last-child{min-width:0}
+.course-row>*{min-width:0}
+.thumb .dur{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:6px;background:rgba(15,6,38,.72);color:#fff;font-size:11.5px;font-weight:700;backdrop-filter:blur(2px)}
+.thumb .dur svg{width:10px;height:10px;fill:currentColor}
+.mini-bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:92px;margin-top:18px;padding-top:6px;border-top:1px dashed var(--line)}
+.mini-bars div{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.mini-bars i{width:100%;max-width:26px;border-radius:7px 7px 4px 4px;background:var(--purple-100);height:0;transition:height .9s var(--spring)}
+.mini-bars i.hi{background:var(--violet)}
+.mini-bars small{font-size:11px;color:var(--muted);font-weight:600}
+.card-foot{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink-2)}
+.card-foot a{margin-left:auto}
+.side-off{margin-top:62px}
+.prat-mid{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);align-items:start}
+.recs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rec{display:flex;gap:14px;padding:12px}
+.rec .thumb{position:relative;width:96px;flex:none;border-radius:var(--r-md);overflow:hidden}
+.rec .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease)}
+.rec:hover .thumb img{transform:scale(1.06)}
+.rec .body{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.rec h3{font-size:14.5px;margin:0;line-height:1.25}
+.rec p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.35}
+.rec .btn{margin-top:auto;width:100%}
+.hist img{width:46px;height:46px;border-radius:var(--r-sm);object-fit:cover;flex:none}
+.quick{grid-template-columns:repeat(3,minmax(0,1fr))}
+.quick a{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.quick b{display:block;font-size:14px}
+.quick small{color:var(--muted);font-size:12.5px}
+
+/* Modal de gravação */
+.modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;background:rgba(25,11,47,.55);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+.modal.open{opacity:1;pointer-events:auto}
+.sheet{width:min(640px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#fff;border-radius:26px;box-shadow:var(--shadow-pop);transform:translateY(20px) scale(.98);transition:transform .35s var(--spring)}
+.modal.open .sheet{transform:none}
+.sheet-top{position:relative;height:150px;overflow:hidden;background:linear-gradient(110deg,var(--hero-a),var(--hero-b));color:#fff;padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between}
+.sheet-top img{position:absolute;right:0;bottom:0;height:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 35%);mask-image:linear-gradient(90deg,transparent,#000 35%)}
+.sheet-top .x{position:relative;z-index:1;align-self:flex-start;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.sheet-top .steps{position:relative;z-index:1;display:flex;gap:6px;width:220px;margin-top:8px}
+.sheet-top .steps i{flex:1;height:5px;border-radius:5px;background:rgba(255,255,255,.25)}
+.sheet-top .steps i.on{background:var(--yellow)}
+.sheet-body{padding:24px 28px 28px;text-align:center}
+.sheet-body h3{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.02em;margin:10px 0 8px}
+.prompt-ex{display:inline-block;margin:4px 0 0;padding:8px 14px;border-radius:var(--r-md);background:#faf8ff;color:var(--ink-2);font-size:14px}
+.mic-zone{position:relative;display:grid;place-items:center;height:170px;margin:12px 0 4px}
+.mic-zone>*{grid-area:1/1}
+.mic{position:relative;z-index:2;width:104px;height:104px;border-radius:50%;background:var(--violet);color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px rgba(96,36,247,.4);transition:transform .2s var(--spring),background .2s}
+.mic:hover{transform:scale(1.05)}
+.mic svg.i{width:40px;height:40px}
+.halo{width:104px;height:104px;border-radius:50%;background:rgba(96,36,247,.16);opacity:0}
+.rec-on .mic{background:#ef3b4b;box-shadow:0 14px 30px rgba(239,59,75,.4)}
+.rec-on .halo{animation:halo 1.6s var(--ease) infinite;background:rgba(239,59,75,.18)}
+.rec-on .halo:nth-child(2){animation-delay:.5s}
+@keyframes halo{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+.wave{display:flex;align-items:center;justify-content:center;gap:4px;height:48px}
+.wave i{width:5px;height:8px;border-radius:5px;background:var(--purple-200);transition:height .12s}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink-2);margin-top:4px}
+.sheet-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.sent{display:none;flex-direction:column;align-items:center;gap:10px;padding:10px 0}
+.sent .check{width:84px;height:84px;border-radius:50%;background:var(--success-soft);color:var(--success);display:grid;place-items:center;transform:scale(.5);opacity:0}
+.sent.show{display:flex}
+.sent.show .check{animation:pop .5s var(--spring) forwards}
+.sent .check svg.i{width:42px;height:42px;stroke-width:2.6}
+
+/* ============ Materiais ============ */
+.mat-grid{grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);align-items:start}
+.cont{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cont a{display:flex;gap:14px;padding:12px}
+.cont img{width:78px;height:98px;border-radius:var(--r-sm);object-fit:cover;flex:none;box-shadow:0 4px 10px rgba(31,13,57,.12)}
+.cont .b{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.cont b{font-size:14.5px;line-height:1.25}
+.cont small{color:var(--muted);font-size:12.5px;display:flex;align-items:center;gap:6px}
+.cont .f{display:flex;justify-content:space-between;align-items:center;margin-top:auto;font-size:12px;color:var(--muted)}
+.mrows{list-style:none;margin:0;padding:4px 18px 12px}
+.mrows li{display:grid;grid-template-columns:44px minmax(0,1fr) 150px 110px 28px;gap:12px;align-items:center;padding:8px 6px;border-bottom:1px solid var(--line);transition:background .2s}
+.mrows li:last-child{border:0}
+.mrows li:hover{background:#fcfbff}
+.mrows li[hidden]{display:none}
+.mrows .ico{width:40px;height:40px}
+.mrows .ico svg.i{width:20px;height:20px}
+.mrows b{display:block;font-size:14px}
+.mrows small{color:var(--muted);font-size:12.5px}
+.kebab{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--muted)}
+.kebab:hover{background:#f3f0fa}
+.fav img{width:48px;height:48px;border-radius:var(--r-sm);object-fit:cover;flex:none}
+.star{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:#d4cfe0;transition:transform .2s var(--spring),color .2s}
+.star svg.i{fill:currentColor;stroke:none;width:20px;height:20px}
+.star[aria-pressed="true"]{color:var(--yellow)}
+.star:active{transform:scale(1.3)}
+
+/* ============ Progresso ============ */
+.p-top{grid-template-columns:minmax(0,2.1fr) minmax(0,1fr)}
+.prof{display:grid;grid-template-columns:240px 1fr;gap:26px}
+.prof-level{border-right:1px solid var(--line);padding-right:22px}
+.big-level{font-family:var(--display);font-weight:800;font-size:76px;letter-spacing:-.04em;line-height:.95;margin:4px 0 6px}
+.skill-bars{display:flex;flex-direction:column;gap:12px}
+.skill-bars>div{display:grid;grid-template-columns:22px 110px 40px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:14px}
+.skill-bars svg.i{width:18px;height:18px;color:var(--ink-2)}
+.skill-bars .v{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.p-mid{grid-template-columns:minmax(0,2.1fr) minmax(0,1fr)}
+.chart{width:100%;height:auto;overflow:visible}
+.chart .grid-l{stroke:#ece8f4;stroke-dasharray:4 5}
+.chart .line{fill:none;stroke:var(--violet);stroke-width:3;stroke-linecap:round;stroke-dasharray:1000;stroke-dashoffset:1000}
+.screen.active .chart .line{animation:draw 1.6s .2s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.chart .area{fill:url(#area);opacity:0}
+.screen.active .chart .area{animation:fadein .8s 1s var(--ease) forwards}
+@keyframes fadein{to{opacity:1}}
+.chart .pt{fill:var(--violet);stroke:#fff;stroke-width:3}
+.chart .lbl rect{fill:#efe9ff}
+.chart .lbl text{font:700 12px var(--sans);fill:var(--violet)}
+.chart .ax{font:500 12px var(--sans);fill:var(--muted)}
+.cons li{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cons li:last-child{border:0}
+.cons b{font-family:var(--display);font-weight:800;font-size:22px;min-width:58px}
+.cons span{color:var(--muted);font-size:13px;flex:1}
+.course-row{display:grid;grid-template-columns:auto minmax(0,1.1fr) minmax(0,1.4fr) 1px minmax(0,1fr);gap:20px;align-items:center}
+.course-row img{width:76px;height:52px;border-radius:var(--r-sm);object-fit:cover}
+.badges{grid-template-columns:repeat(4,minmax(0,1fr))}
+.badges>div{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.badges b{font-family:var(--display);font-weight:800;font-size:20px}
+.badges small{color:var(--muted);font-size:12.5px;line-height:1.25}
+.info-line{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);background:#fff;border-radius:var(--r-md);padding:10px 14px;margin:0 0 14px;box-shadow:var(--shadow)}
+.info-line svg.i{color:var(--violet);width:18px;height:18px}
+
+/* ============ Agenda ============ */
+.ag-grid{grid-template-columns:minmax(0,2.4fr) minmax(0,1fr);align-items:start}
+.cal-h{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.cal-h h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0;letter-spacing:-.01em}
+.arrow{width:32px;height:32px;border-radius:var(--r-sm);display:grid;place-items:center;color:var(--ink-2)}
+.arrow:hover{background:#f3f0fa}
+.tz{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.cal{position:relative;display:grid;grid-template-columns:52px repeat(7,minmax(0,1fr));border-top:1px solid var(--line)}
+.cal .dh{text-align:center;padding:10px 0;font-size:12.5px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line)}
+.cal .dh b{display:grid;place-items:center;width:30px;height:30px;margin:4px auto 0;border-radius:50%;font-size:14px;color:var(--ink)}
+.cal .dh.today b{background:var(--violet);color:#fff}
+.cal .hr{font-size:11.5px;color:var(--muted);text-align:right;padding-right:8px;transform:translateY(-7px);height:60px}
+.cal .cell{border-left:1px solid var(--line);border-bottom:1px solid #f4f1fa;height:60px}
+.cal .cell.td{background:rgba(96,36,247,.025)}
+.ev{position:absolute;border-radius:var(--r-sm);padding:7px 9px;font-size:12px;line-height:1.3;text-align:left;border-left:3px solid;transition:transform .2s var(--ease),box-shadow .2s,opacity .25s;overflow:hidden}
+.ev:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover);z-index:2}
+.ev b{display:flex;align-items:center;gap:5px;font-size:12.5px}
+.ev b svg.i{width:14px;height:14px}
+.ev span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.short small{display:none}
+.ev small{color:inherit;opacity:.75}
+.ev.aula{background:#ece7ff;border-color:var(--violet);color:#3b1f8f}
+.ev.pratica{background:#fff2cf;border-color:var(--yellow);color:#7a5200}
+.ev.evento{background:#fde6f5;border-color:#d052b2;color:#7f1f68}
+.ev.dim{opacity:.2;pointer-events:none}
+.now-line{position:absolute;height:2px;background:#ef3b4b;pointer-events:none}
+.now-line::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ef3b4b}
+.qlinks a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r-md);background:#faf8ff;font-weight:600;font-size:14px;margin-bottom:8px;transition:background .2s}
+.qlinks a:hover{background:var(--purple-50)}
+.qlinks a .chev{margin-left:auto;color:var(--muted)}
+.popover{position:absolute;top:0;left:0;z-index:70;width:300px;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:18px;opacity:0;transform:translateY(6px) scale(.98);pointer-events:none;transition:all .2s var(--ease)}
+.popover.open{opacity:1;transform:none;pointer-events:auto}
+.popover h3{font-family:var(--display);font-weight:800;font-size:18px;margin:8px 0 6px;letter-spacing:-.01em}
+.popover ul{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--ink-2)}
+.popover li{display:flex;align-items:center;gap:8px}
+.popover li svg.i{width:16px;height:16px;color:var(--muted)}
+
+/* ============ Assinatura pendente ============ */
+.gate{display:none}
+body.gated .screen[data-paid] .content{display:none}
+body.gated .screen[data-paid] .gate{display:grid}
+.gate{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:30px;align-items:center;padding:clamp(22px,3vw,40px)}
+.gate h2{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,2.4vw,2.1rem);letter-spacing:-.02em;margin:14px 0 8px;line-height:1.1}
+.gate ul{list-style:none;padding:0;margin:18px 0 24px;display:grid;gap:10px}
+.gate li{display:flex;gap:10px;align-items:center}
+.gate li svg.i{color:var(--success)}
+.gate .art{position:relative;border-radius:var(--r-xl);overflow:hidden;min-height:280px;background:linear-gradient(110deg,var(--hero-a),var(--hero-b))}
+.gate .art img{position:absolute;right:0;bottom:0;height:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%);mask-image:linear-gradient(90deg,transparent,#000 30%)}
+.gate .art .lockb{position:absolute;left:24px;top:24px;width:56px;height:56px;border-radius:50%;background:var(--yellow);color:#1d1040;display:grid;place-items:center;box-shadow:0 0 0 10px rgba(249,201,51,.2)}
+.stepper{display:flex;gap:16px;flex-wrap:wrap;margin-top:22px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.stepper span{display:flex;align-items:center;gap:8px}
+.stepper span b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--purple-100);color:var(--violet);font-size:12px}
+.stepper span.on{color:var(--ink)}
+.stepper span.on b{background:var(--yellow);color:#1d1040}
+
+/* ============ Toast, painel do protótipo ============ */
+.toast{position:fixed;left:50%;bottom:26px;z-index:90;display:flex;align-items:center;gap:12px;padding:12px 18px 12px 14px;border-radius:var(--r-md);background:#1f1146;color:#fff;font-weight:600;font-size:14px;box-shadow:var(--shadow-pop);transform:translate(-50%,30px);opacity:0;transition:all .35s var(--spring);pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast .ok{width:26px;height:26px;border-radius:50%;background:var(--success);display:grid;place-items:center;flex:none}
+.toast .ok svg.i{width:15px;height:15px;stroke-width:3}
+.proto{position:fixed;right:18px;bottom:18px;z-index:60}
+.proto>button{display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:var(--pill);background:#1f1146;color:#fff;font-weight:600;font-size:13px;box-shadow:var(--shadow-pop)}
+.proto>button svg.i{width:16px;height:16px}
+.proto-menu{position:absolute;right:0;bottom:50px;width:290px;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:14px;display:none}
+.proto.open .proto-menu{display:block}
+.proto-menu h4{margin:0 0 8px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#f3f0fa;border-radius:var(--r-sm);padding:3px;margin-bottom:14px}
+.seg button{height:34px;border-radius:8px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--violet);box-shadow:var(--shadow)}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:85;width:min(420px,100%);background:#fff;box-shadow:var(--shadow-pop);padding:24px;transform:translateX(105%);transition:transform .35s var(--ease);overflow:auto}
+.drawer.open{transform:none}
+.drawer h3{font-family:var(--display);font-weight:800;margin:0 0 4px;font-size:20px}
+.drawer ul{padding-left:18px;color:var(--ink-2);font-size:14px}
+.drawer li{margin:8px 0}
+.drawer .ref{font-size:12px;color:var(--muted)}
+
+/* ============ Responsivo ============ */
+.bottom-nav,.m-top{display:none}
+@media (max-width:1180px){
+  .row1{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .row1 .hero{grid-column:1/-1}
+  .row2,.prat-mid,.mat-grid,.ag-grid,.p-top,.p-mid,.aulas-top,.prat-top,.lesson-grid{grid-template-columns:minmax(0,1fr)}
+  .side-off{margin-top:0!important}
+  .skills4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lessons li{grid-template-columns:24px 28px minmax(0,1fr) 80px 120px}
+  .lessons li .act:not(:empty){grid-column:3/-1}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .sidebar,.topbar,.tagline{display:none}
+  .m-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--sb);color:#fff;position:sticky;top:0;z-index:30}
+  .m-top img.l{height:40px}
+  .m-top .me img{width:34px;height:34px;border:2px solid rgba(255,255,255,.4)}
+  .page{padding:4px 16px 96px}
+  .page-head{min-height:0;margin:16px 0 14px}
+  .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(31,13,57,.06)}
+  .bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);padding:4px 0}
+  .bottom-nav a svg.i{width:30px;height:28px;padding:3px;border-radius:10px;transition:background .2s}
+  .bottom-nav a[aria-current="page"]{color:var(--violet)}
+  .bottom-nav a[aria-current="page"] svg.i{background:var(--purple-50)}
+  .hero-copy{max-width:100%}
+  .hero{min-height:0;padding:22px 20px}
+  .hero .photo{width:48%;opacity:.3}
+  .hero .btn{width:100%}
+  .row1,.tiles,.recs,.cont,.quick{grid-template-columns:minmax(0,1fr)}
+  .badges{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .prof{grid-template-columns:minmax(0,1fr)}
+  .prof-level{border:0;padding:0}
+  .skill-bars>div{grid-template-columns:20px 84px 34px minmax(0,1fr) 40px}
+  .course-row{display:flex;flex-wrap:wrap;gap:12px 14px}
+  .course-row>div:not(.bar-wrap){flex:1 1 0}
+  .course-row>.sep,.course-row>.mod-now{display:none}
+  .course-row>.bar-wrap{flex:1 1 100%}
+  .lessons{padding-left:18px}
+  .lessons::before{display:none}
+  .lessons li{grid-template-columns:24px minmax(0,1fr) auto;row-gap:4px}
+  .lessons li .n,.lessons li .d{display:none}
+  .lessons li .act:not(:empty){grid-column:2/-1}
+  .mod-h .count{display:none}
+  .mod-h .tag{display:none}
+  .mrows li{grid-template-columns:40px minmax(0,1fr) auto}
+  .mrows li .tag,.mrows li .kebab{display:none}
+  .cal-wrap{overflow-x:auto;margin:0 -4px}
+  .cal-wrap .cal{min-width:600px}
+  .rhythm{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .rhythm>div{flex-direction:column;align-items:flex-start;gap:8px}
+  .pills{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px 16px;padding:4px 16px 8px;scrollbar-width:none}
+  .pills::-webkit-scrollbar{display:none}
+  .pill{flex:none}
+  .skill{flex-direction:column;gap:10px}
+  .proto{bottom:84px}
+  .toast{bottom:90px}
+  .gate{grid-template-columns:minmax(0,1fr)}
+  .gate .art{min-height:180px}
+  #perfilGrid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+  <symbol id="i-play-sq" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="4"/><path d="m10 9 5 3-5 3z"/></symbol>
+  <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="1.6"/><rect x="17" y="14" width="4" height="7" rx="1.6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><rect x="4" y="12" width="3.5" height="8" rx="1"/><rect x="10.25" y="7" width="3.5" height="13" rx="1"/><rect x="16.5" y="4" width="3.5" height="16" rx="1"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"/><path d="M12 6v14"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/></symbol>
+  <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/></symbol>
+  <symbol id="i-play-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5.5 3.5-5.5 3.5z" fill="currentColor"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13 7 4 4"/></symbol>
+  <symbol id="i-grad" viewBox="0 0 24 24"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="19" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6L20 9"/><path d="M20 4v5h-5"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" aria-label="Navegação principal">
+    <a href="#inicio"><img class="logo" src="assets/logo.webp" alt="Yas English Lab"></a>
+    <nav class="nav" id="nav">
+      <a href="#inicio"><svg class="i"><use href="#i-home"/></svg>Início</a>
+      <a href="#aulas" data-paid><svg class="i"><use href="#i-play-sq"/></svg>Aulas<svg class="i lock"><use href="#i-lock"/></svg></a>
+      <a href="#pratica" data-paid><svg class="i"><use href="#i-headphones"/></svg>Prática<svg class="i lock"><use href="#i-lock"/></svg></a>
+      <a href="#materiais" data-paid><svg class="i"><use href="#i-file"/></svg>Materiais<svg class="i lock"><use href="#i-lock"/></svg></a>
+      <a href="#progresso"><svg class="i"><use href="#i-bars"/></svg>Progresso</a>
+      <a href="#agenda" data-paid><svg class="i"><use href="#i-cal"/></svg>Agenda<svg class="i lock"><use href="#i-lock"/></svg></a>
+      <a href="#perfil"><svg class="i"><use href="#i-user"/></svg>Perfil</a>
+    </nav>
+    <svg class="sb-wave" viewBox="0 0 260 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C60 10 110 10 150 55 S230 120 260 60 V150 H0Z" fill="#5a2b9e" opacity=".55"/><path d="M0 105 C55 60 120 70 160 100 S235 140 260 105 V150 H0Z" fill="#6a36b4" opacity=".35"/></svg>
+    <a class="help" href="#perfil"><svg class="i"><use href="#i-headphones"/></svg><span><b>Precisa de ajuda?</b><small>Fale com o nosso time</small></span><svg class="i" style="margin-left:auto;width:16px;height:16px"><use href="#i-arrow"/></svg></a>
+  </aside>
+
+  <div class="main">
+    <svg class="bg-deco" viewBox="0 0 1200 340" preserveAspectRatio="none" aria-hidden="true"><path d="M520 0 C700 120 860 40 1000 90 S1160 200 1200 150 V0Z" fill="#e7defc" opacity=".8"/><path d="M640 0 C780 60 900 10 1040 40 S1170 110 1200 80 V0Z" fill="#ddd1fb" opacity=".55"/></svg>
+    <div class="m-top"><img class="l" src="assets/logo.webp" alt="Yas English Lab"><a class="me" href="#perfil"><img src="assets/avatar.webp" alt="Seu perfil"></a></div>
+    <header class="topbar">
+      <label class="search"><svg class="i"><use href="#i-search"/></svg><span class="sr-only">Buscar</span><input placeholder="Buscar aulas, materiais, temas…"></label>
+      <div class="top-right">
+        <button class="bell" aria-label="Notificações, 1 nova"><svg class="i"><use href="#i-bell"/></svg></button>
+        <a class="me" href="#perfil"><img src="assets/avatar.webp" alt="">Yasmin<svg class="i" style="width:16px;height:16px"><use href="#i-down"/></svg></a>
+      </div>
+    </header>
+
+    <main class="page">
+
+<!-- ======================= INÍCIO ======================= -->
+<section class="screen" id="inicio">
+  <div class="page-head rv"><div><h1>Olá, Yasmin 👋</h1><p>Continue sua jornada no inglês com prática e constância.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+
+  <div class="grid row1">
+    <article class="hero rv" style="--i:1">
+      <img class="photo" src="assets/hero-teacher.webp" alt="">
+      <div class="hero-copy">
+        <span class="kicker"><svg class="i"><use href="#i-cal"/></svg>Próxima aula ao vivo</span>
+        <h2>Inglês para Viagens</h2>
+        <ul class="meta">
+          <li><svg class="i"><use href="#i-cal"/></svg>Hoje, ter 14 de out</li>
+          <li><svg class="i"><use href="#i-clock"/></svg><span>19:00 – 19:50 · começa em <b id="countdown"></b></span></li>
+          <li><svg class="i"><use href="#i-user"/></svg>Teacher Alex</li>
+        </ul>
+        <button class="btn btn-y btn-lg" data-toast="O link da aula abre 15 minutos antes do início."><svg class="i"><use href="#i-video"/></svg>Entrar na aula<svg class="i"><use href="#i-arrow"/></svg></button>
+      </div>
+    </article>
+
+    <article class="card rv" style="--i:2">
+      <div class="card-h"><h2>Meu progresso</h2><a class="more" href="#progresso">Ver detalhes<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="prog-card">
+        <div class="ring" data-p="56"><div><span><b data-count="56">0</b><b style="font-size:16px">%</b><small>do curso</small></span></div></div>
+        <div style="min-width:0">
+          <small class="muted">Nível atual</small>
+          <div class="level"><b>A2</b><span class="tag lilac">Pré-intermediário</span></div>
+          <small class="muted" style="display:block;margin-top:4px">Teste de 12 set · revisado pela professora</small>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:18px"><div class="bar y" style="flex:1"><i data-w="56"></i></div><b style="font-size:13.5px">18/32 aulas</b></div>
+      <div class="card-foot"><span class="ico sq lilac" style="width:34px;height:34px"><svg class="i" style="width:17px;height:17px"><use href="#i-play-sq"/></svg></span><span>Próxima: <b>Real-life conversation</b></span><a class="more" href="#aulas" data-open-lesson>Continuar<svg class="i"><use href="#i-arrow"/></svg></a></div>
+    </article>
+
+    <article class="card rv" style="--i:3">
+      <div class="card-h"><h2>Sequência de prática</h2></div>
+      <div style="display:flex;gap:14px;align-items:center">
+        <div class="flame" aria-hidden="true">🔥</div>
+        <div><div class="streak-n"><span data-count="7">0</span> dias</div><small class="muted">Você está mandando muito bem!</small></div>
+      </div>
+      <div class="dots" role="img" aria-label="Praticou nos últimos 7 dias">
+        <div><i class="on" style="--d:0"></i>S</div><div><i class="on" style="--d:1"></i>T</div><div><i class="on" style="--d:2"></i>Q</div><div><i class="on" style="--d:3"></i>Q</div><div><i class="on" style="--d:4"></i>S</div><div><i class="on" style="--d:5"></i>S</div><div><i class="on today" style="--d:6"></i>D</div>
+      </div>
+      <div class="card-foot"><svg class="i" style="width:17px;height:17px;color:var(--t-yellow-ink)"><use href="#i-trophy"/></svg><span>Recorde: <b>12 dias</b></span></div>
+    </article>
+  </div>
+
+  <div class="grid row2" style="margin-top:4px">
+    <div>
+      <div class="sec-h rv" style="--i:4"><h2>Trilhas recomendadas</h2><a class="more" href="#pratica">Ver todas<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="grid tiles">
+        <a class="card tile lift rv" style="--i:5" href="#pratica"><span class="ico lilac"><svg class="i"><use href="#i-chat"/></svg></span><div><h3>Conversação</h3><p>Ganhe mais confiança para se comunicar.</p></div><span class="go"><svg class="i"><use href="#i-arrow"/></svg></span></a>
+        <a class="card tile lift rv" style="--i:6" href="#pratica"><span class="ico yellow"><svg class="i"><use href="#i-headphones"/></svg></span><div><h3>Listening</h3><p>Treine sua compreensão do inglês real.</p></div><span class="go"><svg class="i"><use href="#i-arrow"/></svg></span></a>
+        <a class="card tile lift rv" style="--i:7" href="#pratica"><span class="ico blue"><svg class="i"><use href="#i-book"/></svg></span><div><h3>Vocabulário</h3><p>Palavras e expressões do dia a dia.</p></div><span class="go"><svg class="i"><use href="#i-arrow"/></svg></span></a>
+      </div>
+      <div class="sec-h rv" style="--i:8"><h2>Atividades recentes</h2><a class="more" href="#progresso">Ver todas<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="card rv" style="--i:9;padding:8px 18px">
+        <ul class="list">
+          <li><a class="row" href="#aulas"><span class="ico sq lilac"><svg class="i"><use href="#i-play-sq"/></svg></span><span class="t"><b>Aula realizada: Small Talk at Work</b><small>Com Teacher Alex · 12 de out</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a></li>
+          <li><a class="row" href="#pratica"><span class="ico sq yellow"><svg class="i"><use href="#i-headphones"/></svg></span><span class="t"><b>Exercício de listening</b><small>At the Airport · 88% de acerto</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a></li>
+          <li><a class="row" href="#materiais"><span class="ico sq blue"><svg class="i"><use href="#i-file"/></svg></span><span class="t"><b>Quiz de vocabulário</b><small>Travel &amp; Tourism · 10/10 acertos</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a></li>
+        </ul>
+      </div>
+    </div>
+    <aside class="card rv side-off" style="--i:6">
+      <div class="card-h"><h2>Minha agenda</h2><a class="more" href="#agenda">Ver agenda<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700"><button class="arrow" aria-label="Semana anterior"><svg class="i"><use href="#i-left"/></svg></button>Outubro 2026<button class="arrow" aria-label="Próxima semana"><svg class="i"><use href="#i-right"/></svg></button></div>
+      <div class="week-strip" id="homeWeek">
+        <div><small>SEG</small><button>13</button></div><div><small>TER</small><button class="has" aria-pressed="true">14</button></div><div><small>QUA</small><button class="has">15</button></div><div><small>QUI</small><button class="has">16</button></div><div><small>SEX</small><button>17</button></div><div><small>SÁB</small><button class="has">18</button></div><div><small>DOM</small><button>19</button></div>
+      </div>
+      <ul class="tl">
+        <li class="now"><time>Hoje<br>19:00</time><span><b>Inglês para Viagens</b><small>Teacher Alex</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></li>
+        <li><time>Qui, 16/10<br>19:00</time><span><b>Business English</b><small>Teacher Sam</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></li>
+        <li><time>Sáb, 18/10<br>09:00</time><span><b>English Club</b><small>Teacher Emma</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></li>
+      </ul>
+      <a class="btn btn-soft" href="#agenda" style="width:100%;margin-top:12px"><svg class="i"><use href="#i-cal"/></svg>Ver agenda completa</a>
+    </aside>
+  </div>
+</section>
+
+<!-- ======================= AULAS ======================= -->
+<section class="screen" id="aulas" data-paid>
+  <div class="page-head rv"><div><h1>Aulas</h1><p>Continue sua trilha e acompanhe sua evolução no curso.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="content">
+  <div id="trilha">
+    <div class="pills rv" style="--i:1" role="tablist">
+      <button class="pill" role="tab" aria-selected="true"><svg class="i"><use href="#i-book"/></svg>Minha trilha</button>
+      <button class="pill" role="tab" aria-selected="false"><svg class="i"><use href="#i-users"/></svg>Encontros ao vivo</button>
+      <button class="pill" role="tab" aria-selected="false"><svg class="i"><use href="#i-play-sq"/></svg>Gravações</button>
+    </div>
+    <div class="grid aulas-top">
+      <article class="hero rv" style="--i:2">
+        <img class="photo" src="assets/hero-course.webp" alt="">
+        <div class="hero-copy">
+          <span class="kicker"><svg class="i"><use href="#i-cal"/></svg>Seu curso</span>
+          <h2>English Journey — A2</h2>
+          <span style="opacity:.92;font-size:14.5px"><b data-count="18">0</b> de 32 aulas concluídas</span>
+          <div class="prog"><div class="bar"><i data-w="56"></i></div><b>56%</b></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;margin:-6px 0 16px;opacity:.92"><svg class="i" style="width:17px;height:17px"><use href="#i-layers"/></svg>Você está no Módulo 2</div>
+          <button class="btn btn-y btn-lg" data-open-lesson><svg class="i"><use href="#i-play-sq"/></svg>Continuar de onde parei<svg class="i"><use href="#i-arrow"/></svg></button>
+        </div>
+      </article>
+      <div class="grid" style="gap:14px">
+        <article class="card rv" style="--i:3;padding:18px 20px">
+          <div class="card-h" style="margin-bottom:12px"><h2 style="display:flex;align-items:center;gap:8px"><svg class="i" style="width:18px;height:18px"><use href="#i-cal"/></svg>Próximo encontro ao vivo</h2><a class="more" href="#agenda">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+          <div class="live-card"><span class="ico lilac" style="width:56px;height:56px"><svg class="i"><use href="#i-users"/></svg></span><div style="flex:1;min-width:0"><b style="font-size:15.5px">Inglês para Viagens</b><div class="muted" style="font-size:13px">Hoje · 19:00 · Teacher Alex</div></div><button class="btn btn-v btn-sm" data-toast="O link abre 15 minutos antes do início."><svg class="i" style="width:16px;height:16px"><use href="#i-video"/></svg>Entrar</button></div>
+        </article>
+        <article class="card rv" style="--i:4;padding:18px 20px">
+          <div class="card-h" style="margin-bottom:12px"><h2 style="display:flex;align-items:center;gap:8px"><svg class="i" style="width:18px;height:18px"><use href="#i-bars"/></svg>Seu ritmo nesta semana</h2></div>
+          <div class="rhythm">
+            <div><span class="ico lilac" style="width:40px;height:40px"><svg class="i" style="width:19px;height:19px"><use href="#i-bars"/></svg></span><span><b data-count="3">0</b><small>aulas</small></span></div>
+            <div><span class="ico yellow" style="width:40px;height:40px"><svg class="i" style="width:19px;height:19px"><use href="#i-clock"/></svg></span><span><b><span data-count="85">0</span><span style="font-size:14px"> min</span></b><small>estudados</small></span></div>
+            <div><span class="ico red" style="width:40px;height:40px;font-size:18px">🔥</span><span><b><span data-count="7">0</span><span style="font-size:14px"> dias</span></b><small>de sequência</small></span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="sec-h rv" style="--i:5"><h2>Módulos do curso</h2></div>
+    <div class="mods">
+      <div class="mod rv" style="--i:6"><button class="mod-h" aria-expanded="false"><svg class="i chev"><use href="#i-right"/></svg><span class="num done"><svg class="i" style="width:16px;height:16px;stroke-width:3"><use href="#i-check"/></svg></span><span class="title">Módulo 1 · Getting Started</span><span class="count">8/8 aulas</span><span class="tag green"><svg class="i"><use href="#i-check-c"/></svg>Concluído</span></button><div class="mod-b"><div><ul class="lessons"><li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">01</span><span>Welcome to Yas</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>10 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li><li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">02</span><span>Introductions that sound natural</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>14 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li></ul></div></div></div>
+      <div class="mod open rv" style="--i:7"><button class="mod-h" aria-expanded="true"><svg class="i chev"><use href="#i-right"/></svg><span class="num now">2</span><span class="title">Módulo 2 · Everyday English</span><span class="count">6/8 aulas</span><span class="tag lilac"><svg class="i"><use href="#i-redo"/></svg>Em andamento</span></button>
+        <div class="mod-b"><div><ul class="lessons">
+          <li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">01</span><span>Daily routines</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>18 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li>
+          <li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">02</span><span>Talking about your day</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>22 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li>
+          <li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">03</span><span>Present Simple in context</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>16 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li>
+          <li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">04</span><span>Vocabulary: everyday activities</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>12 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li>
+          <li><span class="st ok"><svg class="i"><use href="#i-check-c"/></svg></span><span class="n">05</span><span>Listening practice</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>14 min</span><span><span class="tag green">Concluída</span></span><span class="act"></span></li>
+          <li class="cur"><span class="st cur"><svg class="i"><use href="#i-play-c"/></svg></span><span class="n">06</span><span>Real-life conversation</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>24 min</span><span><span class="tag lilac">Aula atual</span></span><span class="act"><button class="btn btn-v btn-sm" data-open-lesson>Continuar aula<svg class="i" style="width:16px;height:16px"><use href="#i-arrow"/></svg></button></span></li>
+          <li><span class="st"><svg class="i" style="color:#b9b2cc"><use href="#i-circle"/></svg></span><span class="n">07</span><span>Practice &amp; Review</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>18 min</span><span><span class="tag grey">Disponível</span></span><span class="act"></span></li>
+          <li><span class="st lock"><svg class="i"><use href="#i-lock"/></svg></span><span class="n">08</span><span class="muted">Module Challenge</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>12 min</span><span><span class="tag grey"><svg class="i"><use href="#i-lock"/></svg>Bloqueada</span></span><span class="act"></span></li>
+        </ul></div></div></div>
+      <div class="mod rv" style="--i:8"><button class="mod-h" aria-expanded="false"><svg class="i chev"><use href="#i-right"/></svg><span class="num">3</span><span class="title">Módulo 3 · People &amp; Places</span><span class="count">0/7 aulas</span><span class="tag grey"><svg class="i"><use href="#i-circle"/></svg>Próximo módulo</span></button><div class="mod-b"><div><ul class="lessons"><li><span class="st lock"><svg class="i"><use href="#i-lock"/></svg></span><span class="n">01</span><span class="muted">Describing people</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>15 min</span><span><span class="tag grey">Após o Módulo 2</span></span><span class="act"></span></li></ul></div></div></div>
+      <div class="mod rv" style="--i:9"><button class="mod-h" aria-expanded="false"><svg class="i chev"><use href="#i-right"/></svg><span class="num">4</span><span class="title">Módulo 4 · Travel &amp; Experiences</span><span class="count">0/9 aulas</span><span class="tag grey"><svg class="i"><use href="#i-lock"/></svg>Bloqueado</span></button><div class="mod-b"><div><ul class="lessons"><li><span class="st lock"><svg class="i"><use href="#i-lock"/></svg></span><span class="n">01</span><span class="muted">At the airport</span><span class="d"><svg class="i"><use href="#i-clock"/></svg>20 min</span><span><span class="tag grey">Bloqueada</span></span><span class="act"></span></li></ul></div></div></div>
+    </div>
+  </div>
+
+  <!-- drill-in: aula -->
+  <div id="licao" hidden>
+    <button class="more rv" data-close-lesson style="margin:-6px 0 14px"><svg class="i" style="transform:rotate(180deg)"><use href="#i-arrow"/></svg>Voltar para a trilha</button>
+    <div class="grid lesson-grid">
+      <div>
+        <div class="player rv" style="--i:1"><img src="assets/th-speak.webp" alt="Prévia da aula Real-life conversation"><button class="playbtn" aria-label="Reproduzir" data-toast="Player de vídeo (Mux) entra aqui na implementação."><svg viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg></button><div class="ctrl"><span>08:12</span><div class="bar"><i data-w="34"></i></div><span>24:00</span><span class="cc">CC EN</span></div></div>
+        <div class="rv" style="--i:2;margin:20px 0 14px">
+          <span class="tag lilac">Módulo 2 · Aula 6 de 8</span><h2 class="h-display" style="font-size:clamp(1.6rem,2.4vw,2.2rem);margin:10px 0 4px">Real-life conversation</h2><p class="muted" style="margin:0">Use o que você aprendeu para manter uma conversa natural do dia a dia.</p>
+        </div>
+        <div class="card rv" style="--i:3">
+          <div class="tabs-line" role="tablist"><button role="tab" aria-selected="true">Transcrição</button><button role="tab" aria-selected="false">Materiais (2)</button><button role="tab" aria-selected="false">Minhas notas</button></div>
+          <div class="trans">
+            <p><time>07:40</time><span>So, what do you usually do after work?</span></p>
+            <p class="on"><time>08:12</time><span><b>I usually go to the gym, and then I cook dinner at home.</b></span></p>
+            <p><time>08:31</time><span>That sounds healthy! Do you cook every day?</span></p>
+            <p><time>08:45</time><span>Not every day. On Fridays I order pizza.</span></p>
+          </div>
+        </div>
+        <div class="done-banner rv" style="--i:4" id="doneBanner">
+          <div style="display:flex;gap:14px;align-items:center"><span class="flame" style="width:48px;height:48px;font-size:22px">🎯</span><div><b>Terminou a aula?</b><div class="muted" style="font-size:13.5px">Marque como concluída e siga para a prática da aula.</div></div></div>
+          <button class="btn btn-y" id="completeBtn"><svg class="i"><use href="#i-check"/></svg>Concluir aula</button>
+        </div>
+      </div>
+      <aside class="card rv" style="--i:2;padding:18px">
+        <div class="card-h"><h2>Módulo 2 · Everyday English</h2></div>
+        <div style="display:flex;align-items:center;gap:10px;margin:-6px 0 14px"><div class="bar" style="flex:1"><i data-w="75"></i></div><small class="muted">6/8</small></div>
+        <ul class="side-lessons">
+          <li><button><img src="assets/m-routines.webp" alt=""><span><b>05 · Listening practice</b><small>14 min · concluída</small></span></button></li>
+          <li class="cur"><button aria-current="step"><img src="assets/th-speak.webp" alt=""><span><b>06 · Real-life conversation</b><small>24 min · assistindo</small></span></button></li>
+          <li><button><img src="assets/th-airport.webp" alt=""><span><b>07 · Practice &amp; Review</b><small>18 min · disponível</small></span></button></li>
+          <li><button disabled style="opacity:.55;cursor:not-allowed"><img src="assets/th-travel.webp" alt=""><span><b>08 · Module Challenge</b><small>12 min · bloqueada</small></span></button></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+  </div>
+  <div class="card gate"></div>
+</section>
+
+<!-- ======================= PRÁTICA ======================= -->
+<section class="screen" id="pratica" data-paid>
+  <div class="page-head rv"><div><h1>Prática</h1><p>Treine um pouco todos os dias e ganhe mais confiança no inglês.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="content">
+  <div class="grid prat-top">
+    <article class="hero rv" style="--i:1">
+      <img class="photo" src="assets/hero-practice.webp" alt="">
+      <div class="hero-copy">
+        <span class="kicker"><svg class="i"><use href="#i-cal"/></svg>Prática de hoje</span>
+        <h2>10 minutos para manter sua sequência</h2>
+        <div class="chips"><span><svg class="i"><use href="#i-headphones"/></svg>Listening + Speaking</span><span><svg class="i"><use href="#i-target"/></svg>Baseado na aula de ontem</span></div>
+        <button class="btn btn-y btn-lg" data-open-speak><svg class="i"><use href="#i-play-sq"/></svg>Começar prática<svg class="i"><use href="#i-arrow"/></svg></button>
+      </div>
+    </article>
+    <article class="card rv" style="--i:2">
+      <div class="card-h"><h2>Resumo da semana</h2><a class="more" href="#progresso">Ver detalhes<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="week-sum">
+        <div class="ws"><span class="ico lilac" style="width:40px;height:40px"><svg class="i" style="width:19px;height:19px"><use href="#i-clock"/></svg></span><b><span data-count="47">0</span> min</b><small>praticados</small><span class="tag green">+12 min</span></div>
+        <div class="ws"><span class="ico yellow" style="width:40px;height:40px;font-size:18px">🔥</span><b><span data-count="7">0</span> dias</b><small>de sequência</small><span class="tag yellow">Continue!</span></div>
+        <div class="ws"><span class="ico blue" style="width:40px;height:40px"><svg class="i" style="width:19px;height:19px"><use href="#i-check-c"/></svg></span><b data-count="4">0</b><small>atividades</small><span class="tag blue">+2 na semana</span></div>
+      </div>
+      <div class="mini-bars" role="img" aria-label="Minutos praticados por dia: seg 6, ter 9, qua 4, qui 8, sex 5, sáb 3, dom 12">
+        <div><i data-h="50"></i><small>S</small></div><div><i data-h="75"></i><small>T</small></div><div><i data-h="33"></i><small>Q</small></div><div><i data-h="66"></i><small>Q</small></div><div><i data-h="42"></i><small>S</small></div><div><i data-h="25"></i><small>S</small></div><div><i class="hi" data-h="100"></i><small>D</small></div>
+      </div>
+    </article>
+  </div>
+
+  <div class="sec-h rv" style="--i:3"><h2>Escolha uma habilidade</h2></div>
+  <div class="grid skills4">
+    <button class="skill lilac rv" style="--i:4" data-open-speak><span class="ico"><svg class="i" style="color:var(--t-lilac-ink)"><use href="#i-chat"/></svg></span><span><h3>Conversação<svg class="i"><use href="#i-arrow"/></svg></h3><p>Pratique diálogos reais e ganhe fluência.</p></span></button>
+    <button class="skill blue rv" style="--i:5" data-toast="Abrindo atividades de listening…"><span class="ico"><svg class="i" style="color:var(--t-blue-ink)"><use href="#i-headphones"/></svg></span><span><h3>Listening<svg class="i"><use href="#i-arrow"/></svg></h3><p>Compreensão com áudios autênticos.</p></span></button>
+    <button class="skill yellow rv" style="--i:6" data-open-speak><span class="ico"><svg class="i" style="color:var(--t-yellow-ink)"><use href="#i-mic"/></svg></span><span><h3>Pronúncia<svg class="i"><use href="#i-arrow"/></svg></h3><p>Treine sua fala e soe mais natural.</p></span></button>
+    <button class="skill green rv" style="--i:7" data-toast="Abrindo revisão de vocabulário…"><span class="ico"><svg class="i" style="color:var(--t-green-ink)"><use href="#i-book"/></svg></span><span><h3>Vocabulário<svg class="i"><use href="#i-arrow"/></svg></h3><p>Reforce e aprenda novas palavras.</p></span></button>
+  </div>
+
+  <div class="grid prat-mid" style="margin-top:4px">
+    <div>
+      <div class="sec-h rv" style="--i:8"><h2>Recomendado para você</h2><a class="more" href="#pratica">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="grid recs">
+        <article class="card rec lift rv" style="--i:9"><div class="thumb"><img src="assets/th-travel.webp" alt=""><span class="dur"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg> 8 min</span></div><div class="body"><span class="tag lilac" style="align-self:flex-start"><svg class="i"><use href="#i-book"/></svg>Vocabulário</span><h3>Travel vocabulary</h3><p>Palavras e expressões para suas viagens.</p><button class="btn btn-soft btn-sm" data-toast="Abrindo Travel vocabulary…">Praticar<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button></div></article>
+        <article class="card rec lift rv" style="--i:10"><div class="thumb"><img src="assets/th-airport.webp" alt=""><span class="dur"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg> 6 min</span></div><div class="body"><span class="tag blue" style="align-self:flex-start"><svg class="i"><use href="#i-headphones"/></svg>Listening</span><h3>At the airport</h3><p>Escute um diálogo real no aeroporto.</p><button class="btn btn-soft btn-sm" data-toast="Abrindo At the airport…">Praticar<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button></div></article>
+        <article class="card rec lift rv" style="--i:11"><div class="thumb"><img src="assets/th-speak.webp" alt=""><span class="dur"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg> 5 min</span></div><div class="body"><span class="tag yellow" style="align-self:flex-start"><svg class="i"><use href="#i-mic"/></svg>Speaking</span><h3>Tell me about your weekend</h3><p>Grave sua resposta. A professora revisa.</p><button class="btn btn-soft btn-sm" data-open-speak>Praticar<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button></div></article>
+      </div>
+      <div class="sec-h rv" style="--i:12"><h2>Desafios rápidos</h2></div>
+      <div class="grid quick">
+        <a class="card lift rv" style="--i:13" href="#pratica" data-toast="Abrindo o listening do dia…"><span class="ico lilac"><svg class="i"><use href="#i-headphones"/></svg></span><span style="flex:1"><b>Listening do dia</b><small>Ouça e responda 3 perguntas</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a>
+        <a class="card lift rv" style="--i:14" href="#pratica" data-toast="Abrindo revisão de 5 palavras…"><span class="ico yellow"><svg class="i"><use href="#i-file"/></svg></span><span style="flex:1"><b>5 palavras para revisar</b><small>Fixe seu vocabulário</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a>
+        <a class="card lift rv" style="--i:15" href="#pratica" data-open-speak><span class="ico green"><svg class="i"><use href="#i-mic"/></svg></span><span style="flex:1"><b>Fale por 2 minutos</b><small>Escolha um tema e grave</small></span><span class="go"><svg class="i"><use href="#i-right"/></svg></span></a>
+      </div>
+    </div>
+    <aside class="card rv side-off" style="--i:10">
+      <div class="card-h"><h2>Histórico recente</h2><a class="more" href="#progresso">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <ul class="list hist">
+        <li><img src="assets/h-speak.webp" alt=""><span class="t"><b>Speak: Daily routine</b><small>Hoje, 10:24</small></span><span class="tag yellow">Em revisão</span></li>
+        <li><img src="assets/h-listen.webp" alt=""><span class="t"><b>Listening: At the airport</b><small>Ontem, 18:17</small></span><span class="tag green"><svg class="i"><use href="#i-check-c"/></svg>Concluída</span></li>
+        <li><img src="assets/h-vocab.webp" alt=""><span class="t"><b>Travel vocabulary</b><small>Seg, 13 out</small></span><span class="tag green"><svg class="i"><use href="#i-check-c"/></svg>Concluída</span></li>
+        <li><img src="assets/h-pron.webp" alt=""><span class="t"><b>Pronunciation practice</b><small>Sex, 10 out</small></span><span class="tag green"><svg class="i"><use href="#i-check-c"/></svg>Revisada</span></li>
+        <li><img src="assets/h-cafe.webp" alt=""><span class="t"><b>Useful phrases: Cafés</b><small>Qua, 8 out</small></span><span class="tag green"><svg class="i"><use href="#i-check-c"/></svg>Concluída</span></li>
+      </ul>
+    </aside>
+  </div>
+  </div>
+  <div class="card gate"></div>
+</section>
+
+<!-- ======================= MATERIAIS ======================= -->
+<section class="screen" id="materiais" data-paid>
+  <div class="page-head rv"><div><h1>Materiais</h1><p>Encontre, revise e baixe os recursos do seu curso.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="content">
+  <div class="pills rv" style="--i:1" id="matFilters">
+    <button class="pill" aria-pressed="true" data-f="all"><svg class="i"><use href="#i-grid"/></svg>Todos</button>
+    <button class="pill" aria-pressed="false" data-f="pdf"><svg class="i"><use href="#i-file"/></svg>PDFs</button>
+    <button class="pill" aria-pressed="false" data-f="vocab"><svg class="i"><use href="#i-book"/></svg>Vocabulário</button>
+    <button class="pill" aria-pressed="false" data-f="gram"><svg class="i"><use href="#i-grad"/></svg>Gramática</button>
+    <button class="pill" aria-pressed="false" data-f="audio"><svg class="i"><use href="#i-headphones"/></svg>Áudios</button>
+    <button class="pill" aria-pressed="false" data-f="ex"><svg class="i"><use href="#i-pen"/></svg>Exercícios</button>
+  </div>
+  <div class="grid mat-grid">
+    <div>
+      <div class="sec-h rv" style="--i:2;margin-top:4px"><h2>Continue revisando</h2><a class="more" href="#materiais">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <div class="grid cont">
+        <a class="card lift rv" style="--i:3" href="#materiais"><img src="assets/m-everyday.webp" alt=""><span class="b"><b>Everyday English · Resumo do módulo</b><small><svg class="i" style="width:14px;height:14px;color:#d93a2b"><use href="#i-file"/></svg>PDF · 8 páginas</small><span class="f">Mód. 2 · Aula 1<span class="btn btn-soft btn-sm" style="height:30px">Abrir</span></span></span></a>
+        <a class="card lift rv" style="--i:4" href="#materiais"><img src="assets/m-routines.webp" alt=""><span class="b"><b>Vocabulary: Daily Routines</b><small><svg class="i" style="width:14px;height:14px;color:var(--t-blue-ink)"><use href="#i-book"/></svg>24 palavras</small><span class="f">Mód. 2 · Aula 3<span class="btn btn-soft btn-sm" style="height:30px">Revisar</span></span></span></a>
+        <a class="card lift rv" style="--i:5" href="#materiais"><img src="assets/m-plane.webp" alt=""><span class="b"><b>Listening transcript · At the Airport</b><small><svg class="i" style="width:14px;height:14px;color:#d93a2b"><use href="#i-file"/></svg>PDF + Áudio</small><span class="f">Mód. 2 · Aula 4<span class="btn btn-soft btn-sm" style="height:30px">Abrir</span></span></span></a>
+      </div>
+      <div class="sec-h rv" style="--i:6"><h2>Materiais do curso</h2></div>
+      <div class="mods">
+        <div class="mod rv" style="--i:7"><button class="mod-h" aria-expanded="false"><svg class="i chev"><use href="#i-right"/></svg><span class="num now">1</span><span class="title">Módulo 1 · Getting Started</span><span class="count">6 materiais</span></button><div class="mod-b"><div><ul class="mrows"><li data-k="pdf"><span class="ico sq red"><svg class="i"><use href="#i-file"/></svg></span><span><b>Guia de boas-vindas</b><small>Módulo 1 · Aula 1</small></span><span class="tag red">PDF · 2 páginas</span><button class="btn btn-soft btn-sm">Abrir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li></ul></div></div></div>
+        <div class="mod open rv" style="--i:8"><button class="mod-h" aria-expanded="true"><svg class="i chev"><use href="#i-right"/></svg><span class="num now">2</span><span class="title">Módulo 2 · Everyday English</span><span class="count">6 materiais</span></button>
+          <div class="mod-b"><div><ul class="mrows" id="mrows">
+            <li data-k="pdf"><span class="ico sq red"><svg class="i"><use href="#i-file"/></svg></span><span><b>Resumo do módulo</b><small>Módulo 2 · Aula 1</small></span><span class="tag red">PDF · 8 páginas</span><button class="btn btn-soft btn-sm">Abrir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li data-k="gram pdf"><span class="ico sq lilac"><svg class="i"><use href="#i-grad"/></svg></span><span><b>Present Simple Guide</b><small>Módulo 2 · Aula 2</small></span><span class="tag lilac">Gramática · PDF</span><button class="btn btn-soft btn-sm">Abrir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li data-k="vocab"><span class="ico sq blue"><svg class="i"><use href="#i-book"/></svg></span><span><b>Daily Routine Vocabulary</b><small>Módulo 2 · Aula 3</small></span><span class="tag blue">24 palavras</span><button class="btn btn-soft btn-sm">Revisar<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li data-k="audio"><span class="ico sq lilac"><svg class="i"><use href="#i-headphones"/></svg></span><span><b>Listening Pack</b><small>Módulo 2 · Aula 4</small></span><span class="tag lilac">4 áudios</span><button class="btn btn-soft btn-sm">Ouvir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li data-k="ex pdf"><span class="ico sq green"><svg class="i"><use href="#i-pen"/></svg></span><span><b>Practice Worksheet</b><small>Relacionado à aula de ontem</small></span><span class="tag green">Exercícios · PDF</span><button class="btn btn-soft btn-sm">Abrir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li data-k="pdf ex"><span class="ico sq red"><svg class="i"><use href="#i-file"/></svg></span><span><b>Answer Key</b><small>Módulo 2 · Aula 5</small></span><span class="tag red">PDF</span><button class="btn btn-soft btn-sm">Abrir<svg class="i" style="width:15px;height:15px"><use href="#i-arrow"/></svg></button><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+            <li class="empty-row" hidden style="grid-template-columns:1fr;text-align:center;color:var(--muted);padding:18px">Nenhum material deste tipo neste módulo.</li>
+          </ul></div></div></div>
+        <div class="mod rv" style="--i:9"><button class="mod-h" aria-expanded="false"><svg class="i chev"><use href="#i-right"/></svg><span class="num">3</span><span class="title">Módulo 3 · People &amp; Places</span><span class="count">7 materiais</span></button><div class="mod-b"><div><ul class="mrows"><li style="grid-template-columns:44px minmax(0,1fr)"><span class="ico sq lilac"><svg class="i"><use href="#i-lock"/></svg></span><span><b class="muted">Disponível ao iniciar o módulo</b><small>7 materiais</small></span></li></ul></div></div></div>
+      </div>
+    </div>
+    <div class="grid side-off" style="gap:16px">
+      <aside class="card rv" style="--i:4">
+        <div class="card-h"><h2>Favoritos</h2><a class="more" href="#materiais">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+        <ul class="list fav">
+          <li><img src="assets/f-phrasal.webp" alt=""><span class="t"><b>Phrasal Verbs Cheat Sheet</b><small>PDF · 4 páginas</small></span><button class="star" aria-pressed="true" aria-label="Remover dos favoritos"><svg class="i"><use href="#i-star"/></svg></button></li>
+          <li><img src="assets/m-plane.webp" alt=""><span class="t"><b>Travel Vocabulary</b><small>Lista · 50 palavras</small></span><button class="star" aria-pressed="true" aria-label="Remover dos favoritos"><svg class="i"><use href="#i-star"/></svg></button></li>
+          <li><img src="assets/f-present.webp" alt=""><span class="t"><b>Present Perfect Guide</b><small>PDF · 6 páginas</small></span><button class="star" aria-pressed="true" aria-label="Remover dos favoritos"><svg class="i"><use href="#i-star"/></svg></button></li>
+          <li><img src="assets/f-mic.webp" alt=""><span class="t"><b>Pronunciation Tips</b><small>PDF · 3 páginas</small></span><button class="star" aria-pressed="false" aria-label="Adicionar aos favoritos"><svg class="i"><use href="#i-star"/></svg></button></li>
+        </ul>
+      </aside>
+      <aside class="card rv" style="--i:5">
+        <div class="card-h"><h2>Recentes</h2></div>
+        <ul class="list fav">
+          <li><img src="assets/m-everyday.webp" alt=""><span class="t"><b>Everyday English.pdf</b><small>PDF · 8 páginas</small></span><small class="muted">Há 2 h</small></li>
+          <li><span class="ico sq lilac" style="width:48px;height:48px"><svg class="i"><use href="#i-headphones"/></svg></span><span class="t"><b>Listening 02.mp3</b><small>MP3 · 12 min</small></span><small class="muted">Ontem</small></li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+  </div>
+  <div class="card gate"></div>
+</section>
+
+<!-- ======================= PROGRESSO ======================= -->
+<section class="screen" id="progresso">
+  <div class="page-head rv"><div><h1>Progresso</h1><p>Acompanhe sua evolução, nível e desempenho no inglês.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="pills rv" style="--i:1" role="tablist">
+    <button class="pill" role="tab" aria-selected="true"><svg class="i"><use href="#i-grid"/></svg>Visão geral</button>
+    <button class="pill" role="tab" aria-selected="false"><svg class="i"><use href="#i-bars"/></svg>Proficiência</button>
+    <button class="pill" role="tab" aria-selected="false"><svg class="i"><use href="#i-trophy"/></svg>Habilidades</button>
+    <button class="pill" role="tab" aria-selected="false"><svg class="i"><use href="#i-history"/></svg>Histórico</button>
+  </div>
+  <div class="grid p-top">
+    <article class="card rv" style="--i:2">
+      <div class="card-h"><h2>Teste de proficiência</h2><span class="tag lilac"><svg class="i"><use href="#i-check-c"/></svg>Revisado pela professora</span></div>
+      <div class="prof">
+        <div class="prof-level">
+          <small class="muted">Seu nível atual</small>
+          <div class="big-level">A2</div>
+          <b>Elementary / Pre-Intermediate</b>
+          <p class="muted" style="font-size:13px;margin:8px 0 16px">Último teste em 12 de setembro de 2026</p>
+          <button class="btn btn-y" style="width:100%" data-toast="Abrindo o resultado completo do teste…"><svg class="i"><use href="#i-file"/></svg>Ver resultado</button>
+        </div>
+        <div>
+          <b style="font-size:14.5px;display:block;margin-bottom:14px">Desempenho por habilidade</b>
+          <div class="skill-bars">
+            <div><svg class="i"><use href="#i-book"/></svg>Reading<span class="tag green">B1</span><div class="bar"><i data-w="82"></i></div><span class="v">82%</span></div>
+            <div><svg class="i"><use href="#i-headphones"/></svg>Listening<span class="tag lilac">A2</span><div class="bar"><i data-w="68"></i></div><span class="v">68%</span></div>
+            <div><svg class="i"><use href="#i-mic"/></svg>Speaking<span class="tag lilac">A2</span><div class="bar"><i data-w="61"></i></div><span class="v">61%</span></div>
+            <div><svg class="i"><use href="#i-book"/></svg>Vocabulary<span class="tag lilac">A2</span><div class="bar"><i data-w="72"></i></div><span class="v">72%</span></div>
+            <div><svg class="i"><use href="#i-grad"/></svg>Grammar<span class="tag green">B1</span><div class="bar"><i data-w="80"></i></div><span class="v">80%</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+    <article class="card rv" style="--i:3">
+      <div class="card-h"><h2>Seu próximo objetivo</h2></div>
+      <div style="display:flex;gap:14px;align-items:center;padding:14px;border-radius:var(--r-lg);background:#faf8ff"><span class="ico sq lilac" style="width:52px;height:52px"><svg class="i" style="width:26px;height:26px"><use href="#i-target"/></svg></span><div><b style="font-size:15.5px">Avançar para B1</b><div class="muted" style="font-size:13px">Foque em Speaking e Listening no próximo teste.</div></div></div>
+      <div class="skill-bars" style="margin:18px 0">
+        <div style="grid-template-columns:22px 90px minmax(0,1fr) 40px"><svg class="i"><use href="#i-mic"/></svg>Speaking<div class="bar"><i data-w="61"></i></div><span class="v">61%</span></div>
+        <div style="grid-template-columns:22px 90px minmax(0,1fr) 40px"><svg class="i"><use href="#i-headphones"/></svg>Listening<div class="bar"><i data-w="68"></i></div><span class="v">68%</span></div>
+      </div>
+      <a class="btn btn-y" href="#pratica" style="width:100%"><svg class="i"><use href="#i-bars"/></svg>Ver práticas recomendadas</a>
+    </article>
+  </div>
+  <div class="grid p-mid" style="margin-top:18px">
+    <article class="card rv" style="--i:4">
+      <div class="card-h"><h2>Evolução de proficiência</h2><a class="more" href="#progresso">Ver histórico<svg class="i"><use href="#i-arrow"/></svg></a></div>
+      <svg class="chart" viewBox="0 0 700 190" role="img" aria-label="Nível: A1 em janeiro, A1+ em março, A2 em junho e A2 em setembro de 2026">
+        <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6024f7" stop-opacity=".18"/><stop offset="1" stop-color="#6024f7" stop-opacity="0"/></linearGradient></defs>
+        <text class="ax" x="0" y="34">B1</text><text class="ax" x="0" y="94">A2</text><text class="ax" x="0" y="154">A1</text>
+        <line class="grid-l" x1="40" x2="690" y1="30" y2="30"/><line class="grid-l" x1="40" x2="690" y1="90" y2="90"/><line class="grid-l" x1="40" x2="690" y1="150" y2="150"/>
+        <path class="area" d="M80 150 C180 140 220 125 300 120 S460 90 520 88 S620 84 660 84 V160 H80Z"/>
+        <path class="line" d="M80 150 C180 140 220 125 300 120 S460 90 520 88 S620 84 660 84"/>
+        <g class="lbl"><rect x="62" y="114" width="36" height="22" rx="11"/><text x="80" y="129" text-anchor="middle">A1</text></g><circle class="pt" cx="80" cy="150" r="7"/>
+        <g class="lbl"><rect x="278" y="84" width="44" height="22" rx="11"/><text x="300" y="99" text-anchor="middle">A1+</text></g><circle class="pt" cx="300" cy="120" r="7"/>
+        <g class="lbl"><rect x="502" y="52" width="36" height="22" rx="11"/><text x="520" y="67" text-anchor="middle">A2</text></g><circle class="pt" cx="520" cy="88" r="7"/>
+        <g class="lbl"><rect x="642" y="48" width="36" height="22" rx="11"/><text x="660" y="63" text-anchor="middle">A2</text></g><circle class="pt" cx="660" cy="84" r="7"/>
+        <text class="ax" x="80" y="182" text-anchor="middle">Jan 2026</text><text class="ax" x="300" y="182" text-anchor="middle">Mar 2026</text><text class="ax" x="520" y="182" text-anchor="middle">Jun 2026</text><text class="ax" x="660" y="182" text-anchor="middle">Set 2026</text>
+      </svg>
+    </article>
+    <article class="card rv" style="--i:5">
+      <div class="card-h"><h2>Sua consistência</h2></div>
+      <ul class="list cons">
+        <li><span class="ico sq yellow" style="font-size:18px">🔥</span><b data-count="7">0</b><span>dias de sequência</span><svg class="i" style="color:var(--muted);width:16px"><use href="#i-right"/></svg></li>
+        <li><span class="ico sq lilac"><svg class="i"><use href="#i-bars"/></svg></span><b data-count="4">0</b><span>práticas nesta semana</span><svg class="i" style="color:var(--muted);width:16px"><use href="#i-right"/></svg></li>
+        <li><span class="ico sq blue"><svg class="i"><use href="#i-clock"/></svg></span><b>3h20</b><span>estudadas no mês</span><svg class="i" style="color:var(--muted);width:16px"><use href="#i-right"/></svg></li>
+      </ul>
+    </article>
+  </div>
+  <div class="info-line rv" style="--i:6;margin-top:18px"><svg class="i"><use href="#i-spark"/></svg>O progresso no curso mostra aulas concluídas. Ele não muda seu nível: o nível vem do teste revisado pela professora.</div>
+  <article class="card rv" style="--i:7;padding:16px 20px">
+    <div class="course-row">
+      <img src="assets/m-everyday.webp" alt="">
+      <div><b style="font-size:15.5px">English Journey — A2</b><div class="muted" style="font-size:13px">18 de 32 aulas concluídas</div></div>
+      <div class="bar-wrap" style="display:flex;align-items:center;gap:12px"><div class="bar" style="flex:1"><i data-w="56"></i></div><b>56%</b></div>
+      <span class="sep" style="width:1px;height:40px;background:var(--line)"></span>
+      <a class="mod-now" href="#aulas" style="display:flex;align-items:center;gap:12px"><span class="ico sq lilac" style="width:40px;height:40px"><svg class="i" style="width:19px;height:19px"><use href="#i-book"/></svg></span><span><small class="muted">Módulo atual</small><b style="display:block;font-size:14px">Módulo 2 — Everyday English</b></span><svg class="i" style="margin-left:auto;color:var(--muted)"><use href="#i-right"/></svg></a>
+    </div>
+  </article>
+  <div class="sec-h rv" style="--i:8;margin-top:20px"><h2>Suas conquistas</h2></div>
+  <div class="grid badges">
+    <div class="card lift rv" style="--i:9"><span class="ico yellow"><svg class="i"><use href="#i-trophy"/></svg></span><b>7</b><small>dias de<br>sequência</small></div>
+    <div class="card lift rv" style="--i:10"><span class="ico lilac"><svg class="i"><use href="#i-chat"/></svg></span><b>10</b><small>práticas de<br>conversação</small></div>
+    <div class="card lift rv" style="--i:11"><span class="ico yellow"><svg class="i"><use href="#i-star"/></svg></span><b>A2</b><small>primeiro nível<br>alcançado</small></div>
+    <div class="card lift rv" style="--i:12"><span class="ico blue"><svg class="i"><use href="#i-cal"/></svg></span><b>1 mês</b><small>no Yas<br>English Lab</small></div>
+  </div>
+</section>
+
+<!-- ======================= AGENDA ======================= -->
+<section class="screen" id="agenda" data-paid>
+  <div class="page-head rv"><div><h1>Agenda</h1><p>Veja suas aulas, práticas e compromissos.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="content">
+  <div class="pills rv" style="--i:1" id="agFilters">
+    <button class="pill" aria-pressed="true" data-f="all"><svg class="i"><use href="#i-file"/></svg>Todos (4)</button>
+    <button class="pill" aria-pressed="false" data-f="aula"><svg class="i"><use href="#i-play-sq"/></svg>Aulas (2)</button>
+    <button class="pill" aria-pressed="false" data-f="pratica"><svg class="i"><use href="#i-headphones"/></svg>Práticas (1)</button>
+    <button class="pill" aria-pressed="false" data-f="evento"><svg class="i"><use href="#i-cal"/></svg>Eventos (1)</button>
+  </div>
+  <div class="grid ag-grid">
+    <article class="card rv" style="--i:2">
+      <div class="cal-h"><h2>Outubro 2026</h2><button class="arrow" aria-label="Semana anterior"><svg class="i"><use href="#i-left"/></svg></button><button class="arrow" aria-label="Próxima semana"><svg class="i"><use href="#i-right"/></svg></button><button class="btn btn-line btn-sm">Hoje</button><span class="tz"><svg class="i" style="width:16px;height:16px"><use href="#i-globe"/></svg>Horário de Recife (UTC−3)</span></div>
+      <div class="cal-wrap"><div class="cal" id="cal"></div></div>
+    </article>
+    <div class="grid" style="gap:16px">
+      <button class="btn btn-y btn-lg rv" style="--i:3;width:100%" data-toast="Escolha um horário livre na agenda para agendar a prática.">Agendar nova prática<svg class="i"><use href="#i-plus"/></svg></button>
+      <aside class="card rv" style="--i:4">
+        <div class="card-h"><h2>Próximos compromissos</h2><a class="more" href="#agenda">Ver todos<svg class="i"><use href="#i-arrow"/></svg></a></div>
+        <ul class="list">
+          <li><span class="ico sq lilac"><svg class="i"><use href="#i-play-sq"/></svg></span><span class="t"><b>Aula · Inglês para Viagens</b><small>Hoje · 19:00 – 19:50</small></span><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+          <li><span class="ico sq yellow"><svg class="i"><use href="#i-headphones"/></svg></span><span class="t"><b>Prática · Conversação</b><small>Qua, 15 out · 14:00 – 15:00</small></span><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+          <li><span class="ico sq lilac"><svg class="i"><use href="#i-play-sq"/></svg></span><span class="t"><b>Aula · Business English</b><small>Qui, 16 out · 19:00 – 20:00</small></span><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+          <li><span class="ico sq pink"><svg class="i"><use href="#i-users"/></svg></span><span class="t"><b>Evento · English Club</b><small>Sáb, 18 out · 09:00 – 12:00</small></span><button class="kebab" aria-label="Mais ações"><svg class="i"><use href="#i-more"/></svg></button></li>
+        </ul>
+      </aside>
+      <aside class="card qlinks rv" style="--i:5">
+        <div class="card-h"><h2>Links rápidos</h2></div>
+        <a href="#aulas"><span class="ico sq lilac" style="width:34px;height:34px"><svg class="i" style="width:18px;height:18px"><use href="#i-cal"/></svg></span>Minhas aulas<svg class="i chev"><use href="#i-right"/></svg></a>
+        <a href="#pratica"><span class="ico sq yellow" style="width:34px;height:34px"><svg class="i" style="width:18px;height:18px"><use href="#i-headphones"/></svg></span>Agendar prática de conversação<svg class="i chev"><use href="#i-right"/></svg></a>
+        <a href="#agenda"><span class="ico sq pink" style="width:34px;height:34px"><svg class="i" style="width:18px;height:18px"><use href="#i-users"/></svg></span>Ver eventos e workshops<svg class="i chev"><use href="#i-right"/></svg></a>
+      </aside>
+    </div>
+  </div>
+  </div>
+  <div class="card gate"></div>
+</section>
+
+<!-- ======================= PERFIL (resumo) ======================= -->
+<section class="screen" id="perfil">
+  <div class="page-head rv"><div><h1>Perfil</h1><p>Gerencie suas informações e preferências.</p></div><img class="tagline" src="assets/tagline.png" alt=""></div>
+  <div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:start" id="perfilGrid">
+    <article class="card rv" style="--i:1;display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+      <img src="assets/avatar.webp" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 6px var(--purple-50)">
+      <div style="flex:1;min-width:200px"><h2 class="h-display" style="font-size:24px;margin:0">Yasmin Oliveira</h2><div class="muted">Aluna</div><span class="tag lilac" style="margin-top:10px"><svg class="i"><use href="#i-cal"/></svg>Membro desde set 2026</span></div>
+      <button class="btn btn-soft">Editar foto</button>
+    </article>
+    <article class="card rv" style="--i:2">
+      <div class="card-h"><h2>Meu plano</h2><span class="tag green">Ativo</span></div>
+      <b style="font-size:16px">Talk</b><p class="muted" style="font-size:13.5px;margin:4px 0 16px">Core Class e Conversation Lab semanais, portal completo.</p>
+      <a class="btn btn-soft" href="#perfil" style="width:100%">Ver planos e benefícios<svg class="i"><use href="#i-arrow"/></svg></a>
+    </article>
+  </div>
+</section>
+
+    </main>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Navegação">
+  <a href="#inicio"><svg class="i"><use href="#i-home"/></svg>Início</a>
+  <a href="#aulas"><svg class="i"><use href="#i-play-sq"/></svg>Aulas</a>
+  <a href="#pratica"><svg class="i"><use href="#i-headphones"/></svg>Prática</a>
+  <a href="#agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</a>
+  <a href="#progresso"><svg class="i"><use href="#i-bars"/></svg>Progresso</a>
+</nav>
+
+<div class="modal" id="speakModal" role="dialog" aria-modal="true" aria-labelledby="speakTitle">
+  <div class="sheet">
+    <div class="sheet-top"><img src="assets/hero-practice.webp" alt=""><button class="x" data-close-speak aria-label="Fechar"><svg class="i"><use href="#i-x"/></svg></button><div><small style="opacity:.85;font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:12px;position:relative;z-index:1">Speaking · etapa 1 de 2</small><div class="steps"><i class="on"></i><i></i></div></div></div>
+    <div class="sheet-body">
+      <div id="speakMain">
+        <span class="tag yellow"><svg class="i"><use href="#i-mic"/></svg>Responda em inglês</span>
+        <h3 id="speakTitle">Tell me about your weekend.</h3>
+        <span class="prompt-ex">Ex.: <i>“On Saturday I visited my family and we had lunch together.”</i></span>
+        <div class="mic-zone" id="micZone"><span class="halo"></span><span class="halo"></span><button class="mic" id="mic" aria-pressed="false" aria-label="Iniciar gravação"><svg class="i"><use href="#i-mic"/></svg></button></div>
+        <div class="wave" id="wave" aria-hidden="true"></div>
+        <div class="timer" id="timer" aria-live="polite">00:00 / 02:00</div>
+        <p class="muted" id="micHint" style="font-size:14px;margin:6px 0 0">Toque no microfone para gravar. Você pode ouvir e regravar antes de enviar.</p>
+        <div class="sheet-actions" id="speakActions"><button class="btn btn-line" data-close-speak>Agora não</button></div>
+      </div>
+      <div class="sent" id="speakSent">
+        <span class="check"><svg class="i"><use href="#i-check"/></svg></span>
+        <h3 style="margin:6px 0 0">Resposta enviada!</h3>
+        <p class="muted" style="margin:0;max-width:380px">A professora vai ouvir e deixar um feedback. Você acompanha em Prática › Histórico recente.</p>
+        <div class="sheet-actions"><button class="btn btn-y" data-close-speak>Voltar para a prática</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="popover" id="pop" role="dialog" aria-label="Detalhes do compromisso"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="ok"><svg class="i"><use href="#i-check"/></svg></span><span id="toastMsg"></span></div>
+
+<div class="proto" id="proto">
+  <div class="proto-menu">
+    <h4>Estado do aluno</h4>
+    <div class="seg" id="stateSeg"><button aria-pressed="true" data-s="ok">Assinante</button><button aria-pressed="false" data-s="gated">Assinatura pendente</button></div>
+    <button class="btn btn-soft btn-sm" id="openNotes" style="width:100%"><svg class="i" style="width:16px;height:16px"><use href="#i-spark"/></svg>Notas de design desta tela</button>
+  </div>
+  <button id="protoBtn" aria-expanded="false"><svg class="i"><use href="#i-spark"/></svg>Protótipo v2</button>
+</div>
+<aside class="drawer" id="drawer" aria-label="Notas de design"><button class="arrow" id="closeNotes" aria-label="Fechar" style="float:right"><svg class="i"><use href="#i-x"/></svg></button><div id="notesBody"></div></aside>
+
+<template id="gateTpl">
+  <div>
+    <span class="tag yellow"><svg class="i"><use href="#i-lock"/></svg>Assinatura pendente</span>
+    <h2>Escolha um plano para liberar seu curso</h2>
+    <p class="muted" style="margin:0">Aulas, prática, materiais e encontros ao vivo ficam disponíveis assim que o pagamento for confirmado.</p>
+    <ul><li><svg class="i"><use href="#i-check-c"/></svg>Trilha de aulas em vídeo com transcrição</li><li><svg class="i"><use href="#i-check-c"/></svg>Práticas com revisão da professora</li><li><svg class="i"><use href="#i-check-c"/></svg>Encontros ao vivo conforme o plano</li><li><svg class="i"><use href="#i-check-c"/></svg>Materiais para baixar</li></ul>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-y btn-lg" href="#perfil">Escolher plano<svg class="i"><use href="#i-arrow"/></svg></a><a class="btn btn-line btn-lg" href="#perfil">Falar com o suporte</a></div>
+    <div class="stepper"><span class="on"><b>1</b>Escolher plano</span><span><b>2</b>Pagamento confirmado</span><span><b>3</b>Onboarding</span></div>
+  </div>
+  <div class="art"><img src="assets/hero-practice.webp" alt=""><span class="lockb"><svg class="i" style="width:26px;height:26px"><use href="#i-lock"/></svg></span></div>
+</template>
+
+<script>
+(function(){
+  const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* toast */
+  let tt; function toast(msg){ $('#toastMsg').textContent = msg; $('#toast').classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>$('#toast').classList.remove('show'), 2600); }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-toast]'); if (b) { e.preventDefault(); toast(b.dataset.toast); } });
+
+  /* animações de entrada: contadores, barras, anéis */
+  function animate(root){
+    $$('[data-count]', root).forEach(el => {
+      if (el.offsetParent === null) return;
+      const end = +el.dataset.count, t0 = performance.now(), dur = reduce ? 1 : 900;
+      (function step(t){ const k = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-k,3); el.textContent = Math.round(end*e); if(k<1) requestAnimationFrame(step); })(t0);
+    });
+    $$('.bar>i[data-w]', root).forEach(i => { i.style.transition = 'none'; i.style.width = '0'; i.offsetWidth; i.style.transition = ''; requestAnimationFrame(()=> i.style.width = i.dataset.w + '%'); });
+    $$('.mini-bars i[data-h]', root).forEach((i, n) => { i.style.transition = 'none'; i.style.height = '0'; i.offsetWidth; i.style.transition = ''; i.style.transitionDelay = (200 + n*60) + 'ms'; requestAnimationFrame(()=> i.style.height = (i.dataset.h * .72) + 'px'); });
+    $$('.ring[data-p]', root).forEach(r => { r.style.transition = 'none'; r.style.setProperty('--p', 0); r.offsetWidth; r.style.transition = ''; requestAnimationFrame(()=> r.style.setProperty('--p', r.dataset.p)); });
+  }
+  function restartReveal(root){ $$('.rv', root).forEach(el => { el.style.animation = 'none'; el.offsetHeight; el.style.animation = ''; }); }
+
+  /* roteamento */
+  const screens = $$('.screen');
+  function route(){
+    const id = (location.hash || '#inicio').slice(1);
+    const target = screens.find(s => s.id === id) || screens[0];
+    screens.forEach(s => s.classList.toggle('active', s === target));
+    $$('#nav a, .bottom-nav a').forEach(a => a.getAttribute('href') === '#'+target.id ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'));
+    if (target.id !== 'aulas') showTrail(true);
+    window.scrollTo(0, 0);
+    animate(target);
+    if (target.id === 'agenda') requestAnimationFrame(placeEvents);
+    $('#drawer').classList.contains('open') && openNotes();
+  }
+  window.addEventListener('hashchange', route);
+
+  /* pílulas e tabs */
+  $$('.pills, .tabs-line').forEach(g => g.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const attr = b.hasAttribute('aria-selected') ? 'aria-selected' : 'aria-pressed';
+    $$('button', g).forEach(x => x.setAttribute(attr, String(x === b)));
+  }));
+
+  /* acordeões */
+  document.addEventListener('click', e => {
+    const h = e.target.closest('.mod-h'); if (!h) return;
+    const m = h.parentElement, open = !m.classList.contains('open');
+    m.classList.toggle('open', open); h.setAttribute('aria-expanded', String(open));
+  });
+
+  /* aula (drill-in) */
+  function showLesson(){ $('#trilha').hidden = true; $('#licao').hidden = false; window.scrollTo(0,0); restartReveal($('#licao')); animate($('#licao')); }
+  function showTrail(silent){ $('#licao').hidden = true; $('#trilha').hidden = false; if(!silent){ window.scrollTo(0,0); restartReveal($('#trilha')); animate($('#trilha')); } }
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-open-lesson]')) { if (location.hash !== '#aulas') { location.hash = '#aulas'; setTimeout(showLesson, 30); } else showLesson(); }
+    if (e.target.closest('[data-close-lesson]')) showTrail(false);
+  });
+  $('#completeBtn').addEventListener('click', () => {
+    const b = $('#completeBtn'); b.innerHTML = '<svg class="i"><use href="#i-check-c"/></svg>Aula concluída'; b.disabled = true;
+    const d = $('#doneBanner'); d.style.background = 'linear-gradient(100deg,var(--success-soft),#fff 70%)'; d.style.borderColor = '#bfe8cc';
+    toast('Aula 6 concluída! A prática da aula foi liberada.');
+  });
+  $$('.trans p').forEach(p => p.addEventListener('click', () => $$('.trans p').forEach(x => x.classList.toggle('on', x === p))));
+
+  /* semana na home */
+  $('#homeWeek').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; $$('#homeWeek button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
+
+  /* favoritos */
+  document.addEventListener('click', e => { const s = e.target.closest('.star'); if(!s) return; const on = s.getAttribute('aria-pressed') !== 'true'; s.setAttribute('aria-pressed', String(on)); s.setAttribute('aria-label', on ? 'Remover dos favoritos' : 'Adicionar aos favoritos'); toast(on ? 'Adicionado aos favoritos' : 'Removido dos favoritos'); });
+
+  /* filtro de materiais */
+  $('#matFilters').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b) return; const f = b.dataset.f; let n = 0;
+    $$('#mrows li[data-k]').forEach(li => { const show = f === 'all' || li.dataset.k.split(' ').includes(f); li.hidden = !show; if(show) n++; });
+    $('#mrows .empty-row').hidden = n > 0;
+  });
+
+  /* agenda: calendário semanal */
+  const days = [['Seg',13],['Ter',14],['Qua',15],['Qui',16],['Sex',17],['Sáb',18],['Dom',19]], todayIdx = 1, startH = 8, endH = 21, rowH = 60;
+  const events = [
+    {d:1,s:19,e:19+50/60,k:'aula',t:'Inglês para Viagens',who:'Teacher Alex',icon:'i-play-sq',label:'Aula'},
+    {d:2,s:14,e:15,k:'pratica',t:'Conversação',who:'Prática guiada',icon:'i-headphones',label:'Prática'},
+    {d:3,s:19,e:20,k:'aula',t:'Business English',who:'Teacher Sam',icon:'i-play-sq',label:'Aula'},
+    {d:5,s:9,e:12,k:'evento',t:'English Club',who:'Teacher Emma',icon:'i-users',label:'Evento'},
+  ];
+  const cal = $('#cal');
+  cal.insertAdjacentHTML('beforeend', '<div></div>' + days.map((d,i)=>`<div class="dh ${i===todayIdx?'today':''}">${d[0]}<b>${d[1]}</b></div>`).join(''));
+  for (let h = startH; h < endH; h++) cal.insertAdjacentHTML('beforeend', `<div class="hr">${String(h).padStart(2,'0')}:00</div>` + days.map((_,i)=>`<div class="cell ${i===todayIdx?'td':''}"></div>`).join(''));
+  const fmt = h => String(Math.floor(h)).padStart(2,'0') + ':' + String(Math.round((h%1)*60)).padStart(2,'0');
+  function placeEvents(){
+    if (!cal.offsetParent) return;
+    $$('.ev, .now-line', cal).forEach(x => x.remove());
+    const hr = $('.hr', cal), head = $('.dh', cal).offsetHeight, x0 = hr.offsetWidth, colW = (cal.clientWidth - x0) / 7;
+    events.forEach((ev, idx) => {
+      const b = document.createElement('button'); b.className = 'ev ' + ev.k + ((ev.e-ev.s) < 1 ? ' short' : ''); b.dataset.k = ev.k; b.dataset.idx = idx;
+      b.style.left = (x0 + ev.d*colW + 4) + 'px'; b.style.width = (colW - 8) + 'px';
+      b.style.top = (head + (ev.s-startH)*rowH + 2) + 'px'; b.style.height = Math.max(46,(ev.e-ev.s)*rowH - 4) + 'px';
+      b.setAttribute('aria-label', `${ev.label}: ${ev.t}, ${days[ev.d][0]} ${fmt(ev.s)}`);
+      b.innerHTML = `<b><svg class="i"><use href="#${ev.icon}"/></svg>${ev.label}</b><span>${ev.t}</span><small>${fmt(ev.s)} – ${fmt(ev.e)}</small>`;
+      cal.appendChild(b);
+    });
+    const now = 16.5, nl = document.createElement('div'); nl.className = 'now-line';
+    nl.style.left = (x0 + todayIdx*colW) + 'px'; nl.style.width = colW + 'px'; nl.style.top = (head + (now-startH)*rowH) + 'px'; cal.appendChild(nl);
+    applyAgFilter();
+  }
+  let agF = 'all';
+  function applyAgFilter(){ $$('.ev', cal).forEach(ev => ev.classList.toggle('dim', agF !== 'all' && ev.dataset.k !== agF)); }
+  $('#agFilters').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; agF = b.dataset.f; applyAgFilter(); });
+  new ResizeObserver(placeEvents).observe(cal);
+  const pop = $('#pop');
+  cal.addEventListener('click', e => {
+    const b = e.target.closest('.ev'); if(!b) return; e.stopPropagation(); const ev = events[b.dataset.idx], r = b.getBoundingClientRect();
+    const tagc = {aula:'lilac',pratica:'yellow',evento:'pink'}[ev.k];
+    const action = ev.k === 'aula' && ev.d === todayIdx ? `<button class="btn btn-v" style="width:100%" data-toast="O link abre 15 minutos antes do início."><svg class="i"><use href="#i-video"/></svg>Entrar (abre 18:45)</button>` : `<button class="btn btn-soft" style="width:100%" data-toast="Lembrete criado para ${days[ev.d][0]}, ${fmt(ev.s)}.">Adicionar lembrete</button>`;
+    pop.innerHTML = `<span class="tag ${tagc}"><svg class="i"><use href="#${ev.icon}"/></svg>${ev.label}</span><h3>${ev.t}</h3><ul><li><svg class="i"><use href="#i-cal"/></svg>${days[ev.d][0]}, ${days[ev.d][1]} de outubro</li><li><svg class="i"><use href="#i-clock"/></svg>${fmt(ev.s)} – ${fmt(ev.e)} · Recife</li><li><svg class="i"><use href="#i-user"/></svg>${ev.who}</li></ul>${action}`;
+    const left = Math.min(innerWidth - 316, Math.max(16, r.left)), below = r.bottom + 270 < innerHeight;
+    pop.style.left = (left + scrollX) + 'px'; pop.style.top = ((below ? r.bottom + 8 : Math.max(16, r.top - 258)) + scrollY) + 'px'; pop.classList.add('open');
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('#pop') && !e.target.closest('.ev')) pop.classList.remove('open'); });
+
+  /* contagem regressiva (relógio fictício: 16:28) */
+  (function(){ const el = $('#countdown'); let m = 2*60 + 32; const draw = () => el.textContent = Math.floor(m/60) + 'h' + String(m%60).padStart(2,'0'); draw(); setInterval(() => { m = Math.max(0, m-1); draw(); }, 60000); })();
+
+  /* modal de gravação */
+  const modal = $('#speakModal'), mic = $('#mic'), zone = $('#micZone'), wave = $('#wave'), timer = $('#timer'), hint = $('#micHint'), acts = $('#speakActions');
+  for (let i = 0; i < 36; i++) wave.appendChild(document.createElement('i'));
+  let sec = 0, iv = null, raf = null, lastFocus = null;
+  const clock = s => String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0') + ' / 02:00';
+  function waveLoop(){ const t = performance.now(); $$('i', wave).forEach((b, i) => b.style.height = (8 + Math.abs(Math.sin(t/180 + i*.55)) * (14 + Math.random()*24)) + 'px'); raf = requestAnimationFrame(waveLoop); }
+  function freezeWave(){ cancelAnimationFrame(raf); $$('i', wave).forEach((b,i) => { b.style.height = (8 + Math.abs(Math.sin(i*.7))*16) + 'px'; b.style.background = 'var(--violet)'; }); }
+  function resetSpeak(){ clearInterval(iv); cancelAnimationFrame(raf); sec = 0; timer.textContent = clock(0); zone.classList.remove('rec-on'); mic.setAttribute('aria-pressed','false'); mic.setAttribute('aria-label','Iniciar gravação');
+    $$('i', wave).forEach(b => { b.style.height = '8px'; b.style.background = ''; }); hint.textContent = 'Toque no microfone para gravar. Você pode ouvir e regravar antes de enviar.';
+    acts.innerHTML = '<button class="btn btn-line" data-close-speak>Agora não</button>'; $('#speakMain').hidden = false; $('#speakSent').classList.remove('show'); }
+  function openSpeak(){ lastFocus = document.activeElement; resetSpeak(); modal.classList.add('open'); setTimeout(() => mic.focus(), 60); }
+  function closeSpeak(){ modal.classList.remove('open'); resetSpeak(); lastFocus && lastFocus.focus && lastFocus.focus(); }
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-open-speak]')) { e.preventDefault(); openSpeak(); }
+    if (e.target.closest('[data-close-speak]') || e.target === modal) closeSpeak();
+    if (e.target.closest('[data-redo]')) resetSpeak();
+    if (e.target.closest('[data-send]')) { $('#speakMain').hidden = true; $('#speakSent').classList.add('show'); }
+    if (e.target.closest('[data-listen]')) toast('Reproduzindo sua gravação…');
+  });
+  mic.addEventListener('click', () => {
+    if (zone.classList.contains('rec-on')) {
+      clearInterval(iv); freezeWave(); zone.classList.remove('rec-on'); mic.setAttribute('aria-pressed','false'); mic.setAttribute('aria-label','Gravar novamente');
+      hint.textContent = `Gravação pronta (${sec}s). Ouça, regrave ou envie para a professora.`;
+      acts.innerHTML = '<button class="btn btn-line" data-redo><svg class="i"><use href="#i-redo"/></svg>Regravar</button><button class="btn btn-soft" data-listen><svg class="i"><use href="#i-play-c"/></svg>Ouvir</button><button class="btn btn-y" data-send>Enviar para revisão<svg class="i"><use href="#i-arrow"/></svg></button>';
+    } else {
+      zone.classList.add('rec-on'); mic.setAttribute('aria-pressed','true'); mic.setAttribute('aria-label','Parar gravação'); hint.textContent = 'Gravando… toque de novo para parar.';
+      acts.innerHTML = ''; if (!reduce) waveLoop();
+      iv = setInterval(() => { sec = Math.min(120, sec+1); timer.textContent = clock(sec); if (sec >= 120) mic.click(); }, 1000);
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { if (modal.classList.contains('open')) closeSpeak(); pop.classList.remove('open'); $('#drawer').classList.remove('open'); $('#proto').classList.remove('open'); } });
+
+  /* estado: assinante x assinatura pendente */
+  const gateHTML = $('#gateTpl').innerHTML; $$('.gate').forEach(g => g.innerHTML = gateHTML);
+  $('#stateSeg').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; $$('#stateSeg button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); document.body.classList.toggle('gated', b.dataset.s === 'gated'); route(); });
+  $('#protoBtn').addEventListener('click', () => { const o = $('#proto').classList.toggle('open'); $('#protoBtn').setAttribute('aria-expanded', String(o)); });
+
+  /* notas de design */
+  const N = {
+    inicio:['Início','home',['Composição da referência aprovada: hero de próxima aula com foto e traços amarelos, Meu progresso, Sequência de prática, Trilhas, Atividades e Minha agenda.','Diferença intencional: o anel mostra progresso do curso (56%) e o nível A2 aparece separado, com a origem (teste revisado). A referência usava “62% para B1”, o que mistura progresso com CEFR (regra do AGENTS.md).','Contagem regressiva e link que abre 15 min antes: padrão Preply/Zoom (pesquisa Mobbin).','Movimento: contadores, anel e pontos da sequência animam ao entrar; cards levantam no hover.']],
+    aulas:['Aulas','aulas',['Segue a referência: abas em pílula, hero do curso com foto, próximo encontro, ritmo da semana e módulos em acordeão com estado por aula.','Estados por ícone + texto (Concluída, Aula atual, Disponível, Bloqueada), nunca só cor.','“Continuar aula” abre o player: lista do módulo ao lado (Coursera/Skillshare), transcrição clicável e “Concluir aula” com feedback.']],
+    pratica:['Prática','pratica',['Segue a referência: hero “Prática de hoje”, resumo da semana, 4 habilidades em tons pastel, recomendados com thumbnail, histórico e desafios rápidos.','Gravação em modal (Speak/Duolingo): microfone central com halo, onda ao vivo, limite de 2 min, ouvir/regravar/enviar.','Sem nota automática: a resposta vai para revisão humana (MANUAL_PENDING) e aparece como “Em revisão” no histórico.']],
+    materiais:['Materiais','materiais',['Segue a referência: filtros por tipo (funcionam), Continue revisando, materiais por módulo, Favoritos e Recentes.','Favorito com feedback imediato e estado vazio quando o filtro não tem itens.']],
+    progresso:['Progresso','progresso',['Segue a referência: teste de proficiência, habilidades, próximo objetivo, evolução, consistência, curso e conquistas.','Diferença intencional: “Ver resultado” no lugar de “Fazer novo teste” (o placement passa por revisão da professora) e faixa explicando que progresso no curso não muda o nível.','O gráfico desenha a linha ao entrar.']],
+    agenda:['Agenda','agenda',['Segue a referência: filtros por tipo, calendário semanal com cor por tipo, “Agendar nova prática”, próximos compromissos e links rápidos.','Adições: fuso de Recife explícito, linha do “agora” e popover ao clicar no evento com a ação certa (Entrar só perto do horário).']],
+    perfil:['Perfil','perfil',['Versão resumida da referência só para fechar a navegação. Abas e formulários ficam para a próxima rodada.']],
+  };
+  function openNotes(){ const id = (location.hash||'#inicio').slice(1), n = N[id] || N.inicio;
+    $('#notesBody').innerHTML = `<h3>Notas · ${n[0]}</h3><p class="ref">Fonte de verdade: docs/reference-ui/${n[1]}/reference.webp</p><ul>${n[2].map(x=>`<li>${x}</li>`).join('')}</ul><p class="ref">Logo, fotos e frase manuscrita foram recortados das referências aprovadas só para o protótipo. Na implementação, usar os arquivos oficiais.</p>`;
+    $('#drawer').classList.add('open'); }
+  $('#openNotes').addEventListener('click', () => { $('#proto').classList.remove('open'); openNotes(); });
+  $('#closeNotes').addEventListener('click', () => $('#drawer').classList.remove('open'));
+
+  route();
+})();
+</script>
+</body>
+</html>

@@ -12,6 +12,15 @@
   },
   "features": [
     {
+      "id": "pr74-gates",
+      "title": "Corrigir redesign PR 74 e otimizar gates sem reduzir cobertura",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": ["harness/goals/pr74-gates.md", "harness/evidence/pr74-gates/README.md"],
+      "updated_at": "2026-10-15T23:01:32.846Z"
+    },
+    {
       "id": "stage-11-flow-gap-closure",
       "title": "Etapa 11: fail-closed paid access, practice by enrollment, course completion, notification scheduler and flow gaps",
       "status": "in_progress",

@@ -241,7 +241,12 @@ test("Admin and Teacher operation overviews preserve landmarks, focus and WCAG A
   await page.goto("/teacher");
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Próxima atividade", exact: true })).toBeVisible();
-  const reviews = page.getByRole("link", { name: "Revisões de prática", exact: true });
+  const mobileMenu = page.getByRole("button", {
+    name: "Abrir navegação do professor",
+    exact: true,
+  });
+  if (await mobileMenu.isVisible()) await mobileMenu.click();
+  const reviews = page.getByRole("link", { name: "Revisões", exact: true });
   await reviews.focus();
   await expect(reviews).toBeFocused();
   await assertAxe(page);
@@ -345,6 +350,7 @@ test("Stage 12B entry assessment editor preserves keyboard order and accessible 
     destination: /\/admin\/assessments\/new$/,
   });
   const title = page.getByLabel("Título da avaliação *", { exact: true });
+  await expect(title).toBeEnabled();
   await title.focus();
   await expect(title).toBeFocused();
   await title.press("Tab");

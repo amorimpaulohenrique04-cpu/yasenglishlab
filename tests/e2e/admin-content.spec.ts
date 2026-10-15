@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
@@ -29,6 +30,21 @@ async function loginStudent(page: Page): Promise<void> {
 
 test.describe("Admin Content publication", () => {
   test.setTimeout(120_000);
+  async function cleanupModule() {
+    const db = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } },
+    );
+    const { error } = await db
+      .from("modules")
+      .delete()
+      .eq("course_id", courseId)
+      .eq("title", moduleTitle);
+    if (error) throw error;
+  }
+  test.beforeEach(cleanupModule);
+  test.afterEach(cleanupModule);
 
   test("Admin publishes, reorders and unpublishes a module; Student visibility follows publication", async ({
     page,
@@ -74,18 +90,14 @@ test.describe("Admin Content publication", () => {
       await loginStudent(studentPage);
       await studentPage.goto("/aulas");
       await expect(studentPage.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toHaveCount(0);
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toHaveCount(0);
 
       await page.goto("/admin/content?kind=modules");
       await page.getByRole("button", { name: `Publicar ${moduleTitle}` }).click();
       await expect(page.getByRole("status")).toContainText("Conteúdo publicado");
 
       await studentPage.reload();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toBeVisible();
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toBeVisible();
       await captureEvidence(studentPage, "module-published-student.png");
 
       await page.getByRole("button", { name: `Mover ${moduleTitle} para cima` }).click();
@@ -94,9 +106,7 @@ test.describe("Admin Content publication", () => {
       await expect(page.getByRole("status")).toContainText("Publicação retirada");
 
       await studentPage.reload();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toHaveCount(0);
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toHaveCount(0);
       await captureEvidence(studentPage, "module-unpublished-student.png");
     } finally {
       await studentContext.close();

@@ -1,3 +1,4 @@
+import { runPlaywrightSuite } from "./_playwright-suite.mjs";
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -51,20 +52,26 @@ function prepareFixture(env) {
   run(process.execPath, ["scripts/setup-canonical-e2e.mjs"], env);
 }
 
+const supabaseArgs = process.env.YAS_SUPABASE_WORKDIR
+  ? ["--workdir", process.env.YAS_SUPABASE_WORKDIR]
+  : [];
+const sb = (args, capture = false) =>
+  run("supabase", [...args, ...supabaseArgs], process.env, capture);
+
 console.log("\n=== Yas full verification ===");
 run("supabase", ["--version"]);
 run("psql", ["--version"]);
 
 let supabaseStarted = false;
 try {
-  if (!existsSync("supabase/config.toml")) {
-    run("supabase", ["init"]);
+  if (!existsSync(`${process.env.YAS_SUPABASE_WORKDIR ?? "."}/supabase/config.toml`)) {
+    sb(["init"]);
   }
-  run("supabase", ["start"]);
+  sb(["start"]);
   supabaseStarted = true;
-  run("supabase", ["db", "reset"]);
+  sb(["db", "reset"]);
 
-  const status = run("supabase", ["status", "-o", "env"], process.env, true);
+  const status = sb(["status", "-o", "env"], true);
   const local = parseEnv(status.stdout ?? "");
   const publicKey = local.PUBLISHABLE_KEY ?? local.ANON_KEY;
   const serviceKey = local.SECRET_KEY ?? local.SERVICE_ROLE_KEY;
@@ -82,6 +89,7 @@ try {
     SUPABASE_PROTECTED_ASSETS_BUCKET: "yas-protected-assets",
     DATABASE_URL: local.DB_URL,
     CANONICAL_E2E: "1",
+    YAS_E2E_PRODUCTION: "1",
     CANONICAL_E2E_PASSWORD: randomBytes(30).toString("base64url"),
   };
 
@@ -91,22 +99,22 @@ try {
   runNpm(["run", "eval:agent"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  runNpm(["run", "test:e2e"], runtimeEnv);
+  runPlaywrightSuite("test:e2e", "artifacts/e2e/results.json", runtimeEnv);
   run(process.execPath, ["scripts/assert-canonical-e2e.mjs"], runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  runNpm(["run", "test:a11y"], runtimeEnv);
+  runPlaywrightSuite("test:a11y", "artifacts/a11y/results.json", runtimeEnv);
 
   runNpm(["run", "storybook:build"], runtimeEnv);
-  runNpm(["run", "test:visual:storybook"], runtimeEnv);
+  runPlaywrightSuite("test:visual:storybook", "artifacts/storybook/results.json", runtimeEnv);
 
   prepareFixture(runtimeEnv);
-  runNpm(["run", "test:visual:golden"], runtimeEnv);
+  runPlaywrightSuite("test:visual:golden", "artifacts/golden/results.json", runtimeEnv);
 
   console.log("\n✓ Full verification passed: core + DB integration + RLS + E2E + a11y + visual.");
 } finally {
   if (supabaseStarted) {
-    spawnSync("supabase", ["stop", "--no-backup"], {
+    spawnSync("supabase", ["stop", "--no-backup", ...supabaseArgs], {
       stdio: "inherit",
     });
   }

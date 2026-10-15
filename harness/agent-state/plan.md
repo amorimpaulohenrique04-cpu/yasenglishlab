@@ -1,3 +1,19 @@
+# Plano — PR 74 gates
+
+## Active task
+
+**pr74-gates**
+
+Goal: `harness/goals/pr74-gates.md`.
+
+1. Reproduzir falhas em stack local isolada.
+2. Corrigir contraste, reflow, foco e expectativas de UI; isolar dados mutáveis.
+3. Separar goldens e atualizar referências aprovadas após revisão.
+4. Eliminar retries, centralizar setup Preview, validar relatórios e agregadores.
+5. Verificar agent/UI/full; publicar e acompanhar CI; registrar evidência.
+
+---
+
 # Plano - Redesign da UI (ui-redesign-approved-proposal)
 
 ## Active task

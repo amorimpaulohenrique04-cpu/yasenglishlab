@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yas Admin · Proposta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Tokens: mesma base da proposta do aluno (medidos em docs/reference-ui) */
+:root{
+  --sb:#461d82;--sb-active:#6132ad;--violet:#6024f7;--violet-700:#4f17d6;
+  --purple-200:#ddd0ff;--purple-100:#eee8ff;--purple-50:#f7f4ff;
+  --hero-a:#3d1a8c;--hero-b:#5527ad;
+  --yellow:#f9c933;--yellow-hover:#fbd54f;--yellow-soft:#fff4cf;
+  --ink:#1f1146;--ink-2:#3b2d63;--muted:#6f6880;--line:#ebe5f7;--line-2:#f3f0fa;
+  --surface:#fff;--canvas:#f3effd;
+  --t-lilac:#efe9ff;--t-lilac-ink:#6a3fe0;--t-blue:#e6f0ff;--t-blue-ink:#2f6fe4;
+  --t-yellow:#fff3d6;--t-yellow-ink:#a86f00;--t-green:#e5f7ea;--t-green-ink:#1f9a50;
+  --t-pink:#fde8f6;--t-pink-ink:#c03aa0;--t-red:#ffe9e7;--t-red-ink:#d93a2b;--t-grey:#f1eff5;
+  --r-sm:10px;--r-md:14px;--r-lg:18px;--r-xl:22px;--pill:999px;
+  --shadow:0 1px 2px rgba(37,16,67,.04),0 8px 24px rgba(66,29,119,.07);
+  --shadow-hover:0 2px 4px rgba(37,16,67,.05),0 16px 36px rgba(66,29,119,.13);
+  --shadow-pop:0 24px 60px rgba(31,13,57,.25);--ring:0 0 0 3px rgba(96,36,247,.28);
+  --display:"Montserrat","Segoe UI",sans-serif;--sans:Inter,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.2,0,0,1);--spring:cubic-bezier(.34,1.56,.64,1);--sidebar:16rem;color-scheme:light;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--canvas);line-height:1.45;-webkit-font-smoothing:antialiased;font-size:14.5px}
+a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}img{display:block;max-width:100%}
+:focus-visible{outline:none;box-shadow:var(--ring);border-radius:var(--r-sm)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.h-display{font-family:var(--display);font-weight:800;letter-spacing:-.025em}
+
+/* Shell */
+.app{display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--sb);color:#fff;display:flex;flex-direction:column;padding:22px 16px 16px;overflow:hidden;z-index:20}
+.sidebar .logo{width:140px;margin:0 0 6px 8px}
+.role{display:inline-flex;align-items:center;gap:6px;margin:0 0 22px 10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#d8c9ff}
+.nav{display:flex;flex-direction:column;gap:4px;position:relative;z-index:1}
+.nav .grp{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#b8a6e6;margin:14px 0 4px 12px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-md);font-weight:600;font-size:14.5px;color:#f1ebff;transition:background .2s var(--ease)}
+.nav a svg.i{width:20px;height:20px}
+.nav a:hover{background:rgba(255,255,255,.08)}
+.nav a[aria-current="page"]{background:var(--sb-active);color:#fff;box-shadow:0 6px 18px rgba(16,4,46,.25)}
+.nav .count{margin-left:auto;min-width:22px;height:22px;padding:0 7px;border-radius:var(--pill);background:var(--yellow);color:#1d1040;font-size:11.5px;font-weight:800;display:grid;place-items:center}
+.nav .count.soft{background:rgba(255,255,255,.16);color:#fff}
+.sb-wave{position:absolute;left:-10px;right:-10px;bottom:70px;height:130px;pointer-events:none}
+.me-card{position:relative;z-index:1;margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:var(--r-md);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12)}
+.me-card .av{background:#fff;color:var(--violet)}
+.me-card b{display:block;font-size:13.5px}.me-card small{font-size:12px;opacity:.8}
+
+.main{min-width:0;position:relative;isolation:isolate}
+.bg-deco{position:absolute;inset:0 0 auto 0;width:100%;height:300px;z-index:-1;pointer-events:none}
+.topbar{display:flex;align-items:center;gap:14px;padding:16px clamp(18px,2.4vw,34px) 0}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--pill);padding:0 14px;height:42px;width:min(420px,100%);box-shadow:var(--shadow);color:var(--muted)}
+.search input{border:0;outline:0;background:none;width:100%}
+.search kbd{white-space:nowrap;font:600 11px var(--sans);padding:2px 7px;border-radius:6px;background:var(--line-2);color:var(--muted)}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.aal{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px;border-radius:var(--pill);background:var(--t-green);color:var(--t-green-ink);font-size:12.5px;font-weight:700}
+.aal svg.i{width:16px;height:16px}
+.bell{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;color:var(--ink-2)}
+.bell:hover{background:rgba(255,255,255,.7)}
+.bell::after{content:"";position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:#ef3b4b;border:2px solid var(--canvas)}
+.page{padding:4px clamp(18px,2.4vw,34px) 48px;max-width:1500px}
+.page-head{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:16px 0 18px;flex-wrap:wrap}
+.page-head h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:clamp(1.9rem,3vw,2.6rem);line-height:1.04;margin:0}
+.page-head p{margin:6px 0 0;font-size:1rem;color:var(--ink-2)}
+.head-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Primitivos */
+.card{background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow);padding:20px;position:relative}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.card-h h2{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.01em;margin:0;display:flex;align-items:center;gap:8px}
+.card-h h2 svg.i{width:18px;height:18px;color:var(--violet)}
+.more{display:inline-flex;align-items:center;gap:6px;color:var(--violet);font-weight:600;font-size:13px;white-space:nowrap}
+.more svg.i{width:15px;height:15px;transition:transform .2s var(--ease)}.more:hover svg.i{transform:translateX(3px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:var(--r-md);font-weight:700;font-size:14px;white-space:nowrap;transition:transform .15s var(--ease),background .2s,box-shadow .2s,border-color .2s}
+.btn:active{transform:scale(.98)}.btn svg.i{width:18px;height:18px}
+.btn-y{background:var(--yellow);color:#1d1040;box-shadow:0 6px 16px rgba(249,201,51,.35)}.btn-y:hover{background:var(--yellow-hover)}
+.btn-v{background:var(--violet);color:#fff;box-shadow:0 6px 16px rgba(96,36,247,.28)}.btn-v:hover{background:var(--violet-700)}
+.btn-soft{background:var(--purple-50);color:var(--violet)}.btn-soft:hover{background:var(--purple-100)}
+.btn-line{background:var(--surface);border:1px solid var(--line);color:var(--ink)}.btn-line:hover{border-color:var(--purple-200)}
+.btn-danger{background:var(--t-red);color:var(--t-red-ink)}
+.btn-sm{height:34px;padding:0 12px;font-size:13px;border-radius:var(--r-sm)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;box-shadow:none}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--shadow);font-weight:600;font-size:13.5px;color:var(--ink-2);transition:all .2s var(--ease)}
+.pill svg.i{width:17px;height:17px}.pill:hover{color:var(--violet)}
+.pill .n{min-width:20px;height:20px;padding:0 6px;border-radius:var(--pill);background:var(--line-2);font-size:11.5px;display:grid;place-items:center}
+.pill[aria-pressed="true"]{background:var(--violet);color:#fff;box-shadow:0 8px 18px rgba(96,36,247,.3)}
+.pill[aria-pressed="true"] .n{background:rgba(255,255,255,.22)}
+.tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--pill);font-size:12px;font-weight:600;white-space:nowrap}
+.tag svg.i{width:13px;height:13px}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+.tag.nodot::before{display:none}
+.tag.lilac{background:var(--t-lilac);color:var(--t-lilac-ink)}.tag.blue{background:var(--t-blue);color:var(--t-blue-ink)}
+.tag.yellow{background:var(--t-yellow);color:var(--t-yellow-ink)}.tag.green{background:var(--t-green);color:var(--t-green-ink)}
+.tag.pink{background:var(--t-pink);color:var(--t-pink-ink)}.tag.red{background:var(--t-red);color:var(--t-red-ink)}.tag.grey{background:var(--t-grey);color:var(--muted)}
+.ico{width:42px;height:42px;border-radius:var(--r-md);display:grid;place-items:center;flex:none}
+.ico svg.i{width:20px;height:20px}
+.ico.lilac{background:var(--t-lilac);color:var(--t-lilac-ink)}.ico.blue{background:var(--t-blue);color:var(--t-blue-ink)}
+.ico.yellow{background:var(--t-yellow);color:#c58a00}.ico.green{background:var(--t-green);color:var(--t-green-ink)}
+.ico.pink{background:var(--t-pink);color:var(--t-pink-ink)}.ico.red{background:var(--t-red);color:var(--t-red-ink)}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;flex:none;object-fit:cover;background:var(--t-lilac);color:var(--t-lilac-ink)}
+.av.b{background:var(--t-blue);color:var(--t-blue-ink)}.av.y{background:var(--t-yellow);color:#a86f00}.av.g{background:var(--t-green);color:var(--t-green-ink)}.av.p{background:var(--t-pink);color:var(--t-pink-ink)}
+.bar{height:8px;border-radius:var(--pill);background:#ece8f4;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;border-radius:inherit;background:var(--violet);transition:width 1.1s var(--ease)}
+.bar.y>i{background:var(--yellow)}.bar.r>i{background:#ef5b4b}.bar.g>i{background:var(--t-green-ink)}
+.muted{color:var(--muted)}.grid{display:grid;gap:16px}
+.lift{transition:transform .25s var(--ease),box-shadow .25s var(--ease)}.lift:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.go{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--line-2);color:var(--ink-2);flex:none}
+.go svg.i{width:15px;height:15px}
+.screen{display:none}.screen.active{display:block}
+.screen.active .rv{animation:rv .5s var(--ease) both;animation-delay:calc(var(--i,0) * 50ms)}
+@keyframes rv{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pop{to{transform:scale(1);opacity:1}}
+
+/* KPIs */
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{display:flex;flex-direction:column;gap:10px;padding:18px 20px;overflow:hidden}
+.kpi-top{display:flex;align-items:center;gap:12px}
+.kpi-top span{font-size:13px;font-weight:600;color:var(--ink-2)}
+.kpi b{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.03em;line-height:1}
+.kpi-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.kpi small{font-size:12.5px;color:var(--muted)}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:var(--pill)}
+.delta.up{background:var(--t-green);color:var(--t-green-ink)}.delta.warn{background:var(--t-red);color:var(--t-red-ink)}.delta.flat{background:var(--t-grey);color:var(--muted)}
+.spark{width:96px;height:36px;overflow:visible}
+.spark path.l{fill:none;stroke:var(--violet);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:300;stroke-dashoffset:300}
+.spark path.a{fill:url(#sparkFill);opacity:0}
+.spark.red path.l{stroke:#ef5b4b}.spark.yel path.l{stroke:#e0a800}
+.screen.active .spark path.l{animation:draw 1.3s .25s var(--ease) forwards}
+.screen.active .spark path.a{animation:fadein .6s .9s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes fadein{to{opacity:1}}
+
+/* Funil de entrada (hero) */
+.funnel{position:relative;overflow:hidden;border-radius:var(--r-xl);color:#fff;padding:22px 24px;
+  background:radial-gradient(120% 160% at 100% 0%,#6a33d8 0%,transparent 55%),linear-gradient(110deg,var(--hero-a),var(--hero-b));box-shadow:0 14px 34px rgba(61,26,140,.25)}
+.funnel .strokes{position:absolute;right:22px;top:16px;width:44px;opacity:.95}
+.funnel h2{font-family:var(--display);font-weight:800;font-size:20px;margin:0 0 4px;letter-spacing:-.02em}
+.funnel p{margin:0 0 18px;opacity:.85;font-size:13.5px}
+.stages{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;position:relative}
+.stage{position:relative;text-align:left;padding:12px 12px 18px;border-radius:var(--r-md);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);transition:background .2s,transform .2s var(--ease)}
+.stage:hover{background:rgba(255,255,255,.18);transform:translateY(-2px)}
+.stage b{display:block;font-family:var(--display);font-weight:800;font-size:26px;line-height:1;letter-spacing:-.02em}
+.stage span{display:block;font-size:11.5px;font-weight:600;opacity:.9;margin-top:6px;line-height:1.25}
+.stage.hot{background:var(--yellow);color:#1d1040;border-color:var(--yellow)}
+.stage.hot:hover{background:var(--yellow-hover)}
+.stage .flow{position:absolute;left:12px;right:12px;bottom:6px;height:3px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.stage .flow i{display:block;height:100%;background:currentColor;opacity:.6;width:0;transition:width 1s var(--ease)}
+
+/* Visão geral */
+.ov-1{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);align-items:start}
+.attn li{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.attn li:last-child{border:0}
+.attn .t{flex:1;min-width:0}.attn .t b{display:block;font-size:14px}.attn .t small{color:var(--muted);font-size:12.5px}
+ul.clean{list-style:none;margin:0;padding:0}
+.cohort-occ li{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1.6fr) 54px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.cohort-occ li:last-child{border:0}
+.cohort-occ b{font-size:13.5px;display:block}.cohort-occ small{color:var(--muted);font-size:12px}
+.cohort-occ .v{text-align:right;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+.today li{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.today li:last-child{border:0}
+.today time{font-weight:800;font-family:var(--display);font-size:15px}
+.today b{display:block;font-size:13.5px}.today small{color:var(--muted);font-size:12px}
+.audit li{display:flex;gap:12px;padding:9px 0;font-size:13px;color:var(--ink-2)}
+.audit .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none;background:var(--purple-200)}
+.audit time{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
+
+/* Tabelas */
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.field{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--line);color:var(--muted);min-width:200px}
+.field input{border:0;outline:0;background:none;width:100%;color:var(--ink)}
+.sel{height:38px;padding:0 34px 0 12px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236f6880' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;appearance:none;font-size:13.5px;color:var(--ink-2)}
+.table-card{padding:0;overflow:hidden}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{text-align:left;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 14px;background:#fbfaff;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tbody tr{transition:background .15s;cursor:pointer}
+tbody tr:hover{background:#fbfaff}
+tbody tr.sel{background:var(--purple-50)}
+tbody tr:last-child td{border-bottom:0}
+.who{display:flex;align-items:center;gap:10px;min-width:180px}
+.who b{display:block;font-size:13.5px}.who small{color:var(--muted);font-size:12px}
+.cb{width:18px;height:18px;border-radius:6px;border:1.5px solid #cfc7e0;display:grid;place-items:center;background:#fff;transition:all .15s}
+.cb svg{width:12px;height:12px;stroke:#fff;stroke-width:3;opacity:0}
+.cb.on{background:var(--violet);border-color:var(--violet)}.cb.on svg{opacity:1}
+.mini{display:flex;align-items:center;gap:8px;min-width:120px}.mini .bar{flex:1;height:6px}.mini span{font-size:12px;font-weight:600;color:var(--ink-2);min-width:30px}
+.bulk{position:fixed;left:calc(50% + var(--sidebar)/2);bottom:24px;z-index:50;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100vw - 32px);padding:10px 12px 10px 18px;border-radius:var(--r-lg);background:#1f1146;color:#fff;box-shadow:var(--shadow-pop);transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:all .3s var(--spring)}
+.bulk.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.bulk .btn-sm{background:rgba(255,255,255,.12);color:#fff}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:40px 20px;text-align:center;color:var(--muted)}
+.empty .ico{width:56px;height:56px;border-radius:50%}
+
+/* Drawer de detalhe */
+.scrim{position:fixed;inset:0;z-index:70;background:rgba(25,11,47,.35);opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:75;width:min(480px,100%);background:#fff;box-shadow:var(--shadow-pop);display:flex;flex-direction:column;transform:translateX(105%);transition:transform .35s var(--ease)}
+.drawer.open{transform:none}
+.dr-head{padding:20px 22px 16px;border-bottom:1px solid var(--line);position:relative;background:linear-gradient(180deg,var(--purple-50),#fff)}
+.dr-head .x{position:absolute;right:16px;top:16px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:var(--shadow)}
+.dr-head h3{font-family:var(--display);font-weight:800;font-size:20px;margin:10px 0 2px;letter-spacing:-.02em}
+.dr-body{flex:1;overflow:auto;padding:18px 22px}
+.dr-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:13.5px;margin:0 0 18px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:600}
+.sec-t{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px}
+.tline{list-style:none;margin:0;padding:0 0 0 18px;position:relative}
+.tline::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tline li{position:relative;padding:0 0 14px;font-size:13.5px}
+.tline li::before{content:"";position:absolute;left:-16px;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--purple-200)}
+.tline li.done::before{background:var(--t-green-ink);border-color:var(--t-green-ink)}
+.tline li.now::before{background:var(--violet);border-color:var(--violet);box-shadow:0 0 0 4px rgba(96,36,247,.15)}
+.tline li b{display:block}.tline li small{color:var(--muted);font-size:12px}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-md);background:var(--t-blue);color:#1d3f8f;font-size:13px;line-height:1.4}
+.note svg.i{width:18px;height:18px;margin-top:1px}
+.note.warn{background:var(--t-yellow);color:#6b4500}
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.form-row label{font-size:13px;font-weight:600}
+.form-row select,.form-row textarea,.form-row input{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;background:#fff;font-size:13.5px}
+.form-row textarea{min-height:84px;resize:vertical}
+.form-row .err{font-size:12px;color:var(--t-red-ink);display:none}
+.form-row.invalid .err{display:block}.form-row.invalid textarea,.form-row.invalid select{border-color:#ef5b4b}
+
+/* Leads kanban */
+.board{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:14px;overflow-x:auto;padding-bottom:6px}
+.col{background:rgba(255,255,255,.55);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px;min-height:420px;display:flex;flex-direction:column;gap:10px;transition:background .2s,border-color .2s}
+.col.over{background:var(--purple-50);border-color:var(--violet);border-style:dashed}
+.col.deny{background:var(--t-red);border-color:#ef5b4b;border-style:dashed}
+.col-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;padding:2px 4px}
+.col-h .n{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+.col-h .dot{width:9px;height:9px;border-radius:50%}
+.lead{background:#fff;border-radius:var(--r-md);box-shadow:var(--shadow);padding:12px;cursor:grab;transition:transform .2s var(--ease),box-shadow .2s,opacity .2s;border:1px solid transparent}
+.lead:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.lead.dragging{opacity:.4;transform:rotate(2deg)}
+.lead b{display:block;font-size:14px;margin-bottom:2px}
+.lead small{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px}
+.lead small svg.i{width:13px;height:13px}
+.lead .row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.lead.terminal{cursor:default}
+.temp{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:var(--pill)}
+.temp.HOT{background:#ffe3dd;color:#d4381f}.temp.WARM{background:var(--t-yellow);color:#a86f00}.temp.COLD{background:var(--t-blue);color:var(--t-blue-ink)}
+.add-lead{display:flex;align-items:center;justify-content:center;gap:6px;height:36px;border-radius:var(--r-sm);border:1.5px dashed #d6cdea;color:var(--muted);font-weight:600;font-size:13px;transition:all .2s}
+.add-lead:hover{border-color:var(--violet);color:var(--violet);background:#fff}
+
+/* Turmas */
+.cohorts{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.coh{display:flex;flex-direction:column;gap:14px}
+.coh-top{display:flex;align-items:flex-start;gap:14px}
+.ring{--p:0;width:72px;height:72px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--c,var(--violet)) calc(var(--p)*1%),#eeeaf5 0);transition:--p 1.1s var(--ease)}
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
+.ring>div{width:54px;height:54px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:800;font-family:var(--display);font-size:14px}
+.coh h3{font-family:var(--display);font-weight:700;font-size:16px;margin:0 0 4px}
+.coh .meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.coh .meta span{display:inline-flex;align-items:center;gap:5px}
+.coh .meta svg.i{width:14px;height:14px}
+.coh-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px dashed var(--line)}
+.stack{display:flex}.stack .av{width:28px;height:28px;font-size:10.5px;border:2px solid #fff;margin-left:-8px}.stack .av:first-child{margin-left:0}
+.coh.new{align-items:center;justify-content:center;border:2px dashed #d6cdea;background:transparent;box-shadow:none;min-height:210px;color:var(--muted);font-weight:600}
+.coh.new:hover{border-color:var(--violet);color:var(--violet);background:#fff}
+
+/* Pagamentos */
+.pay-top{grid-template-columns:minmax(0,1fr) 320px;align-items:start}
+.donut{--a:0;--b:0;width:150px;height:150px;border-radius:50%;flex:none;background:conic-gradient(var(--violet) 0 calc(var(--a)*1%),var(--yellow) 0 calc(var(--b)*1%),#c9b8ff 0);display:grid;place-items:center;transition:--a 1s var(--ease),--b 1s var(--ease)}
+@property --a{syntax:"<number>";inherits:false;initial-value:0}@property --b{syntax:"<number>";inherits:false;initial-value:0}
+.donut>div{width:104px;height:104px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}
+.donut b{font-family:var(--display);font-weight:800;font-size:26px;line-height:1}
+.legend li{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13.5px}
+.legend i{width:12px;height:12px;border-radius:4px}.legend b{margin-left:auto}
+
+/* Conteúdos */
+.ct-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:start}
+.tree{display:flex;flex-direction:column;gap:10px}
+.tmod{background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;border:1px solid transparent}
+.tmod.open{border-color:var(--purple-200)}
+.tmod-h{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.handle{color:#c2b9d6;cursor:grab;display:grid}.handle svg.i{width:18px;height:18px}
+.tmod-h .title{flex:1;min-width:0;font-weight:700}
+.tmod-h .title small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.chev{transition:transform .3s var(--ease);color:var(--muted)}.tmod.open .chev{transform:rotate(90deg)}
+.tmod-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.tmod.open .tmod-b{grid-template-rows:1fr}.tmod-b>div{overflow:hidden}
+.tles{list-style:none;margin:0;padding:4px 14px 12px 48px}
+.tles li{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:var(--r-sm);font-size:13.5px;transition:background .15s}
+.tles li:hover{background:#fbfaff}
+.tles li .t{flex:1;min-width:0}.tles li small{color:var(--muted);font-size:12px}
+.tles li.drag-over{box-shadow:inset 0 2px 0 var(--violet)}
+.switch{position:relative;width:42px;height:24px;border-radius:var(--pill);background:#d9d3e6;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .25s var(--spring)}
+.switch[aria-checked="true"]{background:var(--t-green-ink)}.switch[aria-checked="true"]::after{transform:translateX(18px)}
+.pub-label{font-size:12px;font-weight:700;min-width:74px}
+.preview{border-radius:var(--r-xl);overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.preview .pv-top{position:relative;height:150px;background:linear-gradient(110deg,var(--hero-a),var(--hero-b));color:#fff;padding:18px;display:flex;flex-direction:column;justify-content:flex-end}
+.preview .pv-top img{position:absolute;right:0;bottom:0;height:100%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 35%);mask-image:linear-gradient(90deg,transparent,#000 35%)}
+.preview .pv-top b{position:relative;font-family:var(--display);font-weight:800;font-size:20px}
+.checks li{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13.5px;border-bottom:1px solid var(--line-2)}
+.checks li:last-child{border:0}
+.checks .ok{color:var(--t-green-ink)}.checks .no{color:var(--t-red-ink)}
+
+/* Toast / proto */
+.toast{position:fixed;left:50%;bottom:26px;z-index:90;display:flex;align-items:center;gap:12px;padding:12px 18px 12px 14px;border-radius:var(--r-md);background:#1f1146;color:#fff;font-weight:600;font-size:13.5px;box-shadow:var(--shadow-pop);transform:translate(-50%,30px);opacity:0;transition:all .35s var(--spring);pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+body.bulk-on .toast{bottom:92px}
+.toast .ok{width:24px;height:24px;border-radius:50%;background:var(--t-green-ink);display:grid;place-items:center;flex:none}
+.toast.err .ok{background:#ef5b4b}
+.toast .ok svg.i{width:14px;height:14px;stroke-width:3}
+.proto{position:fixed;right:18px;bottom:18px;z-index:60}
+.proto>button{display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:var(--pill);background:#1f1146;color:#fff;font-weight:600;font-size:12.5px;box-shadow:var(--shadow-pop)}
+.proto>button svg.i{width:15px;height:15px}
+.notes{position:absolute;right:0;bottom:48px;width:340px;max-height:60vh;overflow:auto;background:#fff;border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:16px;display:none;font-size:13px;color:var(--ink-2)}
+.proto.open .notes{display:block}
+.notes h4{font-family:var(--display);margin:0 0 6px;font-size:15px;color:var(--ink)}
+.notes ul{padding-left:18px;margin:6px 0}.notes li{margin:6px 0}
+
+/* Responsivo */
+.m-top{display:none}
+@media (max-width:1240px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stages{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ov-1,.pay-top,.ct-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .sidebar,.topbar{display:none}
+  .m-top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--sb);color:#fff;position:sticky;top:0;z-index:30}
+  .m-top img{height:36px}.m-top .aal{margin-left:auto;background:rgba(255,255,255,.14);color:#fff}
+  .m-nav{display:flex;gap:8px;overflow-x:auto;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:56px;z-index:29;scrollbar-width:none}
+  .m-nav::-webkit-scrollbar{display:none}
+  .m-nav a{flex:none;height:34px;padding:0 12px;border-radius:var(--pill);display:inline-flex;align-items:center;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--line-2)}
+  .m-nav a[aria-current="page"]{background:var(--violet);color:#fff}
+  .page{padding:4px 16px 80px}
+  .kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .kpi{padding:14px}.kpi b{font-size:24px}.spark{display:none}
+  .stages{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pills{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:4px 16px 8px;scrollbar-width:none}.pill{flex:none}
+  .field{min-width:0;flex:1}
+  .drawer{width:100%}
+  .bulk{left:50%;bottom:72px}
+  .proto{bottom:16px}
+}
+@media (min-width:861px){.m-nav{display:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6024f7" stop-opacity=".18"/><stop offset="1" stop-color="#6024f7" stop-opacity="0"/></linearGradient></defs>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5 5h14l1 8v6H4v-6z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-teacher" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/><path d="M9 14l3 3 3-3"/></symbol>
+  <symbol id="i-funnel" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h3"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"/><path d="M12 6v14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 1 1 12 0v5l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4"/><path d="M3 8h14"/><path d="m17 12 4 4-4 4"/><path d="M21 16H7"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9c-2-4-6-4-6-1.5S9 9 12 9zM12 9c2-4 6-4 6-1.5S15 9 12 9z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-drag" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.3" fill="currentColor"/><circle cx="15" cy="6" r="1.3" fill="currentColor"/><circle cx="9" cy="12" r="1.3" fill="currentColor"/><circle cx="15" cy="12" r="1.3" fill="currentColor"/><circle cx="9" cy="18" r="1.3" fill="currentColor"/><circle cx="15" cy="18" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+  <symbol id="i-export" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 2 1.5 3 2.5 3-1.5-3 0-6 0-8z"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar" aria-label="Navegação do admin">
+    <a href="#overview"><img class="logo" src="assets/logo.webp" alt="Yas English Lab"></a>
+    <span class="role"><svg class="i" style="width:14px;height:14px"><use href="#i-shield"/></svg>Administração</span>
+    <nav class="nav" id="nav">
+      <a href="#overview"><svg class="i"><use href="#i-grid"/></svg>Visão geral</a>
+      <span class="grp">Operação</span>
+      <a href="#matriculas"><svg class="i"><use href="#i-inbox"/></svg>Matrículas<span class="count">4</span></a>
+      <a href="#alunos"><svg class="i"><use href="#i-users"/></svg>Alunos</a>
+      <a href="#turmas"><svg class="i"><use href="#i-layers"/></svg>Turmas</a>
+      <a href="#professores"><svg class="i"><use href="#i-teacher"/></svg>Professores<span class="count soft">1</span></a>
+      <span class="grp">Comercial</span>
+      <a href="#leads"><svg class="i"><use href="#i-funnel"/></svg>Leads</a>
+      <a href="#pagamentos"><svg class="i"><use href="#i-card"/></svg>Pagamentos<span class="count">2</span></a>
+      <span class="grp">Produto</span>
+      <a href="#conteudos"><svg class="i"><use href="#i-book"/></svg>Conteúdos</a>
+    </nav>
+    <svg class="sb-wave" viewBox="0 0 260 130" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 C60 10 110 10 150 50 S230 110 260 55 V130 H0Z" fill="#5a2b9e" opacity=".55"/><path d="M0 92 C55 52 120 62 160 88 S235 122 260 92 V130 H0Z" fill="#6a36b4" opacity=".35"/></svg>
+    <div class="me-card"><span class="av">AD</span><span><b>Admin Dev</b><small>Sessão verificada (AAL2)</small></span></div>
+  </aside>
+
+  <div class="main">
+    <svg class="bg-deco" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true"><path d="M560 0 C720 110 860 30 1000 80 S1160 180 1200 130 V0Z" fill="#e7defc" opacity=".8"/><path d="M680 0 C800 55 920 10 1050 36 S1170 100 1200 70 V0Z" fill="#ddd1fb" opacity=".55"/></svg>
+    <div class="m-top"><img src="assets/logo.webp" alt="Yas English Lab"><span class="aal"><svg class="i"><use href="#i-shield"/></svg>AAL2</span></div>
+    <nav class="m-nav" id="mnav" aria-label="Seções">
+      <a href="#overview">Visão geral</a><a href="#matriculas">Matrículas</a><a href="#alunos">Alunos</a><a href="#turmas">Turmas</a><a href="#professores">Professores</a><a href="#leads">Leads</a><a href="#pagamentos">Pagamentos</a><a href="#conteudos">Conteúdos</a>
+    </nav>
+    <header class="topbar">
+      <label class="search"><svg class="i"><use href="#i-search"/></svg><span class="sr-only">Buscar</span><input placeholder="Buscar alunos, turmas, leads…"><kbd>Ctrl K</kbd></label>
+      <div class="top-right">
+        <span class="aal" title="MFA verificado nesta sessão"><svg class="i"><use href="#i-shield"/></svg>MFA verificado</span>
+        <button class="bell" aria-label="Notificações, 3 novas"><svg class="i"><use href="#i-bell"/></svg></button>
+      </div>
+    </header>
+
+    <main class="page">
+
+<!-- ======================= VISÃO GERAL ======================= -->
+<section class="screen" id="overview">
+  <div class="page-head rv"><div><h1>Bom dia, Admin</h1><p>Terça, 14 de outubro · o que precisa de você hoje.</p></div><div class="head-actions"><a class="btn btn-line" href="#alunos"><svg class="i"><use href="#i-export"/></svg>Exportar</a><a class="btn btn-y" href="#turmas"><svg class="i"><use href="#i-plus"/></svg>Nova turma</a></div></div>
+
+  <div class="grid kpis">
+    <a class="card kpi lift rv" style="--i:1" href="#alunos"><div class="kpi-top"><span class="ico lilac"><svg class="i"><use href="#i-users"/></svg></span><span>Alunos com acesso</span></div><div class="kpi-row"><div><b data-count="128">0</b><div><span class="delta up">+6 no mês</span></div></div><svg class="spark" viewBox="0 0 96 36"><path class="a" d="M0 30 L16 26 L32 27 L48 20 L64 18 L80 12 L96 8 V36 H0Z"/><path class="l" d="M0 30 L16 26 L32 27 L48 20 L64 18 L80 12 L96 8"/></svg></div></a>
+    <a class="card kpi lift rv" style="--i:2" href="#turmas"><div class="kpi-top"><span class="ico blue"><svg class="i"><use href="#i-layers"/></svg></span><span>Ocupação das turmas</span></div><div class="kpi-row"><div><b><span data-count="74">0</span>%</b><div><small>9 turmas ativas</small></div></div><svg class="spark" viewBox="0 0 96 36"><path class="a" d="M0 24 L16 22 L32 24 L48 18 L64 16 L80 15 L96 11 V36 H0Z"/><path class="l" d="M0 24 L16 22 L32 24 L48 18 L64 16 L80 15 L96 11"/></svg></div></a>
+    <a class="card kpi lift rv" style="--i:3" href="#matriculas"><div class="kpi-top"><span class="ico yellow"><svg class="i"><use href="#i-inbox"/></svg></span><span>Casos na fila de entrada</span></div><div class="kpi-row"><div><b data-count="11">0</b><div><span class="delta flat">2 há +3 dias</span></div></div><svg class="spark yel" viewBox="0 0 96 36"><path class="a" d="M0 20 L16 24 L32 18 L48 22 L64 16 L80 20 L96 18 V36 H0Z"/><path class="l" d="M0 20 L16 24 L32 18 L48 22 L64 16 L80 20 L96 18"/></svg></div></a>
+    <a class="card kpi lift rv" style="--i:4" href="#pagamentos"><div class="kpi-top"><span class="ico red"><svg class="i"><use href="#i-card"/></svg></span><span>Pagamentos em atraso</span></div><div class="kpi-row"><div><b data-count="2">0</b><div><span class="delta warn">PAST_DUE</span></div></div><svg class="spark red" viewBox="0 0 96 36"><path class="a" d="M0 28 L16 28 L32 24 L48 26 L64 20 L80 22 L96 16 V36 H0Z"/><path class="l" d="M0 28 L16 28 L32 24 L48 26 L64 20 L80 22 L96 16"/></svg></div></a>
+  </div>
+
+  <div class="funnel rv" style="--i:5;margin-top:16px">
+    <svg class="strokes" viewBox="0 0 44 44" aria-hidden="true"><path d="M10 4 L4 18" stroke="#f9c933" stroke-width="6" stroke-linecap="round"/><path d="M26 10 L14 24" stroke="#f9c933" stroke-width="6" stroke-linecap="round"/></svg>
+    <h2>Jornada de entrada</h2>
+    <p>Do pagamento confirmado à matrícula na turma. Clique numa etapa para abrir a fila filtrada.</p>
+    <div class="stages" id="stages">
+      <a class="stage" href="#matriculas" data-stage="PAYMENT_CONFIRMED"><b data-count="1">0</b><span>Pagamento confirmado</span><span class="flow"><i data-w="20"></i></span></a>
+      <a class="stage" href="#matriculas" data-stage="ASSESSMENT_REQUIRED"><b data-count="2">0</b><span>Avaliação pendente</span><span class="flow"><i data-w="35"></i></span></a>
+      <a class="stage" href="#matriculas" data-stage="IN_PROGRESS"><b data-count="3">0</b><span>Avaliação em andamento</span><span class="flow"><i data-w="50"></i></span></a>
+      <a class="stage hot" href="#matriculas" data-stage="REVIEW_PENDING"><b data-count="2">0</b><span>Aguardando revisão</span><span class="flow"><i data-w="65"></i></span></a>
+      <a class="stage" href="#matriculas" data-stage="PLACEMENT_READY"><b data-count="1">0</b><span>Recomendação pronta</span><span class="flow"><i data-w="78"></i></span></a>
+      <a class="stage" href="#matriculas" data-stage="STUDENT_DECISION"><b data-count="2">0</b><span>Aluno escolhendo turma</span><span class="flow"><i data-w="90"></i></span></a>
+      <a class="stage" href="#alunos" data-stage="ENROLLED"><b data-count="14">0</b><span>Matriculados no mês</span><span class="flow"><i data-w="100"></i></span></a>
+    </div>
+  </div>
+
+  <div class="grid ov-1" style="margin-top:16px">
+    <div class="grid">
+      <article class="card rv" style="--i:6">
+        <div class="card-h"><h2><svg class="i"><use href="#i-alert"/></svg>Precisa de atenção</h2><span class="tag red nodot">4 itens</span></div>
+        <ul class="clean attn">
+          <li><span class="ico yellow"><svg class="i"><use href="#i-layers"/></svg></span><span class="t"><b>1 matrícula ativa sem turma</b><small>Ana Souza · Yas Foundations · não registra progresso nas aulas</small></span><a class="btn btn-soft btn-sm" href="#matriculas">Resolver</a></li>
+          <li><span class="ico red"><svg class="i"><use href="#i-card"/></svg></span><span class="t"><b>2 assinaturas em atraso (PAST_DUE)</b><small>Lucas Prado, Marina Alves · desde 10/10</small></span><a class="btn btn-soft btn-sm" href="#pagamentos">Ver</a></li>
+          <li><span class="ico lilac"><svg class="i"><use href="#i-clock"/></svg></span><span class="t"><b>2 revisões de entrada há mais de 3 dias</b><small>A professora revisa; o admin acompanha e pode lembrar</small></span><a class="btn btn-soft btn-sm" href="#matriculas">Abrir fila</a></li>
+          <li><span class="ico pink"><svg class="i"><use href="#i-teacher"/></svg></span><span class="t"><b>1 professor com aceite incompleto</b><small>Teacher Dev · sem perfil de professor ativo</small></span><a class="btn btn-soft btn-sm" href="#professores">Revisar</a></li>
+        </ul>
+      </article>
+      <article class="card rv" style="--i:7">
+        <div class="card-h"><h2><svg class="i"><use href="#i-layers"/></svg>Ocupação por turma</h2><a class="more" href="#turmas">Ver turmas<svg class="i"><use href="#i-arrow"/></svg></a></div>
+        <ul class="clean cohort-occ">
+          <li><span><b>Foundations · Seg 18h</b><small>Teacher Alex</small></span><div class="bar r"><i data-w="100"></i></div><span class="v">6/6</span></li>
+          <li><span><b>Everyday English · Ter 19h</b><small>Teacher Alex</small></span><div class="bar"><i data-w="83"></i></div><span class="v">5/6</span></li>
+          <li><span><b>Business English · Qui 19h</b><small>Teacher Sam</small></span><div class="bar"><i data-w="66"></i></div><span class="v">4/6</span></li>
+          <li><span><b>Conversation Club · Sáb 9h</b><small>Teacher Emma</small></span><div class="bar y"><i data-w="33"></i></div><span class="v">2/6</span></li>
+        </ul>
+      </article>
+    </div>
+    <div class="grid">
+      <article class="card rv" style="--i:7">
+        <div class="card-h"><h2><svg class="i"><use href="#i-cal"/></svg>Encontros de hoje</h2><span class="tag lilac nodot">3</span></div>
+        <ul class="clean today">
+          <li><time>17:00</time><span><b>Conversation Lab · Everyday</b><small>Teacher Emma · 3/4 reservas</small></span><span class="tag green">Agora</span></li>
+          <li><time>19:00</time><span><b>Inglês para Viagens</b><small>Teacher Alex · 4/6 reservas</small></span><span class="tag grey">Agendado</span></li>
+          <li><time>20:30</time><span><b>Business English</b><small>Teacher Sam · 2/6 reservas</small></span><span class="tag grey">Agendado</span></li>
+        </ul>
+      </article>
+      <article class="card rv" style="--i:8">
+        <div class="card-h"><h2><svg class="i"><use href="#i-clock"/></svg>Atividade recente</h2></div>
+        <ul class="clean audit">
+          <li><span class="dot" style="background:var(--t-green-ink)"></span><span><b>Placement Ready</b> escolheu a turma Foundations</span><time>há 12 min</time></li>
+          <li><span class="dot" style="background:var(--violet)"></span><span>Teacher Alex finalizou a revisão de <b>Placement Pending</b></span><time>há 1 h</time></li>
+          <li><span class="dot" style="background:var(--yellow)"></span><span>Concessão de cortesia criada para <b>Home Now</b></span><time>ontem</time></li>
+          <li><span class="dot"></span><span>Lead <b>Carla Mendes</b> movido para Qualificado</span><time>ontem</time></li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= MATRÍCULAS (fila de entrada) ======================= -->
+<section class="screen" id="matriculas">
+  <div class="page-head rv"><div><h1>Matrículas</h1><p>Acompanhe a entrada do aluno, do pagamento confirmado à turma.</p></div></div>
+  <div class="note warn rv" style="--i:1;margin-bottom:14px"><svg class="i"><use href="#i-alert"/></svg><span><b>1 matrícula ativa sem turma.</b> Ana Souza está matriculada em Yas Foundations, mas fora de qualquer turma ativa, então não registra progresso. <a class="more" href="#" data-open="ana">Colocar em uma turma<svg class="i"><use href="#i-arrow"/></svg></a></span></div>
+  <div class="pills rv" style="--i:2;margin-bottom:14px" id="caseFilters">
+    <button class="pill" aria-pressed="true" data-f="all">Todas<span class="n">11</span></button>
+    <button class="pill" aria-pressed="false" data-f="ASSESSMENT_REQUIRED">Avaliação pendente<span class="n">2</span></button>
+    <button class="pill" aria-pressed="false" data-f="IN_PROGRESS">Em andamento<span class="n">3</span></button>
+    <button class="pill" aria-pressed="false" data-f="REVIEW_PENDING">Aguardando revisão<span class="n">2</span></button>
+    <button class="pill" aria-pressed="false" data-f="PLACEMENT_READY">Recomendação pronta<span class="n">1</span></button>
+    <button class="pill" aria-pressed="false" data-f="STUDENT_DECISION">Escolhendo turma<span class="n">2</span></button>
+  </div>
+  <div class="card table-card rv" style="--i:3">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Aluno</th><th>Etapa</th><th>Na etapa há</th><th>Recomendação</th><th>Turma</th><th></th></tr></thead>
+      <tbody id="caseRows"></tbody>
+    </table></div>
+    <div class="empty" id="caseEmpty" hidden><span class="ico lilac"><svg class="i"><use href="#i-inbox"/></svg></span><b style="color:var(--ink)">Nenhum caso nesta etapa</b><span>Quando um aluno chegar aqui, ele aparece nesta lista.</span></div>
+    <div class="pager"><span id="caseCount">11 casos</span><span>Atualizado agora</span></div>
+  </div>
+</section>
+
+<!-- ======================= ALUNOS ======================= -->
+<section class="screen" id="alunos">
+  <div class="page-head rv"><div><h1>Alunos</h1><p>Matrícula, acesso e progresso operacional.</p></div><div class="head-actions"><button class="btn btn-line" data-toast="CSV gerado com os filtros atuais."><svg class="i"><use href="#i-export"/></svg>Exportar CSV</button></div></div>
+  <div class="toolbar rv" style="--i:1">
+    <label class="field"><svg class="i" style="width:17px;height:17px"><use href="#i-search"/></svg><input id="stuSearch" placeholder="Buscar por nome ou e-mail"></label>
+    <select class="sel" id="stuAccess" aria-label="Acesso"><option value="all">Todo acesso</option><option value="ACTIVE">Assinatura ativa</option><option value="GRANT">Cortesia</option><option value="PAST_DUE">Em atraso</option><option value="NONE">Sem acesso</option></select>
+    <select class="sel" aria-label="Turma"><option>Todas as turmas</option><option>Foundations · Seg 18h</option><option>Everyday English · Ter 19h</option></select>
+    <select class="sel" aria-label="Curso"><option>Todos os cursos</option><option>Yas Foundations</option></select>
+  </div>
+  <div class="card table-card rv" style="--i:2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th style="width:40px"><button class="cb" id="cbAll" aria-label="Selecionar todos"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.5 4.5L19 7"/></svg></button></th><th>Aluno</th><th>Acesso</th><th>Turma</th><th>Progresso no curso</th><th>Próxima sessão</th><th></th></tr></thead>
+      <tbody id="stuRows"></tbody>
+    </table></div>
+    <div class="empty" id="stuEmpty" hidden><span class="ico lilac"><svg class="i"><use href="#i-search"/></svg></span><b style="color:var(--ink)">Nenhum aluno encontrado</b><span>Ajuste a busca ou os filtros.</span></div>
+    <div class="pager"><span id="stuCount"></span><span>Página 1 de 1</span></div>
+  </div>
+  <div class="bulk" id="bulk"><span id="bulkN">0 selecionados</span><button class="btn btn-sm" data-toast="E-mail preparado para os selecionados."><svg class="i" style="width:16px;height:16px"><use href="#i-mail"/></svg>E-mail</button><button class="btn btn-sm" data-toast="CSV dos selecionados gerado."><svg class="i" style="width:16px;height:16px"><use href="#i-export"/></svg>Exportar</button><button class="btn btn-sm" id="bulkClear"><svg class="i" style="width:16px;height:16px"><use href="#i-x"/></svg></button></div>
+</section>
+
+<!-- ======================= TURMAS ======================= -->
+<section class="screen" id="turmas">
+  <div class="page-head rv"><div><h1>Turmas</h1><p>Capacidade, horários recorrentes e professores responsáveis.</p></div><div class="head-actions"><button class="btn btn-y" data-toast="Formulário de nova turma (curso, capacidade, horário, professor)."><svg class="i"><use href="#i-plus"/></svg>Nova turma</button></div></div>
+  <div class="pills rv" style="--i:1;margin-bottom:16px"><button class="pill" aria-pressed="true">Ativas<span class="n">9</span></button><button class="pill" aria-pressed="false">Lotadas<span class="n">1</span></button><button class="pill" aria-pressed="false">Encerradas<span class="n">2</span></button></div>
+  <div class="grid cohorts" id="cohorts"></div>
+</section>
+
+<!-- ======================= PROFESSORES ======================= -->
+<section class="screen" id="professores">
+  <div class="page-head rv"><div><h1>Professores</h1><p>Acesso, carga e escopo operacional.</p></div><div class="head-actions"><button class="btn btn-y" data-toast="Convite enviado. O professor precisa aceitar e configurar o MFA."><svg class="i"><use href="#i-plus"/></svg>Convidar professor</button></div></div>
+  <div class="grid kpis rv" style="--i:1;margin-bottom:16px">
+    <div class="card kpi"><div class="kpi-top"><span class="ico green"><svg class="i"><use href="#i-teacher"/></svg></span><span>Ativos</span></div><b data-count="3">0</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico pink"><svg class="i"><use href="#i-alert"/></svg></span><span>Aceite incompleto</span></div><b data-count="1">0</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico lilac"><svg class="i"><use href="#i-layers"/></svg></span><span>Turmas com professor</span></div><b>9/9</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico yellow"><svg class="i"><use href="#i-clock"/></svg></span><span>Revisões pendentes</span></div><b data-count="2">0</b></div>
+  </div>
+  <div class="card table-card rv" style="--i:2">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Professor</th><th>Situação</th><th>Turmas</th><th>Carga na semana</th><th>Revisões</th><th>Próximo encontro</th><th></th></tr></thead>
+      <tbody id="tchRows"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= LEADS ======================= -->
+<section class="screen" id="leads">
+  <div class="page-head rv"><div><h1>Leads</h1><p>Contatos comerciais e próximos passos. Arraste para avançar a etapa.</p></div><div class="head-actions"><button class="btn btn-y" data-new-lead><svg class="i"><use href="#i-plus"/></svg>Novo lead</button></div></div>
+  <div class="toolbar rv" style="--i:1"><label class="field"><svg class="i" style="width:17px;height:17px"><use href="#i-search"/></svg><input placeholder="Buscar nome, e-mail ou telefone"></label><select class="sel" aria-label="Temperatura"><option>Todas as temperaturas</option><option>Quente</option><option>Morno</option><option>Frio</option></select><select class="sel" aria-label="Origem"><option>Todas as origens</option><option>Instagram</option><option>Indicação</option><option>Site</option></select></div>
+  <div class="board rv" style="--i:2" id="board"></div>
+  <p class="muted rv" style="--i:3;font-size:12.5px;margin-top:10px">Regras do CRM: etapas só avançam; Ganho e Perdido são finais. Temperatura é descritiva e nunca libera acesso. Valor estimado não é receita.</p>
+</section>
+
+<!-- ======================= PAGAMENTOS ======================= -->
+<section class="screen" id="pagamentos">
+  <div class="page-head rv"><div><h1>Pagamentos</h1><p>Assinaturas e estados financeiros confirmados pelo provedor.</p></div></div>
+  <div class="grid kpis rv" style="--i:1">
+    <div class="card kpi"><div class="kpi-top"><span class="ico green"><svg class="i"><use href="#i-card"/></svg></span><span>Assinaturas ativas</span></div><b data-count="119">0</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico red"><svg class="i"><use href="#i-alert"/></svg></span><span>Em atraso</span></div><b data-count="2">0</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico yellow"><svg class="i"><use href="#i-clock"/></svg></span><span>Cancelamentos agendados</span></div><b data-count="3">0</b></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico lilac"><svg class="i"><use href="#i-gift"/></svg></span><span>Concessões de cortesia</span></div><b data-count="9">0</b></div>
+  </div>
+  <div class="grid pay-top" style="margin-top:16px">
+    <div>
+      <div class="pills rv" style="--i:2;margin-bottom:14px" id="subFilters">
+        <button class="pill" aria-pressed="true" data-f="all">Todas</button><button class="pill" aria-pressed="false" data-f="ACTIVE">Ativas</button><button class="pill" aria-pressed="false" data-f="PAST_DUE">Em atraso<span class="n">2</span></button><button class="pill" aria-pressed="false" data-f="CANCELLED">Canceladas</button><button class="pill" aria-pressed="false" data-f="EXPIRED">Expiradas</button>
+      </div>
+      <div class="card table-card rv" style="--i:3">
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Aluno</th><th>Plano</th><th>Situação</th><th>Ciclo atual</th><th>Valor</th><th></th></tr></thead>
+          <tbody id="subRows"></tbody>
+        </table></div>
+        <div class="pager"><span>Valor histórico só aparece quando há snapshot de checkout.</span><span id="subCount"></span></div>
+      </div>
+    </div>
+    <article class="card rv" style="--i:3">
+      <div class="card-h"><h2>Distribuição por plano</h2></div>
+      <div style="display:flex;justify-content:center;margin:6px 0 14px"><div class="donut" id="donut"><div><span><b>119</b><small class="muted" style="display:block;font-size:12px">ativas</small></span></div></div></div>
+      <ul class="clean legend"><li><i style="background:var(--violet)"></i>Start<b>58</b></li><li><i style="background:var(--yellow)"></i>Talk<b>41</b></li><li><i style="background:#c9b8ff"></i>Boost<b>20</b></li></ul>
+      <div class="note" style="margin-top:12px"><svg class="i"><use href="#i-shield"/></svg><span>Estados vêm só do webhook/reconciliação do provedor. O admin não altera assinatura manualmente.</span></div>
+    </article>
+  </div>
+</section>
+
+<!-- ======================= CONTEÚDOS ======================= -->
+<section class="screen" id="conteudos">
+  <div class="page-head rv"><div><h1>Conteúdos</h1><p>Edite rascunhos, visualize e publique o que os alunos veem.</p></div><div class="head-actions"><button class="btn btn-line" data-toast="Abrindo pré-visualização como aluno."><svg class="i"><use href="#i-eye"/></svg>Pré-visualizar</button><button class="btn btn-y" data-toast="Nova aula criada como rascunho."><svg class="i"><use href="#i-plus"/></svg>Nova aula</button></div></div>
+  <div class="pills rv" style="--i:1;margin-bottom:16px"><button class="pill" aria-pressed="true">Cursos</button><button class="pill" aria-pressed="false">Módulos</button><button class="pill" aria-pressed="false">Aulas</button><button class="pill" aria-pressed="false">Conteúdos de aula</button><button class="pill" aria-pressed="false">Materiais</button><button class="pill" aria-pressed="false">Atividades de prática</button></div>
+  <div class="grid ct-grid">
+    <div>
+      <div class="card rv" style="--i:2;display:flex;align-items:center;gap:16px;margin-bottom:12px">
+        <img src="assets/m-everyday.webp" alt="" style="width:70px;height:56px;border-radius:12px;object-fit:cover">
+        <div style="flex:1;min-width:0"><b class="h-display" style="font-size:18px">Yas Foundations</b><div class="muted" style="font-size:12.5px">4 módulos · 29 aulas · disponibilidade ativa</div></div>
+        <span class="tag green">Publicado</span>
+      </div>
+      <div class="tree" id="tree"></div>
+    </div>
+    <aside class="grid">
+      <div class="preview rv" style="--i:3"><div class="pv-top"><img src="assets/hero-course.webp" alt=""><small style="position:relative;opacity:.85;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Como o aluno vê</small><b>Real-life conversation</b></div>
+        <div style="padding:16px 18px">
+          <div class="sec-t" style="margin-top:0">Checagem para publicar</div>
+          <ul class="clean checks" id="checks">
+            <li><svg class="i ok"><use href="#i-check"/></svg>Título e posição preenchidos</li>
+            <li><svg class="i ok"><use href="#i-check"/></svg>Módulo pai publicado</li>
+            <li><svg class="i no"><use href="#i-x"/></svg>Vídeo publicado e utilizável</li>
+          </ul>
+          <div class="note warn" style="margin-top:12px"><svg class="i"><use href="#i-alert"/></svg><span>Uma aula só pode ser publicada com um asset publicado e utilizável. Para editar algo publicado, retire a publicação antes.</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Drawer de detalhe -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drTitle">
+  <div class="dr-head"><button class="x" id="drClose" aria-label="Fechar"><svg class="i"><use href="#i-x"/></svg></button><div id="drHead"></div></div>
+  <div class="dr-body" id="drBody"></div>
+  <div class="dr-foot" id="drFoot"></div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="ok"><svg class="i"><use href="#i-check"/></svg></span><span id="toastMsg"></span></div>
+<div class="proto" id="proto"><div class="notes" id="notes"></div><button id="protoBtn" aria-expanded="false"><svg class="i"><use href="#i-spark"/></svg>Notas · Admin</button></div>
+
+<script>
+(function(){
+const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tt; function toast(msg, err){ const t = $('#toast'); $('#toastMsg').textContent = msg; t.classList.toggle('err', !!err); t.querySelector('.ok').innerHTML = `<svg class="i"><use href="#${err?'i-x':'i-check'}"/></svg>`; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('show'), 2800); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-toast]'); if (b) { e.preventDefault(); toast(b.dataset.toast); } });
+
+function animate(root){
+  $$('[data-count]', root).forEach(el => { const end = +el.dataset.count, t0 = performance.now(), dur = reduce ? 1 : 800;
+    (function step(t){ const k = Math.min(1,(t-t0)/dur); el.textContent = Math.round(end*(1-Math.pow(1-k,3))); if(k<1) requestAnimationFrame(step); })(t0); });
+  $$('.bar>i[data-w], .flow>i[data-w]', root).forEach(i => { i.style.transition='none'; i.style.width='0'; i.offsetWidth; i.style.transition=''; requestAnimationFrame(()=> i.style.width = i.dataset.w+'%'); });
+  $$('.ring[data-p]', root).forEach(r => { r.style.transition='none'; r.style.setProperty('--p',0); r.offsetWidth; r.style.transition=''; requestAnimationFrame(()=> r.style.setProperty('--p', r.dataset.p)); });
+  const d = $('#donut', root); if (d) { d.style.setProperty('--a',0); d.style.setProperty('--b',0); requestAnimationFrame(()=>{ d.style.setProperty('--a',48.7); d.style.setProperty('--b',83.2); }); }
+}
+
+/* ---------------- dados (fixture coerente com a proposta do aluno) ---------------- */
+const STAGE = {
+  ASSESSMENT_REQUIRED:['Avaliação pendente','grey'], IN_PROGRESS:['Avaliação em andamento','blue'], REVIEW_PENDING:['Aguardando revisão','yellow'],
+  PLACEMENT_READY:['Recomendação pronta','lilac'], STUDENT_DECISION:['Escolhendo turma','pink'], PAYMENT_CONFIRMED:['Pagamento confirmado','grey']
+};
+const cases = [
+  {id:'pp',n:'Placement Pending',e:'placement.pending@…',av:'PP',c:'y',st:'REVIEW_PENDING',days:4,rec:'Aguardando a professora',coh:'—'},
+  {id:'pn',n:'Placement New',e:'placement.new@…',av:'PN',c:'b',st:'ASSESSMENT_REQUIRED',days:1,rec:'—',coh:'—'},
+  {id:'pr',n:'Placement Resume',e:'placement.resume@…',av:'PR',c:'',st:'IN_PROGRESS',days:2,rec:'—',coh:'—'},
+  {id:'py',n:'Placement Ready',e:'placement.ready@…',av:'PY',c:'g',st:'PLACEMENT_READY',days:0,rec:'Yas Foundations · confiança alta',coh:'—'},
+  {id:'cm',n:'Carla Mendes',e:'carla.m@…',av:'CM',c:'p',st:'STUDENT_DECISION',days:1,rec:'Yas Foundations · confiança média',coh:'Escolhendo'},
+  {id:'rb',n:'Rafael Brito',e:'rafael.b@…',av:'RB',c:'b',st:'IN_PROGRESS',days:0,rec:'—',coh:'—'},
+  {id:'jl',n:'Júlia Lima',e:'julia.l@…',av:'JL',c:'y',st:'REVIEW_PENDING',days:5,rec:'Aguardando a professora',coh:'—'},
+  {id:'tf',n:'Tiago Freitas',e:'tiago.f@…',av:'TF',c:'',st:'ASSESSMENT_REQUIRED',days:3,rec:'—',coh:'—'},
+  {id:'bs',n:'Bruna Souza',e:'bruna.s@…',av:'BS',c:'g',st:'STUDENT_DECISION',days:2,rec:'Yas Foundations · confiança alta',coh:'Escolhendo'},
+  {id:'mo',n:'Mateus Oliveira',e:'mateus.o@…',av:'MO',c:'p',st:'IN_PROGRESS',days:1,rec:'—',coh:'—'},
+  {id:'ls',n:'Larissa Santos',e:'larissa.s@…',av:'LS',c:'b',st:'PAYMENT_CONFIRMED',days:0,rec:'—',coh:'—'},
+];
+const ACCESS = {ACTIVE:['Assinatura ativa','green'],GRANT:['Cortesia','lilac'],PAST_DUE:['Em atraso','red'],NONE:['Sem acesso','grey'],CANCELLED:['Cancelada · acesso até 30/10','yellow']};
+const students = [
+  {id:'ana',n:'Ana Souza',e:'canonical.student@…',av:'AS',c:'',acc:'ACTIVE',plan:'Start',coh:null,p:0,next:'Sem sessão marcada'},
+  {id:'ya',n:'Yasmin Oliveira',e:'yasmin@…',img:'assets/avatar.webp',acc:'ACTIVE',plan:'Talk',coh:'Everyday English · Ter 19h',p:56,next:'Hoje, 19:00'},
+  {id:'ca',n:'Cohort Student A',e:'cohort.a@…',av:'CA',c:'b',acc:'ACTIVE',plan:'Start',coh:'Foundations · Seg 18h',p:12,next:'Seg, 20/10 18:00'},
+  {id:'cb',n:'Cohort Student B',e:'cohort.b@…',av:'CB',c:'g',acc:'ACTIVE',plan:'Start',coh:'Business English · Qui 19h',p:8,next:'Qui, 16/10 19:00'},
+  {id:'hn',n:'Home Now',e:'home.now@…',av:'HN',c:'y',acc:'GRANT',plan:'—',coh:'Foundations · Seg 18h',p:20,next:'Hoje, 17:00'},
+  {id:'lp',n:'Lucas Prado',e:'lucas.p@…',av:'LP',c:'p',acc:'PAST_DUE',plan:'Talk',coh:'Everyday English · Ter 19h',p:34,next:'Hoje, 19:00'},
+  {id:'ma',n:'Marina Alves',e:'marina.a@…',av:'MA',c:'b',acc:'PAST_DUE',plan:'Boost',coh:'Business English · Qui 19h',p:61,next:'Qui, 16/10 19:00'},
+  {id:'pe',n:'Progress Empty',e:'progress.empty@…',av:'PE',c:'',acc:'NONE',plan:'—',coh:null,p:0,next:'—'},
+  {id:'gc',n:'Gabriel Costa',e:'gabriel.c@…',av:'GC',c:'g',acc:'CANCELLED',plan:'Start',coh:'Conversation Club · Sáb 9h',p:40,next:'Sáb, 18/10 09:00'},
+];
+const cohorts = [
+  {n:'Foundations · Seg 18h',course:'Yas Foundations',t:'Teacher Alex',timg:'assets/hero-teacher.webp',cap:6,occ:6,when:'Seg · 18:00–19:00',next:'Seg, 20/10'},
+  {n:'Everyday English · Ter 19h',course:'Yas Foundations',t:'Teacher Alex',timg:'assets/hero-teacher.webp',cap:6,occ:5,when:'Ter · 19:00–20:00',next:'Hoje, 19:00'},
+  {n:'Business English · Qui 19h',course:'Yas Foundations',t:'Teacher Sam',timg:'assets/h-pron.webp',cap:6,occ:4,when:'Qui · 19:00–20:00',next:'Qui, 16/10'},
+  {n:'Conversation Club · Sáb 9h',course:'Yas Foundations',t:'Teacher Emma',timg:'assets/h-speak.webp',cap:6,occ:2,when:'Sáb · 09:00–10:00',next:'Sáb, 18/10'},
+  {n:'Placement Monday',course:'Yas Foundations',t:'Teacher Alex',timg:'assets/hero-teacher.webp',cap:6,occ:0,when:'Seg · 19:00–20:00',next:'Sem encontro agendado'},
+];
+const teachers = [
+  {n:'Teacher Alex',e:'canonical.teacher@…',img:'assets/hero-teacher.webp',st:['Ativo','green'],coh:3,load:[9,12],rev:2,next:'Hoje, 19:00'},
+  {n:'Teacher Sam',e:'canonical.teacher-b@…',img:'assets/h-pron.webp',st:['Ativo','green'],coh:1,load:[3,12],rev:0,next:'Qui, 16/10 19:00'},
+  {n:'Teacher Emma',e:'emma@…',img:'assets/h-speak.webp',st:['Ativo','green'],coh:1,load:[4,12],rev:0,next:'Hoje, 17:00'},
+  {n:'Teacher Dev',e:'teacher.dev@…',av:'TD',st:['Aceite incompleto','pink'],coh:0,load:[0,12],rev:0,next:'—'},
+];
+const SUB = {ACTIVE:['Ativa','green'],PAST_DUE:['Em atraso','red'],CANCELLED:['Cancelada','yellow'],EXPIRED:['Expirada','grey'],TRIALING:['Em teste','blue']};
+const subs = [
+  {n:'Yasmin Oliveira',img:'assets/avatar.webp',plan:'Talk',st:'ACTIVE',cycle:'01/10 – 31/10',v:'R$ 179,90'},
+  {n:'Lucas Prado',av:'LP',c:'p',plan:'Talk',st:'PAST_DUE',cycle:'10/10 – 09/11',v:'R$ 179,90'},
+  {n:'Marina Alves',av:'MA',c:'b',plan:'Boost',st:'PAST_DUE',cycle:'10/10 – 09/11',v:'R$ 329,90'},
+  {n:'Ana Souza',av:'AS',c:'',plan:'Start',st:'ACTIVE',cycle:'13/10 – 12/11',v:'Valor indisponível'},
+  {n:'Gabriel Costa',av:'GC',c:'g',plan:'Start',st:'CANCELLED',cycle:'acesso até 30/10',v:'R$ 99,90'},
+  {n:'Paula Reis',av:'PR',c:'y',plan:'Start',st:'EXPIRED',cycle:'encerrada em 02/10',v:'R$ 99,90'},
+];
+const LSTAGES = [['NEW','Novo','#8e86a6'],['CONTACTED','Contatado','#2f6fe4'],['QUALIFIED','Qualificado','#6024f7'],['WON','Ganho','#1f9a50'],['LOST','Perdido','#d93a2b']];
+const leads = [
+  {id:1,n:'Carla Mendes',src:'Instagram',ch:'i-phone',temp:'HOT',st:'QUALIFIED',when:'ontem'},
+  {id:2,n:'Pedro Nunes',src:'Site',ch:'i-mail',temp:'WARM',st:'NEW',when:'há 2 h'},
+  {id:3,n:'Renata Lopes',src:'Indicação',ch:'i-phone',temp:'HOT',st:'CONTACTED',when:'hoje'},
+  {id:4,n:'André Silva',src:'Site',ch:'i-mail',temp:'COLD',st:'NEW',when:'há 1 dia'},
+  {id:5,n:'Fernanda Dias',src:'Instagram',ch:'i-phone',temp:'WARM',st:'CONTACTED',when:'há 3 dias'},
+  {id:6,n:'Bruno Rocha',src:'Indicação',ch:'i-mail',temp:'HOT',st:'WON',when:'sex'},
+  {id:7,n:'Sofia Martins',src:'Site',ch:'i-mail',temp:'COLD',st:'LOST',when:'seg'},
+  {id:8,n:'Igor Teixeira',src:'Instagram',ch:'i-phone',temp:'WARM',st:'NEW',when:'há 4 h'},
+];
+const TEMP = {HOT:'Quente',WARM:'Morno',COLD:'Frio'};
+const modules = [
+  {n:'Módulo 1 · Getting Started',pub:true,open:false,ls:[['Welcome to Yas','Vídeo · 10 min',true],['Introductions that sound natural','Vídeo + prática · 14 min',true],['Build your first conversation','Vídeo · 18 min',true]]},
+  {n:'Módulo 2 · Everyday English',pub:true,open:true,ls:[['Daily routines','Vídeo · 18 min',true],['Talking about your day','Vídeo · 22 min',true],['Real-life conversation','Vídeo pendente · 24 min',false],['Practice & Review','Prática · 18 min',false]]},
+  {n:'Módulo 3 · People & Places',pub:false,open:false,ls:[['Describing people','Rascunho · 15 min',false]]},
+];
+
+const avatar = o => o.img ? `<img class="av" src="${o.img}" alt="" style="object-position:center 20%">` : `<span class="av ${o.c||''}">${o.av}</span>`;
+
+/* ---------------- matrículas ---------------- */
+let caseF = 'all';
+function renderCases(){
+  const rows = cases.filter(c => caseF === 'all' || c.st === caseF);
+  $('#caseRows').innerHTML = rows.map(c => { const [l,k] = STAGE[c.st]; const late = c.days >= 3 && c.st === 'REVIEW_PENDING';
+    return `<tr data-case="${c.id}"><td><div class="who">${avatar(c)}<span><b>${c.n}</b><small>${c.e}</small></span></div></td><td><span class="tag ${k}">${l}</span></td><td>${c.days === 0 ? 'hoje' : c.days + (c.days>1?' dias':' dia')}${late?' <span class="tag red nodot" style="margin-left:6px">atrasado</span>':''}</td><td class="${c.rec==='—'?'muted':''}">${c.rec}</td><td class="muted">${c.coh}</td><td><span class="go"><svg class="i"><use href="#i-right"/></svg></span></td></tr>`; }).join('');
+  $('#caseEmpty').hidden = rows.length > 0; $('#caseCount').textContent = rows.length + (rows.length === 1 ? ' caso' : ' casos');
+}
+$('#caseFilters').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; $$('#caseFilters button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); caseF = b.dataset.f; renderCases(); });
+$('#stages').addEventListener('click', e => { const a = e.target.closest('.stage'); if (!a || a.dataset.stage === 'ENROLLED') return; caseF = STAGE[a.dataset.stage] ? a.dataset.stage : 'all';
+  setTimeout(() => { $$('#caseFilters button').forEach(x=>x.setAttribute('aria-pressed', String(x.dataset.f === caseF || (caseF==='PAYMENT_CONFIRMED' && x.dataset.f==='all')))); renderCases(); }, 0); });
+
+/* ---------------- alunos ---------------- */
+const selected = new Set();
+function renderStudents(){
+  const q = ($('#stuSearch').value || '').toLowerCase(), acc = $('#stuAccess').value;
+  const rows = students.filter(s => (acc === 'all' || s.acc === acc) && (s.n.toLowerCase().includes(q) || s.e.toLowerCase().includes(q)));
+  $('#stuRows').innerHTML = rows.map(s => { const [al,ak] = ACCESS[s.acc];
+    return `<tr data-stu="${s.id}" class="${selected.has(s.id)?'sel':''}"><td><button class="cb ${selected.has(s.id)?'on':''}" data-cb="${s.id}" aria-label="Selecionar ${s.n}"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.5 4.5L19 7"/></svg></button></td>
+      <td><div class="who">${avatar(s)}<span><b>${s.n}</b><small>${s.e}</small></span></div></td>
+      <td><span class="tag ${ak}">${al}</span>${s.plan!=='—'?`<div class="muted" style="font-size:12px;margin-top:3px">Plano ${s.plan}</div>`:''}</td>
+      <td>${s.coh ? s.coh : '<span class="tag yellow nodot">Sem turma ativa</span>'}</td>
+      <td><div class="mini"><div class="bar"><i data-w="${s.p}" style="width:${s.p}%"></i></div><span>${s.p}%</span></div></td>
+      <td class="muted">${s.next}</td><td><span class="go"><svg class="i"><use href="#i-right"/></svg></span></td></tr>`; }).join('');
+  $('#stuEmpty').hidden = rows.length > 0; $('#stuCount').textContent = rows.length + ' de ' + students.length + ' alunos';
+}
+$('#stuSearch').addEventListener('input', renderStudents); $('#stuAccess').addEventListener('change', renderStudents);
+function syncBulk(){ $('#bulkN').textContent = selected.size + (selected.size === 1 ? ' selecionado' : ' selecionados'); $('#bulk').classList.toggle('show', selected.size > 0); document.body.classList.toggle('bulk-on', selected.size > 0); $('#cbAll').classList.toggle('on', selected.size === students.length); }
+$('#cbAll').addEventListener('click', e => { e.stopPropagation(); if (selected.size === students.length) selected.clear(); else students.forEach(s => selected.add(s.id)); renderStudents(); syncBulk(); });
+$('#bulkClear').addEventListener('click', () => { selected.clear(); renderStudents(); syncBulk(); });
+
+/* ---------------- turmas ---------------- */
+function renderCohorts(){
+  $('#cohorts').innerHTML = cohorts.map((c,i) => { const p = Math.round(c.occ/c.cap*100), full = c.occ >= c.cap;
+    return `<article class="card coh lift rv" style="--i:${i+2}"><div class="coh-top"><div class="ring" data-p="${p}" style="--c:${full?'#ef5b4b':p<40?'#e0a800':'var(--violet)'}"><div>${c.occ}/${c.cap}</div></div><div style="min-width:0"><h3>${c.n}</h3><div class="meta"><span><svg class="i"><use href="#i-book"/></svg>${c.course}</span><span><svg class="i"><use href="#i-clock"/></svg>${c.when}</span></div>${full?'<span class="tag red" style="margin-top:8px">Lotada</span>':p===0?'<span class="tag grey" style="margin-top:8px">Sem alunos</span>':'<span class="tag green" style="margin-top:8px">Ativa</span>'}</div></div>
+      <div class="coh-foot"><span style="display:flex;align-items:center;gap:8px;font-size:13px"><img class="av" src="${c.timg}" alt="" style="width:28px;height:28px;object-position:center 20%">${c.t}</span><span class="muted" style="font-size:12.5px">${c.next}</span></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-soft btn-sm" style="flex:1" data-toast="Abrindo a gestão de ${c.n}.">Gerenciar</button><button class="btn btn-line btn-sm" data-toast="Lista de alunos de ${c.n}."><svg class="i" style="width:16px;height:16px"><use href="#i-users"/></svg></button></div></article>`; }).join('')
+    + `<button class="card coh new rv" style="--i:${cohorts.length+2}" data-toast="Formulário de nova turma (curso, capacidade, horário, professor)."><svg class="i" style="width:28px;height:28px"><use href="#i-plus"/></svg>Nova turma</button>`;
+}
+
+/* ---------------- professores ---------------- */
+function renderTeachers(){
+  $('#tchRows').innerHTML = teachers.map((t,i) => `<tr data-tch="${i}"><td><div class="who">${avatar(t)}<span><b>${t.n}</b><small>${t.e}</small></span></div></td><td><span class="tag ${t.st[1]}">${t.st[0]}</span></td><td>${t.coh}</td>
+    <td><div class="mini"><div class="bar ${t.load[0]/t.load[1]>.7?'y':''}"><i data-w="${Math.round(t.load[0]/t.load[1]*100)}" style="width:${Math.round(t.load[0]/t.load[1]*100)}%"></i></div><span>${t.load[0]}h</span></div></td>
+    <td>${t.rev ? `<span class="tag yellow nodot">${t.rev} pendentes</span>` : '<span class="muted">—</span>'}</td><td class="muted">${t.next}</td><td><span class="go"><svg class="i"><use href="#i-right"/></svg></span></td></tr>`).join('');
+}
+
+/* ---------------- leads (kanban com regras do CRM) ---------------- */
+const order = LSTAGES.map(s => s[0]);
+function canMove(from, to){ if (from === to) return true; if (from === 'WON' || from === 'LOST') return false; if (to === 'LOST') return true; return order.indexOf(to) > order.indexOf(from) && to !== 'LOST'; }
+function renderBoard(){
+  $('#board').innerHTML = LSTAGES.map(([k,l,c]) => { const items = leads.filter(x => x.st === k);
+    return `<div class="col" data-col="${k}"><div class="col-h"><span class="dot" style="background:${c}"></span>${l}<span class="n">${items.length}</span></div>
+      ${items.map(x => `<article class="lead ${k==='WON'||k==='LOST'?'terminal':''}" draggable="${k!=='WON'&&k!=='LOST'}" data-lead="${x.id}"><b>${x.n}</b><small><svg class="i"><use href="#${x.ch}"/></svg>${x.src} · ${x.when}</small><div class="row"><span class="temp ${x.temp}">${TEMP[x.temp]}</span>${k==='WON'?'<span class="tag green nodot">Final</span>':k==='LOST'?'<span class="tag red nodot">Final</span>':'<span class="go"><svg class="i"><use href="#i-right"/></svg></span>'}</div></article>`).join('')}
+      ${k==='NEW'?'<button class="add-lead" data-new-lead><svg class="i" style="width:16px;height:16px"><use href="#i-plus"/></svg>Adicionar</button>':''}</div>`; }).join('');
+}
+let dragId = null;
+document.addEventListener('dragstart', e => { const c = e.target.closest('.lead'); if(!c) return; dragId = +c.dataset.lead; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+document.addEventListener('dragend', e => { const c = e.target.closest('.lead'); if (c) c.classList.remove('dragging'); $$('.col').forEach(x => x.classList.remove('over','deny')); });
+document.addEventListener('dragover', e => { const col = e.target.closest('.col'); if(!col || dragId === null) return; const ok = canMove(leads.find(x=>x.id===dragId).st, col.dataset.col); e.preventDefault(); $$('.col').forEach(x => x.classList.remove('over','deny')); col.classList.add(ok ? 'over' : 'deny'); });
+document.addEventListener('drop', e => { const col = e.target.closest('.col'); if(!col || dragId === null) return; e.preventDefault(); const l = leads.find(x=>x.id===dragId), to = col.dataset.col;
+  if (!canMove(l.st, to)) toast('Etapas só avançam. Ganho e Perdido são finais.', true);
+  else if (l.st !== to) { l.st = to; toast(`${l.n} → ${LSTAGES.find(s=>s[0]===to)[1]}`); }
+  dragId = null; renderBoard(); });
+
+/* ---------------- pagamentos ---------------- */
+let subF = 'all';
+function renderSubs(){ const rows = subs.filter(s => subF === 'all' || s.st === subF);
+  $('#subRows').innerHTML = rows.map(s => `<tr><td><div class="who">${avatar(s)}<span><b>${s.n}</b></span></div></td><td>${s.plan}</td><td><span class="tag ${SUB[s.st][1]}">${SUB[s.st][0]}</span></td><td class="muted">${s.cycle}</td><td class="${s.v.startsWith('Valor')?'muted':''}">${s.v}</td><td><button class="btn btn-soft btn-sm" data-toast="Abrindo a assinatura de ${s.n}.">Ver</button></td></tr>`).join('');
+  $('#subCount').textContent = rows.length + ' assinaturas'; }
+$('#subFilters').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; $$('#subFilters button').forEach(x=>x.setAttribute('aria-pressed', String(x===b))); subF = b.dataset.f; renderSubs(); });
+
+/* ---------------- conteúdos ---------------- */
+function renderTree(){
+  $('#tree').innerHTML = modules.map((m,mi) => `<div class="tmod rv ${m.open?'open':''}" style="--i:${mi+3}" data-mod="${mi}"><div class="tmod-h"><span class="handle" title="Arrastar para reordenar"><svg class="i"><use href="#i-drag"/></svg></span><button class="chev" data-toggle="${mi}" aria-label="Expandir"><svg class="i"><use href="#i-right"/></svg></button><span class="title">${m.n}<small>${m.ls.length} aulas</small></span><span class="pub-label" style="color:${m.pub?'var(--t-green-ink)':'var(--muted)'}">${m.pub?'Publicado':'Rascunho'}</span><button class="switch" role="switch" aria-checked="${m.pub}" aria-label="Publicação do módulo" data-pubmod="${mi}"></button></div>
+    <div class="tmod-b"><div><ul class="tles">${m.ls.map((l,li) => `<li draggable="true" data-l="${mi}:${li}"><span class="handle"><svg class="i"><use href="#i-drag"/></svg></span><span class="ico ${l[2]?'green':'lilac'}" style="width:32px;height:32px"><svg class="i" style="width:16px;height:16px"><use href="#${l[1].startsWith('Prática')?'i-mic':'i-video'}"/></svg></span><span class="t"><b style="font-weight:600">${l[0]}</b><br><small>${l[1]}</small></span><span class="pub-label" style="color:${l[2]?'var(--t-green-ink)':'var(--muted)'}">${l[2]?'Publicada':'Rascunho'}</span><button class="switch" role="switch" aria-checked="${l[2]}" aria-label="Publicação da aula" data-publ="${mi}:${li}"></button>${l[2]?`<button class="btn btn-line btn-sm" data-locked title="Retire a publicação para editar"><svg class="i" style="width:15px;height:15px"><use href="#i-lock"/></svg></button>`:`<button class="btn btn-soft btn-sm" data-toast="Editando ${l[0]}.">Editar</button>`}</li>`).join('')}</ul></div></div></div>`).join('');
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-toggle]'); if (t) { const m = modules[+t.dataset.toggle]; m.open = !m.open; t.closest('.tmod').classList.toggle('open', m.open); }
+  const pm = e.target.closest('[data-pubmod]'); if (pm) { const m = modules[+pm.dataset.pubmod];
+    if (!m.pub && !m.ls.some(l => l[2])) { toast('Publique ao menos uma aula utilizável antes do módulo.', true); return; }
+    if (m.pub && m.ls.some(l => l[2])) { toast('Retire a publicação das aulas antes de despublicar o módulo.', true); return; }
+    m.pub = !m.pub; renderTree(); toast(m.pub ? 'Módulo publicado.' : 'Módulo voltou para rascunho.'); }
+  const pl = e.target.closest('[data-publ]'); if (pl) { const [mi,li] = pl.dataset.publ.split(':').map(Number), l = modules[mi].ls[li];
+    if (!l[2] && l[1].startsWith('Vídeo pendente')) { toast('Falta um vídeo publicado e utilizável para publicar esta aula.', true); return; }
+    if (!l[2] && !modules[mi].pub) { toast('Publique o módulo pai primeiro.', true); return; }
+    l[2] = !l[2]; renderTree(); toast(l[2] ? `“${l[0]}” publicada.` : `“${l[0]}” voltou para rascunho e pode ser editada.`); }
+  if (e.target.closest('[data-locked]')) toast('Conteúdo publicado: retire a publicação antes de editar.', true);
+});
+let dragL = null;
+document.addEventListener('dragstart', e => { const li = e.target.closest('.tles li'); if (li) { dragL = li.dataset.l; e.dataTransfer.effectAllowed = 'move'; } });
+document.addEventListener('dragover', e => { const li = e.target.closest('.tles li'); if (li && dragL && li.dataset.l.split(':')[0] === dragL.split(':')[0]) { e.preventDefault(); $$('.tles li').forEach(x=>x.classList.remove('drag-over')); li.classList.add('drag-over'); } });
+document.addEventListener('drop', e => { const li = e.target.closest('.tles li'); if (!li || !dragL) return; e.preventDefault(); const [m,a] = dragL.split(':').map(Number), b = +li.dataset.l.split(':')[1];
+  if (m === +li.dataset.l.split(':')[0] && a !== b) { const arr = modules[m].ls; const [it] = arr.splice(a,1); arr.splice(b,0,it); renderTree(); toast('Ordem das aulas atualizada.'); } dragL = null; });
+
+/* ---------------- drawer de detalhe ---------------- */
+const drawer = $('#drawer'), scrim = $('#scrim'); let lastFocus = null;
+function openDrawer(head, body, foot){ lastFocus = document.activeElement; $('#drHead').innerHTML = head; $('#drBody').innerHTML = body; $('#drFoot').innerHTML = foot; drawer.classList.add('open'); scrim.classList.add('open'); setTimeout(()=>$('#drClose').focus(), 50); }
+function closeDrawer(){ drawer.classList.remove('open'); scrim.classList.remove('open'); $$('tr.sel[data-case], tr.sel[data-tch]').forEach(r=>r.classList.remove('sel')); lastFocus && lastFocus.focus && lastFocus.focus(); }
+$('#drClose').addEventListener('click', closeDrawer); scrim.addEventListener('click', closeDrawer);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); $('#proto').classList.remove('open'); } });
+
+const ORDER = ['PAYMENT_CONFIRMED','ASSESSMENT_REQUIRED','IN_PROGRESS','REVIEW_PENDING','PLACEMENT_READY','STUDENT_DECISION','ENROLLED'];
+const LABEL = {PAYMENT_CONFIRMED:'Pagamento confirmado',ASSESSMENT_REQUIRED:'Avaliação liberada',IN_PROGRESS:'Avaliação em andamento',REVIEW_PENDING:'Revisão da professora',PLACEMENT_READY:'Recomendação pronta',STUDENT_DECISION:'Aluno escolhendo turma',ENROLLED:'Matriculado na turma'};
+function caseDrawer(c){
+  const idx = ORDER.indexOf(c.st), [l,k] = STAGE[c.st];
+  const tl = ORDER.map((s,i) => `<li class="${i<idx?'done':i===idx?'now':''}"><b>${LABEL[s]}</b><small>${i<idx?'concluído':i===idx?(c.days===0?'desde hoje':'há '+c.days+(c.days>1?' dias':' dia')):'pendente'}</small></li>`).join('');
+  const action = c.st === 'REVIEW_PENDING'
+    ? `<div class="note"><svg class="i"><use href="#i-shield"/></svg><span>A revisão é feita pela professora (TEACHER + AAL2). O admin acompanha e pode enviar um lembrete, mas não revisa no lugar dela.</span></div>`
+    : c.st === 'STUDENT_DECISION' || c.st === 'PLACEMENT_READY' ? `<div class="note"><svg class="i"><use href="#i-spark"/></svg><span>Recomendação, escolha do aluno e turma atual ficam registradas separadamente. A matrícula só é criada na escolha final.</span></div>` : '';
+  openDrawer(`${avatar(c)}<h3 id="drTitle">${c.n}</h3><span class="tag ${k}">${l}</span>`,
+    `<dl class="kv"><dt>E-mail</dt><dd>${c.e}</dd><dt>Curso</dt><dd>Yas Foundations</dd><dt>Recomendação</dt><dd>${c.rec}</dd><dt>Turma atual</dt><dd>${c.coh}</dd></dl>${action}<div class="sec-t">Jornada</div><ul class="tline">${tl}</ul>`,
+    c.st === 'REVIEW_PENDING' ? `<button class="btn btn-line" data-close>Fechar</button><button class="btn btn-v" data-toast="Lembrete enviado para a professora responsável."><svg class="i"><use href="#i-mail"/></svg>Lembrar professora</button>` : `<button class="btn btn-line" data-close>Fechar</button>`);
+}
+function transferForm(s){
+  return `<div class="sec-t">Colocar em uma turma</div>
+    <div class="form-row"><label for="tfCoh">Turma de destino</label><select id="tfCoh"><option value="">Selecione…</option>${cohorts.filter(c=>c.occ<c.cap).map(c=>`<option>${c.n} (${c.cap-c.occ} vagas)</option>`).join('')}</select><span class="err">Escolha uma turma com vaga.</span></div>
+    <div class="form-row"><label for="tfWhy">Motivo (obrigatório)</label><textarea id="tfWhy" placeholder="Ex.: matrícula ativa sem turma após a etapa 6a"></textarea><span class="err">Informe o motivo. Ele fica no registro de auditoria.</span></div>`;
+}
+function studentDrawer(s){
+  const [al,ak] = ACCESS[s.acc];
+  const grant = s.acc === 'NONE' ? `<div class="sec-t">Concessão de cortesia</div><div class="note warn"><svg class="i"><use href="#i-gift"/></svg><span>Libera só o acesso base (ADR 0017). Exige motivo e fica auditada.</span></div>
+    <div class="form-row" style="margin-top:12px"><label for="grWhy">Motivo (obrigatório)</label><textarea id="grWhy" placeholder="Ex.: aluno de turma piloto"></textarea><span class="err">Informe o motivo da concessão.</span></div>` : '';
+  const transfer = !s.coh ? transferForm(s) : '';
+  openDrawer(`${avatar(s)}<h3 id="drTitle">${s.n}</h3><span class="tag ${ak}">${al}</span>`,
+    `<dl class="kv"><dt>E-mail</dt><dd>${s.e}</dd><dt>Plano</dt><dd>${s.plan}</dd><dt>Turma</dt><dd>${s.coh || '<span class="tag yellow nodot">Sem turma ativa</span>'}</dd><dt>Progresso</dt><dd><div class="mini"><div class="bar"><i style="width:${s.p}%"></i></div><span>${s.p}%</span></div></dd><dt>Próxima sessão</dt><dd>${s.next}</dd></dl>
+    ${s.acc==='PAST_DUE'?'<div class="note warn"><svg class="i"><use href="#i-alert"/></svg><span>Pagamento em atraso. O estado muda só por evento do provedor; o acesso segue a regra de acesso pago.</span></div>':''}${transfer}${grant}`,
+    !s.coh && s.acc !== 'NONE' ? `<button class="btn btn-line" data-close>Cancelar</button><button class="btn btn-v" id="doTransfer"><svg class="i"><use href="#i-swap"/></svg>Colocar na turma</button>`
+    : s.acc === 'NONE' ? `<button class="btn btn-line" data-close>Cancelar</button><button class="btn btn-v" id="doGrant"><svg class="i"><use href="#i-gift"/></svg>Conceder acesso</button>`
+    : `<button class="btn btn-line" data-close>Fechar</button><button class="btn btn-soft" data-toast="Abrindo a ficha completa de ${s.n}.">Abrir ficha completa</button>`);
+  const tf = $('#doTransfer'); if (tf) tf.addEventListener('click', () => { const coh = $('#tfCoh'), why = $('#tfWhy'); coh.parentElement.classList.toggle('invalid', !coh.value); why.parentElement.classList.toggle('invalid', why.value.trim().length < 5);
+    if (coh.value && why.value.trim().length >= 5) { s.coh = coh.value.replace(/ \(.*$/,''); closeDrawer(); renderStudents(); toast(`${s.n} entrou em ${s.coh}. Registro de auditoria criado.`); } });
+  const gr = $('#doGrant'); if (gr) gr.addEventListener('click', () => { const why = $('#grWhy'); why.parentElement.classList.toggle('invalid', why.value.trim().length < 5);
+    if (why.value.trim().length >= 5) { s.acc = 'GRANT'; closeDrawer(); renderStudents(); toast(`Concessão criada para ${s.n}.`); } });
+}
+function teacherDrawer(t){
+  const pending = t.st[0] === 'Aceite incompleto';
+  openDrawer(`${avatar(t)}<h3 id="drTitle">${t.n}</h3><span class="tag ${t.st[1]}">${t.st[0]}</span>`,
+    `<dl class="kv"><dt>E-mail</dt><dd>${t.e}</dd><dt>Turmas</dt><dd>${t.coh}</dd><dt>Carga na semana</dt><dd>${t.load[0]}h de ${t.load[1]}h</dd><dt>Revisões</dt><dd>${t.rev || '—'}</dd></dl>
+    ${pending ? `<div class="note warn"><svg class="i"><use href="#i-alert"/></svg><span>A conta tem o papel TEACHER e MFA, mas não tem perfil de professor ativo. Sem ele, a área do professor bloqueia sessões, turmas e revisões.</span></div><div class="sec-t">Checklist de ativação</div><ul class="clean checks"><li><svg class="i ok"><use href="#i-check"/></svg>Conta criada com papel TEACHER</li><li><svg class="i ok"><use href="#i-check"/></svg>MFA verificado</li><li><svg class="i no"><use href="#i-x"/></svg>Perfil de professor ativo</li><li><svg class="i no"><use href="#i-x"/></svg>Vinculado a uma turma</li></ul>` : `<div class="sec-t">Turmas</div><ul class="clean checks">${cohorts.filter(c=>c.t===t.n).map(c=>`<li><svg class="i ok"><use href="#i-layers"/></svg>${c.n}<span class="muted" style="margin-left:auto">${c.occ}/${c.cap}</span></li>`).join('')}</ul>`}`,
+    pending ? `<button class="btn btn-line" data-close>Fechar</button><button class="btn btn-v" id="doActivate"><svg class="i"><use href="#i-check"/></svg>Ativar perfil</button>` : `<button class="btn btn-line" data-close>Fechar</button><button class="btn btn-soft" data-toast="Abrindo disponibilidade de ${t.n}.">Ver disponibilidade</button>`);
+  const a = $('#doActivate'); if (a) a.addEventListener('click', () => { t.st = ['Ativo','green']; closeDrawer(); renderTeachers(); toast('Perfil de professor ativado. Falta vincular a uma turma.'); });
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-close]')) { closeDrawer(); return; }
+  const cb = e.target.closest('[data-cb]'); if (cb) { e.stopPropagation(); const id = cb.dataset.cb; selected.has(id) ? selected.delete(id) : selected.add(id); renderStudents(); syncBulk(); return; }
+  const rc = e.target.closest('tr[data-case]'); if (rc) { rc.classList.add('sel'); caseDrawer(cases.find(c => c.id === rc.dataset.case)); }
+  const rs = e.target.closest('tr[data-stu]'); if (rs) studentDrawer(students.find(s => s.id === rs.dataset.stu));
+  const rt = e.target.closest('tr[data-tch]'); if (rt) { rt.classList.add('sel'); teacherDrawer(teachers[+rt.dataset.tch]); }
+  const op = e.target.closest('[data-open]'); if (op) { e.preventDefault(); studentDrawer(students.find(s => s.id === op.dataset.open)); }
+  const lc = e.target.closest('.lead'); if (lc && !e.defaultPrevented) { const l = leads.find(x => x.id === +lc.dataset.lead), term = l.st==='WON'||l.st==='LOST';
+    openDrawer(`<span class="av p">${l.n.split(' ').map(w=>w[0]).join('')}</span><h3 id="drTitle">${l.n}</h3><span class="temp ${l.temp}">${TEMP[l.temp]}</span>`,
+      `<dl class="kv"><dt>Etapa</dt><dd>${LSTAGES.find(s=>s[0]===l.st)[1]}</dd><dt>Origem</dt><dd>${l.src}</dd><dt>Último contato</dt><dd>${l.when}</dd></dl>${term?'<div class="note"><svg class="i"><use href="#i-lock"/></svg><span>Etapa final: este lead não muda mais de etapa.</span></div>':'<div class="note"><svg class="i"><use href="#i-spark"/></svg><span>Arraste o card no quadro para avançar a etapa, ou marque como perdido.</span></div>'}`,
+      term ? '<button class="btn btn-line" data-close>Fechar</button>' : `<button class="btn btn-danger" id="leadLost">Marcar como perdido</button><button class="btn btn-v" id="leadNext">Avançar etapa<svg class="i"><use href="#i-arrow"/></svg></button>`);
+    const nx = $('#leadNext'); if (nx) nx.addEventListener('click', () => { const i = order.indexOf(l.st); l.st = order[Math.min(i+1, 3)]; closeDrawer(); renderBoard(); toast(`${l.n} → ${LSTAGES.find(s=>s[0]===l.st)[1]}`); });
+    const ls = $('#leadLost'); if (ls) ls.addEventListener('click', () => { l.st = 'LOST'; closeDrawer(); renderBoard(); toast(`${l.n} marcado como perdido.`); }); }
+  if (e.target.closest('[data-new-lead]')) { e.preventDefault(); openDrawer(`<span class="ico lilac"><svg class="i"><use href="#i-funnel"/></svg></span><h3 id="drTitle">Novo lead</h3><span class="muted" style="font-size:13px">Precisa de e-mail ou telefone e de uma origem.</span>`,
+    `<div class="form-row"><label for="nlName">Nome</label><input id="nlName" placeholder="Nome do contato"></div><div class="form-row" id="nlContactRow"><label for="nlContact">E-mail ou telefone</label><input id="nlContact" placeholder="email@exemplo.com ou (81) 9…"><span class="err">Informe e-mail ou telefone.</span></div><div class="form-row" id="nlSrcRow"><label for="nlSrc">Origem</label><select id="nlSrc"><option value="">Selecione…</option><option>Instagram</option><option>Indicação</option><option>Site</option></select><span class="err">Informe a origem.</span></div><div class="form-row"><label for="nlTemp">Temperatura</label><select id="nlTemp"><option value="WARM">Morno</option><option value="HOT">Quente</option><option value="COLD">Frio</option></select></div>`,
+    `<button class="btn btn-line" data-close>Cancelar</button><button class="btn btn-y" id="nlSave"><svg class="i"><use href="#i-plus"/></svg>Criar lead</button>`);
+    $('#nlSave').addEventListener('click', () => { const c = $('#nlContact').value.trim(), s = $('#nlSrc').value; $('#nlContactRow').classList.toggle('invalid', !c); $('#nlSrcRow').classList.toggle('invalid', !s);
+      if (c && s) { leads.unshift({id:Date.now(),n:$('#nlName').value.trim()||c,src:s,ch:c.includes('@')?'i-mail':'i-phone',temp:$('#nlTemp').value,st:'NEW',when:'agora'}); closeDrawer(); if (location.hash !== '#leads') location.hash = '#leads'; renderBoard(); toast('Lead criado em Novo.'); } }); }
+});
+
+/* ---------------- roteamento ---------------- */
+const screens = $$('.screen');
+function route(){
+  const id = (location.hash || '#overview').slice(1), target = screens.find(s => s.id === id) || screens[0];
+  screens.forEach(s => s.classList.toggle('active', s === target));
+  $$('#nav a, #mnav a').forEach(a => a.getAttribute('href') === '#'+target.id ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'));
+  const cur = $('#mnav a[aria-current]'); cur && cur.scrollIntoView({inline:'center', block:'nearest'});
+  closeDrawer(); window.scrollTo(0,0);
+  if (target.id === 'turmas') renderCohorts();
+  if (target.id === 'conteudos') renderTree();
+  animate(target); renderNotes(target.id);
+}
+window.addEventListener('hashchange', route);
+$$('.pills').forEach(g => { if (g.id) return; g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$('button', g).forEach(x => x.setAttribute('aria-pressed', String(x === b))); }); });
+
+/* ---------------- notas ---------------- */
+const N = {
+  overview:['Visão geral',['Sem referência aprovada de admin: aplica a linguagem visual aprovada do aluno (sidebar, Montserrat, cards, tiles pastel, hero roxo com traços amarelos) com densidade de operação.','KPIs com sparklines levam às telas de origem. A “Jornada de entrada” mostra os 7 estados de placement de docs/PLACEMENT.md e abre a fila filtrada.','“Precisa de atenção” agrega os casos reais vistos no app: matrícula sem turma (Etapa 11), PAST_DUE, revisões atrasadas e professor com aceite incompleto.']],
+  matriculas:['Matrículas',['Fila por etapa com tempo na etapa e alerta de atraso. Linha abre o detalhe lateral com a jornada (Navattic/Customer.io).','Regra: o admin não revisa no lugar da professora. Em “Aguardando revisão” a ação é só lembrar.','A faixa de “matrícula ativa sem turma” substitui a consulta SQL manual (admin_enrollments_without_active_cohort).']],
+  alunos:['Alunos',['Busca e filtro de acesso funcionam; seleção múltipla abre a barra de ações em lote (Toggl).','Detalhe lateral: colocar em turma exige turma com vaga e motivo (auditado); concessão de cortesia exige motivo e libera só o acesso base (ADR 0017).','Progresso no curso aparece como barra; nenhum CEFR é inferido.']],
+  turmas:['Turmas',['Cards com anel de ocupação (vermelho = lotada, amarelo = baixa), horário recorrente e professor.','Card “Nova turma” tracejado no fim da grade.']],
+  professores:['Professores',['Situação “Aceite incompleto” com checklist de ativação: é exatamente o caso do teacher.dev encontrado no ambiente local (papel TEACHER + MFA, sem perfil ativo).','Carga semanal como barra (amarelo acima de 70%).']],
+  leads:['Leads',['Kanban NEW → CONTACTED → QUALIFIED → WON/LOST (Twenty, Pipedrive, Attio).','Regras do CRM no arrastar: só avança; WON e LOST são finais; coluna fica vermelha quando o movimento é proibido. Temperatura não libera acesso.','Novo lead valida e-mail ou telefone e origem.']],
+  pagamentos:['Pagamentos',['Estados ACTIVE, PAST_DUE, CANCELLED e EXPIRED vindos do provedor; o admin não altera assinatura manualmente.','Valor histórico só com snapshot de checkout (“Valor indisponível” quando não há).','Distribuição por plano Start/Talk/Boost (planos do seed).']],
+  conteudos:['Conteúdos',['Árvore curso → módulo → aula com arrastar para reordenar e interruptor de publicação.','Regras do ADMIN_CONTENT: aula só publica com asset utilizável e módulo pai publicado; conteúdo publicado fica travado até despublicar.','Painel “Como o aluno vê” com checagem de publicação.']],
+};
+function renderNotes(id){ const n = N[id] || N.overview; $('#notes').innerHTML = `<h4>Notas · ${n[0]}</h4><ul>${n[1].map(x=>`<li>${x}</li>`).join('')}</ul>`; }
+$('#protoBtn').addEventListener('click', () => { const o = $('#proto').classList.toggle('open'); $('#protoBtn').setAttribute('aria-expanded', String(o)); });
+
+renderCases(); renderStudents(); renderTeachers(); renderBoard(); renderSubs(); renderCohorts(); renderTree();
+route();
+})();
+</script>
+</body>
+</html>

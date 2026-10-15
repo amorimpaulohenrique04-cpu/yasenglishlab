@@ -1,3 +1,4 @@
+import { assertNoDocumentOverflow } from "../helpers/responsive";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
@@ -12,11 +13,7 @@ const sizes = [
 async function capture(page: Page, name: string) {
   await expect(page.getByRole("main")).toBeVisible();
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    ),
-  ).toBeLessThanOrEqual(1);
+  await assertNoDocumentOverflow(page);
   await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" });
   const body = await page.screenshot({
     path: test.info().outputPath(`${name}.png`),
@@ -51,7 +48,9 @@ test("Placement main surfaces recompose across desktop/tablet/mobile", async ({ 
     readyPage = await ready.newPage();
   await login(readyPage, "ready");
   await readyPage.goto("/onboarding");
-  await readyPage.getByRole("button", { name: "Ver recomendação e turmas" }).click();
+  // The recommendation is persisted: repeated runs reuse it instead of trying to submit again.
+  const recommendation = readyPage.getByRole("button", { name: "Ver recomendação e turmas" });
+  if (await recommendation.isVisible()) await recommendation.click();
   for (const size of sizes) {
     await readyPage.setViewportSize(size);
     await readyPage.goto("/onboarding/placement");

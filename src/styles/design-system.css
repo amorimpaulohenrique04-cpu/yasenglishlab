@@ -63,7 +63,10 @@
   font: inherit;
   font-size: var(--yas-font-size-sm);
   font-weight: var(--yas-weight-bold);
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  max-width: 100%;
   text-decoration: none;
   cursor: pointer;
 }
@@ -562,6 +565,7 @@
 
 /* ---------- Fields ---------- */
 .yas-field {
+  min-width: 0;
   display: grid;
   gap: 0.375rem;
 }
@@ -1279,6 +1283,8 @@ textarea.yas-field-control {
 
 .yas-stack {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   gap: var(--yas-space-4);
 }
 

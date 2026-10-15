@@ -21,7 +21,7 @@ test("Teacher operational surfaces stay scoped and usable on mobile", async ({
   if (!student) throw new Error("Canonical assigned Student is missing.");
 
   await loginCanonicalTeacher(page, password);
-  await expect(page.getByRole("link", { name: "Revisões de prática", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Revisões", exact: true })).toBeVisible();
   await page.goto("/teacher/turmas");
   await expect(page.getByRole("heading", { name: "Turmas", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Cohort Basic" })).toBeVisible();

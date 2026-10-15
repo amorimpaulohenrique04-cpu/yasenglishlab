@@ -5,13 +5,18 @@ export default defineConfig({
   testMatch: "design-system.spec.ts",
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
   workers: 1,
-  reporter: process.env.CI ? "github" : "list",
+  reporter: [
+    [process.env.CI ? "github" : "list"],
+    ["json", { outputFile: "artifacts/storybook/results.json" }],
+  ],
   use: {
     baseURL: "http://127.0.0.1:6006",
-    trace: "on-first-retry",
+    trace: "retain-on-failure",
     reducedMotion: "reduce",
+    actionTimeout: 10_000,
+    screenshot: "only-on-failure",
     viewport: { width: 1440, height: 1000 },
   },
   projects: [
