@@ -128,7 +128,9 @@ export default async function AdminStudentsPage({
         <Button type="submit" variant="primary">
           Aplicar filtros
         </Button>
-        <Link href="/admin/students">Limpar</Link>
+        <Link className="yas-button yas-button--ghost" href="/admin/students">
+          Limpar
+        </Link>
       </FilterBar>
 
       {students.length === 0 ? (
@@ -223,9 +225,21 @@ export default async function AdminStudentsPage({
       )}
 
       <nav aria-label="Paginação de alunos" className="yas-cluster">
-        {page > 1 && <Link href={`${base}page=${page - 1}`}>Página anterior</Link>}
+        {page > 1 && (
+          <Link
+            className="yas-button yas-button--soft yas-button--sm"
+            href={`${base}page=${page - 1}`}
+          >
+            Página anterior
+          </Link>
+        )}
         {students.length === pageSize && (
-          <Link href={`${base}page=${page + 1}`}>Próxima página</Link>
+          <Link
+            className="yas-button yas-button--soft yas-button--sm"
+            href={`${base}page=${page + 1}`}
+          >
+            Próxima página
+          </Link>
         )}
       </nav>
     </div>

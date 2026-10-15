@@ -44,3 +44,11 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Matrícula `COMPLETED`: Home e Progresso mostram "Curso concluído" no lugar da próxima aula.
 - `/support`: página protegida, somente com orientação textual. Sem e-mail, telefone, WhatsApp ou URL até a decisão do canal (OPEN_QUESTIONS). Avisos de suspensão e `/billing/return` apontam para ela.
 - `/pratica` sem matrícula: estado vazio explicativo, sem atividades.
+
+## Proposta visual aprovada (2026-10-16)
+
+- Linguagem visual de aluno, professor e admin segue `artifacts/design-proposal/{aluno,professor,admin}.html` (goal `ui-redesign-approved-proposal`).
+- Shell único (`RoleShell`): sidebar roxa sólida com logo e onda, grupos no staff, topbar com perfil e selo de sessão verificada (aal2), drawer no celular e tab bar inferior para o aluno.
+- Perfil e Suporte usam o shell do papel principal do usuário (grupo de rotas `(account)`).
+- Blocos do protótipo sem fonte de dados não aparecem (ver `harness/agent-state/decisions.md`).
+- Logo, frase manuscrita e fotos em `public/brand/` são placeholders recortados das referências; trocar pelos arquivos oficiais.

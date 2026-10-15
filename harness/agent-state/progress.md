@@ -701,3 +701,8 @@ PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de t
 - Início (hero da próxima sessão, fila de revisões, indicadores, próximos encontros), Sessões (agrupadas por dia), Turmas (cartões com anel de ocupação). Demais telas herdam o visual pelos primitivos e pelo módulo CSS.
 - Teste `teacher-surfaces.spec.ts` ajustado: Turmas deixou de ser tabela; a asserção agora procura a região do cartão da turma.
 - Verificado: typecheck (src), lint e capturas pontuais. e2e/a11y/goldens não executados (pedido do usuário).
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 3 (admin) e pendências
+
+- Tabela, kanban, cartões de linha, leads e indicadores restilizados em `operations.css` (vale para todas as telas admin); paginação e ações soltas viraram botões.
+- Pendente antes de marcar verificado: regenerar goldens (win32 e linux), rodar e2e/a11y e `verify:ui`/`verify:full`; resolver o "Teacher session overlap" do `setup-canonical-e2e.mjs` na base local; recomposições dedicadas ainda não feitas: onboarding/placement, detalhe de sessão do professor, construtor de práticas, conteúdos/turmas/matrículas do admin (hoje só herdam os primitivos).

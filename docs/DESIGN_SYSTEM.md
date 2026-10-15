@@ -29,3 +29,9 @@ Estados: default, hover, focus-visible, active, disabled, loading, error, succes
 - Primitive implementada possui estados necessários.
 - Página nova compõe componentes existentes sempre que possível.
 - Tokens substituem valores repetidos/arbitrários.
+
+## Atualização 2026-10-16
+
+- Tokens medidos na proposta aprovada (`src/styles/tokens.css`): sidebar `#461d82`, ativo `#6132ad`, violeta `#6024f7`, amarelo `#f9c933`, canvas `#f3effd`; tints pastel com texto AA (`--yas-tint-*`).
+- Tipografia: Montserrat 700/800 para títulos (`--yas-font-display`) e Inter para corpo, via `next/font`.
+- Primitivos novos: `Icon` (conjunto linear da proposta), `IconBadge`, `Hero`, `AvatarStack`, `Button` variante `soft`, `Badge` com `dot`/`icon`, `MetricCard` com ícone, utilitários `.yas-list`, `.yas-link`, `.yas-timeline`, `.yas-switch`, `.yas-reveal`.
