@@ -25,6 +25,8 @@ export default defineConfig({
   use: {
     baseURL,
     trace: "on-first-retry",
+    // Same as the a11y/visual/golden configs: axe must not scan a tab or button mid-transition.
+    reducedMotion: "reduce",
   },
   projects: [
     {
