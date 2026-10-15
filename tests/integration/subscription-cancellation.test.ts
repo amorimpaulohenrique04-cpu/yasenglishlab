@@ -23,7 +23,7 @@ vi.mock("@/server/commercial/provider", () => ({ commercialProvider: mocks.provi
 vi.mock("@/server/observability/report", () => ({ reportTechnicalError: mocks.report }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidatePath }));
 
-import { cancelSubscriptionAction } from "@/app/(protected)/profile/subscription-actions";
+import { cancelSubscriptionAction } from "@/app/(protected)/(account)/profile/subscription-actions";
 import {
   CancellationError,
   cancelOwnSubscription,

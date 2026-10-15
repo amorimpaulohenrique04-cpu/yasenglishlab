@@ -132,3 +132,12 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 - Navegação de cada papel vive num único array por shell, consumido por `RoleShell` (sidebar, drawer mobile e tab bar). Os rótulos acessíveis usados pelos testes foram preservados.
 - Logo, frase manuscrita e fotos em `public/brand/` são placeholders recortados das referências aprovadas; trocar pelos arquivos oficiais quando existirem.
 - Selo "Sessão verificada" só aparece com `aal2` real do contexto de autenticação.
+
+## 2026-10-16 — ui-redesign-approved-proposal: área do aluno (Fase 1)
+
+- Blocos do protótipo sem fonte de dados foram omitidos, não simulados: sequência/recorde de dias, minutos estudados por dia, conquistas, favoritos recentes, "continue revisando", evolução de nível no tempo, busca global e sino de notificações.
+- Agenda: lista agrupada por dia (Recife) no lugar do calendário semanal em grade do protótipo; mantém tipo por cor + texto, fuso explícito e regras de reserva.
+- Progresso: o selo "Revisado pela professora" não aparece enquanto o CEFR estiver indisponível; a seção vazia "Objetivos" foi removida por não ter fonte de dados.
+- Perfil e Suporte passaram para o grupo de rotas `(account)` com layout que escolhe o shell pelo papel (URLs inalteradas), para não perder a navegação.
+- Rótulos acessíveis usados pelos testes (incluindo setas "→" em links) foram mantidos.
+- Onboarding/placement/assessment herdam o visual pelos primitivos; não receberam recomposição dedicada nesta fase.

@@ -4,22 +4,20 @@ export default function HomeLoading() {
   return (
     <div className="yas-home-page" aria-busy="true" aria-label="Carregando início">
       <PageHeader title="Carregando…" description="Preparando seu próximo passo." />
-      <div className="yas-home-overview">
-        <Card className="yas-home-card">
-          <Skeleton height="12rem" />
+      <div className="yas-home-top">
+        <Skeleton height="15.25rem" style={{ borderRadius: "var(--yas-radius-xl)" }} />
+        <Card>
+          <Skeleton height="11rem" />
         </Card>
-        <Card className="yas-home-card">
-          <Skeleton height="8rem" />
-        </Card>
-        <Card className="yas-home-card">
-          <Skeleton height="8rem" />
+        <Card>
+          <Skeleton height="11rem" />
         </Card>
       </div>
-      <div className="yas-home-secondary">
-        <Card className="yas-home-card">
-          <Skeleton height="9rem" />
+      <div className="yas-home-bottom">
+        <Card>
+          <Skeleton height="12rem" />
         </Card>
-        <Card className="yas-home-card">
+        <Card>
           <Skeleton height="9rem" />
         </Card>
       </div>

@@ -690,3 +690,8 @@ PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de t
 - Base local `yasenglishlab` (55321) estava 7 migrations atrás da main; aplicadas com `supabase migration up --local` (sem reset).
 - `setup-canonical-e2e.mjs` falha localmente com "Teacher session overlap" (dado residual de execuções anteriores). Investigar antes dos gates `verify:ui`.
 - Fundação aplicada: tokens, fontes, ícones, primitivos, shell e navegação centralizada. typecheck, lint (0 erros) e 273 testes unitários passaram. Capturas em `harness/evidence/ui-redesign-approved-proposal/phase-0/`.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 1 (aluno)
+
+- Home, Aulas, módulo, aula, Prática, Materiais, Progresso, Agenda, Perfil e Suporte recompostos no visual aprovado.
+- Verificado: typecheck (src), lint, 273 testes unitários e capturas locais pontuais. Por pedido do usuário (economia), e2e, a11y, goldens e verify:ui NÃO foram executados nesta fase; goldens das telas do aluno estão desatualizados e precisam ser regenerados antes de fechar a tarefa.

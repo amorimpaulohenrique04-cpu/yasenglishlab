@@ -37,7 +37,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: "neutral" | "success" | "warning" | "error" | "info" | "muted" | "pink";
   /** Ponto colorido antes do texto (densidade de operação). */
   dot?: boolean;
-  icon?: IconName;
+  icon?: IconName | undefined;
 }
 
 export function Badge({ tone = "neutral", dot, icon, className, children, ...props }: BadgeProps) {
@@ -197,7 +197,7 @@ export interface ProgressBarProps {
   label?: string;
   showLabel?: boolean;
   showValue?: boolean;
-  tone?: "default" | "priority";
+  tone?: "default" | "priority" | "success";
 }
 
 export function ProgressBar({

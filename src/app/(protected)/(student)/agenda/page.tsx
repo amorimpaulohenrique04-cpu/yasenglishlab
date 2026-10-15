@@ -1,4 +1,18 @@
-import { Alert, Badge, Button, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
+import Link from "next/link";
+
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  Icon,
+  IconBadge,
+  PageHeader,
+  type IconName,
+  type Tint,
+} from "@/components/ui";
 import {
   YAS_SCHEDULE_TIME_ZONE,
   scheduleAvailabilityLabel,
@@ -12,7 +26,6 @@ import { loadSchedulePage } from "@/server/schedule/schedule";
 
 import { bookLiveSessionAction, cancelLiveSessionAction, joinLiveSessionAction } from "./actions";
 import { JoinMeeting } from "@/modules/schedule/ui/join-meeting";
-import Link from "next/link";
 import styles from "@/modules/schedule/ui/schedule.module.css";
 
 interface AgendaPageProps {
@@ -30,24 +43,55 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   month: "short",
 });
 
-const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: YAS_SCHEDULE_TIME_ZONE,
-  weekday: "short",
-  day: "2-digit",
-  month: "short",
-});
-
 const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: YAS_SCHEDULE_TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
 });
 
+const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: YAS_SCHEDULE_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const dayLabelFormatter = new Intl.DateTimeFormat("pt-BR", {
+  timeZone: YAS_SCHEDULE_TIME_ZONE,
+  weekday: "long",
+  day: "2-digit",
+  month: "long",
+});
+
+const typeVisual: Record<ScheduleSessionView["sessionType"], { icon: IconName; tint: Tint }> = {
+  CORE_CLASS: { icon: "play-sq", tint: "lilac" },
+  CONVERSATION_LAB: { icon: "chat", tint: "blue" },
+  PRIVATE_SESSION: { icon: "user", tint: "pink" },
+  WORKSHOP: { icon: "users", tint: "yellow" },
+};
+
 function statusTone(status: ScheduleAvailability): "success" | "warning" | "info" | "neutral" {
   if (status === "AVAILABLE") return "success";
   if (status === "FULL") return "warning";
   if (status === "BOOKED") return "info";
   return "neutral";
+}
+
+function groupByDay(sessions: ScheduleSessionView[]) {
+  const today = dayKeyFormatter.format(new Date());
+  const groups = new Map<string, { label: string; today: boolean; items: ScheduleSessionView[] }>();
+  for (const session of sessions) {
+    const date = new Date(session.startsAt);
+    const key = dayKeyFormatter.format(date);
+    const group = groups.get(key) ?? {
+      label: dayLabelFormatter.format(date),
+      today: key === today,
+      items: [],
+    };
+    group.items.push(session);
+    groups.set(key, group);
+  }
+  return [...groups.entries()];
 }
 
 function bookingAlert(code: string | undefined) {
@@ -90,7 +134,7 @@ function bookingAlert(code: string | undefined) {
       <Alert
         tone="success"
         title="Reserva confirmada"
-        description="A sessão foi persistida e já aparece entre seus próximos compromissos."
+        description="A sessão já aparece entre seus próximos compromissos."
       />
     );
   }
@@ -99,7 +143,7 @@ function bookingAlert(code: string | undefined) {
       <Alert
         tone="warning"
         title="Sessão não incluída no seu acesso atual"
-        description="A disponibilidade da sessão continua visível, mas este entitlement não está ativo para sua conta."
+        description="Você continua vendo a sessão, mas o seu plano atual não inclui este tipo de encontro."
       />
     );
   }
@@ -126,31 +170,11 @@ function bookingAlert(code: string | undefined) {
       <Alert
         tone="error"
         title="Não foi possível confirmar a reserva"
-        description="Tente novamente. Nenhuma reserva falsa foi exibida como sucesso."
+        description="Tente novamente em instantes. Nada foi reservado."
       />
     );
   }
   return null;
-}
-
-function DateStrip({ sessions }: { sessions: ScheduleSessionView[] }) {
-  const dates = new Map<string, string>();
-  for (const session of sessions) {
-    const date = new Date(session.startsAt);
-    const key = date.toISOString().slice(0, 10);
-    if (!dates.has(key)) dates.set(key, dateFormatter.format(date));
-    if (dates.size === 7) break;
-  }
-
-  return (
-    <div className={styles.dateStrip} aria-label="Próximas datas com sessões" tabIndex={0}>
-      {[...dates.entries()].map(([key, label], index) => (
-        <span key={key} className={styles.dateChip} data-first={index === 0}>
-          {label}
-        </span>
-      ))}
-    </div>
-  );
 }
 
 function SessionCard({
@@ -165,128 +189,149 @@ function SessionCard({
   const canSubmit =
     !suspended && session.availability === "AVAILABLE" && session.eligibility.canBook;
   const entitlementBlocked = session.eligibility.reason === "ENTITLEMENT_REQUIRED";
+  const visual = typeVisual[session.sessionType];
 
   return (
-    <Card className={styles.sessionCard} aria-labelledby={`session-${session.id}`}>
-      <div className={styles.sessionTopline}>
-        <Badge tone={statusTone(session.availability)}>
-          {scheduleAvailabilityLabel(session.availability)}
-        </Badge>
-        <span className={styles.sessionType}>{scheduleSessionTypeLabel(session.sessionType)}</span>
+    <Card
+      className={styles.sessionCard}
+      data-booked={session.availability === "BOOKED" || undefined}
+      aria-labelledby={`session-${session.id}`}
+    >
+      <div className={styles.sessionTime}>
+        <time dateTime={session.startsAt}>{timeFormatter.format(start)}</time>
+        <small>
+          até <time dateTime={session.endsAt}>{timeFormatter.format(end)}</time>
+        </small>
       </div>
 
       <div className={styles.sessionCopy}>
+        <div className={styles.sessionTopline}>
+          <span className={styles.sessionType} data-tint={visual.tint}>
+            <Icon name={visual.icon} size={14} />
+            {scheduleSessionTypeLabel(session.sessionType)}
+          </span>
+          <Badge tone={statusTone(session.availability)} dot>
+            {scheduleAvailabilityLabel(session.availability)}
+          </Badge>
+        </div>
         <h3 id={`session-${session.id}`}>{session.title}</h3>
-        <p>
-          <time dateTime={session.startsAt}>{longDateFormatter.format(start)}</time>
-          {" · "}
-          <time dateTime={session.startsAt}>{timeFormatter.format(start)}</time>
-          {"–"}
-          <time dateTime={session.endsAt}>{timeFormatter.format(end)}</time>
-        </p>
-      </div>
-
-      <div className={styles.sessionMeta}>
-        {session.availability === "BOOKED" ? (
-          <span>Sua reserva está confirmada.</span>
-        ) : (
+        <div className={styles.sessionMeta}>
           <span>
-            {session.spotsRemaining}{" "}
-            {session.spotsRemaining === 1 ? "vaga restante" : "vagas restantes"}
-            {" · "}
-            capacidade {session.capacity}
+            <Icon name="cal" size={15} />
+            <time dateTime={session.startsAt}>{dateFormatter.format(start)}</time>
           </span>
-        )}
+          {session.availability === "BOOKED" ? (
+            <span>
+              <Icon name="check-c" size={15} />
+              Sua reserva está confirmada.
+            </span>
+          ) : (
+            <span>
+              <Icon name="users" size={15} />
+              {session.spotsRemaining}{" "}
+              {session.spotsRemaining === 1 ? "vaga restante" : "vagas restantes"} · capacidade{" "}
+              {session.capacity}
+            </span>
+          )}
+          {session.quota?.total != null && (
+            <span>
+              <Icon name="history" size={15} />
+              Quota {session.quota.cadence === "WEEK" ? "semanal" : "mensal"}: {session.quota.used}/
+              {session.quota.total} utilizadas · {session.quota.remaining} disponíveis
+            </span>
+          )}
+        </div>
         {entitlementBlocked && (
-          <span className={styles.entitlementNote}>
-            Seu entitlement atual não autoriza esta sessão.
-          </span>
-        )}
-        {session.quota?.total != null && (
-          <span>
-            Quota {session.quota.cadence === "WEEK" ? "semanal" : "mensal"}: {session.quota.used}/
-            {session.quota.total} utilizadas · {session.quota.remaining} disponíveis
+          <span className={styles.sessionNote}>
+            Este tipo de encontro não está incluído no seu plano.
           </span>
         )}
         {session.eligibility.reason === "QUOTA_EXCEEDED" && (
-          <span>Limite deste período atingido.</span>
+          <span className={styles.sessionNote}>Limite deste período atingido.</span>
         )}
         {suspended && session.availability !== "BOOKED" && (
-          <span id={`suspended-${session.id}`}>
+          <span className={styles.sessionNote} id={`suspended-${session.id}`}>
             Reservas em pausa enquanto a assinatura é regularizada.
           </span>
         )}
         {session.eligibility.reason === "COHORT_REQUIRED" && (
-          <span>Seu vínculo com esta turma não permite novas reservas.</span>
+          <span className={styles.sessionNote}>
+            Seu vínculo com esta turma não permite novas reservas.
+          </span>
         )}
       </div>
 
-      <form action={bookLiveSessionAction}>
-        <input type="hidden" name="liveSessionId" value={session.id} />
-        <Button
-          type="submit"
-          variant={canSubmit ? "primary" : "secondary"}
-          size="sm"
-          disabled={!canSubmit}
-          aria-describedby={
-            suspended && session.availability !== "BOOKED" ? `suspended-${session.id}` : undefined
-          }
-        >
-          {session.availability === "BOOKED"
-            ? "Reservado"
-            : suspended
-              ? "Reservas em pausa"
-              : session.availability === "FULL"
-                ? "Lotado"
-                : session.availability === "CLOSED"
-                  ? "Encerrado"
-                  : entitlementBlocked
-                    ? "Acesso não disponível"
-                    : session.eligibility.reason === "QUOTA_EXCEEDED"
-                      ? "Quota esgotada"
-                      : session.ownBookingStatus === "CANCELLED"
-                        ? "Reservar novamente"
-                        : "Reservar"}
-        </Button>
-      </form>
-      {session.availability === "BOOKED" && (
-        <JoinMeeting sessionId={session.id} action={joinLiveSessionAction} />
-      )}
-      {session.ownBookingStatus === "BOOKED" && (
-        <Link href={`/agenda/${session.id}`}>Recursos e tarefas</Link>
-      )}
-      {session.availability === "BOOKED" && (
-        <form action={cancelLiveSessionAction}>
+      <div className={styles.sessionActions}>
+        <form action={bookLiveSessionAction}>
           <input type="hidden" name="liveSessionId" value={session.id} />
-          <Button type="submit" variant="secondary" size="sm">
-            Cancelar reserva
+          <Button
+            type="submit"
+            variant={canSubmit ? "primary" : "outline"}
+            size="sm"
+            disabled={!canSubmit}
+            aria-describedby={
+              suspended && session.availability !== "BOOKED" ? `suspended-${session.id}` : undefined
+            }
+          >
+            {session.availability === "BOOKED"
+              ? "Reservado"
+              : suspended
+                ? "Reservas em pausa"
+                : session.availability === "FULL"
+                  ? "Lotado"
+                  : session.availability === "CLOSED"
+                    ? "Encerrado"
+                    : entitlementBlocked
+                      ? "Acesso não disponível"
+                      : session.eligibility.reason === "QUOTA_EXCEEDED"
+                        ? "Quota esgotada"
+                        : session.ownBookingStatus === "CANCELLED"
+                          ? "Reservar novamente"
+                          : "Reservar"}
           </Button>
         </form>
-      )}
+        {session.availability === "BOOKED" && (
+          <JoinMeeting sessionId={session.id} action={joinLiveSessionAction} />
+        )}
+        {session.ownBookingStatus === "BOOKED" && (
+          <Link className="yas-link" href={`/agenda/${session.id}`}>
+            Recursos e tarefas <Icon name="arrow" />
+          </Link>
+        )}
+        {session.availability === "BOOKED" && (
+          <form action={cancelLiveSessionAction}>
+            <input type="hidden" name="liveSessionId" value={session.id} />
+            <Button type="submit" variant="ghost" size="sm">
+              Cancelar reserva
+            </Button>
+          </form>
+        )}
+      </div>
     </Card>
   );
 }
 
 function UpcomingBookings({ sessions }: { sessions: ScheduleSessionView[] }) {
   return (
-    <Card className={styles.upcomingCard} aria-labelledby="agenda-upcoming-title">
-      <div className={styles.sectionHeading}>
-        <div>
-          <h2 id="agenda-upcoming-title">Próximas reservas</h2>
-          <p>Somente reservas da sua conta.</p>
-        </div>
+    <Card aria-labelledby="agenda-upcoming-title">
+      <div className="yas-card-header">
+        <h2 className="yas-card-title" id="agenda-upcoming-title">
+          Próximas reservas
+        </h2>
       </div>
 
       {sessions.length === 0 ? (
         <p className={styles.sideEmpty}>Nenhuma reserva futura confirmada.</p>
       ) : (
-        <ol className={styles.upcomingList}>
+        <ol className="yas-list">
           {sessions.map((session) => (
             <li key={session.id}>
-              <span className={styles.upcomingMark} aria-hidden="true">
-                {session.sessionType === "PRIVATE_SESSION" ? "1:1" : "Y"}
-              </span>
-              <span>
+              <IconBadge
+                icon={typeVisual[session.sessionType].icon}
+                tone={typeVisual[session.sessionType].tint}
+                shape="square"
+              />
+              <span className="yas-list-text">
                 <strong>{session.title}</strong>
                 <small>
                   {dateFormatter.format(new Date(session.startsAt))} ·{" "}
@@ -329,7 +374,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <PageHeader title="Agenda" description="Veja suas sessões e próximos compromissos." />
         <ErrorState
           title="Acesso não autorizado"
-          description="Sua conta não possui o papel Student necessário para esta Agenda."
+          description="Esta agenda é exclusiva para contas de aluno."
         />
       </div>
     );
@@ -338,55 +383,79 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   if (state.status === "empty") {
     return (
       <div className={styles.page}>
-        <PageHeader title="Agenda" description="Veja suas sessões e próximos compromissos." />
+        <PageHeader
+          title="Agenda"
+          description="Veja suas sessões e próximos compromissos."
+          tagline
+        />
         {notice}
         {alert}
         <EmptyState
           title="Nenhuma sessão futura"
-          description="Quando novas sessões forem publicadas no domínio Live, elas aparecerão aqui."
+          description="Quando novas sessões forem publicadas, elas aparecerão aqui."
         />
       </div>
     );
   }
 
   const { sessions, upcomingBookings } = state.data;
+  const days = groupByDay(sessions);
 
   return (
     <div className={styles.page}>
       <PageHeader
         title="Agenda"
-        description="Veja suas sessões disponíveis e reservas confirmadas."
+        description="Veja suas aulas ao vivo, reserve encontros e acompanhe seus compromissos."
+        tagline
       />
 
       {notice}
       {alert}
-      <DateStrip sessions={sessions} />
 
       <div className={styles.layout}>
         <section className={styles.schedulePanel} aria-labelledby="agenda-sessions-title">
           <div className={styles.sectionHeading}>
-            <div>
-              <h2 id="agenda-sessions-title">Sessões disponíveis</h2>
-              <p>Disponibilidade e elegibilidade são calculadas separadamente.</p>
-            </div>
+            <h2 id="agenda-sessions-title">Sessões disponíveis</h2>
+            <span className={styles.timezone}>
+              <Icon name="globe" size={16} />
+              Horário de Recife (UTC−3)
+            </span>
           </div>
 
-          <div className={styles.sessionGrid}>
-            {sessions.map((session) => (
-              <SessionCard key={session.id} session={session} suspended={suspended} />
-            ))}
-          </div>
+          {days.map(([key, day]) => (
+            <div className={styles.dayGroup} key={key}>
+              <h3 className={styles.dayTitle}>
+                {day.label}
+                {day.today && <span className={styles.todayChip}>Hoje</span>}
+              </h3>
+              <div className={styles.sessionList}>
+                {day.items.map((session) => (
+                  <SessionCard key={session.id} session={session} suspended={suspended} />
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
 
         <aside className={styles.sideColumn} aria-label="Resumo de reservas">
           <UpcomingBookings sessions={upcomingBookings} />
-          <Card className={styles.contractCard} variant="soft">
-            <strong>Sua agenda</strong>
-            <p>
-              Reservas respeitam capacidade e quota. Cancelar antes do início libera crédito;
-              presença e ausência não geram novo consumo. O acesso à reunião abre 15 minutos antes
-              do encontro para reservas confirmadas.
-            </p>
+          <Card>
+            <div className="yas-card-header">
+              <h2 className="yas-card-title">Como funcionam as reservas</h2>
+            </div>
+            <ul className={styles.rules}>
+              <li>
+                <Icon name="clock" size={16} />O link da reunião abre 15 minutos antes do encontro.
+              </li>
+              <li>
+                <Icon name="redo" size={16} />
+                Cancelar antes do início devolve o crédito da reserva.
+              </li>
+              <li>
+                <Icon name="users" size={16} />
+                Cada encontro respeita a capacidade e a quota do seu plano.
+              </li>
+            </ul>
           </Card>
         </aside>
       </div>

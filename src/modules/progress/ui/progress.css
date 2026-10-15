@@ -1,249 +1,363 @@
+/* Student progress — artifacts/design-proposal/aluno.html#progresso */
+
 .yas-progress-page {
   display: grid;
-  gap: var(--yas-space-6);
+  gap: 1.125rem;
 }
 
-.yas-progress-overview,
-.yas-progress-two-column {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
-  gap: var(--yas-space-5);
-  align-items: start;
-}
-
-.yas-progress-two-column--balanced {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.yas-progress-muted {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  line-height: var(--yas-line-body);
 }
 
 .yas-progress-section {
   display: grid;
-  gap: var(--yas-space-4);
-  min-width: 0;
+  gap: 0.75rem;
 }
 
-.yas-progress-card-stack,
+.yas-progress-section-heading h2 {
+  margin: 0.25rem 0 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-progress-section-heading p {
+  margin: 0.125rem 0 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+.yas-progress-top {
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+  gap: 1.125rem;
+}
+
+.yas-progress-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 1.125rem;
+}
+
+/* ---------- Proficiency ---------- */
+.yas-progress-proficiency-grid {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 1.625rem;
+}
+
+.yas-progress-level {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  border-inline-end: var(--yas-border-subtle);
+  padding-inline-end: 1.375rem;
+}
+
+.yas-progress-level-value {
+  margin: 0.25rem 0 0.375rem;
+  color: var(--yas-color-purple-200);
+  font-family: var(--yas-font-display);
+  font-size: 4.75rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.yas-progress-level h3 {
+  margin: 0;
+  font-size: 0.96875rem;
+  line-height: 1.3;
+}
+
+.yas-progress-level .yas-progress-muted {
+  margin-top: 0.375rem;
+}
+
+.yas-progress-subtitle {
+  display: block;
+  margin-bottom: 0.875rem;
+  font-size: 0.90625rem;
+}
+
+.yas-progress-skills {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-progress-skill {
+  display: grid;
+  grid-template-columns: 1.375rem 7rem minmax(0, 1fr) 3.5rem;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-progress-skill > .yas-icon {
+  color: var(--yas-color-ink-soft);
+}
+
+.yas-progress-skill strong {
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-progress-skill-empty {
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+}
+
+.yas-progress-skill-value {
+  color: var(--yas-color-ink);
+  font-weight: var(--yas-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* ---------- Consistency ---------- */
+.yas-progress-consistency {
+  display: flex;
+  flex-direction: column;
+}
+
+.yas-progress-active-days {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface-soft);
+  padding: 0.875rem;
+}
+
+.yas-progress-active-days strong {
+  display: block;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+}
+
+.yas-progress-consistency-list {
+  margin-top: 0.625rem;
+}
+
+.yas-progress-consistency-list > li {
+  padding-inline: 0;
+}
+
+.yas-progress-consistency-list b {
+  min-width: 2.25rem;
+  font-family: var(--yas-font-display);
+  font-size: 1.375rem;
+  font-weight: var(--yas-weight-display);
+}
+
+.yas-progress-consistency-list span {
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Info line ---------- */
+.yas-progress-info-line {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-white);
+  box-shadow: var(--yas-shadow-card);
+  padding: 0.625rem 0.875rem;
+  color: var(--yas-color-ink-soft);
+  font-size: 0.8125rem;
+}
+
+.yas-progress-info-line .yas-icon {
+  color: var(--yas-color-purple-600);
+}
+
+/* ---------- Course ---------- */
 .yas-progress-course-list {
   display: grid;
-  gap: var(--yas-space-4);
+  gap: 0.75rem;
 }
 
-.yas-progress-cefr h2,
-.yas-progress-card-heading h3 {
-  margin: var(--yas-space-1) 0 0;
-  color: var(--yas-color-ink);
-  line-height: var(--yas-line-tight);
+.yas-progress-course {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1.2fr) minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
 }
 
-.yas-progress-cefr h2 {
-  max-width: 28rem;
-  font-size: var(--yas-font-size-2xl);
+.yas-progress-course-title {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
 }
 
-.yas-progress-cefr p,
-.yas-progress-boundary-note,
-.yas-progress-card-stack small,
-.yas-progress-list small,
-.yas-progress-timeline small {
-  color: var(--yas-color-muted);
-  line-height: var(--yas-line-body);
+.yas-progress-course-title h3 {
+  margin: 0;
+  font-size: 0.96875rem;
 }
 
-.yas-progress-cefr p {
-  max-width: 42rem;
-  margin: var(--yas-space-2) 0 0;
-}
-
-.yas-progress-eyebrow {
-  color: var(--yas-color-purple-700);
-  font-size: var(--yas-font-size-xs);
-  font-weight: var(--yas-weight-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.yas-progress-highlight {
-  color: var(--yas-color-ink);
-  font-size: var(--yas-font-size-2xl);
-  line-height: var(--yas-line-tight);
-}
-
-.yas-progress-card-heading {
+.yas-progress-course-bar {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--yas-space-4);
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.yas-progress-card-heading > strong {
-  color: var(--yas-color-purple-700);
-  font-size: var(--yas-font-size-2xl);
+.yas-progress-course-bar .yas-progress {
+  flex: 1;
+}
+
+.yas-progress-course-foot {
+  grid-column: 2 / -1;
+  margin-top: -0.75rem;
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+}
+
+/* ---------- Panels ---------- */
+.yas-progress-panel {
+  display: grid;
+  align-content: start;
+  gap: 0.875rem;
+}
+
+.yas-progress-panel .yas-card-header {
+  margin-bottom: 0;
+}
+
+.yas-progress-panel .yas-state {
+  min-height: 0;
+  box-shadow: none;
+  padding: 1rem 0;
 }
 
 .yas-progress-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--yas-space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
   margin: 0;
 }
 
-.yas-progress-stats--compact {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.yas-progress-stats--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .yas-progress-stats > div {
-  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
   border-radius: var(--yas-radius-md);
   background: var(--yas-color-surface-soft);
-  padding: var(--yas-space-3);
+  padding: 0.75rem;
 }
 
 .yas-progress-stats dt {
+  order: 2;
   color: var(--yas-color-muted);
   font-size: var(--yas-font-size-xs);
 }
 
 .yas-progress-stats dd {
-  margin: var(--yas-space-1) 0 0;
-  color: var(--yas-color-ink);
-  font-size: var(--yas-font-size-lg);
-  font-weight: var(--yas-weight-bold);
+  order: 1;
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.375rem;
+  font-weight: var(--yas-weight-display);
+  line-height: 1;
 }
 
-.yas-progress-list,
-.yas-progress-skills,
+.yas-progress-stats dd small {
+  color: var(--yas-color-muted);
+  font-family: var(--yas-font-sans);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+/* ---------- History ---------- */
 .yas-progress-timeline {
+  position: relative;
   display: grid;
-  gap: 0;
+  gap: 0.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.yas-progress-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--yas-space-4);
-  border-bottom: var(--yas-border-subtle);
-  padding: var(--yas-space-3) 0;
-}
-
-.yas-progress-list li:last-child {
-  border-bottom: 0;
-}
-
-.yas-progress-list li > div {
-  display: grid;
-  gap: var(--yas-space-1);
-}
-
-.yas-progress-skills {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--yas-space-5);
-}
-
-.yas-progress-skills li {
-  display: grid;
-  gap: var(--yas-space-3);
-  min-width: 0;
-}
-
-.yas-progress-skill-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--yas-space-4);
-  font-size: var(--yas-font-size-sm);
-}
-
-.yas-progress-skill-heading span {
-  color: var(--yas-color-muted);
-  text-align: right;
-}
-
-.yas-progress-boundary-note {
-  margin: var(--yas-space-5) 0 0;
-  font-size: var(--yas-font-size-sm);
-}
-
-.yas-progress-link {
-  width: fit-content;
-  color: var(--yas-color-purple-700);
-  text-decoration: none;
-  font-weight: var(--yas-weight-semibold);
-}
-
-.yas-progress-link:hover {
-  text-decoration: underline;
-}
-
 .yas-progress-timeline li {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--yas-space-3);
-  padding: 0 0 var(--yas-space-5);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
 }
 
-.yas-progress-timeline li:last-child {
-  padding-bottom: 0;
-}
-
-.yas-progress-timeline-marker {
-  width: 0.75rem;
-  height: 0.75rem;
-  margin-top: 0.35rem;
-  border: 2px solid var(--yas-color-purple-500);
-  border-radius: 50%;
-  background: var(--yas-color-white);
-}
-
-.yas-progress-timeline li:not(:last-child)::before {
+.yas-progress-timeline li:not(:last-child)::after {
   content: "";
   position: absolute;
-  inset-block-start: 1.1rem;
-  inset-block-end: 0;
-  inset-inline-start: 0.34rem;
-  width: 1px;
-  background: var(--yas-color-purple-200);
+  inset-block: 2.75rem -0.5rem;
+  inset-inline-start: 1.0625rem;
+  width: 2px;
+  background: var(--yas-color-border);
 }
 
 .yas-progress-timeline li > div {
+  min-width: 0;
   display: grid;
-  gap: var(--yas-space-1);
 }
 
-@media (max-width: 63.99rem) {
-  .yas-progress-overview,
-  .yas-progress-two-column,
-  .yas-progress-two-column--balanced {
-    grid-template-columns: 1fr;
+.yas-progress-timeline strong {
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-progress-timeline small {
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+}
+
+@media (max-width: 73.75rem) {
+  .yas-progress-top,
+  .yas-progress-two-column {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 47.99rem) {
-  .yas-progress-stats,
-  .yas-progress-stats--compact {
+  .yas-progress-proficiency-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .yas-progress-level {
+    border: 0;
+    padding: 0;
+  }
+
+  .yas-progress-skill {
+    grid-template-columns: 1.25rem 5.25rem minmax(0, 1fr) 2.75rem;
+  }
+
+  .yas-progress-course {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .yas-progress-course-bar,
+  .yas-progress-course > .yas-link,
+  .yas-progress-course-foot {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .yas-progress-stats--four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .yas-progress-skills {
-    grid-template-columns: 1fr;
-  }
-
-  .yas-progress-card-heading,
-  .yas-progress-list li,
-  .yas-progress-skill-heading {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .yas-progress-card-heading,
-  .yas-progress-list li,
-  .yas-progress-skill-heading {
-    display: flex;
-  }
-
-  .yas-progress-skill-heading span {
-    text-align: left;
+  .yas-progress-info-line {
+    align-items: flex-start;
   }
 }
