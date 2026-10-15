@@ -683,3 +683,10 @@ A/B entregues localmente. Sem commit/build/deploy. Próximo escopo macro: UI C/E
 ## 2026-10-15 — conclusao da Etapa 12 (branch feat/etapa-12-conclusao)
 
 PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de trilha da turma e matricula no proximo curso, seletor de publico (C3), app do aluno com aulas bloqueadas e aviso de curso concluido, docs de C/D/E/F. Checagens baratas passaram (typecheck, lint, 583 testes, verify:harness). e2e/a11y/screenshots de C/E e verify:full NAO foram executados por decisao de custo; Etapa 12 segue in_progress/verified:false.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 0
+
+- Branch `feat/ui-redesign` a partir de `main` (30aa75a).
+- Base local `yasenglishlab` (55321) estava 7 migrations atrás da main; aplicadas com `supabase migration up --local` (sem reset).
+- `setup-canonical-e2e.mjs` falha localmente com "Teacher session overlap" (dado residual de execuções anteriores). Investigar antes dos gates `verify:ui`.
+- Fundação aplicada: tokens, fontes, ícones, primitivos, shell e navegação centralizada. typecheck, lint (0 erros) e 273 testes unitários passaram. Capturas em `harness/evidence/ui-redesign-approved-proposal/phase-0/`.

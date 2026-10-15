@@ -1,178 +1,87 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
-import { AppShell, ContentContainer, Sidebar, Topbar } from "@/components/layout";
-import { Avatar, Drawer, IconButton } from "@/components/ui";
+import { RoleShell, type RoleNavItem } from "@/components/layout";
+import { Avatar } from "@/components/ui";
 
-import styles from "./admin-content.module.css";
-
-const contentHref = "/admin/content?kind=courses";
+const navigation: readonly RoleNavItem[] = [
+  { id: "overview", label: "Visão geral", href: "/admin", icon: "grid" },
+  {
+    id: "enrollments",
+    label: "Matrículas",
+    href: "/admin/enrollments",
+    icon: "inbox",
+    group: "Pessoas",
+  },
+  { id: "students", label: "Alunos", href: "/admin/students", icon: "users", group: "Pessoas" },
+  { id: "cohorts", label: "Turmas", href: "/admin/cohorts", icon: "layers", group: "Pessoas" },
+  {
+    id: "teachers",
+    label: "Professores",
+    href: "/admin/teachers",
+    icon: "teacher",
+    group: "Pessoas",
+  },
+  { id: "leads", label: "Leads", href: "/admin/leads", icon: "funnel", group: "Comercial" },
+  { id: "billing", label: "Pagamentos", href: "/admin/billing", icon: "card", group: "Comercial" },
+  {
+    id: "content",
+    label: "Conteúdos",
+    href: "/admin/content?kind=courses",
+    icon: "book",
+    group: "Conteúdo",
+    match: (pathname) => pathname.startsWith("/admin/content"),
+  },
+  {
+    id: "assessments",
+    label: "Teste de entrada",
+    href: "/admin/assessments",
+    icon: "check-c",
+    group: "Conteúdo",
+  },
+];
 
 export function AdminShell({
   displayName,
+  verifiedSession = false,
   children,
 }: {
   displayName: string;
+  verifiedSession?: boolean;
   children: ReactNode;
 }) {
-  const pathname = usePathname();
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const initials = displayName
     .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0])
     .join("")
     .toUpperCase();
-  const items = [
-    {
-      id: "overview",
-      label: "Visão geral",
-      href: "/admin",
-      active: pathname === "/admin",
-    },
-    {
-      id: "cohorts",
-      label: "Turmas",
-      href: "/admin/cohorts",
-      active: pathname.startsWith("/admin/cohorts"),
-    },
-    {
-      id: "students",
-      label: "Alunos",
-      href: "/admin/students",
-      active: pathname.startsWith("/admin/students"),
-    },
-    {
-      id: "leads",
-      label: "Leads",
-      href: "/admin/leads",
-      active: pathname.startsWith("/admin/leads"),
-    },
-    {
-      id: "teachers",
-      label: "Professores",
-      href: "/admin/teachers",
-      active: pathname.startsWith("/admin/teachers"),
-    },
-    {
-      id: "enrollments",
-      label: "Matrículas",
-      href: "/admin/enrollments",
-      active: pathname.startsWith("/admin/enrollments"),
-    },
-    {
-      id: "billing",
-      label: "Pagamentos",
-      href: "/admin/billing",
-      active: pathname.startsWith("/admin/billing"),
-    },
-    {
-      id: "content",
-      label: "Conteúdos",
-      href: contentHref,
-      active: pathname.startsWith("/admin/content"),
-    },
-    {
-      id: "assessments",
-      label: "Teste de entrada",
-      href: "/admin/assessments",
-      active: pathname.startsWith("/admin/assessments"),
-    },
-  ];
 
   return (
-    <AppShell
-      sidebar={
-        <Sidebar
-          ariaLabel="Navegação administrativa"
-          brand={
-            <Link className={styles.brand} href="/admin">
-              <span>Yas</span>
-              <small>English Lab · Administração</small>
-            </Link>
-          }
-          items={items}
-          footer={
-            <Link className={styles.sidebarFooterLink} href={contentHref}>
-              <span className={styles.sidebarFooterMark} aria-hidden="true">
-                AD
-              </span>
-              <span>
-                <strong>Administração</strong>
-                <small>Conteúdos e operação</small>
-              </span>
-            </Link>
-          }
-        />
-      }
-      topbar={
-        <Topbar
-          start={
-            <>
-              <span className={styles.mobileMenu}>
-                <IconButton
-                  label="Abrir navegação administrativa"
-                  onClick={() => setDrawerOpen(true)}
-                >
-                  ☰
-                </IconButton>
-              </span>
-              <span className={styles.topbarLabel}>Operações administrativas</span>
-            </>
-          }
-          end={
-            <Link className={styles.profileLink} href="/profile">
-              <Avatar fallback={initials || "YA"} label={displayName} size="sm" />
-              <span>{displayName}</span>
-            </Link>
-          }
-        />
+    <RoleShell
+      displayName={displayName}
+      homeHref="/admin"
+      items={navigation}
+      role="Administração"
+      sidebarLabel="Navegação administrativa"
+      menuButtonLabel="Abrir navegação administrativa"
+      drawerTitle="Navegação administrativa"
+      drawerDescription="Acesse as áreas administrativas."
+      drawerNavLabel="Navegação administrativa no celular"
+      verifiedSession={verifiedSession}
+      sidebarFooter={
+        <div className="yas-sidebar-card">
+          <Avatar fallback={initials || "YA"} label={displayName} size="sm" />
+          <span>
+            <strong>{displayName}</strong>
+            <small>Administração</small>
+          </span>
+        </div>
       }
     >
-      <ContentContainer>{children}</ContentContainer>
-      <Drawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        title="Navegação administrativa"
-        description="Acesse as áreas administrativas."
-      >
-        <nav className={styles.drawerNav} aria-label="Navegação administrativa no celular">
-          <Link href="/admin" onClick={() => setDrawerOpen(false)}>
-            Visão geral
-          </Link>
-          <Link href="/admin/cohorts" onClick={() => setDrawerOpen(false)}>
-            Turmas
-          </Link>
-          <Link href="/admin/students" onClick={() => setDrawerOpen(false)}>
-            Alunos
-          </Link>
-          <Link href="/admin/leads" onClick={() => setDrawerOpen(false)}>
-            Leads
-          </Link>
-          <Link href="/admin/teachers" onClick={() => setDrawerOpen(false)}>
-            Professores
-          </Link>
-          <Link href="/admin/enrollments" onClick={() => setDrawerOpen(false)}>
-            Matrículas
-          </Link>
-          <Link
-            href="/admin/billing"
-            aria-current={pathname.startsWith("/admin/billing") ? "page" : undefined}
-            onClick={() => setDrawerOpen(false)}
-          >
-            Pagamentos
-          </Link>
-          <Link href={contentHref} onClick={() => setDrawerOpen(false)}>
-            Conteúdos
-          </Link>
-          <Link href="/profile" onClick={() => setDrawerOpen(false)}>
-            Perfil
-          </Link>
-        </nav>
-      </Drawer>
-    </AppShell>
+      {children}
+    </RoleShell>
   );
 }

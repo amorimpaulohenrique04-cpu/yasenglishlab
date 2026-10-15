@@ -1,6 +1,24 @@
-# Plano - Etapa 12 (stage-12-lacunas-operacionais)
+# Plano - Redesign da UI (ui-redesign-approved-proposal)
 
 ## Active task
+
+**ui-redesign-approved-proposal**
+
+Goal: `harness/goals/ui-redesign-approved-proposal.md`. Branch `feat/ui-redesign` a partir de `main` (30aa75a, Etapa 12 mergeada). Commits por fase.
+
+0. Fundação: tokens remapeados, Montserrat + Inter via next/font/local, assets placeholder em `public/brand`, ícones, shell (sidebar/topbar/tab bar), nav centralizada por papel, primitivos, Storybook.
+1. Aluno: home, aulas, aula, prática, materiais, progresso, agenda, perfil/support/onboarding, gate de assinatura.
+2. Professor: início, sessões, nova sessão, turmas, alunos, revisões, entrada, disponibilidade, práticas.
+3. Admin: visão geral, matrículas, alunos, turmas, professores, leads, pagamentos, conteúdos, teste de entrada.
+   Por fase: typecheck, lint, unit, storybook:build, e2e/a11y das áreas, goldens das telas redesenhadas, evidência em `harness/evidence/ui-redesign-approved-proposal/`.
+
+Regra: só apresentação; sem dado inventado; sem tocar server/RLS/actions.
+
+---
+
+# Plano anterior - Etapa 12 (stage-12-lacunas-operacionais)
+
+## Previous task
 
 **stage-12-lacunas-operacionais**
 

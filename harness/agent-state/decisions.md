@@ -123,3 +123,12 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 - Escopo (2026-10-15, apos sessao Codex): D e F ja implementados e testados; ficam nesta PR (supersede o adiamento anterior).
 
 - Conclusao (2026-10-15): por custo, sem e2e/a11y/verify:full locais; specs de C/E nao verificados foram retirados do repositorio. Escopo do GOAL passou a listar um padrao por modulo (o verificador nao expande chaves) e incluiu admin-cohort-path e admin-overview.
+
+## 2026-10-16 — ui-redesign-approved-proposal: fundação visual
+
+- Tokens `--yas-*` mantêm os nomes e recebem os valores medidos na proposta aprovada (`artifacts/design-proposal`). Novos tokens: superfícies do shell (sidebar, hero), tints pastel e `--yas-font-display`.
+- Diferença intencional em relação ao protótipo: as cores de texto das tags pastel foram escurecidas para AA (o protótipo ficava entre 3,3:1 e 4,2:1). Valores e razões em `src/styles/tokens.css`.
+- Fontes: `next/font/google` (Inter + Montserrat 700/800) auto-hospedadas no build, expostas como `--yas-font-inter`/`--yas-font-montserrat`; os tokens caem para fontes locais quando a variável não existe (Storybook). Escolhido no lugar de `next/font/local` para não versionar binários de fonte; o build precisa de rede para baixar as fontes.
+- Navegação de cada papel vive num único array por shell, consumido por `RoleShell` (sidebar, drawer mobile e tab bar). Os rótulos acessíveis usados pelos testes foram preservados.
+- Logo, frase manuscrita e fotos em `public/brand/` são placeholders recortados das referências aprovadas; trocar pelos arquivos oficiais quando existirem.
+- Selo "Sessão verificada" só aparece com `aal2` real do contexto de autenticação.
