@@ -695,3 +695,9 @@ PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de t
 
 - Home, Aulas, módulo, aula, Prática, Materiais, Progresso, Agenda, Perfil e Suporte recompostos no visual aprovado.
 - Verificado: typecheck (src), lint, 273 testes unitários e capturas locais pontuais. Por pedido do usuário (economia), e2e, a11y, goldens e verify:ui NÃO foram executados nesta fase; goldens das telas do aluno estão desatualizados e precisam ser regenerados antes de fechar a tarefa.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 2 (professor)
+
+- Início (hero da próxima sessão, fila de revisões, indicadores, próximos encontros), Sessões (agrupadas por dia), Turmas (cartões com anel de ocupação). Demais telas herdam o visual pelos primitivos e pelo módulo CSS.
+- Teste `teacher-surfaces.spec.ts` ajustado: Turmas deixou de ser tabela; a asserção agora procura a região do cartão da turma.
+- Verificado: typecheck (src), lint e capturas pontuais. e2e/a11y/goldens não executados (pedido do usuário).

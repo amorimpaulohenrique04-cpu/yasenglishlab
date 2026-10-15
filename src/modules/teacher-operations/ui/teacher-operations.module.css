@@ -1,93 +1,164 @@
-.brand {
-  display: grid;
-  gap: var(--yas-space-1);
-  color: var(--yas-color-white);
-  text-decoration: none;
-  line-height: 1;
-}
-
-.brand span {
-  font-size: var(--yas-font-size-xl);
-  font-weight: var(--yas-weight-bold);
-}
-
-.brand small {
-  color: rgb(255 255 255 / 72%);
-  font-size: var(--yas-font-size-xs);
-  font-weight: var(--yas-weight-medium);
-}
-
-.mobileMenu {
-  display: none;
-}
-
-.topbarLabel {
-  color: var(--yas-color-purple-800);
-  font-weight: var(--yas-weight-semibold);
-}
-
-.profileLink {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--yas-space-2);
-  color: var(--yas-color-ink);
-  text-decoration: none;
-  font-size: var(--yas-font-size-sm);
-  font-weight: var(--yas-weight-semibold);
-}
-
-.drawerNav {
-  display: grid;
-  gap: var(--yas-space-2);
-}
-
-.drawerNav a,
-.backLink {
-  border-radius: var(--yas-radius-md);
-  color: var(--yas-color-purple-700);
-  padding: var(--yas-space-3);
-  text-decoration: none;
-  font-weight: var(--yas-weight-semibold);
-}
-
-.drawerNav a:focus-visible,
-.backLink:focus-visible,
-.profileLink:focus-visible,
-.brand:focus-visible {
-  outline: 2px solid var(--yas-color-focus);
-  outline-offset: 3px;
-  box-shadow: var(--yas-shadow-focus);
-}
+/* Teacher area — artifacts/design-proposal/professor.html */
 
 .page {
   display: grid;
-  gap: var(--yas-space-6);
+  gap: 1.125rem;
 }
 
+.backLink {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-purple-600);
+  font-size: 0.84375rem;
+  font-weight: var(--yas-weight-semibold);
+  text-decoration: none;
+}
+
+.backLink:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+}
+
+/* Home */
+.homeTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 1.125rem;
+}
+
+.queueCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.queueCard :global(.yas-card-title) :global(.yas-icon) {
+  color: var(--yas-color-purple-600);
+}
+
+.queueCard :global(.yas-list) > li {
+  padding-inline: 0;
+}
+
+.agendaList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agendaList li {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.875rem;
+  border-bottom: var(--yas-border-subtle);
+  padding: 0.75rem 0;
+}
+
+.agendaList li:last-child {
+  border-bottom: 0;
+}
+
+.agendaTime {
+  font-family: var(--yas-font-display);
+  font-size: 0.9375rem;
+  font-weight: var(--yas-weight-display);
+  line-height: 1.1;
+}
+
+.agendaTime small {
+  display: block;
+  color: var(--yas-color-muted);
+  font-family: var(--yas-font-sans);
+  font-size: 0.71875rem;
+  font-weight: var(--yas-weight-medium);
+}
+
+.agendaCopy {
+  min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+}
+
+.agendaCopy strong {
+  font-size: 0.875rem;
+}
+
+.agendaCopy small {
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+}
+
+.typeChip {
+  display: inline-flex;
+  margin-inline-end: 0.5rem;
+  border-radius: 6px;
+  background: var(--yas-tint-lilac);
+  color: var(--yas-tint-lilac-ink);
+  padding: 0.0625rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.typeChip[data-type="CONVERSATION_LAB"] {
+  background: var(--yas-tint-blue);
+  color: var(--yas-tint-blue-ink);
+}
+
+.typeChip[data-type="PRIVATE_SESSION"] {
+  background: var(--yas-tint-pink);
+  color: var(--yas-tint-pink-ink);
+}
+
+.typeChip[data-type="WORKSHOP"] {
+  background: var(--yas-tint-yellow);
+  color: var(--yas-tint-yellow-ink);
+}
+
+/* Forms */
 .operationForm {
   display: grid;
-  gap: var(--yas-space-4);
+  gap: 1rem;
 }
 
 .operationForm label {
   display: grid;
-  gap: var(--yas-space-2);
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
 }
 
 .operationForm input,
 .operationForm select,
 .operationForm textarea {
-  padding: var(--yas-space-3);
-  border: 1px solid var(--yas-color-purple-200);
-  border-radius: var(--yas-radius-md);
-  max-width: 100%;
   min-width: 0;
+  max-width: 100%;
+  min-height: var(--yas-control-height-md);
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-sm);
+  background: var(--yas-color-white);
+  color: var(--yas-color-ink);
+  padding: 0.5rem 0.875rem;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-regular);
 }
 
+.operationForm input:focus-visible,
+.operationForm select:focus-visible,
+.operationForm textarea:focus-visible {
+  border-color: var(--yas-color-purple-600);
+  outline: none;
+  box-shadow: var(--yas-shadow-focus);
+}
+
+/* Sessions and roster */
 .sessionGrid,
 .rosterList {
   display: grid;
-  gap: var(--yas-space-4);
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -100,7 +171,7 @@
 .sessionCard,
 .participantCard {
   display: grid;
-  gap: var(--yas-space-4);
+  gap: 0.75rem;
 }
 
 .sessionTopline,
@@ -110,7 +181,7 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--yas-space-3);
+  gap: 0.625rem;
 }
 
 .sessionTopline,
@@ -125,63 +196,73 @@
 }
 
 .sessionTitle {
-  font-size: var(--yas-font-size-xl);
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--yas-weight-bold);
 }
 
 .participantName {
-  font-size: var(--yas-font-size-lg);
+  font-size: 0.96875rem;
 }
 
 .sessionMeta {
   color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
+  font-size: 0.8125rem;
 }
 
 .sessionMeta span + span::before {
-  content: "•";
-  margin-inline-end: var(--yas-space-3);
+  content: "·";
+  margin-inline-end: 0.625rem;
 }
 
 .cardLink {
   width: fit-content;
-  color: var(--yas-color-purple-700);
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-purple-600);
+  font-size: 0.84375rem;
   font-weight: var(--yas-weight-semibold);
   text-decoration: none;
+}
+
+.cardLink:hover {
+  text-decoration: underline;
 }
 
 .cardLink:focus-visible {
   outline: 2px solid var(--yas-color-focus);
   outline-offset: 3px;
-  box-shadow: var(--yas-shadow-focus);
 }
 
 .detailSummary {
   display: grid;
-  gap: var(--yas-space-3);
+  gap: 0.75rem;
 }
 
 .rosterHeading {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--yas-space-4);
+  gap: 1rem;
 }
 
 .rosterHeading h2 {
   margin: 0;
-  font-size: var(--yas-font-size-xl);
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--yas-weight-bold);
 }
 
 .rosterHeading p {
-  margin: var(--yas-space-1) 0 0;
+  margin: 0.125rem 0 0;
   color: var(--yas-color-muted);
+  font-size: 0.8125rem;
 }
 
 .participantMeta {
   display: grid;
-  gap: var(--yas-space-1);
+  gap: 0.25rem;
   color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
+  font-size: 0.8125rem;
 }
 
 .attendanceActions form {
@@ -192,6 +273,24 @@
   margin: 0;
   color: var(--yas-color-muted);
   font-size: var(--yas-font-size-sm);
+}
+
+@media (max-width: 73.75rem) {
+  .homeTop {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .agendaList li {
+    grid-template-columns: 4rem minmax(0, 1fr);
+  }
+
+  .agendaList li > :global(.yas-badge),
+  .agendaList li > :global(.yas-button) {
+    grid-column: 2;
+    justify-self: start;
+  }
 }
 
 .loadingGrid {
@@ -351,4 +450,154 @@
   .builderActions > * {
     width: 100%;
   }
+}
+
+/* Sessions grouped by day */
+.dayGroup {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.dayTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0.25rem 0 0;
+  color: var(--yas-color-ink-soft);
+  font-family: var(--yas-font-display);
+  font-size: 0.875rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.dayTitle::first-letter {
+  text-transform: uppercase;
+}
+
+.todayChip {
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--yas-font-sans);
+  font-size: 0.6875rem;
+}
+
+.sessionRow {
+  display: grid;
+  grid-template-columns: 5.375rem minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.125rem;
+}
+
+.sessionRowTime time {
+  display: block;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--yas-weight-display);
+  line-height: 1;
+}
+
+.sessionRowTime small {
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+}
+
+.sessionRow .sessionTitle {
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 47.99rem) {
+  .sessionRow {
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .sessionRow > :global(.yas-badge),
+  .sessionRow > :global(.yas-button) {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+/* Cohort cards */
+.cohortGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: 1.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cohortCard {
+  height: 100%;
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.cohortTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.cohortTop :global(.yas-progress-ring-content) {
+  font-size: 0.875rem;
+}
+
+.cohortMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.875rem;
+  margin: 0.375rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+}
+
+.cohortMeta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.cohortSection {
+  display: grid;
+  gap: 0.375rem;
+  border-top: 1px dashed var(--yas-color-border);
+  padding-top: 0.75rem;
+}
+
+.cohortSection h3 {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.6875rem;
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cohortSection ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cohortSection li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: var(--yas-font-size-sm);
+}
+
+.cohortSection small {
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
 }

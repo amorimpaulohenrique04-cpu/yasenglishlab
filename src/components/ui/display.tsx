@@ -391,15 +391,22 @@ export function MetricCard({
   value,
   detail,
   href,
+  icon,
+  tone = "lilac",
 }: {
   label: string;
   value: ReactNode;
   detail?: ReactNode;
   href?: string;
+  icon?: IconName;
+  tone?: Tint;
 }) {
   const content = (
     <>
-      <span className="yas-metric-label">{label}</span>
+      <span className="yas-metric-label">
+        {icon && <IconBadge icon={icon} tone={tone} shape="square" size="sm" />}
+        {label}
+      </span>
       <strong className="yas-metric-value">{value}</strong>
       {detail && <span className="yas-metric-detail">{detail}</span>}
     </>
