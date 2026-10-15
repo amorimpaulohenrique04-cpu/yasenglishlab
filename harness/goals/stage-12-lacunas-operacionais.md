@@ -31,9 +31,9 @@ Fechar, numa unica PR empilhada sobre a Etapa 11, as lacunas que impedem operar 
 - [ ] Cada tipo de resposta (escolha unica, varias, verdadeiro/falso, lacunas, ordenar) corrige no banco; escrever e falar vao para a fila de revisao existente, sem nota agregada nem CEFR.
 - [ ] `start_placement_assessment` usa somente a avaliacao marcada `is_placement`; publicar valida o contrato; so Admin+AAL2.
 - [ ] Trilha da turma: turma padrao x propria, itens exclusivos, liberacao por data, sequencia, conclusao automatica pela trilha do aluno; leitura de titulos de outros cursos fechada.
-- [ ] (ADIADO para PR seguinte, decisao de custo 2026-10-15) `admin_plan_set_entitlement` preserva historico de reservas e so aceita vigencia futura; sem edicao de preco.
+- [ ] `admin_plan_set_entitlement` preserva historico de reservas e so aceita vigencia futura; sem edicao de preco.
 - [ ] `admin_enroll_in_course` idempotente, auditado, sem encerrar a matricula concluida.
-- [ ] (ADIADO para PR seguinte, decisao de custo 2026-10-15) `admin_operational_alerts` em uma chamada, dentro do orcamento do E2E da visao geral.
+- [ ] `admin_operational_alerts` em uma chamada, dentro do orcamento do E2E da visao geral.
 - [ ] Toda funcao nova revogada de public/anon/authenticated e liberada explicitamente; AAL2/RLS nunca afrouxados.
 - [ ] ADRs 0020-0023, docs de dominio e OPEN_QUESTIONS atualizados.
 - [ ] No unrelated behavior regressed.
@@ -106,3 +106,9 @@ Escopo e aceite: ver secao Fechamento A e B do plan.md. Pedido expresso para con
 (A) e teste de entrada (B), incluindo app, testes e prova visual. UI C/E fica fora. Metas locais: E2E/a11y
 reais na stack isolada, unit/integration/typecheck/lint e verificadores sem build. Estado macro so muda apos
 os gates finais; nenhuma permissao para commit/push ou uso do banco de desenvolvimento.
+
+## D/F — pedido expresso do usuário (2026-10-15)
+
+D e F deixam de estar adiados nesta sessão. Implementar admin_plan_list/set_entitlement e editor em /admin/billing?tab=plans, apenas direitos com vigência futura e histórico de reservas intacto; admin_operational_alerts read-only ADMIN+AAL2 em uma RPC e cartões na visão geral com causas do matching existente, revisão >3 dias, escolha >7 dias, entrada não publicada e concluído sem próxima matrícula. Escopo: migrations aditivas geradas pelo CLI, supabase/tests, registro SQL, src/modules/admin-plans/** e admin-overview, src/server/{admin-plans,admin-overview}/**, rotas Admin billing/overview e respectivas ações, testes unit/integration/SQL/E2E/a11y, docs BILLING/PLACEMENT/AUTH_RBAC_RLS/DATA_MODEL e harness. Não editar preço, webhook ou migrations anteriores; sem subagentes, next build ou banco dev. Commit/push/PR autorizados expressamente, sem merge. PR atual permanece rascunho enquanto C/E UI e gates macro estiverem pendentes.
+
+Plano: 1 SQL D/F com negativos/atomicidade/histórico; 2 adaptadores e UI usando primitivos atuais; 3 testes focados, prova E2E/a11y/screenshots; 4 documentação/evidência, commits e atualização da PR.

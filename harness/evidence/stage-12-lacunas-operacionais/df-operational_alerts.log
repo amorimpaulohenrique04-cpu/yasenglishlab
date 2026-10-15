@@ -1,0 +1,214 @@
+BEGIN
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 30
+INSERT 0 30
+INSERT 0 1
+INSERT 0 8
+INSERT 0 8
+INSERT 0 8
+INSERT 0 5
+INSERT 0 4
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+CREATE TABLE
+GRANT
+DO
+ login 
+-------
+ 
+(1 row)
+
+       open_placement_decision        
+--------------------------------------
+ 9ba83c46-c505-41e8-bd3f-8ddd68b32321
+(1 row)
+
+ set_config | set_config 
+------------+------------
+            | {}
+(1 row)
+
+UPDATE 8
+UPDATE 1
+UPDATE 1
+DELETE 1
+UPDATE 1
+UPDATE 1
+INSERT 0 3
+SET
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+RESET
+SET
+ ok 
+----
+ 
+(1 row)
+
+RESET
+SELECT 1
+ login 
+-------
+ 
+(1 row)
+
+SET
+SELECT 1
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+RESET
+ ok 
+----
+ 
+(1 row)
+
+UPDATE 1
+UPDATE 1
+SET
+SELECT 1
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ROLLBACK

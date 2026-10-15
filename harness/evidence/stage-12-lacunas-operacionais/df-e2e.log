@@ -1,0 +1,68 @@
+
+Running 2 tests using 1 worker
+
+(node:22068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\admin-plans-alerts.spec.ts:106:3 › Stage 12D/F Admin operations › schedules future rights, rejects past date and preserves price (10.0s)
+(node:24812) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\e2e\admin-plans-alerts.spec.ts:164:3 › Stage 12D/F Admin operations › overview exposes actionable alerts within the existing operation budget (5.8s)
+
+
+  1) [chromium] › tests\e2e\admin-plans-alerts.spec.ts:106:3 › Stage 12D/F Admin operations › schedules future rights, rejects past date and preserves price 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })
+    Expected substring: "Vigente: 1 · Por semana"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Plano D E2E 1792088674601', exact: true })
+
+
+      113 |     ).toBeVisible();
+      114 |     const plan = page.getByRole("region", { name: planName, exact: true });
+    > 115 |     await expect(plan).toContainText("Vigente: 1 · Por semana");
+          |                        ^
+      116 |     await capture(page, "d-plans");
+      117 |     await page.setViewportSize({ width: 1440, height: 1000 });
+      118 |     await plan
+        at C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\tests\e2e\admin-plans-alerts.spec.ts:115:24
+
+    Error Context: test-results\admin-plans-alerts-Stage-1-f8d39-st-date-and-preserves-price-chromium\error-context.md
+
+    Error Context: test-results\admin-plans-alerts-Stage-1-f8d39-st-date-and-preserves-price-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\admin-plans-alerts.spec.ts:164:3 › Stage 12D/F Admin operations › overview exposes actionable alerts within the existing operation budget 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })
+    Expected substring: "Turma sem entrada F E2E 1792088730213"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true }) with timeout 5000ms
+      - waiting for getByRole('region', { name: 'Alertas operacionais', exact: true }).getByRole('region', { name: 'Turmas sem configuração de entrada', exact: true })
+
+
+      171 |       exact: true,
+      172 |     });
+    > 173 |     await expect(missing).toContainText(cohortName);
+          |                           ^
+      174 |     await expect(missing).toContainText("Turma sem capacidade e horários de entrada configurados.");
+      175 |     await expect(
+      176 |       region.getByRole("heading", { name: "Teste de entrada não publicado", exact: true }),
+        at C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\tests\e2e\admin-plans-alerts.spec.ts:173:27
+
+    Error Context: test-results\admin-plans-alerts-Stage-1-bdf8c-e-existing-operation-budget-chromium\error-context.md
+
+    Error Context: test-results\admin-plans-alerts-Stage-1-bdf8c-e-existing-operation-budget-chromium\error-context.md
+
+  2 failed
+    [chromium] › tests\e2e\admin-plans-alerts.spec.ts:106:3 › Stage 12D/F Admin operations › schedules future rights, rejects past date and preserves price 
+    [chromium] › tests\e2e\admin-plans-alerts.spec.ts:164:3 › Stage 12D/F Admin operations › overview exposes actionable alerts within the existing operation budget 

@@ -116,6 +116,8 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 - Fora de escopo: host de deploy, plataforma de aula ao vivo, canal de suporte, LGPD, recuperacao de MFA, troca de plano, remarcacao.
 - Custo/tempo (2026-10-15): por pedido do usuario, esta PR entrega A, B, C e E; D (direitos de plano) e F (alertas) adiados para PR seguinte. Verificacao por bloco e direcionada; gates pesados uma vez no fim.
 
-
 - A/B: prompts de avaliação reutilizam schemas executáveis do motor Student; instruções opcionais apenas em resposta humana. Nenhum afrouxamento da leitura do aluno.
 - Validação isolada: cache persistente do Turbopack desativado apenas em YAS_ISOLATED_VERIFY após os112; configuração normal preservada. Servidor de testes controlado único evita órfãos de interrupção no Windows. Sem build Next.
+
+- 2026-10-15: usuário pediu commit e PR, e autorizou implementar D (direitos de plano) e F (alertas) agora. Revoga o adiamento D/F apenas; preços, regras futuras e demais restrições continuam fora do escopo.
+- Escopo (2026-10-15, apos sessao Codex): D e F ja implementados e testados; ficam nesta PR (supersede o adiamento anterior).

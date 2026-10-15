@@ -10,9 +10,9 @@ Goal: `harness/goals/stage-12-lacunas-operacionais.md`. Branch `feat/etapa-12-la
    A. (URGENTE) Praticas do professor: migration `20261015100000_stage_12a_practice_authoring.sql`, RPCs `teacher_practice_*`, formato `content` v2, atribuicao por turma, construtor e renderizador do aluno, testes.
    B. Teste de entrada: `20261015110000_stage_12b_assessment_authoring.sql`, `assessments.is_placement`, RPCs `admin_assessment_*`, editor admin.
    C. Trilha da turma + fechar leitura de titulos: C1 `20261015120000_stage_12c1_cohort_path_model.sql` e C2 `20261015130000_stage_12c2_cohort_path_admin.sql`.
-   D. (ADIADO: PR seguinte) Direitos de plano; timestamp da migration sera definido naquela PR.
+   D. Direitos de plano: `20261015180920_stage_12d_plan_entitlement_admin.sql` (implementado na sessao Codex; entra nesta PR).
    E. Proximo curso: `20261015140000_stage_12e_admin_enroll_next_course.sql`.
-   F. (ADIADO: PR seguinte) Alertas operacionais: `20261015150000_stage_12f_operational_alerts.sql`.
+   F. Alertas operacionais: `20261015180924_stage_12f_operational_alerts.sql` (implementado na sessao Codex; entra nesta PR).
    G. Validacao: verify:db/security/agent/ui, verify:full, evidencia e revisao yas-qa (read-only).
 
 Plano detalhado da sessao: `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-com-cached-engelbart.md`.
@@ -65,3 +65,11 @@ Sem commit, sem build Next, sem banco dev; stack 55422/55421. Preservar alteraco
 A/B: next.config.ts incluido para desativar apenas cache persistente Turbopack em YAS_ISOLATED_VERIFY, apos erro real os112. Limpeza somente do cache gerado .next-p18/dev/cache/turbopack, caminho absoluto verificado.
 
 A/B concluídos localmente: E2E 2/2, a11y 4/4, axe e screenshots nos três viewports, SQL e checks registrados. Próximo: UI C/E e fechamento macro; não executar build/commit sem nova autorização.
+
+## D/F — pedido expresso do usuário (2026-10-15)
+
+D e F deixam de estar adiados nesta sessão. Implementar admin_plan_list/set_entitlement e editor em /admin/billing?tab=plans, apenas direitos com vigência futura e histórico de reservas intacto; admin_operational_alerts read-only ADMIN+AAL2 em uma RPC e cartões na visão geral com causas do matching existente, revisão >3 dias, escolha >7 dias, entrada não publicada e concluído sem próxima matrícula. Escopo: migrations aditivas geradas pelo CLI, supabase/tests, registro SQL, src/modules/admin-plans/** e admin-overview, src/server/{admin-plans,admin-overview}/**, rotas Admin billing/overview e respectivas ações, testes unit/integration/SQL/E2E/a11y, docs BILLING/PLACEMENT/AUTH_RBAC_RLS/DATA_MODEL e harness. Não editar preço, webhook ou migrations anteriores; sem subagentes, next build ou banco dev. Commit/push/PR autorizados expressamente, sem merge. PR atual permanece rascunho enquanto C/E UI e gates macro estiverem pendentes.
+
+Plano: 1 SQL D/F com negativos/atomicidade/histórico; 2 adaptadores e UI usando primitivos atuais; 3 testes focados, prova E2E/a11y/screenshots; 4 documentação/evidência, commits e atualização da PR.
+
+Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adiava foi revogado de fato. D e F entram nesta PR. Falta UI de C/E (trilha admin, matricular, trilha do aluno), docs e gates finais.
