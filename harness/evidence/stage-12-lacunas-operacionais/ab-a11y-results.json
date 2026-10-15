@@ -37,9 +37,7 @@
         "name": "desktop-a11y",
         "testDir": "C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/tests/a11y",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       },
       {
@@ -53,18 +51,13 @@
         "name": "mobile-a11y",
         "testDir": "C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/tests/a11y",
         "testIgnore": [],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
         "timeout": 30000
       }
     ],
     "quiet": false,
     "reporter": [
-      [
-        "list",
-        null
-      ],
+      ["list", null],
       [
         "json",
         {

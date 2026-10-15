@@ -32,7 +32,7 @@ Isolated next config disables persistent Turbopack dev cache; ordinary dev confi
 
 ## Test/eval created
 
- tests/unit/isolated-next-config.test.ts; tests/unit/action-guards.test.ts; tests/e2e/admin-assessments.spec.ts; tests/e2e/teacher-practices.spec.ts; Stage 12 cases in tests/a11y/critical-flows.spec.ts.
+tests/unit/isolated-next-config.test.ts; tests/unit/action-guards.test.ts; tests/e2e/admin-assessments.spec.ts; tests/e2e/teacher-practices.spec.ts; Stage 12 cases in tests/a11y/critical-flows.spec.ts.
 
 ## Reproduction
 

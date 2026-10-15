@@ -32,7 +32,7 @@ Admin input validation calls the canonical executable prompt schema for the sele
 
 ## Test/eval created
 
- tests/unit/admin-assessments.test.ts asserts both objective and manual authored prompts pass canonical Student schemas and objective instructions are rejected. tests/e2e/admin-assessments.spec.ts publishes version 2 and starts it through the ordinary Student onboarding, checking the visible authored prompt and persisted assessment_version_id.
+tests/unit/admin-assessments.test.ts asserts both objective and manual authored prompts pass canonical Student schemas and objective instructions are rejected. tests/e2e/admin-assessments.spec.ts publishes version 2 and starts it through the ordinary Student onboarding, checking the visible authored prompt and persisted assessment_version_id.
 
 ## Reproduction
 

@@ -166,18 +166,18 @@ B: módulos admin-assessments de domínio/UI/servidor e rotas /admin/assessments
 
 A: construtor/player preexistentes exercitados no navegador. Corrigida preservação do passo Publicar e atribuir após comandos. E2E cobre criar/salvar/prévia/publicar/atribuir/prazo, aluno da turma responder, outra turma não ver, outro professor receber 404 e tentativa exigir duplicação. Matriz completa de formatos e mídia coberta em practice_authoring.sql e unitários de domínio/construtor/player.
 
-| Verificação | Resultado | Evidência |
-| --- | --- | --- |
-| SQL transacional practice_authoring, assessment_authoring, placement, assessment_engine, function_privileges | todos exit 0, docker exec psql em supabase_db_yastest12 | ab-*.log correspondentes |
-| Vitest completo | exit 0, 67 arquivos/544 testes passaram, 1 ignorado | ab-vitest.log |
-| Typecheck | exit 0 | ab-typecheck.log |
-| ESLint src tests --quiet | exit 0 | ab-eslint.log |
-| Prettier arquivos A/B tocados | exit 0 | ab-format.log |
-| verify-db/security/harness | todos exit 0 | ab-verify-*.log |
-| E2E A/B | exit 0; 2 passaram, 0 skipped/flaky/falhas; gate JSON exit 0 | ab-e2e.log, ab-e2e-results.json |
-| A11y Stage 12 desktop/mobile | exit 0; 4 passaram, 0 skipped/flaky/falhas; gate JSON exit 0 | ab-a11y.log, ab-a11y-results.json, ab-a11y-gate.log |
+| Verificação                                                                                                  | Resultado                                                    | Evidência                                           |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------------------- |
+| SQL transacional practice_authoring, assessment_authoring, placement, assessment_engine, function_privileges | todos exit 0, docker exec psql em supabase_db_yastest12      | ab-*.log correspondentes                            |
+| Vitest completo                                                                                              | exit 0, 67 arquivos/544 testes passaram, 1 ignorado          | ab-vitest.log                                       |
+| Typecheck                                                                                                    | exit 0                                                       | ab-typecheck.log                                    |
+| ESLint src tests --quiet                                                                                     | exit 0                                                       | ab-eslint.log                                       |
+| Prettier arquivos A/B tocados                                                                                | exit 0                                                       | ab-format.log                                       |
+| verify-db/security/harness                                                                                   | todos exit 0                                                 | ab-verify-*.log                                     |
+| E2E A/B                                                                                                      | exit 0; 2 passaram, 0 skipped/flaky/falhas; gate JSON exit 0 | ab-e2e.log, ab-e2e-results.json                     |
+| A11y Stage 12 desktop/mobile                                                                                 | exit 0; 4 passaram, 0 skipped/flaky/falhas; gate JSON exit 0 | ab-a11y.log, ab-a11y-results.json, ab-a11y-gate.log |
 
-Telas desktop/tablet/mobile: screenshots/a-preview-*.png e screenshots/b-editor-*.png. Inspeção visual feita nos seis arquivos desktop/tablet/mobile: sem corte horizontal; tipografia, controles, estados e navegação seguem os primitivos existentes. Axe WCAG 2 A/AA, 2.1 AA e 2.2 AA nos três viewports faz parte do E2E, sem atualização de goldens.
+Telas desktop/tablet/mobile: screenshots/a-preview-_.png e screenshots/b-editor-_.png. Inspeção visual feita nos seis arquivos desktop/tablet/mobile: sem corte horizontal; tipografia, controles, estados e navegação seguem os primitivos existentes. Axe WCAG 2 A/AA, 2.1 AA e 2.2 AA nos três viewports faz parte do E2E, sem atualização de goldens.
 
 Ambiente: REST isolado foi recuperado com a imagem local PostgREST, DB/JWT exclusivamente yastest12 e credenciais obtidas do status oficial do CLI sem imprimir segredos. setup-canonical-e2e rodou apenas nessa stack (ab-fixtures.log). MFA usa namespace temporário stage12 para não sobrescrever segredos de outras stacks. Teste B cria Student exclusivo e restaura a flag de entrada original em finally.
 
