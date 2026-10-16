@@ -50,7 +50,7 @@ UI aprovada acessível e responsiva; publicação, progresso e feedback preserva
 ## Required evidence
 
 - `harness/evidence/pr74-gates/` — comandos, capturas, diferenças visuais e tempos locais/CI.
-- `harness/failure-log/pr74-gates.md` — prova vermelho/verde e proteção permanente.
+- `harness/failure-log/2026-10-15-pr74-gates.md` — prova vermelho/verde e proteção permanente.
 
 ## Definition of done
 
