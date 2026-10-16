@@ -8,7 +8,8 @@ function argument(name) {
 }
 
 function git(args, allowFailure = false) {
-  const result = spawnSync("git", args, { encoding: "utf8" });
+  // Large branches produce multi-megabyte diffs; the 1 MiB default buffer fails with ENOBUFS.
+  const result = spawnSync("git", args, { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
   if (!allowFailure && result.status !== 0) {
     throw new Error(result.stderr || `git ${args.join(" ")} failed`);
   }
