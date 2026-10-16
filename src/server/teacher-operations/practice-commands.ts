@@ -9,6 +9,10 @@ import {
   practiceContentV2DraftSchema,
   practiceFeedbackSchema,
 } from "@/modules/practice/domain/content-v2";
+import {
+  practiceContentV3DraftSchema,
+  practiceItemKeysDraftSchema,
+} from "@/modules/teacher-operations/domain/practice-draft-v3";
 import { assertRole } from "@/server/auth/guards";
 import { getRequestTechnicalContext } from "@/server/observability/context";
 import { withObservedSpan } from "@/server/observability/trace";
@@ -50,6 +54,18 @@ const INVALID_RULES: readonly [needle: string, message: string][] = [
   ["valid uploaded asset", "O arquivo ainda não foi enviado ou é inválido."],
   ["related module", "O módulo relacionado precisa ser do curso da prática."],
   ["related lesson", "A aula relacionada precisa ser do curso da prática."],
+  ["item keys", "Defina a resposta correta de todas as perguntas objetivas."],
+  ["item has no answer key", "Defina a resposta correta de todas as perguntas objetivas."],
+  ["invalid item key", "Confira a resposta correta das perguntas objetivas."],
+  ["invalid item feedback", "Confira as explicações das perguntas."],
+  ["between 1 and 20 items", "Uma prática tem de 1 a 20 perguntas."],
+  ["duplicate practice item id", "Há perguntas repetidas; remova e adicione de novo."],
+  [
+    "pronunciation items require",
+    "Na pronúncia, cada pergunta precisa de áudio modelo e resposta falada.",
+  ],
+  ["planningseconds", "Tempo de preparo só vale para resposta escrita ou falada (0, 30 ou 60 s)."],
+  ["practice content v3", "Confira o objetivo e as perguntas da prática."],
   ["payload too large", "O conteúdo da prática é grande demais."],
 ];
 
@@ -111,9 +127,11 @@ export const teacherPracticeDetailSchema = z.object({
   courseId: uuid.nullable(),
   relatedModuleId: uuid.nullable(),
   relatedLessonId: uuid.nullable(),
-  content: practiceContentV2DraftSchema,
+  content: z.union([practiceContentV3DraftSchema, practiceContentV2DraftSchema]),
   answerKey: answerKeyDraftSchema,
   feedback: practiceFeedbackSchema,
+  /** v3 only: private keys and feedback per question id (absent for v2). */
+  itemKeys: practiceItemKeysDraftSchema.nullish(),
   publicationStatus,
   publishedAt: z.string().nullable(),
   hasAttempts: z.boolean(),
@@ -150,9 +168,10 @@ export const teacherPracticeSaveInputSchema = z
     courseId: uuid,
     relatedModuleId: uuid.nullable().optional(),
     relatedLessonId: uuid.nullable().optional(),
-    content: practiceContentV2DraftSchema,
+    content: z.union([practiceContentV3DraftSchema, practiceContentV2DraftSchema]),
     answerKey: answerKeyDraftSchema.nullable().optional(),
     feedback: practiceFeedbackSchema.nullable().optional(),
+    itemKeys: practiceItemKeysDraftSchema.nullable().optional(),
   })
   .strict();
 export type TeacherPracticeSaveInput = z.infer<typeof teacherPracticeSaveInputSchema>;
@@ -234,6 +253,31 @@ function emptyToNull<T extends object>(value: T | null | undefined): T | null {
 
 export async function saveTeacherPractice(rawInput: unknown): Promise<string> {
   const input = teacherPracticeSaveInputSchema.parse(rawInput);
+  if (input.content.version === 3) {
+    const content = input.content;
+    const v3Payload = {
+      title: input.title,
+      skill: input.skill,
+      cefr_target: input.cefrTarget ?? null,
+      difficulty: input.difficulty ?? null,
+      estimated_minutes: input.estimatedMinutes,
+      course_id: input.courseId,
+      related_module_id: input.relatedModuleId ?? null,
+      related_lesson_id: input.relatedLessonId ?? null,
+      content,
+    };
+    return run(
+      "save_v3",
+      { practice_id: input.id, item_count: content.items.length },
+      (client) =>
+        client.rpc("teacher_practice_save_v3", {
+          p_id: input.id,
+          p_payload: v3Payload,
+          p_item_keys: input.itemKeys ?? {},
+        }),
+      (data) => uuid.parse(data),
+    );
+  }
   const payload = {
     title: input.title,
     skill: input.skill,
@@ -369,5 +413,41 @@ export async function completeTeacherPracticeAsset(
     (client, context) =>
       client.rpc("teacher_practice_complete_asset", { p_asset: id, p_context: context }),
     (data) => completedAssetSchema.parse(data),
+  );
+}
+
+export const REVIEW_RATING_LEVELS = ["NEEDS_WORK", "DEVELOPING", "SOLID", "STRONG"] as const;
+
+/**
+ * Manual review of one WRITTEN/SPOKEN answer. v3 attempts review one item at a time (`itemId`, which selects
+ * the `finalize_practice_review` overload with `p_item_id`); v1/v2 omit it and keep the original call.
+ */
+export async function finalizeTeacherPracticeReview(input: {
+  attemptId: string;
+  itemId?: string | null | undefined;
+  ratings: Record<string, (typeof REVIEW_RATING_LEVELS)[number]>;
+  feedback: string;
+}): Promise<void> {
+  const attemptId = uuid.parse(input.attemptId);
+  const itemId = input.itemId
+    ? z
+        .string()
+        .regex(/^[a-z0-9-]{1,40}$/)
+        .parse(input.itemId)
+    : null;
+  const feedback = z.string().trim().min(1).max(4000).parse(input.feedback);
+  const ratings = z.record(z.string(), z.enum(REVIEW_RATING_LEVELS)).parse(input.ratings);
+  return run(
+    "review.finalize",
+    { attempt_id: attemptId, item_id: itemId },
+    (client) =>
+      client.rpc("finalize_practice_review", {
+        p_attempt: attemptId,
+        p_ratings: ratings,
+        p_feedback: feedback,
+        p_rubric_version: "v1",
+        ...(itemId ? { p_item_id: itemId } : {}),
+      }),
+    () => undefined,
   );
 }

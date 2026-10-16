@@ -66,6 +66,7 @@ export async function savePracticeAction(form: FormData) {
       content: jsonField(form, "content"),
       answerKey: jsonField(form, "answerKey"),
       feedback: jsonField(form, "feedback"),
+      itemKeys: jsonField(form, "itemKeys"),
     });
   } catch (error) {
     failure(target, error);

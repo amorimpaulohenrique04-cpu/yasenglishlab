@@ -34,6 +34,7 @@ vi.mock("@/server/observability/trace", () => ({
 import {
   PracticeAuthoringError,
   assignTeacherPractice,
+  finalizeTeacherPracticeReview,
   getTeacherPractice,
   listTeacherPractices,
   mapPracticeAuthoringError,
@@ -245,5 +246,50 @@ describe("teacher practice server actions", () => {
     await expect(actions.publishPracticeAction(form)).rejects.toThrow(
       `REDIRECT:/teacher/praticas/${practiceId}?save=success`,
     );
+  });
+});
+
+describe("teacher practice v3 commands", () => {
+  const v3Draft = {
+    ...draft,
+    answerKey: undefined,
+    feedback: undefined,
+    content: {
+      version: 3,
+      objective: "usar o passado",
+      askConfidence: true,
+      items: [
+        {
+          id: "q-1",
+          prompt: "Choose",
+          stimulus: { type: "NONE" },
+          response: draft.content.response,
+        },
+      ],
+    },
+    itemKeys: { "q-1": { answerKey: { optionId: "a" }, feedback: { correct: "Ok" } } },
+  };
+
+  it("saves through teacher_practice_save_v3 with item keys", async () => {
+    mocks.rpc.mockResolvedValue({ data: practiceId, error: null });
+    await expect(saveTeacherPractice(v3Draft)).resolves.toBe(practiceId);
+    const [name, args] = mocks.rpc.mock.calls[0]!;
+    expect(name).toBe("teacher_practice_save_v3");
+    expect(args.p_payload.content.version).toBe(3);
+    expect(args.p_item_keys["q-1"].answerKey).toEqual({ optionId: "a" });
+    expect(args).not.toHaveProperty("p_answer_key");
+  });
+
+  it("calls the finalize_practice_review overload only when an item id is given", async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: null });
+    const input = {
+      attemptId: practiceId,
+      ratings: { task_completion: "SOLID" as const },
+      feedback: "Bom",
+    };
+    await finalizeTeacherPracticeReview({ ...input, itemId: "q-2" });
+    await finalizeTeacherPracticeReview(input);
+    expect(mocks.rpc.mock.calls[0]![1].p_item_id).toBe("q-2");
+    expect(mocks.rpc.mock.calls[1]![1]).not.toHaveProperty("p_item_id");
   });
 });

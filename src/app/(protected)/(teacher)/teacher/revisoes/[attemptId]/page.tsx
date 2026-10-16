@@ -17,11 +17,12 @@ export default async function ReviewPage({
   searchParams: Promise<{ save?: string }>;
 }) {
   const { attemptId } = await params;
-  const [item] = await loadTeacherReviews(attemptId);
-  if (!item) notFound();
+  const items = await loadTeacherReviews(attemptId);
+  const [first] = items;
+  if (!first) notFound();
   return (
     <div className={styles.page}>
-      <PageHeader title={item.title} description={`Resposta de ${item.studentName ?? "Aluno"}`} />
+      <PageHeader title={first.title} description={`Resposta de ${first.studentName ?? "Aluno"}`} />
       {(await searchParams).save === "error" && (
         <Alert
           tone="error"
@@ -29,43 +30,56 @@ export default async function ReviewPage({
           description="O vínculo pode ter mudado ou outro professor já concluiu esta revisão."
         />
       )}
-      <Card>
-        <p>{item.prompt}</p>
-        {typeof item.response.text === "string" && <p>{item.response.text}</p>}
-        {typeof item.response.mediaId === "string" && (
-          <AudioPlayback id={item.response.mediaId} action={teacherAudioPlaybackAction} />
-        )}
-      </Card>
-      {item.status === "PENDING_MANUAL" ? (
-        <Card>
-          <form action={reviewPracticeAction} className={styles.operationForm}>
-            <input type="hidden" name="attemptId" value={item.id} />
-            <input type="hidden" name="skill" value={item.skill} />
-            {rubricDimensionsFor(item.skill, item.responseType).map((dimension) => (
-              <label key={dimension}>
-                {RUBRIC_LABELS[dimension]}
-                <select name={dimension} required defaultValue="">
-                  <option value="" disabled>
-                    Selecione um nível
-                  </option>
-                  {RUBRIC_LEVELS.map((level) => (
-                    <option key={level} value={level}>
-                      {RUBRIC_LABELS[level]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-            <label>
-              Feedback ao aluno
-              <textarea name="feedback" required maxLength={4000} rows={6} />
-            </label>
-            <Button type="submit">Finalizar revisão</Button>
-          </form>
-        </Card>
-      ) : (
-        <p>Revisão finalizada. O feedback já está disponível ao aluno.</p>
-      )}
+      {items.map((item, index) => (
+        <section
+          key={item.itemId ?? item.id}
+          aria-label={items.length > 1 ? `Pergunta ${index + 1} de ${items.length}` : undefined}
+          className={styles.page}
+        >
+          {items.length > 1 && <h2>Pergunta {index + 1}</h2>}
+          <Card>
+            <p>{item.prompt}</p>
+            {typeof item.response.text === "string" && <p>{item.response.text}</p>}
+            {typeof item.response.mediaId === "string" && (
+              <AudioPlayback id={item.response.mediaId} action={teacherAudioPlaybackAction} />
+            )}
+          </Card>
+          {item.status === "PENDING_MANUAL" ? (
+            <Card>
+              <form action={reviewPracticeAction} className={styles.operationForm}>
+                <input type="hidden" name="attemptId" value={item.id} />
+                <input type="hidden" name="skill" value={item.skill} />
+                {item.itemId && <input type="hidden" name="itemId" value={item.itemId} />}
+                {item.responseType && (
+                  <input type="hidden" name="responseType" value={item.responseType} />
+                )}
+                {rubricDimensionsFor(item.skill, item.responseType).map((dimension) => (
+                  <label key={dimension}>
+                    {RUBRIC_LABELS[dimension]}
+                    <select name={dimension} required defaultValue="">
+                      <option value="" disabled>
+                        Selecione um nível
+                      </option>
+                      {RUBRIC_LEVELS.map((level) => (
+                        <option key={level} value={level}>
+                          {RUBRIC_LABELS[level]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+                <label>
+                  Feedback ao aluno
+                  <textarea name="feedback" required maxLength={4000} rows={6} />
+                </label>
+                <Button type="submit">Finalizar revisão</Button>
+              </form>
+            </Card>
+          ) : (
+            <p>Revisão finalizada. O feedback já está disponível ao aluno.</p>
+          )}
+        </section>
+      ))}
     </div>
   );
 }

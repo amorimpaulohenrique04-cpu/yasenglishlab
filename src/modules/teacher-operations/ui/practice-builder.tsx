@@ -20,8 +20,11 @@ import {
   STIMULUS_TYPES_V2,
   type PublicationAsset,
 } from "@/modules/practice/domain/content-v2";
+import { PLANNING_SECONDS, PRACTICE_V3_MAX_ITEMS } from "@/modules/practice/domain/content-v3";
+import { RUBRIC_LABELS, rubricDimensionsFor } from "@/modules/practice/domain/rubric";
 import { PracticePlayer } from "@/modules/practice/ui/practice-player";
 import { clozeBlankIds } from "@/modules/practice/ui/practice-player-logic";
+import { PracticeSessionPlayer } from "@/modules/practice/ui/practice-session-player";
 
 import { StimulusAssetField, type ReserveResult } from "./practice-asset-field";
 import {
@@ -37,7 +40,8 @@ import {
   STIMULUS_LABELS,
   assetKindForStimulus,
   builderReducer,
-  initialBuilderState,
+  generateItemId,
+  initialBuilderStateV3,
   isResponseType,
   isStimulusType,
   publicationReport,
@@ -47,8 +51,12 @@ import {
   toPayload,
   validateDraft,
   type AssetKind,
+  type BuilderAction,
   type BuilderState,
+  type ItemAction,
+  type ItemFields,
   type MetaErrors,
+  type PlanningSeconds,
   type PracticeDetailLike,
   type ScalarField,
 } from "./practice-builder-logic";
@@ -78,6 +86,8 @@ export interface PracticeBuilderProps {
   };
   /** Signed URL for the saved stimulus asset (teacher owner only), minted on the server. */
   stimulusUrl: string | null;
+  /** v3: signed URLs of the saved question assets, keyed by asset id. */
+  assetUrls?: Record<string, string | null>;
   actions: {
     save: FormAction;
     publish: FormAction;
@@ -139,11 +149,24 @@ function TypeCards<T extends string>({
   );
 }
 
-export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: PracticeBuilderProps) {
+const PLANNING_LABELS: Record<PlanningSeconds, string> = {
+  0: "Sem tempo de preparo",
+  30: "30 segundos",
+  60: "60 segundos",
+};
+
+export function PracticeBuilder({
+  detail,
+  scope,
+  stimulusUrl,
+  assetUrls,
+  actions,
+}: PracticeBuilderProps) {
   const defaultCourse = scope.courses.length === 1 ? (scope.courses[0]?.id ?? "") : "";
   const [state, dispatch] = useReducer(builderReducer, detail, (initial): BuilderState =>
-    initial ? stateFromDetail(initial) : initialBuilderState(defaultCourse),
+    initial ? stateFromDetail(initial) : initialBuilderStateV3(defaultCourse),
   );
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState<MetaErrors>({});
   const [uploaded, setUploaded] = useState<PublicationAsset[]>([]);
@@ -152,7 +175,7 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stepChanged = useRef(false);
   const savedSnapshot = useMemo(
-    () => snapshot(detail ? stateFromDetail(detail) : initialBuilderState(defaultCourse)),
+    () => snapshot(detail ? stateFromDetail(detail) : initialBuilderStateV3(defaultCourse)),
     [detail, defaultCourse],
   );
 
@@ -170,6 +193,18 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
   ];
   const report = publicationReport(state, assets);
   const payload = toPayload(state);
+  const v3 = state.version === 3;
+  const curItem = v3
+    ? (state.items.find((item) => item.id === activeId) ?? state.items[0])
+    : undefined;
+  const cur: ItemFields = curItem ?? state;
+  const dispatchCur = (action: ItemAction) =>
+    curItem
+      ? dispatch({ type: "itemAction", id: curItem.id, action })
+      : dispatch(action as BuilderAction);
+  const setItem = (field: ScalarField) => (value: string) =>
+    dispatchCur({ type: "set", field, value });
+  const pronunciation = v3 && state.skill === "PRONUNCIATION";
 
   useEffect(() => {
     const stored = window.sessionStorage.getItem(STEP_STORAGE_KEY);
@@ -213,7 +248,7 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
   const set = (field: ScalarField) => (value: string) => dispatch({ type: "set", field, value });
 
   const stepId = BUILDER_STEPS[step]?.id ?? "stimulus";
-  const assetKind = assetKindForStimulus(state.stimulusType);
+  const assetKind = assetKindForStimulus(cur.stimulusType);
   const courseModules = scope.modules.filter((item) => item.courseId === state.courseId);
   const courseLessons = scope.lessons.filter((lesson) =>
     courseModules.some((item) => item.id === lesson.moduleId),
@@ -222,60 +257,167 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
     (lesson) => !state.moduleId || lesson.moduleId === state.moduleId,
   );
   const courseCohorts = scope.cohorts.filter((cohort) => cohort.courseId === state.courseId);
-  const blankIds = clozeBlankIds(state.clozeText.trim());
-  const previewUrl =
-    (state.assetId && localUrls[state.assetId]) ||
-    (state.assetId && state.assetId === detail?.content.stimulus.assetId ? stimulusUrl : null) ||
+  const blankIds = clozeBlankIds(cur.clozeText.trim());
+  const v2AssetId = detail && !("items" in detail.content) ? detail.content.stimulus.assetId : "";
+  const urlFor = (assetId: string) =>
+    (assetId && localUrls[assetId]) ||
+    (assetId && assetUrls?.[assetId]) ||
+    (assetId && assetId === v2AssetId ? stimulusUrl : null) ||
     null;
+  const previewUrl = urlFor(cur.assetId);
   const assetReady = assets.some(
-    (asset) => asset.id === state.assetId && asset.uploadStatus === "READY",
+    (asset) => asset.id === cur.assetId && asset.uploadStatus === "READY",
   );
-  const manual = state.responseType === "WRITTEN" || state.responseType === "SPOKEN";
+  const manual = cur.responseType === "WRITTEN" || cur.responseType === "SPOKEN";
+  const PRON_STIMULUS = ["AUDIO"] as const;
+  const PRON_RESPONSE = ["SPOKEN"] as const;
+
+  const pronunciationAlert = pronunciation ? (
+    <Alert
+      tone="info"
+      title="Prática de pronúncia"
+      description="Cada pergunta usa um áudio modelo e uma resposta falada. A revisão é manual."
+    />
+  ) : null;
+
+  const questionPicker =
+    v3 && state.items.length > 1 ? (
+      <Select
+        label="Pergunta em edição"
+        value={curItem?.id ?? ""}
+        options={state.items.map((item, index) => ({
+          value: item.id,
+          label: `Pergunta ${index + 1}${item.prompt.trim() ? `: ${item.prompt.trim().slice(0, 40)}` : ""}`,
+        }))}
+        onChange={(event) => setActiveId(event.target.value)}
+      />
+    ) : null;
+
+  const questionList = v3 ? (
+    <fieldset className={styles.builderFieldset}>
+      <legend>
+        Perguntas ({state.items.length} de {PRACTICE_V3_MAX_ITEMS})
+      </legend>
+      {pronunciation && (
+        <div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => dispatch({ type: "applyPronunciationTemplate" })}
+          >
+            Aplicar modelo de pronúncia
+          </Button>
+        </div>
+      )}
+      {pronunciationAlert}
+      <ol className={styles.builderList}>
+        {state.items.map((item, index) => (
+          <li key={item.id} className={styles.builderRow}>
+            <span>
+              Pergunta {index + 1}: {item.prompt.trim() || "sem enunciado"} (
+              {RESPONSE_LABELS[item.responseType]})
+            </span>
+            <Button
+              type="button"
+              variant={item.id === curItem?.id ? "primary" : "outline"}
+              aria-pressed={item.id === curItem?.id}
+              onClick={() => setActiveId(item.id)}
+            >
+              {`Editar pergunta ${index + 1}`}
+            </Button>
+            <IconButton
+              label={`Subir pergunta ${index + 1}`}
+              disabled={index === 0}
+              onClick={() => dispatch({ type: "moveItem", index, direction: "up" })}
+            >
+              ↑
+            </IconButton>
+            <IconButton
+              label={`Descer pergunta ${index + 1}`}
+              disabled={index === state.items.length - 1}
+              onClick={() => dispatch({ type: "moveItem", index, direction: "down" })}
+            >
+              ↓
+            </IconButton>
+            <IconButton
+              label={`Remover pergunta ${index + 1}`}
+              disabled={state.items.length <= 1}
+              onClick={() => {
+                const neighbour = state.items[index + 1] ?? state.items[index - 1];
+                dispatch({ type: "removeItem", id: item.id });
+                if (item.id === curItem?.id) setActiveId(neighbour?.id ?? null);
+              }}
+            >
+              ×
+            </IconButton>
+          </li>
+        ))}
+      </ol>
+      <div>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={state.items.length >= PRACTICE_V3_MAX_ITEMS}
+          onClick={() => {
+            const id = generateItemId(state.items.map((item) => item.id));
+            dispatch({ type: "addItem", id });
+            setActiveId(id);
+          }}
+        >
+          Adicionar pergunta
+        </Button>
+      </div>
+    </fieldset>
+  ) : null;
 
   const stimulusPanel = (
     <div className={styles.builderStack}>
+      {questionPicker}
+      {pronunciationAlert}
       <TypeCards
         legend="Tipo de estímulo"
         name="stimulusType"
-        values={STIMULUS_TYPES_V2}
+        values={pronunciation ? PRON_STIMULUS : STIMULUS_TYPES_V2}
         labels={STIMULUS_LABELS}
         descriptions={STIMULUS_DESCRIPTIONS}
-        current={state.stimulusType}
+        current={cur.stimulusType}
         disabled={readOnly}
-        onSelect={(value) => isStimulusType(value) && dispatch({ type: "setStimulusType", value })}
+        onSelect={(value) =>
+          isStimulusType(value) && dispatchCur({ type: "setStimulusType", value })
+        }
       />
-      {state.stimulusType === "TEXT" && (
+      {cur.stimulusType === "TEXT" && (
         <Textarea
           label="Texto de apoio"
           required
           rows={5}
           maxLength={2000}
-          value={state.stimulusText}
-          onChange={(event) => set("stimulusText")(event.target.value)}
+          value={cur.stimulusText}
+          onChange={(event) => setItem("stimulusText")(event.target.value)}
         />
       )}
-      {state.stimulusType === "IMAGE" && (
+      {cur.stimulusType === "IMAGE" && (
         <Textarea
           label="Texto alternativo da imagem"
           required
           rows={2}
           maxLength={300}
           message="Descreva a imagem para quem não consegue vê-la. É obrigatório."
-          value={state.alt}
-          onChange={(event) => set("alt")(event.target.value)}
+          value={cur.alt}
+          onChange={(event) => setItem("alt")(event.target.value)}
         />
       )}
-      {(state.stimulusType === "AUDIO" || state.stimulusType === "VIDEO") && (
+      {(cur.stimulusType === "AUDIO" || cur.stimulusType === "VIDEO") && (
         <>
           <Textarea
             label="Transcrição (recomendada)"
             rows={4}
             maxLength={4000}
             message="Ajuda alunos surdos ou com dificuldade de ouvir. O aluno vê a transcrição sob demanda."
-            value={state.transcript}
-            onChange={(event) => set("transcript")(event.target.value)}
+            value={cur.transcript}
+            onChange={(event) => setItem("transcript")(event.target.value)}
           />
-          {!state.transcript.trim() && (
+          {!cur.transcript.trim() && (
             <Alert
               tone="warning"
               title="Sem transcrição"
@@ -288,13 +430,13 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
         <StimulusAssetField
           kind={assetKind}
           practiceId={detail?.id ?? null}
-          assetId={state.assetId}
+          assetId={cur.assetId}
           assetReady={assetReady}
           disabled={readOnly}
           reserve={actions.reserveAsset}
           complete={actions.completeAsset}
           onUploaded={(assetId, localUrl) => {
-            dispatch({ type: "setAsset", assetId });
+            dispatchCur({ type: "setAsset", assetId });
             setUploaded((current) => [
               ...current.filter((item) => item.id !== assetId),
               { id: assetId, assetType: assetKind, uploadStatus: "READY" },
@@ -307,46 +449,54 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
   );
 
   const responsePanel = (
-    <TypeCards
-      legend="Como o aluno responde"
-      name="responseType"
-      values={RESPONSE_TYPES_V2}
-      labels={RESPONSE_LABELS}
-      descriptions={RESPONSE_DESCRIPTIONS}
-      current={state.responseType}
-      disabled={readOnly}
-      onSelect={(value) => isResponseType(value) && dispatch({ type: "setResponseType", value })}
-    />
+    <div className={styles.builderStack}>
+      {questionList}
+      <TypeCards
+        legend="Como o aluno responde"
+        name="responseType"
+        values={pronunciation ? PRON_RESPONSE : RESPONSE_TYPES_V2}
+        labels={RESPONSE_LABELS}
+        descriptions={RESPONSE_DESCRIPTIONS}
+        current={cur.responseType}
+        disabled={readOnly}
+        onSelect={(value) =>
+          isResponseType(value) && dispatchCur({ type: "setResponseType", value })
+        }
+      />
+    </div>
   );
 
   const configPanel = (
     <div className={styles.builderStack}>
+      {questionPicker}
       <Textarea
         label="Enunciado"
         required
         rows={3}
         maxLength={600}
-        value={state.prompt}
-        onChange={(event) => set("prompt")(event.target.value)}
+        value={cur.prompt}
+        onChange={(event) => setItem("prompt")(event.target.value)}
       />
-      <Textarea
-        label="Instruções (opcional)"
-        rows={2}
-        maxLength={600}
-        value={state.instructions}
-        onChange={(event) => set("instructions")(event.target.value)}
-      />
+      {!v3 && (
+        <Textarea
+          label="Instruções (opcional)"
+          rows={2}
+          maxLength={600}
+          value={state.instructions}
+          onChange={(event) => set("instructions")(event.target.value)}
+        />
+      )}
 
-      {(state.responseType === "CHOICE_SINGLE" || state.responseType === "CHOICE_MULTI") && (
+      {(cur.responseType === "CHOICE_SINGLE" || cur.responseType === "CHOICE_MULTI") && (
         <fieldset className={styles.builderFieldset}>
           <legend>
-            {state.responseType === "CHOICE_SINGLE"
+            {cur.responseType === "CHOICE_SINGLE"
               ? "Alternativas (marque a correta)"
               : "Alternativas (marque todas as corretas)"}
           </legend>
-          {state.options.map((option) => {
+          {cur.options.map((option) => {
             const letter = option.id.toUpperCase();
-            const correct = state.correctOptionIds.includes(option.id);
+            const correct = cur.correctOptionIds.includes(option.id);
             return (
               <div key={option.id} className={styles.builderRow}>
                 <Input
@@ -354,27 +504,31 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
                   value={option.label}
                   maxLength={240}
                   onChange={(event) =>
-                    dispatch({ type: "setOptionLabel", id: option.id, label: event.target.value })
+                    dispatchCur({
+                      type: "setOptionLabel",
+                      id: option.id,
+                      label: event.target.value,
+                    })
                   }
                 />
-                {state.responseType === "CHOICE_SINGLE" ? (
+                {cur.responseType === "CHOICE_SINGLE" ? (
                   <Radio
                     name="correct-option"
                     label={`${letter} é a correta`}
                     checked={correct}
-                    onChange={() => dispatch({ type: "toggleCorrect", id: option.id })}
+                    onChange={() => dispatchCur({ type: "toggleCorrect", id: option.id })}
                   />
                 ) : (
                   <Checkbox
                     label={`${letter} é correta`}
                     checked={correct}
-                    onChange={() => dispatch({ type: "toggleCorrect", id: option.id })}
+                    onChange={() => dispatchCur({ type: "toggleCorrect", id: option.id })}
                   />
                 )}
                 <IconButton
                   label={`Remover alternativa ${letter}`}
-                  disabled={state.options.length <= MIN_OPTIONS}
-                  onClick={() => dispatch({ type: "removeOption", id: option.id })}
+                  disabled={cur.options.length <= MIN_OPTIONS}
+                  onClick={() => dispatchCur({ type: "removeOption", id: option.id })}
                 >
                   ×
                 </IconButton>
@@ -385,8 +539,8 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
             <Button
               type="button"
               variant="outline"
-              disabled={state.options.length >= MAX_OPTIONS}
-              onClick={() => dispatch({ type: "addOption" })}
+              disabled={cur.options.length >= MAX_OPTIONS}
+              onClick={() => dispatchCur({ type: "addOption" })}
             >
               Adicionar alternativa
             </Button>
@@ -394,35 +548,35 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
         </fieldset>
       )}
 
-      {state.responseType === "TRUE_FALSE" && (
+      {cur.responseType === "TRUE_FALSE" && (
         <>
           <Textarea
             label="Afirmação"
             required
             rows={2}
             maxLength={600}
-            value={state.statement}
-            onChange={(event) => set("statement")(event.target.value)}
+            value={cur.statement}
+            onChange={(event) => setItem("statement")(event.target.value)}
           />
           <fieldset className={styles.builderFieldset}>
             <legend>Resposta correta</legend>
             <Radio
               name="true-false"
               label="Verdadeiro"
-              checked={state.trueFalse === "true"}
-              onChange={() => set("trueFalse")("true")}
+              checked={cur.trueFalse === "true"}
+              onChange={() => setItem("trueFalse")("true")}
             />
             <Radio
               name="true-false"
               label="Falso"
-              checked={state.trueFalse === "false"}
-              onChange={() => set("trueFalse")("false")}
+              checked={cur.trueFalse === "false"}
+              onChange={() => setItem("trueFalse")("false")}
             />
           </fieldset>
         </>
       )}
 
-      {state.responseType === "CLOZE" && (
+      {cur.responseType === "CLOZE" && (
         <>
           <Textarea
             id="pb-cloze-text"
@@ -431,8 +585,8 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
             rows={4}
             maxLength={1000}
             message="Marque cada lacuna com {{1}}, {{2}} e assim por diante (até 10)."
-            value={state.clozeText}
-            onChange={(event) => set("clozeText")(event.target.value)}
+            value={cur.clozeText}
+            onChange={(event) => setItem("clozeText")(event.target.value)}
           />
           <div>
             <Button
@@ -441,7 +595,7 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
               disabled={blankIds.length >= 10}
               onClick={() => {
                 const next = Math.max(0, ...blankIds.map(Number)) + 1;
-                set("clozeText")(`${state.clozeText}${state.clozeText ? " " : ""}{{${next}}}`);
+                setItem("clozeText")(`${cur.clozeText}${cur.clozeText ? " " : ""}{{${next}}}`);
                 setFocusId("pb-cloze-text");
               }}
             >
@@ -463,16 +617,16 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
                     label={`Lacuna ${id}: respostas aceitas`}
                     message="Separe as variações por ponto e vírgula. Ex.: color; colour"
                     maxLength={500}
-                    value={state.blanks[id]?.accepted ?? ""}
+                    value={cur.blanks[id]?.accepted ?? ""}
                     onChange={(event) =>
-                      dispatch({ type: "setBlankAccepted", id, accepted: event.target.value })
+                      dispatchCur({ type: "setBlankAccepted", id, accepted: event.target.value })
                     }
                   />
                   <Checkbox
                     label={`Lacuna ${id}: diferenciar maiúsculas de minúsculas`}
-                    checked={state.blanks[id]?.caseSensitive ?? false}
+                    checked={cur.blanks[id]?.caseSensitive ?? false}
                     onChange={(event) =>
-                      dispatch({ type: "setBlankCase", id, caseSensitive: event.target.checked })
+                      dispatchCur({ type: "setBlankCase", id, caseSensitive: event.target.checked })
                     }
                   />
                 </div>
@@ -482,40 +636,40 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
         </>
       )}
 
-      {state.responseType === "ORDERING" && (
+      {cur.responseType === "ORDERING" && (
         <fieldset className={styles.builderFieldset}>
           <legend>Itens, escritos na ordem correta</legend>
           <p className={styles.muted}>
             O aluno verá os itens em outra ordem. Use as setas para ajustar a sequência correta.
           </p>
-          {state.orderItems.map((item, index) => (
+          {cur.orderItems.map((item, index) => (
             <div key={item.id} className={styles.builderRow}>
               <Input
                 label={`Item ${index + 1}`}
                 value={item.label}
                 maxLength={240}
                 onChange={(event) =>
-                  dispatch({ type: "setOrderItemLabel", id: item.id, label: event.target.value })
+                  dispatchCur({ type: "setOrderItemLabel", id: item.id, label: event.target.value })
                 }
               />
               <IconButton
                 label={`Subir item ${index + 1}`}
                 disabled={index === 0}
-                onClick={() => dispatch({ type: "moveOrderItem", index, direction: "up" })}
+                onClick={() => dispatchCur({ type: "moveOrderItem", index, direction: "up" })}
               >
                 ↑
               </IconButton>
               <IconButton
                 label={`Descer item ${index + 1}`}
-                disabled={index === state.orderItems.length - 1}
-                onClick={() => dispatch({ type: "moveOrderItem", index, direction: "down" })}
+                disabled={index === cur.orderItems.length - 1}
+                onClick={() => dispatchCur({ type: "moveOrderItem", index, direction: "down" })}
               >
                 ↓
               </IconButton>
               <IconButton
                 label={`Remover item ${index + 1}`}
-                disabled={state.orderItems.length <= MIN_ORDER_ITEMS}
-                onClick={() => dispatch({ type: "removeOrderItem", id: item.id })}
+                disabled={cur.orderItems.length <= MIN_ORDER_ITEMS}
+                onClick={() => dispatchCur({ type: "removeOrderItem", id: item.id })}
               >
                 ×
               </IconButton>
@@ -525,13 +679,64 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
             <Button
               type="button"
               variant="outline"
-              disabled={state.orderItems.length >= MAX_ORDER_ITEMS}
-              onClick={() => dispatch({ type: "addOrderItem" })}
+              disabled={cur.orderItems.length >= MAX_ORDER_ITEMS}
+              onClick={() => dispatchCur({ type: "addOrderItem" })}
             >
               Adicionar item
             </Button>
           </div>
         </fieldset>
+      )}
+
+      {v3 && (cur.responseType === "CHOICE_SINGLE" || cur.responseType === "CHOICE_MULTI") && (
+        <fieldset className={styles.builderFieldset}>
+          <legend>Explicação por alternativa (opcional)</legend>
+          <p className={styles.muted}>O aluno vê a explicação da alternativa que escolheu.</p>
+          {cur.options.map((option) => (
+            <Textarea
+              key={option.id}
+              label={`Explicação da alternativa ${option.id.toUpperCase()}`}
+              rows={2}
+              maxLength={600}
+              value={curItem?.optionFeedback[option.id] ?? ""}
+              onChange={(event) =>
+                dispatchCur({
+                  type: "setOptionFeedback",
+                  optionId: option.id,
+                  value: event.target.value,
+                })
+              }
+            />
+          ))}
+        </fieldset>
+      )}
+
+      {v3 && manual && (
+        <>
+          <Select
+            label="Tempo de preparo"
+            value={String(curItem?.planningSeconds ?? 0)}
+            message="Contagem regressiva antes de responder. O aluno pode pular."
+            options={PLANNING_SECONDS.map((value) => ({
+              value: String(value),
+              label: PLANNING_LABELS[value],
+            }))}
+            onChange={(event) =>
+              dispatchCur({
+                type: "setPlanning",
+                value: Number(event.target.value) as PlanningSeconds,
+              })
+            }
+          />
+          <fieldset className={styles.builderFieldset}>
+            <legend>Critérios que o aluno verá</legend>
+            <ul className={styles.builderList}>
+              {rubricDimensionsFor(state.skill, cur.responseType).map((dimension) => (
+                <li key={dimension}>{RUBRIC_LABELS[dimension]}</li>
+              ))}
+            </ul>
+          </fieldset>
+        </>
       )}
 
       {manual ? (
@@ -547,15 +752,15 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
             label="Quando acertar"
             rows={2}
             maxLength={600}
-            value={state.feedbackCorrect}
-            onChange={(event) => set("feedbackCorrect")(event.target.value)}
+            value={cur.feedbackCorrect}
+            onChange={(event) => setItem("feedbackCorrect")(event.target.value)}
           />
           <Textarea
             label="Quando errar"
             rows={2}
             maxLength={600}
-            value={state.feedbackIncorrect}
-            onChange={(event) => set("feedbackIncorrect")(event.target.value)}
+            value={cur.feedbackIncorrect}
+            onChange={(event) => setItem("feedbackIncorrect")(event.target.value)}
           />
         </fieldset>
       )}
@@ -574,6 +779,32 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
         {...(errors.title ? { message: errors.title } : {})}
         onChange={(event) => set("title")(event.target.value)}
       />
+      {v3 && (
+        <>
+          <Input
+            label="Objetivo"
+            required
+            maxLength={200}
+            message="Complete a frase: Ao final você consegue…"
+            value={state.objective}
+            onChange={(event) => set("objective")(event.target.value)}
+          />
+          <Checkbox
+            label="Pedir confiança do aluno"
+            checked={state.askConfidence}
+            onChange={(event) =>
+              dispatch({ type: "setAskConfidence", value: event.target.checked })
+            }
+          />
+          <Textarea
+            label="Instruções (opcional)"
+            rows={2}
+            maxLength={600}
+            value={state.instructions}
+            onChange={(event) => set("instructions")(event.target.value)}
+          />
+        </>
+      )}
       <Select
         label="Habilidade"
         required
@@ -660,7 +891,20 @@ export function PracticeBuilder({ detail, scope, stimulusUrl, actions }: Practic
   const previewPanel = (
     <div className={styles.builderStack}>
       <p className={styles.muted}>Veja e teste a atividade como o aluno. Nada é salvo aqui.</p>
-      {report.previewContent ? (
+      {v3 && report.previewContentV3 ? (
+        <Card variant="soft">
+          <PracticeSessionPlayer
+            key={snapshot(state)}
+            mode="preview"
+            content={report.previewContentV3}
+            previewKeys={report.previewKeys}
+            skill={state.skill}
+            stimulusUrls={Object.fromEntries(
+              state.items.map((item) => [item.id, urlFor(item.assetId)]),
+            )}
+          />
+        </Card>
+      ) : !v3 && report.previewContent ? (
         <Card variant="soft">
           <PracticePlayer
             key={snapshot(state)}

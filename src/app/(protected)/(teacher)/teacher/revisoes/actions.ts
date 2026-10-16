@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { PRACTICE_SKILLS } from "@/modules/domain";
 import { RUBRIC_LEVELS, rubricDimensionsFor } from "@/modules/practice/domain/rubric";
 import { assertRole } from "@/server/auth/guards";
-import { createSupabaseServerClient } from "@/server/supabase/server";
+import { finalizeTeacherPracticeReview } from "@/server/teacher-operations/practice-commands";
 import { getPracticeAudioPlayback } from "@/server/practice/audio";
 export async function reviewPracticeAction(form: FormData) {
   await assertRole("TEACHER");
@@ -20,14 +20,19 @@ export async function reviewPracticeAction(form: FormData) {
     ]),
   );
   const feedback = z.string().trim().min(1).max(4000).parse(form.get("feedback"));
-  const client = await createSupabaseServerClient();
-  const { error } = await client.rpc("finalize_practice_review", {
-    p_attempt: id,
-    p_ratings: ratings,
-    p_feedback: feedback,
-    p_rubric_version: "v1",
-  });
-  if (error) redirect(`/teacher/revisoes/${id}?save=error`);
+  // v3 attempts review one manual item at a time; the item id selects the finalize_practice_review overload.
+  const itemId = z
+    .string()
+    .regex(/^[a-z0-9-]{1,40}$/)
+    .nullish()
+    .parse(form.get("itemId") || null);
+  let failed = false;
+  try {
+    await finalizeTeacherPracticeReview({ attemptId: id, itemId, ratings, feedback });
+  } catch {
+    failed = true;
+  }
+  if (failed) redirect(`/teacher/revisoes/${id}?save=error`);
   revalidatePath("/teacher/revisoes");
   revalidatePath("/pratica");
   redirect(`/teacher/revisoes/${id}?save=success`);

@@ -12,7 +12,23 @@ import {
   type ResponseTypeV2,
   type StimulusTypeV2,
 } from "@/modules/practice/domain/content-v2";
+import {
+  PLANNING_SECONDS,
+  PRACTICE_ITEM_ID_PATTERN,
+  PRACTICE_V3_MAX_ITEMS,
+  itemKeyErrors,
+  practiceContentV3Schema,
+  pronunciationTemplateErrors,
+  type PracticeContentV3,
+  type PracticeItemKeys,
+} from "@/modules/practice/domain/content-v3";
 import { clozeBlankIds } from "@/modules/practice/ui/practice-player-logic";
+
+import type {
+  PracticeContentV3Draft,
+  PracticeItemKeysDraft,
+  PracticeItemV3Draft,
+} from "../domain/practice-draft-v3";
 
 /**
  * Pure logic behind the guided Teacher practice builder (Stage 12A). No React, no I/O: unit tested in
@@ -171,6 +187,45 @@ export interface BuilderState {
   orderItems: ChoiceDraft[];
   feedbackCorrect: string;
   feedbackIncorrect: string;
+  /** 2 = legacy single-question practice (opens/duplicates as before); 3 = multi-question practice. */
+  version: 2 | 3;
+  /** v3 only: "Ao final você consegue…". */
+  objective: string;
+  /** v3 only: ask LOW/HIGH confidence per objective item. */
+  askConfidence: boolean;
+  /** v3 only: the questions. The per-question fields above are unused in v3. */
+  items: ItemDraft[];
+}
+
+export type PlanningSeconds = (typeof PLANNING_SECONDS)[number];
+
+/** Per-question fields: the same names/semantics as the v2 fields on `BuilderState`. */
+export const ITEM_FIELD_KEYS = [
+  "stimulusType",
+  "stimulusText",
+  "assetId",
+  "alt",
+  "transcript",
+  "prompt",
+  "responseType",
+  "options",
+  "correctOptionIds",
+  "statement",
+  "trueFalse",
+  "clozeText",
+  "blanks",
+  "orderItems",
+  "feedbackCorrect",
+  "feedbackIncorrect",
+] as const;
+export type ItemFields = Pick<BuilderState, (typeof ITEM_FIELD_KEYS)[number]>;
+
+export interface ItemDraft extends ItemFields {
+  /** Stable slug generated once; never regenerated on edit. */
+  id: string;
+  planningSeconds: PlanningSeconds;
+  /** Per-option explanation (CHOICE_SINGLE / CHOICE_MULTI), keyed by option id. */
+  optionFeedback: Record<string, string>;
 }
 
 function emptyOptions(count: number): ChoiceDraft[] {
@@ -209,12 +264,53 @@ export function initialBuilderState(courseId = ""): BuilderState {
     ],
     feedbackCorrect: "",
     feedbackIncorrect: "",
+    version: 2,
+    objective: "",
+    askConfidence: false,
+    items: [],
+  };
+}
+
+const ITEM_ID_ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+/** Slug-like id (`q-xxxxxx`) that matches PRACTICE_ITEM_ID_PATTERN and is unique among `existing`. */
+export function generateItemId(existing: readonly string[], random: () => number = Math.random) {
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    let suffix = "";
+    for (let index = 0; index < 6; index += 1) {
+      suffix += ITEM_ID_ALPHABET[Math.floor(random() * ITEM_ID_ALPHABET.length)] ?? "a";
+    }
+    const id = `q-${suffix}`;
+    if (!existing.includes(id)) return id;
+  }
+  return `q-${existing.length + 1}`;
+}
+
+export function pickItemFields(source: ItemFields): ItemFields {
+  return Object.fromEntries(ITEM_FIELD_KEYS.map((key) => [key, source[key]])) as ItemFields;
+}
+
+export function emptyItem(id: string): ItemDraft {
+  return {
+    ...pickItemFields(initialBuilderState()),
+    id,
+    planningSeconds: 0,
+    optionFeedback: {},
+  };
+}
+
+/** A new practice is always v3: one empty question, confidence off. */
+export function initialBuilderStateV3(courseId = "", itemId = "q-1"): BuilderState {
+  return {
+    ...initialBuilderState(courseId),
+    version: 3,
+    items: [emptyItem(itemId)],
   };
 }
 
 export type ScalarField = Exclude<
   keyof BuilderState,
-  "options" | "correctOptionIds" | "blanks" | "orderItems"
+  "options" | "correctOptionIds" | "blanks" | "orderItems" | "items" | "askConfidence" | "version"
 >;
 
 export type BuilderAction =
@@ -233,7 +329,29 @@ export type BuilderAction =
   | { type: "setBlankAccepted"; id: string; accepted: string }
   | { type: "setBlankCase"; id: string; caseSensitive: boolean }
   | { type: "setAsset"; assetId: string }
-  | { type: "hydrate"; state: BuilderState };
+  | { type: "hydrate"; state: BuilderState }
+  | { type: "setAskConfidence"; value: boolean }
+  | { type: "addItem"; id: string }
+  | { type: "removeItem"; id: string }
+  | { type: "moveItem"; index: number; direction: "up" | "down" }
+  | { type: "itemAction"; id: string; action: ItemAction }
+  | { type: "applyPronunciationTemplate" };
+
+/** Edits of one question: the v2 field actions plus the v3-only ones. */
+export type ItemAction =
+  | Exclude<
+      BuilderAction,
+      | { type: "hydrate" }
+      | { type: "setCourse" }
+      | { type: "setAskConfidence" }
+      | { type: "addItem" }
+      | { type: "removeItem" }
+      | { type: "moveItem" }
+      | { type: "itemAction" }
+      | { type: "applyPronunciationTemplate" }
+    >
+  | { type: "setPlanning"; value: PlanningSeconds }
+  | { type: "setOptionFeedback"; optionId: string; value: string };
 
 function firstUnusedId(used: readonly string[], pool: readonly string[]): string | null {
   return pool.find((id) => !used.includes(id)) ?? null;
@@ -241,10 +359,91 @@ function firstUnusedId(used: readonly string[], pool: readonly string[]): string
 
 const ORDER_ID_POOL = Array.from({ length: MAX_ORDER_ITEMS }, (_, i) => `item-${i + 1}`);
 
+const MANUAL_RESPONSES: readonly ResponseTypeV2[] = ["WRITTEN", "SPOKEN"];
+
+/** Reuses the v2 reducer on the per-question fields so both versions share one set of rules. */
+export function itemReducer(item: ItemDraft, action: ItemAction): ItemDraft {
+  if (action.type === "setPlanning") {
+    return MANUAL_RESPONSES.includes(item.responseType)
+      ? { ...item, planningSeconds: action.value }
+      : item;
+  }
+  if (action.type === "setOptionFeedback") {
+    const optionFeedback = { ...item.optionFeedback };
+    if (action.value === "") delete optionFeedback[action.optionId];
+    else optionFeedback[action.optionId] = action.value;
+    return { ...item, optionFeedback };
+  }
+  const merged = builderReducer(
+    { ...initialBuilderState(), ...pickItemFields(item) },
+    action as BuilderAction,
+  );
+  const next: ItemDraft = { ...item, ...pickItemFields(merged) };
+  const choice = next.responseType === "CHOICE_SINGLE" || next.responseType === "CHOICE_MULTI";
+  const optionIds = new Set(next.options.map((option) => option.id));
+  next.optionFeedback = choice
+    ? Object.fromEntries(Object.entries(next.optionFeedback).filter(([id]) => optionIds.has(id)))
+    : {};
+  if (!MANUAL_RESPONSES.includes(next.responseType)) next.planningSeconds = 0;
+  return next;
+}
+
 export function builderReducer(state: BuilderState, action: BuilderAction): BuilderState {
   switch (action.type) {
     case "hydrate":
       return action.state;
+    case "setAskConfidence":
+      return { ...state, askConfidence: action.value };
+    case "addItem":
+      if (
+        state.items.length >= PRACTICE_V3_MAX_ITEMS ||
+        !PRACTICE_ITEM_ID_PATTERN.test(action.id) ||
+        state.items.some((item) => item.id === action.id)
+      ) {
+        return state;
+      }
+      return { ...state, items: [...state.items, emptyItem(action.id)] };
+    case "removeItem":
+      if (state.items.length <= 1) return state;
+      return { ...state, items: state.items.filter((item) => item.id !== action.id) };
+    case "moveItem": {
+      const target = action.direction === "up" ? action.index - 1 : action.index + 1;
+      if (
+        action.index < 0 ||
+        action.index >= state.items.length ||
+        target < 0 ||
+        target >= state.items.length
+      ) {
+        return state;
+      }
+      const next = [...state.items];
+      const [moved] = next.splice(action.index, 1);
+      next.splice(target, 0, moved!);
+      return { ...state, items: next };
+    }
+    case "itemAction":
+      return {
+        ...state,
+        items: state.items.map((item) =>
+          item.id === action.id ? itemReducer(item, action.action) : item,
+        ),
+      };
+    case "applyPronunciationTemplate":
+      return {
+        ...state,
+        items: state.items.map((item) => ({
+          ...item,
+          assetId: item.stimulusType === "AUDIO" ? item.assetId : "",
+          stimulusType: "AUDIO",
+          stimulusText: "",
+          alt: "",
+          responseType: "SPOKEN",
+          correctOptionIds: [],
+          optionFeedback: {},
+          feedbackCorrect: "",
+          feedbackIncorrect: "",
+        })),
+      };
     case "set":
       return { ...state, [action.field]: action.value } as BuilderState;
     case "setStimulusType":
@@ -371,7 +570,9 @@ function nonEmptyOptions(options: readonly ChoiceDraft[]) {
   return options.map((o) => ({ id: o.id, label: o.label.trim() }));
 }
 
-export function buildContent(state: BuilderState): PracticeContentV2Draft {
+export function buildItemContent(
+  state: ItemFields,
+): Pick<PracticeContentV2Draft, "stimulus" | "prompt" | "response"> {
   const stimulus: PracticeContentV2Draft["stimulus"] = { type: state.stimulusType };
   if (state.stimulusType === "TEXT") stimulus.text = state.stimulusText.trim();
   if (state.stimulusType === "IMAGE") {
@@ -405,17 +606,16 @@ export function buildContent(state: BuilderState): PracticeContentV2Draft {
       response = { type: state.responseType };
   }
 
-  const content: PracticeContentV2Draft = {
-    version: 2,
-    stimulus,
-    prompt: state.prompt.trim(),
-    response,
-  };
+  return { stimulus, prompt: state.prompt.trim(), response };
+}
+
+export function buildContent(state: BuilderState): PracticeContentV2Draft {
+  const content: PracticeContentV2Draft = { version: 2, ...buildItemContent(state) };
   if (state.instructions.trim()) content.instructions = state.instructions.trim();
   return content;
 }
 
-export function buildAnswerKey(state: BuilderState): AnswerKeyDraft | null {
+export function buildAnswerKey(state: ItemFields): AnswerKeyDraft | null {
   switch (state.responseType) {
     case "CHOICE_SINGLE": {
       const id = state.correctOptionIds.find((c) => state.options.some((o) => o.id === c));
@@ -445,7 +645,7 @@ export function buildAnswerKey(state: BuilderState): AnswerKeyDraft | null {
   }
 }
 
-export function buildFeedback(state: BuilderState): PracticeFeedbackV2 | null {
+export function buildFeedback(state: ItemFields): PracticeFeedbackV2 | null {
   if (state.responseType === "WRITTEN" || state.responseType === "SPOKEN") return null;
   const feedback: PracticeFeedbackV2 = {};
   if (state.feedbackCorrect.trim()) feedback.correct = state.feedbackCorrect.trim();
@@ -461,10 +661,57 @@ export function toPayload(state: BuilderState): BuilderPayload {
   };
 }
 
+// ---------------------------------------------------------------------------------------------------------
+// v3 (multi-question) payloads
+// ---------------------------------------------------------------------------------------------------------
+export function buildItemFeedback(item: ItemDraft): PracticeItemKeysDraft[string]["feedback"] {
+  const feedback: NonNullable<PracticeItemKeysDraft[string]["feedback"]> = {
+    ...(buildFeedback(item) ?? {}),
+  };
+  if (item.responseType === "CHOICE_SINGLE" || item.responseType === "CHOICE_MULTI") {
+    const options = Object.fromEntries(
+      item.options
+        .map((option) => [option.id, (item.optionFeedback[option.id] ?? "").trim()] as const)
+        .filter(([, text]) => text.length > 0),
+    );
+    if (Object.keys(options).length > 0) feedback.options = options;
+  }
+  return feedback;
+}
+
+export function buildItemV3(item: ItemDraft): PracticeItemV3Draft {
+  const built: PracticeItemV3Draft = { id: item.id, ...buildItemContent(item) };
+  if (MANUAL_RESPONSES.includes(item.responseType)) built.planningSeconds = item.planningSeconds;
+  return built;
+}
+
+export function buildContentV3(state: BuilderState): PracticeContentV3Draft {
+  const content: PracticeContentV3Draft = {
+    version: 3,
+    objective: state.objective.trim(),
+    askConfidence: state.askConfidence,
+    items: state.items.map(buildItemV3),
+  };
+  if (state.instructions.trim()) content.instructions = state.instructions.trim();
+  return content;
+}
+
+/** `p_item_keys` of `teacher_practice_save_v3`: one entry per question; manual items carry a null key. */
+export function buildItemKeys(state: BuilderState): PracticeItemKeysDraft {
+  return Object.fromEntries(
+    state.items.map((item) => [
+      item.id,
+      {
+        answerKey: MANUAL_RESPONSES.includes(item.responseType) ? null : buildAnswerKey(item),
+        feedback: buildItemFeedback(item) ?? {},
+      },
+    ]),
+  );
+}
+
 /** Field names exactly as `savePracticeAction` reads them. JSON fields are stringified; null becomes "". */
 export function toFormEntries(state: BuilderState): [name: string, value: string][] {
-  const payload = toPayload(state);
-  return [
+  const shared: [string, string][] = [
     ["id", state.id ?? ""],
     ["title", state.title.trim()],
     ["skill", state.skill],
@@ -474,6 +721,19 @@ export function toFormEntries(state: BuilderState): [name: string, value: string
     ["courseId", state.courseId],
     ["relatedModuleId", state.moduleId],
     ["relatedLessonId", state.lessonId],
+  ];
+  if (state.version === 3) {
+    return [
+      ...shared,
+      ["content", JSON.stringify(buildContentV3(state))],
+      ["answerKey", ""],
+      ["feedback", ""],
+      ["itemKeys", JSON.stringify(buildItemKeys(state))],
+    ];
+  }
+  const payload = toPayload(state);
+  return [
+    ...shared,
     ["content", JSON.stringify(payload.content)],
     ["answerKey", payload.answerKey ? JSON.stringify(payload.answerKey) : ""],
     ["feedback", payload.feedback ? JSON.stringify(payload.feedback) : ""],
@@ -490,33 +750,27 @@ export interface PracticeDetailLike {
   courseId: string | null;
   relatedModuleId: string | null;
   relatedLessonId: string | null;
-  content: PracticeContentV2Draft;
+  content: PracticeContentV2Draft | PracticeContentV3Draft;
   answerKey: AnswerKeyDraft;
   feedback: PracticeFeedbackV2;
+  /** v3 only: private keys/feedback per question id. */
+  itemKeys?: PracticeItemKeysDraft | null | undefined;
 }
 
-export function stateFromDetail(detail: PracticeDetailLike): BuilderState {
-  const base = initialBuilderState(detail.courseId ?? "");
-  const { content, answerKey, feedback } = detail;
-  const state: BuilderState = {
-    ...base,
-    id: detail.id,
-    title: detail.title,
-    skill: detail.skill,
-    cefrTarget: (CEFR_LEVELS as readonly string[]).includes(detail.cefrTarget ?? "")
-      ? (detail.cefrTarget as CefrLevel)
-      : "",
-    difficulty: detail.difficulty ?? "",
-    estimatedMinutes: String(detail.estimatedMinutes),
-    moduleId: detail.relatedModuleId ?? "",
-    lessonId: detail.relatedLessonId ?? "",
+/** Builder fields of one stored question (v2 root or v3 item) with its key and feedback. */
+function itemFieldsFrom(
+  content: Pick<PracticeContentV2Draft, "stimulus" | "prompt" | "response">,
+  answerKey: AnswerKeyDraft,
+  feedback: { correct?: string | undefined; incorrect?: string | undefined },
+): ItemFields {
+  const state: ItemFields = {
+    ...pickItemFields(initialBuilderState()),
     stimulusType: content.stimulus.type,
     stimulusText: content.stimulus.text ?? "",
     assetId: content.stimulus.assetId ?? "",
     alt: content.stimulus.alt ?? "",
     transcript: content.stimulus.transcript ?? "",
     prompt: content.prompt,
-    instructions: content.instructions ?? "",
     responseType: content.response.type,
     feedbackCorrect: feedback.correct ?? "",
     feedbackIncorrect: feedback.incorrect ?? "",
@@ -551,6 +805,47 @@ export function stateFromDetail(detail: PracticeDetailLike): BuilderState {
   return state;
 }
 
+export function stateFromDetail(detail: PracticeDetailLike): BuilderState {
+  const base = initialBuilderState(detail.courseId ?? "");
+  const { content } = detail;
+  const shared: BuilderState = {
+    ...base,
+    id: detail.id,
+    title: detail.title,
+    skill: detail.skill,
+    cefrTarget: (CEFR_LEVELS as readonly string[]).includes(detail.cefrTarget ?? "")
+      ? (detail.cefrTarget as CefrLevel)
+      : "",
+    difficulty: detail.difficulty ?? "",
+    estimatedMinutes: String(detail.estimatedMinutes),
+    moduleId: detail.relatedModuleId ?? "",
+    lessonId: detail.relatedLessonId ?? "",
+    instructions: content.instructions ?? "",
+  };
+  if ("items" in content) {
+    return {
+      ...shared,
+      version: 3,
+      objective: content.objective,
+      askConfidence: content.askConfidence,
+      items: content.items.map((item): ItemDraft => {
+        const stored = detail.itemKeys?.[item.id];
+        const feedback = stored?.feedback ?? {};
+        return {
+          ...itemFieldsFrom(item, stored?.answerKey ?? {}, feedback),
+          id: item.id,
+          planningSeconds: item.planningSeconds ?? 0,
+          optionFeedback: { ...(feedback.options ?? {}) },
+        };
+      }),
+    };
+  }
+  return {
+    ...shared,
+    ...itemFieldsFrom(content, detail.answerKey, detail.feedback),
+  };
+}
+
 export type MetaErrors = Partial<Record<"title" | "courseId" | "estimatedMinutes", string>>;
 
 /** Minimum needed to save a draft (the RPC requires a title, a course and a duration). */
@@ -572,12 +867,86 @@ export interface PublicationReport {
   warnings: string[];
   /** Parsed, publication-ready content for the preview; null when it does not validate yet. */
   previewContent: PracticeContentV2 | null;
+  /** v3: parsed content for the multi-question preview player; null when it does not validate yet. */
+  previewContentV3: PracticeContentV3 | null;
+  /** v3: Teacher keys for local grading in the preview (only set together with `previewContentV3`). */
+  previewKeys: PracticeItemKeys;
+}
+
+function publicationReportV3(
+  state: BuilderState,
+  assets: readonly PublicationAsset[],
+): PublicationReport {
+  const issues: string[] = [];
+  const add = (message: string) => {
+    if (!issues.includes(message)) issues.push(message);
+  };
+  const warnings: string[] = [];
+  const keys = buildItemKeys(state);
+  const flagged = new Set<number>();
+
+  if (!state.objective.trim()) add("Objetivo: informe o que o aluno consegue fazer ao final.");
+  else if (state.objective.trim().length > 200) add("Objetivo: use no máximo 200 caracteres.");
+  state.items.forEach((item, index) => {
+    const label = `Pergunta ${index + 1}`;
+    const check = validatePracticeForPublication({
+      skill: state.skill,
+      content: { version: 2, ...buildItemContent(item) },
+      answerKey: keys[item.id]?.answerKey ?? null,
+      assets,
+    });
+    for (const message of check.issues) {
+      flagged.add(index);
+      add(`${label}: ${message}`);
+    }
+    if (
+      (item.stimulusType === "AUDIO" || item.stimulusType === "VIDEO") &&
+      !item.transcript.trim()
+    ) {
+      warnings.push(
+        `${label}: sem transcrição. Alunos surdos ou com dificuldade de ouvir ficam sem acesso.`,
+      );
+    }
+  });
+
+  const content = buildContentV3(state);
+  const parsed = practiceContentV3Schema.safeParse(content);
+  if (parsed.success) {
+    for (const message of itemKeyErrors(parsed.data.items, keys as PracticeItemKeys)) {
+      const index = Number(/^Pergunta (\d+)/.exec(message)?.[1] ?? 0) - 1;
+      if (!flagged.has(index)) add(message);
+    }
+    if (state.skill === "PRONUNCIATION") {
+      for (const message of pronunciationTemplateErrors(parsed.data.items)) add(message);
+    }
+  } else if (issues.length === 0) {
+    add("Confira o objetivo e as perguntas: preencha os campos obrigatórios.");
+  }
+  if (!parsed.success && state.skill === "PRONUNCIATION") {
+    state.items.forEach((item, index) => {
+      if (item.stimulusType !== "AUDIO" || item.responseType !== "SPOKEN") {
+        add(`Pergunta ${index + 1}: pronúncia precisa de áudio modelo e resposta falada.`);
+      }
+    });
+  }
+  for (const message of Object.values(validateDraft(state))) add(message);
+
+  const ok = issues.length === 0;
+  return {
+    ok,
+    issues,
+    warnings,
+    previewContent: null,
+    previewContentV3: ok && parsed.success ? parsed.data : null,
+    previewKeys: ok ? (keys as PracticeItemKeys) : {},
+  };
 }
 
 export function publicationReport(
   state: BuilderState,
   assets: readonly PublicationAsset[],
 ): PublicationReport {
+  if (state.version === 3) return publicationReportV3(state, assets);
   const { content, answerKey } = toPayload(state);
   const check = validatePracticeForPublication({
     skill: state.skill,
@@ -601,6 +970,8 @@ export function publicationReport(
     issues,
     warnings,
     previewContent: parsed.success ? parsed.data : null,
+    previewContentV3: null,
+    previewKeys: {},
   };
 }
 

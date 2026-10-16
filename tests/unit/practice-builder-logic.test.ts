@@ -6,6 +6,8 @@ import {
   builderReducer,
   checkAssetFile,
   displayOrder,
+  generateItemId,
+  initialBuilderStateV3,
   initialBuilderState,
   parseAccepted,
   publicationReport,
@@ -209,5 +211,98 @@ describe("asset rules", () => {
     for (const mimes of Object.values(ASSET_MIME_TYPES)) {
       for (const mime of mimes) expect(source).toContain(`"${mime}"`);
     }
+  });
+});
+
+describe("builder v3 (multi-question)", () => {
+  const v3 = () =>
+    reduce(
+      initialBuilderStateV3(COURSE, "q-1"),
+      { type: "set", field: "title", value: "Mix" },
+      { type: "set", field: "objective", value: "usar o verbo to be" },
+      {
+        type: "itemAction",
+        id: "q-1",
+        action: { type: "set", field: "prompt", value: "Pick one" },
+      },
+      { type: "itemAction", id: "q-1", action: { type: "setOptionLabel", id: "a", label: "am" } },
+      { type: "itemAction", id: "q-1", action: { type: "setOptionLabel", id: "b", label: "is" } },
+      { type: "itemAction", id: "q-1", action: { type: "setOptionLabel", id: "c", label: "are" } },
+      { type: "itemAction", id: "q-1", action: { type: "setOptionLabel", id: "d", label: "be" } },
+      { type: "itemAction", id: "q-1", action: { type: "toggleCorrect", id: "b" } },
+      {
+        type: "itemAction",
+        id: "q-1",
+        action: { type: "setOptionFeedback", optionId: "b", value: "Terceira pessoa." },
+      },
+    );
+
+  it("adds, moves and removes questions keeping ids stable, bounded to 20", () => {
+    let s = reduce(
+      v3(),
+      { type: "addItem", id: "q-2" },
+      { type: "moveItem", index: 1, direction: "up" },
+    );
+    expect(s.items.map((i) => i.id)).toEqual(["q-2", "q-1"]);
+    s = reduce(s, { type: "removeItem", id: "q-2" }, { type: "removeItem", id: "q-1" });
+    expect(s.items.map((i) => i.id)).toEqual(["q-1"]);
+    for (let i = 0; i < 25; i += 1)
+      s = reduce(s, { type: "addItem", id: generateItemId(s.items.map((x) => x.id)) });
+    expect(s.items).toHaveLength(20);
+    expect(s.items.every((i) => /^[a-z0-9-]{1,40}$/.test(i.id))).toBe(true);
+  });
+
+  it("builds v3 content and item keys with option explanations", () => {
+    const entries = Object.fromEntries(toFormEntries(v3()));
+    expect(JSON.parse(entries.content!)).toMatchObject({ version: 3, askConfidence: false });
+    const keys = JSON.parse(entries.itemKeys!);
+    expect(keys["q-1"].answerKey).toEqual({ optionId: "b" });
+    expect(keys["q-1"].feedback.options).toEqual({ b: "Terceira pessoa." });
+    expect(publicationReport(v3(), []).ok).toBe(true);
+    expect(publicationReport(v3(), []).previewContentV3).not.toBeNull();
+  });
+
+  it("requires objective and blocks non-template pronunciation until the template is applied", () => {
+    const noObjective = reduce(v3(), { type: "set", field: "objective", value: "" });
+    expect(publicationReport(noObjective, []).ok).toBe(false);
+    const pron = reduce(v3(), { type: "set", field: "skill", value: "PRONUNCIATION" });
+    expect(publicationReport(pron, []).issues.join(" ")).toContain("pronúncia");
+    const templated = reduce(pron, { type: "applyPronunciationTemplate" });
+    expect(templated.items[0]!.responseType).toBe("SPOKEN");
+    expect(templated.items[0]!.stimulusType).toBe("AUDIO");
+  });
+
+  it("round-trips a stored v3 practice and keeps planning only for manual items", () => {
+    const s = reduce(
+      v3(),
+      { type: "addItem", id: "q-2" },
+      { type: "itemAction", id: "q-2", action: { type: "setResponseType", value: "WRITTEN" } },
+      { type: "itemAction", id: "q-2", action: { type: "setPlanning", value: 30 } },
+      { type: "itemAction", id: "q-1", action: { type: "setPlanning", value: 60 } },
+    );
+    const entries = Object.fromEntries(toFormEntries(s));
+    const content = JSON.parse(entries.content!);
+    expect(content.items[0].planningSeconds).toBeUndefined();
+    expect(content.items[1].planningSeconds).toBe(30);
+    const back = stateFromDetail({
+      id: "i",
+      title: "t",
+      skill: "GRAMMAR",
+      cefrTarget: null,
+      difficulty: null,
+      estimatedMinutes: 10,
+      courseId: COURSE,
+      relatedModuleId: null,
+      relatedLessonId: null,
+      content,
+      answerKey: {},
+      feedback: {},
+      itemKeys: JSON.parse(entries.itemKeys!),
+    });
+    expect(back.version).toBe(3);
+    expect(back.items.map((i) => i.id)).toEqual(["q-1", "q-2"]);
+    expect(back.items[0]!.correctOptionIds).toEqual(["b"]);
+    expect(back.items[0]!.optionFeedback).toEqual({ b: "Terceira pessoa." });
+    expect(back.items[1]!.planningSeconds).toBe(30);
   });
 });
