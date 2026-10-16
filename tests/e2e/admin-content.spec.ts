@@ -42,6 +42,13 @@ test.describe("Admin Content publication", () => {
       .eq("course_id", courseId)
       .eq("title", moduleTitle);
     if (error) throw error;
+    // Reordering also shifts the original module: restore it for the next run.
+    const { error: restoreError } = await db
+      .from("modules")
+      .update({ position: 1 })
+      .eq("course_id", courseId)
+      .eq("id", "41000000-0000-4000-8000-000000000001");
+    if (restoreError) throw restoreError;
   }
   test.beforeEach(cleanupModule);
   test.afterEach(cleanupModule);
