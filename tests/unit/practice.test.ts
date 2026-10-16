@@ -56,6 +56,9 @@ function history(activityId: string): PracticeHistoryItem {
     startedAt: "2026-09-30T12:00:00Z",
     submittedAt: "2026-09-30T12:05:00Z",
     evaluationStatus: "CORRECT",
+    attemptKind: "FULL",
+    metrics: null,
+    lastActivityAt: null,
   };
 }
 

@@ -15,8 +15,11 @@ import {
   type IconName,
 } from "@/components/ui";
 import {
+  practiceContentPrompt,
+  practiceHistoryDetail,
   practiceHistoryStatus,
   practiceSkillLabel,
+  type DueReview,
   type AssignedPractice,
   type AssignedPracticeStatus,
   type PracticeActivityItem,
@@ -26,7 +29,7 @@ import type { PracticeSkill } from "@/modules/domain";
 import { loadLearningCourses } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
-import { listCurrentStudentAssignedPractices, loadPracticePage } from "@/server/practice/practice";
+import { loadPracticePage } from "@/server/practice/practice";
 import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 
 import {
@@ -37,6 +40,7 @@ import {
   type LessonPracticeGroupView,
   type ModulePracticeSection,
 } from "./_practice/grouping";
+import { ExpandableTiles } from "./_practice/expandable-tiles";
 import { StartPracticeForm } from "./_practice/start-practice-form";
 
 interface PracticePageProps {
@@ -243,10 +247,13 @@ function ActivityTile({
   activity,
   index,
   locked,
+  extra = false,
 }: {
   activity: PracticeActivityItem;
   index: number;
   locked: boolean;
+  /** Featured lesson: tiles after the 3rd collapse on mobile. */
+  extra?: boolean;
 }) {
   const visual = practiceSkillVisual[activity.skill];
   return (
@@ -254,6 +261,7 @@ function ActivityTile({
       className="yas-practice-activity-card yas-reveal"
       style={reveal(index + 2)}
       data-tint={visual.tint}
+      data-extra={extra || undefined}
     >
       <div className="yas-practice-activity-top">
         <IconBadge icon={visual.icon} tone={visual.tint} shape="square" />
@@ -265,7 +273,7 @@ function ActivityTile({
       </div>
       <div className="yas-practice-activity-body">
         <h3>{activity.title}</h3>
-        <p>{activity.content.prompt}</p>
+        <p>{practiceContentPrompt(activity.content)}</p>
       </div>
       {locked ? (
         <p className="yas-practice-muted yas-practice-activity-locked">
@@ -301,18 +309,17 @@ function LessonPracticeGroup({
       <Icon name="arrow" size={16} />
     </Link>
   );
-  const tiles = (
-    <ul className="yas-practice-tiles">
-      {group.activities.map((activity, index) => (
-        <ActivityTile
-          key={activity.id}
-          activity={activity}
-          index={index}
-          locked={!group.reachableIds.has(activity.id)}
-        />
-      ))}
-    </ul>
-  );
+  const renderTiles = (collapseAfter: number) =>
+    group.activities.map((activity, index) => (
+      <ActivityTile
+        key={activity.id}
+        activity={activity}
+        index={index}
+        locked={!group.reachableIds.has(activity.id)}
+        extra={index >= collapseAfter}
+      />
+    ));
+  const tiles = <ul className="yas-practice-tiles">{renderTiles(Number.POSITIVE_INFINITY)}</ul>;
 
   if (featured) {
     const first = group.activities[0];
@@ -338,7 +345,7 @@ function LessonPracticeGroup({
             {lessonLink}
           </div>
         </header>
-        {tiles}
+        <ExpandableTiles extraCount={Math.max(0, count - 3)}>{renderTiles(3)}</ExpandableTiles>
       </article>
     );
   }
@@ -543,6 +550,50 @@ function AssignedPracticeSection({ assigned }: { assigned: AssignedPractice[] | 
   );
 }
 
+/** Revisão espaçada: perguntas que voltam hoje, por prática (sem relação com nível ou CEFR). */
+function ReviewTodayCard({
+  reviews,
+  count,
+  titles,
+}: {
+  reviews: DueReview[];
+  count: number;
+  titles: Map<string, string>;
+}) {
+  return (
+    <section
+      className="yas-practice-review-today yas-reveal"
+      style={reveal(2)}
+      aria-labelledby="practice-review-title"
+    >
+      <div>
+        <span className="yas-practice-eyebrow">Revisão espaçada</span>
+        <h2 id="practice-review-title">
+          Revisão de hoje: {count} {count === 1 ? "pergunta" : "perguntas"}
+        </h2>
+      </div>
+      <ul>
+        {reviews.slice(0, 3).map((review) => (
+          <li key={review.practiceActivityId}>
+            <span>
+              <strong>{titles.get(review.practiceActivityId) ?? "Prática"}</strong>
+              <small>
+                {review.dueCount} {review.dueCount === 1 ? "pergunta" : "perguntas"}
+              </small>
+            </span>
+            <StartPracticeForm
+              activity={{ id: review.practiceActivityId }}
+              label="Revisar"
+              soft
+              review
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function formatHistoryDate(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(
     new Date(value),
@@ -596,16 +647,19 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
   const {
     activities,
     catalog,
+    assigned,
     completedThisWeek,
+    dueReviewCount,
+    dueReviews,
+    firstTryCorrectThisWeek,
     history,
+    objectiveQuestionsThisWeek,
     estimatedMinutesThisWeek,
     reachedActivityIds,
     recommendation,
     selectedSkill,
   } = state.data;
-  const assigned: AssignedPractice[] | null = await listCurrentStudentAssignedPractices().catch(
-    () => null,
-  );
+  const reviewTitles = new Map(activities.map((item) => [item.id, item.title]));
   const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
   // Sem trilha carregada, tudo cai em "Prática livre": a página continua utilizável.
   const learning = await loadLearningCourses().catch(() => null);
@@ -649,6 +703,14 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
           />
         )}
 
+        {firstValue(params.semrevisao) === "1" && (
+          <Alert
+            tone="info"
+            title="Nada para revisar agora"
+            description="As perguntas voltam quando chegar a hora de revisar. Enquanto isso, pratique algo novo."
+          />
+        )}
+
         {requestedActivity && (
           <Card className="yas-practice-requested">
             <IconBadge
@@ -658,7 +720,9 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
             />
             <div>
               <h2 className="yas-card-title">{requestedActivity.title}</h2>
-              <p className="yas-practice-muted">{requestedActivity.content.prompt}</p>
+              <p className="yas-practice-muted">
+                {practiceContentPrompt(requestedActivity.content)}
+              </p>
             </div>
             <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
           </Card>
@@ -671,14 +735,36 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
               style={reveal(1)}
               kicker="Prática de hoje"
               kickerIcon="target"
-              title={`${recommendation.activity.estimatedMinutes} minutos para praticar agora`}
+              title={
+                recommendation.reason === "DUE_REVIEW"
+                  ? `Revisão de hoje: ${dueReviewCount} ${dueReviewCount === 1 ? "pergunta" : "perguntas"}`
+                  : recommendation.reason === "RESUME_ATTEMPT"
+                    ? "Continue de onde parou"
+                    : `${recommendation.activity.estimatedMinutes} minutos para praticar agora`
+              }
               photo="/brand/hero-practice.webp"
               actions={
-                <StartPracticeForm
-                  activity={recommendation.activity}
-                  label="Começar prática"
-                  large
-                />
+                recommendation.reason === "RESUME_ATTEMPT" && recommendation.attemptId ? (
+                  <Link
+                    className="yas-button yas-button--primary yas-button--lg"
+                    href={`/pratica/${recommendation.attemptId}`}
+                  >
+                    Continuar →
+                  </Link>
+                ) : recommendation.reason === "DUE_REVIEW" ? (
+                  <StartPracticeForm
+                    activity={recommendation.activity}
+                    label="Começar revisão"
+                    large
+                    review
+                  />
+                ) : (
+                  <StartPracticeForm
+                    activity={recommendation.activity}
+                    label="Começar prática"
+                    large
+                  />
+                )
               }
             >
               <div className="yas-practice-hero-chips">
@@ -739,9 +825,33 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                   </span>
                 </span>
               </div>
+              <div>
+                <IconBadge icon="target" tone="blue" />
+                <span>
+                  <strong>
+                    {objectiveQuestionsThisWeek > 0
+                      ? `${firstTryCorrectThisWeek} de ${objectiveQuestionsThisWeek}`
+                      : "—"}
+                  </strong>
+                  <span>acertos na 1ª tentativa (7 dias)</span>
+                </span>
+              </div>
+              <div>
+                <IconBadge icon="redo" />
+                <span>
+                  <strong>{dueReviewCount}</strong>
+                  <span>
+                    {dueReviewCount === 1 ? "pergunta para revisar" : "perguntas para revisar"}
+                  </span>
+                </span>
+              </div>
             </div>
           </Card>
         </div>
+
+        {dueReviewCount > 0 && recommendation?.reason !== "DUE_REVIEW" && (
+          <ReviewTodayCard reviews={dueReviews} count={dueReviewCount} titles={reviewTitles} />
+        )}
 
         <div className="yas-reveal" style={reveal(3)}>
           <AssignedPracticeSection assigned={assigned} />
@@ -808,13 +918,22 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                   <div className="yas-practice-lessons">
                     {featured && <LessonPracticeGroup group={featured} featured open />}
                     <PracticeLibraryTeaser groups={groups} activities={activities} />
+                    <a className="yas-practice-history-jump" href="#historico">
+                      Ver histórico recente
+                      <Icon name="down" size={16} />
+                    </a>
                   </div>
                 )}
               </ViewTransition>
             )}
           </section>
 
-          <aside className="yas-reveal" style={reveal(5)} aria-labelledby="practice-history-title">
+          <aside
+            id="historico"
+            className="yas-reveal"
+            style={reveal(5)}
+            aria-labelledby="practice-history-title"
+          >
             <Card className="yas-practice-history-card">
               <div className="yas-card-header">
                 <h2 className="yas-card-title" id="practice-history-title">
@@ -845,8 +964,10 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                         >
                           <strong>{item.activityTitle}</strong>
                           <small>
+                            {item.attemptKind === "REVIEW" && "Revisão · "}
                             {formatHistoryDate(item.submittedAt ?? item.startedAt)} ·{" "}
                             {item.status === "IN_PROGRESS" ? "Continuar" : "Ver resultado"}
+                            {practiceHistoryDetail(item) && ` · ${practiceHistoryDetail(item)}`}
                           </small>
                         </Link>
                       )}

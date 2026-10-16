@@ -32,12 +32,17 @@ export function PracticeResultHero({
   feedback,
   titleId,
   activityTitle,
+  title,
+  lead,
   children,
 }: {
   status: OutcomeStatus;
   feedback?: string | null | undefined;
   titleId?: string;
   activityTitle?: string;
+  /** Overrides the single-answer title (multi-question summaries). */
+  title?: string;
+  lead?: string;
   children?: ReactNode;
 }) {
   const visual = VISUAL[status];
@@ -47,8 +52,8 @@ export function PracticeResultHero({
         <Icon name={visual.icon} size={30} />
       </span>
       {activityTitle && <span className="yas-practice-outcome-kicker">{activityTitle}</span>}
-      <h2 id={titleId}>{outcomeTitle(status)}</h2>
-      <p className="yas-practice-outcome-lead">{visual.lead}</p>
+      <h2 id={titleId}>{title ?? outcomeTitle(status)}</h2>
+      <p className="yas-practice-outcome-lead">{lead ?? visual.lead}</p>
       {feedback && (
         <div className="yas-practice-outcome-feedback">
           <span>

@@ -3,6 +3,12 @@ import { z } from "zod";
 import { PRACTICE_SKILLS, type PracticeSkill } from "@/modules/domain";
 
 import { practiceContentV2StudentSchema, type PracticeContentV2Student } from "./content-v2";
+import {
+  practiceContentV3StudentSchema,
+  type PracticeAttemptMetrics,
+  type PracticeContentV3Student,
+} from "./content-v3";
+import { sortDueReviews, type DueReview } from "./spaced-review";
 
 const optionSchema = z
   .object({
@@ -38,13 +44,20 @@ export const practiceContentSchema = z.discriminatedUnion("kind", [
 /** Legacy (kind-based) content. Admin content authoring still uses this schema only. */
 export type LegacyPracticeContent = z.infer<typeof practiceContentSchema>;
 
-/** Student-facing read schema: legacy kinds plus content v2 (never contains an answer key). */
+/** Student-facing read schema: legacy kinds plus content v2/v3 (never contains an answer key). */
 export const practiceReadContentSchema = z.union([
   practiceContentSchema,
   practiceContentV2StudentSchema,
+  practiceContentV3StudentSchema,
 ]);
 
-export type PracticeContent = LegacyPracticeContent | PracticeContentV2Student;
+export type PracticeContent =
+  LegacyPracticeContent | PracticeContentV2Student | PracticeContentV3Student;
+
+/** Short text that describes the practice in lists (v3 has an objective instead of a prompt). */
+export function practiceContentPrompt(content: PracticeContent): string {
+  return content.kind === "V3" ? content.objective : content.prompt;
+}
 export type EvaluationMode = PracticeContent["evaluationMode"];
 export type PracticeAvailability = "DETERMINISTIC" | "MANUAL_PENDING" | "UNSUPPORTED";
 
@@ -97,7 +110,11 @@ export interface PracticeResultView {
   feedback: string | null;
   evaluationStatus: "CORRECT" | "INCORRECT" | "PENDING_MANUAL" | "NOT_SCORED" | "MANUAL_REVIEWED";
   createdAt: string;
+  /** v3 attempts only (`practice_results.metrics`); null for v1/v2 or before the column exists. */
+  metrics: PracticeAttemptMetrics | null;
 }
+
+export type PracticeAttemptKind = "FULL" | "REVIEW";
 
 export interface PracticeAttemptView {
   id: string;
@@ -106,6 +123,9 @@ export interface PracticeAttemptView {
   startedAt: string;
   submittedAt: string | null;
   result: PracticeResultView | null;
+  attemptKind: PracticeAttemptKind;
+  /** REVIEW attempts run only these item ids; null means every item. */
+  itemIds: string[] | null;
 }
 
 export interface PracticeHistoryItem {
@@ -117,6 +137,10 @@ export interface PracticeHistoryItem {
   startedAt: string;
   submittedAt: string | null;
   evaluationStatus: PracticeResultView["evaluationStatus"] | null;
+  attemptKind: PracticeAttemptKind;
+  metrics: PracticeAttemptMetrics | null;
+  /** Last answer saved on the attempt (ISO); null when unknown. */
+  lastActivityAt: string | null;
 }
 
 export interface PracticeSkillCatalogItem {
@@ -208,7 +232,9 @@ export function buildPracticeCatalog(
 }
 
 export type RecommendationReason =
+  | "RESUME_ATTEMPT"
   | "ASSIGNED_DUE"
+  | "DUE_REVIEW"
   | "RECENT_LESSON"
   | "LESS_PRACTICED"
   | "QUICK_DETERMINISTIC_START"
@@ -218,23 +244,69 @@ export interface PracticeRecommendation {
   activity: PracticeRecommendationActivity;
   reason: RecommendationReason;
   explanation: string;
+  /** RESUME_ATTEMPT only: the open attempt to continue. */
+  attemptId?: string | undefined;
+  /** DUE_REVIEW only: what is due for this activity. */
+  review?: DueReview | undefined;
 }
+
+/** An IN_PROGRESS attempt the Student can still resume. */
+export interface OpenPracticeAttempt {
+  attemptId: string;
+  activityId: string;
+  /** Last answer (or start) of the attempt, ISO. */
+  lastActivityAt: string;
+}
+
+/** Decision C: an open attempt is resumed within 24 hours. */
+export const PRACTICE_RESUME_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 function compareText(left: string, right: string): number {
   return left.localeCompare(right, "en", { sensitivity: "base" });
 }
 
+/**
+ * Order: resume open attempt -> due assignment -> due review (high-confidence errors first, then oldest)
+ * -> existing ranks. Only the activities passed in (already filtered to what the Student can reach) are
+ * considered; each result carries a readable reason.
+ */
 export function recommendPractice(input: {
   activities: readonly PracticeRecommendationActivity[];
   history: readonly PracticeRecommendationHistoryItem[];
   recentLessonId: string | null;
   policy?: PracticeEvaluationPolicyPort;
+  openAttempts?: readonly OpenPracticeAttempt[];
+  dueReviews?: readonly DueReview[];
+  now?: Date;
 }): PracticeRecommendation | null {
   const policy = input.policy ?? CONTRACT_EVALUATION_POLICY;
+  const now = input.now ?? new Date();
   const supported = input.activities.filter(
     (activity) => policy.availabilityForEvaluationMode(activity.evaluationMode) !== "UNSUPPORTED",
   );
   if (supported.length === 0) return null;
+
+  const byId = new Map(supported.map((activity) => [activity.id, activity]));
+
+  // 1. Resume: the most recently active open attempt inside the resume window.
+  const resumable = [...(input.openAttempts ?? [])]
+    .filter((attempt) => {
+      const last = Date.parse(attempt.lastActivityAt);
+      return (
+        byId.has(attempt.activityId) &&
+        !Number.isNaN(last) &&
+        now.getTime() - last <= PRACTICE_RESUME_WINDOW_MS
+      );
+    })
+    .sort((left, right) => Date.parse(right.lastActivityAt) - Date.parse(left.lastActivityAt))[0];
+  if (resumable) {
+    return {
+      activity: byId.get(resumable.activityId)!,
+      reason: "RESUME_ATTEMPT",
+      explanation: "Você começou esta prática e não terminou. Continue de onde parou.",
+      attemptId: resumable.attemptId,
+    };
+  }
 
   const attemptCounts = new Map<string, number>();
   for (const attempt of input.history) {
@@ -247,12 +319,38 @@ export function recommendPractice(input: {
     return Number.isNaN(time) ? Number.POSITIVE_INFINITY : time;
   };
 
-  const ranked = [...supported].sort((left, right) => {
-    // Teacher assignments with a deadline come first, earliest deadline first.
-    const leftDue = dueTime(left);
-    const rightDue = dueTime(right);
-    if (leftDue !== rightDue) return leftDue < rightDue ? -1 : 1;
+  // 2. Teacher assignments with a deadline, earliest deadline first.
+  const assigned = supported
+    .filter((activity) => Number.isFinite(dueTime(activity)))
+    .sort((left, right) => dueTime(left) - dueTime(right) || compareText(left.slug, right.slug))[0];
+  if (assigned) {
+    return {
+      activity: assigned,
+      reason: "ASSIGNED_DUE",
+      explanation: "Seu professor atribuiu esta prática com prazo; ela vem primeiro.",
+    };
+  }
 
+  // 3. Spaced review: high-confidence errors first, then the oldest due question.
+  const review = sortDueReviews(
+    (input.dueReviews ?? []).filter(
+      (candidate) => candidate.dueCount > 0 && byId.has(candidate.practiceActivityId),
+    ),
+  )[0];
+  if (review) {
+    const questions = review.dueCount === 1 ? "1 pergunta" : `${review.dueCount} perguntas`;
+    return {
+      activity: byId.get(review.practiceActivityId)!,
+      reason: "DUE_REVIEW",
+      explanation:
+        review.highConfidenceErrors > 0
+          ? `Revisar ${questions} que você errou, algumas com muita certeza. Rever logo fixa melhor.`
+          : `Revisar ${questions} que você errou antes: voltar a elas agora ajuda a lembrar.`,
+      review,
+    };
+  }
+
+  const ranked = [...supported].sort((left, right) => {
     const leftMode =
       policy.availabilityForEvaluationMode(left.evaluationMode) === "DETERMINISTIC" ? 0 : 1;
     const rightMode =
@@ -280,13 +378,6 @@ export function recommendPractice(input: {
   );
   const count = attemptCounts.get(activity.id) ?? 0;
 
-  if (Number.isFinite(dueTime(activity))) {
-    return {
-      activity,
-      reason: "ASSIGNED_DUE",
-      explanation: "Seu professor atribuiu esta prática com prazo; ela vem primeiro.",
-    };
-  }
   if (isRecentLesson) {
     return {
       activity,
@@ -324,9 +415,31 @@ export function practiceHistoryStatus(item: PracticeHistoryItem): string {
   if (item.status === "ABANDONED") return "Interrompida";
   if (item.evaluationStatus === "CORRECT") return "Resposta correta";
   if (item.evaluationStatus === "INCORRECT") return "Revisão recomendada";
-  if (item.evaluationStatus === "PENDING_MANUAL") return "Registro pendente/manual";
-  if (item.evaluationStatus === "MANUAL_REVIEWED") return "Feedback disponível";
+  if (item.evaluationStatus === "PENDING_MANUAL") return "Aguardando revisão";
+  if (item.evaluationStatus === "MANUAL_REVIEWED") return "Revisada";
   return "Concluída";
+}
+
+/** "6/8 na 1ª tentativa" for a finished v3 attempt; null when nothing objective was counted. */
+export function practiceHistoryDetail(item: PracticeHistoryItem): string | null {
+  if (item.status !== "SUBMITTED" || !item.metrics) return null;
+  const objective = item.metrics.itemCount - item.metrics.pendingManual;
+  if (objective <= 0) return null;
+  return `${item.metrics.firstTryCorrect}/${objective} na 1ª tentativa`;
+}
+
+/** Weekly performance: first-try hits over objective questions (manual answers have no score). */
+export function weeklyFirstTryTotals(metrics: readonly PracticeAttemptMetrics[]): {
+  firstTryCorrect: number;
+  objectiveTotal: number;
+} {
+  return metrics.reduce(
+    (total, entry) => ({
+      firstTryCorrect: total.firstTryCorrect + entry.firstTryCorrect,
+      objectiveTotal: total.objectiveTotal + Math.max(0, entry.itemCount - entry.pendingManual),
+    }),
+    { firstTryCorrect: 0, objectiveTotal: 0 },
+  );
 }
 
 export function normalizePracticeSkill(value: unknown): PracticeSkill | null {
@@ -347,4 +460,18 @@ export function isPracticeLessonNotReachedError(
   error: { code?: string | null; hint?: string | null } | null | undefined,
 ): boolean {
   return error?.code === "YP001" && error.hint === "PRACTICE_LESSON_NOT_REACHED";
+}
+
+/** `start_practice_review` raises SQLSTATE YP002 (hint PRACTICE_NOTHING_DUE) when no question is due. */
+export class PracticeNothingDueError extends Error {
+  constructor() {
+    super("PRACTICE_NOTHING_DUE");
+    this.name = "PracticeNothingDueError";
+  }
+}
+
+export function isPracticeNothingDueError(
+  error: { code?: string | null; hint?: string | null } | null | undefined,
+): boolean {
+  return error?.code === "YP002" && error.hint === "PRACTICE_NOTHING_DUE";
 }

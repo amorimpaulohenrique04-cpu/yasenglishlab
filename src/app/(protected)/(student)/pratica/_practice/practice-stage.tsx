@@ -1,18 +1,27 @@
 import Link from "next/link";
 
 import { Badge, Button, Icon, Radio, Textarea } from "@/components/ui";
-import { practiceSkillLabel, type PracticeAttemptView } from "@/modules/practice";
+import {
+  practiceContentPrompt,
+  practiceSkillLabel,
+  type PracticeAttemptView,
+} from "@/modules/practice";
 import { RUBRIC_LABELS } from "@/modules/practice/domain/rubric";
 import { AudioResponse } from "@/modules/practice/ui/audio-response";
 import { PracticePlayer } from "@/modules/practice/ui/practice-player";
 import { PracticeResultHero } from "@/modules/practice/ui/practice-result";
+import { PracticeSessionPlayer } from "@/modules/practice/ui/practice-session-player";
 import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 import { getPracticeStimulusUrl } from "@/server/practice/assets";
 import { loadCurrentStudentManualFeedback } from "@/server/practice/manual-feedback";
+import { loadCurrentStudentItemResults } from "@/server/practice/practice";
 
 import {
   completePracticeAudioAction,
+  finalizePracticeAction,
   submitPracticeAction,
+  submitPracticeItemAction,
+  uploadPracticeItemAudioAction,
   submitPracticeV2Action,
   uploadPracticeAudioAction,
 } from "../actions";
@@ -97,6 +106,63 @@ export async function PracticeStage({
     </>
   );
 
+  const v3 = activity.content.kind === "V3" ? activity.content : null;
+  if (v3) {
+    // v3: no immediate "Praticar de novo" (reinforcement round + spaced review replace it).
+    const initialResults = await loadCurrentStudentItemResults(attempt.id).catch(() => []);
+    const stimulusUrls: Record<string, string | null> = {};
+    await Promise.all(
+      v3.items.map(async (item) => {
+        if (item.stimulus.type === "NONE" || item.stimulus.type === "TEXT") return;
+        stimulusUrls[item.id] = await getPracticeStimulusUrl(item.stimulus.assetId).catch(
+          () => null,
+        );
+      }),
+    );
+    return (
+      <div className="yas-practice-stage">
+        {topbar}
+        <article className="yas-practice-stage-card" aria-labelledby="practice-attempt-title">
+          <div className="yas-practice-stage-intro">
+            <h2 id="practice-attempt-title">{activity.title}</h2>
+            {attempt.attemptKind === "REVIEW" && (
+              <p className="yas-practice-stage-question">
+                Revisão das perguntas que voltaram hoje.
+              </p>
+            )}
+          </div>
+          <PracticeSessionPlayer
+            content={v3}
+            mode="live"
+            skill={activity.skill}
+            stimulusUrls={stimulusUrls}
+            live={{
+              attemptId: attempt.id,
+              submitItem: submitPracticeItemAction.bind(null, attempt.id),
+              finalize: finalizePracticeAction.bind(null, attempt.id),
+              reserveAudio: uploadPracticeItemAudioAction.bind(null, attempt.id),
+              completeAudio: completePracticeAudioAction,
+              initialResults,
+              itemIds: attempt.itemIds,
+            }}
+            resultFooter={
+              <>
+                {next && <StartPracticeForm activity={next} label="Próxima atividade" large />}
+                <Link
+                  className="yas-button yas-button--outline yas-button--lg"
+                  href="/pratica"
+                  transitionTypes={["nav-back"]}
+                >
+                  Voltar às práticas
+                </Link>
+              </>
+            }
+          />
+        </article>
+      </div>
+    );
+  }
+
   if (submitted && attempt.result) {
     const review =
       attempt.result.evaluationStatus === "MANUAL_REVIEWED"
@@ -155,7 +221,7 @@ export async function PracticeStage({
       <article className="yas-practice-stage-card" aria-labelledby="practice-attempt-title">
         <div className="yas-practice-stage-intro">
           <h2 id="practice-attempt-title">{activity.title}</h2>
-          <p className="yas-practice-stage-question">{activity.content.prompt}</p>
+          <p className="yas-practice-stage-question">{practiceContentPrompt(activity.content)}</p>
         </div>
 
         {v2 ? (

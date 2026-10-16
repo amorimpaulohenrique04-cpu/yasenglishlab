@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  finalizePractice,
   getPracticeView,
   startPractice,
+  startPracticeReview,
+  submitPracticeItem,
   submitPractice,
   type PracticeActivityItem,
   type PracticeAnalyticsPort,
@@ -38,6 +41,8 @@ const attempt: PracticeAttemptView = {
   startedAt: "2026-09-30T12:00:00Z",
   submittedAt: null,
   result: null,
+  attemptKind: "FULL",
+  itemIds: null,
 };
 
 function repository(): PracticeRepository {
@@ -55,7 +60,36 @@ function repository(): PracticeRepository {
       feedback: "Correct",
       evaluationStatus: "CORRECT" as const,
       createdAt: "2026-09-30T12:05:00Z",
+      metrics: null,
     })),
+    listAssignedPractices: vi.fn(async () => []),
+    listDueReviews: vi.fn(async () => []),
+    listSubmittedMetricsSince: vi.fn(async () => []),
+    getItemResults: vi.fn(async () => []),
+    submitItem: vi.fn(async (input) => ({
+      itemId: input.itemId,
+      round: input.round,
+      evaluationStatus: "INCORRECT" as const,
+      feedback: null,
+      optionFeedback: null,
+      correctAnswer: null,
+      canRetry: true,
+    })),
+    finalizeAttempt: vi.fn(async () => ({
+      score: 1,
+      maxScore: 2,
+      evaluationStatus: "INCORRECT" as const,
+      metrics: {
+        itemCount: 2,
+        firstTryCorrect: 1,
+        recovered: 0,
+        missed: 1,
+        skipped: 0,
+        highConfidenceErrors: 0,
+        pendingManual: 0,
+      },
+    })),
+    startReview: vi.fn(async () => attempt),
   };
 }
 
@@ -109,6 +143,91 @@ describe("practice application", () => {
       event: "practice_completed",
       properties: { practice_activity_id: activity.id },
       idempotencyKey: `practice_completed:${attempt.id}`,
+    });
+  });
+
+  it("submits one item with the verified attempt and no client identity", async () => {
+    const repo = repository();
+    await submitPracticeItem(repo, {
+      attemptId: attempt.id,
+      itemId: "q1",
+      round: 1,
+      response: { optionId: "a" },
+      confidence: "HIGH",
+    });
+    expect(repo.submitItem).toHaveBeenCalledWith({
+      attemptId: attempt.id,
+      itemId: "q1",
+      round: 1,
+      response: { optionId: "a" },
+      confidence: "HIGH",
+    });
+    await expect(
+      submitPracticeItem(repo, {
+        attemptId: attempt.id,
+        itemId: "q1",
+        round: 1,
+        response: { skip: true },
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("finalizes with a stable completion event and starts reviews like practices", async () => {
+    const repo = repository();
+    const events = analytics();
+    const result = await finalizePractice(repo, events, userId, { attemptId: attempt.id });
+    expect(result.metrics.firstTryCorrect).toBe(1);
+    expect(events.track).toHaveBeenCalledWith({
+      event: "practice_completed",
+      properties: { practice_activity_id: activity.id },
+      idempotencyKey: `practice_completed:${attempt.id}`,
+    });
+
+    await startPracticeReview(repo, events, {
+      activityId: activity.id,
+      idempotencyKey: "85000000-0000-4000-8000-000000000002",
+    });
+    expect(repo.startReview).toHaveBeenCalled();
+  });
+
+  it("surfaces due reviews, weekly performance and degrades when v3 sources fail", async () => {
+    const repo = repository();
+    repo.listDueReviews = vi.fn(async () => [
+      {
+        practiceActivityId: activity.id,
+        dueCount: 3,
+        highConfidenceErrors: 1,
+        oldestDueAt: "2026-10-15T12:00:00Z",
+      },
+    ]);
+    repo.listSubmittedMetricsSince = vi.fn(async () => [
+      {
+        itemCount: 8,
+        firstTryCorrect: 6,
+        recovered: 2,
+        missed: 0,
+        skipped: 0,
+        highConfidenceErrors: 0,
+        pendingManual: 0,
+      },
+    ]);
+    const state = await getPracticeView(repo, userId, true, {}, new Date("2026-10-16T12:00:00Z"));
+    expect(state).toMatchObject({
+      status: "success",
+      data: {
+        dueReviewCount: 3,
+        firstTryCorrectThisWeek: 6,
+        objectiveQuestionsThisWeek: 8,
+        recommendation: { reason: "DUE_REVIEW" },
+      },
+    });
+
+    repo.listDueReviews = vi.fn(async () => {
+      throw new Error("boom");
+    });
+    await expect(getPracticeView(repo, userId, true, {})).resolves.toMatchObject({
+      status: "success",
+      data: { dueReviewCount: 0 },
     });
   });
 });

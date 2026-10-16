@@ -5,12 +5,20 @@ import { createSupabaseServerClient } from "@/server/supabase/server";
 import { createSupabaseAdminClient } from "@/server/supabase/admin";
 const mimeSchema = z.enum(["audio/webm", "audio/ogg", "audio/mpeg", "audio/mp4", "audio/wav"]);
 const bucket = "yas-practice-responses";
-export async function requestPracticeAudioUpload(attemptId: string, mime: string) {
+export async function requestPracticeAudioUpload(attemptId: string, mime: string, itemId?: string) {
   await assertRole("STUDENT");
   const client = await createSupabaseServerClient();
   const { data: id, error } = await client.rpc("reserve_practice_audio", {
     p_attempt: z.uuid().parse(attemptId),
     p_mime: mimeSchema.parse(mime),
+    ...(itemId
+      ? {
+          p_item_id: z
+            .string()
+            .regex(/^[a-z0-9-]{1,40}$/)
+            .parse(itemId),
+        }
+      : {}),
   });
   if (error || typeof id !== "string") throw new Error("Envio não autorizado.");
   const admin = createSupabaseAdminClient();

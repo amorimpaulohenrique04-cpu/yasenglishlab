@@ -1,9 +1,15 @@
 import "server-only";
 
+import type { z } from "zod";
+
 import {
+  finalizePractice,
   getPracticeView,
   startPractice,
+  startPracticeReview,
   submitPractice,
+  submitPracticeItem,
+  type submitPracticeItemInputSchema,
   type StartPracticeInput,
   type SubmitPracticeInput,
 } from "@/modules/practice";
@@ -35,6 +41,42 @@ export async function startCurrentStudentPractice(input: StartPracticeInput) {
     new SupabasePracticeRepository(client),
     new SupabaseProductAnalytics(client),
     input,
+  );
+}
+
+/** Stored item results of an attempt the signed-in Student owns (RLS also scopes the read). */
+export async function loadCurrentStudentItemResults(attemptId: string) {
+  await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  return new SupabasePracticeRepository(client).getItemResults(attemptId);
+}
+
+export async function startCurrentStudentReview(input: StartPracticeInput) {
+  await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  return startPracticeReview(
+    new SupabasePracticeRepository(client),
+    new SupabaseProductAnalytics(client),
+    input,
+  );
+}
+
+export async function submitCurrentStudentPracticeItem(
+  input: z.input<typeof submitPracticeItemInputSchema>,
+) {
+  await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  return submitPracticeItem(new SupabasePracticeRepository(client), input);
+}
+
+export async function finalizeCurrentStudentPractice(attemptId: string) {
+  const auth = await assertRole("STUDENT");
+  const client = await createSupabaseServerClient();
+  return finalizePractice(
+    new SupabasePracticeRepository(client),
+    new SupabaseProductAnalytics(client),
+    auth.userId,
+    { attemptId },
   );
 }
 
