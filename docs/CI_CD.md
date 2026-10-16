@@ -181,3 +181,5 @@ O job `Detect code changes` só dispensa as suítes quando um pull request alter
 - Capturas genéricas repetidas do E2E canônico foram consolidadas nas suítes visuais/responsivas. Permanecem as provas de persistência, retomada, conclusão, publicação, feedback, autorização e reflow.
 
 Tempos observados e justificativas de consolidação estão em `harness/evidence/pr74-gates/README.md`. O pipeline completo permanece obrigatório para código, testes, configuração e dependências; nenhum gate foi convertido em aviso.
+
+Exceção explícita: o projeto `chromium-commercial` executa somente `commercial.spec.ts` em `next dev` isolado (porta principal + 1 e APP_URL correspondente). O provedor FAKE recusa produção por contrato; essa proteção permanece intacta. Os outros E2E e as suítes a11y/golden continuam no build de produção. Ambos os projetos alimentam o mesmo relatório obrigatório.

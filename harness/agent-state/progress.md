@@ -710,3 +710,13 @@ PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de t
 ## PR 74 gates — in_progress (2026-10-15)
 
 Correções publicadas em aa13835 e 67abaa7. Visual Linux e database-proofs passaram no CI; seletores finais de módulo recolhido/feedback passaram localmente (2/2). Windows goldens, verify:agent/ui/full e CI final pendentes. Evidência em harness/evidence/pr74-gates/README.md; não concluir enquanto houver gate obrigatório vermelho.
+
+### Encerramento solicitado pelo usuário — 2026-10-15
+
+Correções publicadas na PR #74, HEAD 0f67200f2b9934a924f8ef3e559274d181ea7f19. Execução local final interrompida a pedido do usuário para encerrar a tarefa; verify:ui e verify:full não concluídos. CI 38827166316: Quality, Supply Chain, Database e Guardrail Simulations aprovados; quatro suítes Preview em execução na última consulta. Não há comprovação de todos os gates obrigatórios verdes; tarefa permanece não verificada.
+
+## Retomada PR 74
+
+Run 38827166316: somente dois E2E falharam; os demais jobs concretos passaram. Corrigidos teste SSR dependente de nome minificado e runtime indevido do checkout FAKE. Proibição de FAKE em produção preservada. 7 unitários, typecheck e contrato harness aprovados; confirmação E2E em curso.
+
+Confirmação local: os dois E2E falhos passaram integralmente, zero retries, em 1,7 min; typecheck, lint dos arquivos alterados, 7 unitários e verify:harness aprovados. CI do novo commit pendente.

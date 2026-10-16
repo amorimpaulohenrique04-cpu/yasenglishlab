@@ -163,6 +163,7 @@ test("commercial journey confirms only through authenticated webhook", async ({
   expect(active.error).toBeNull();
   expect(active.data?.status).toBe("ACTIVE");
   await page.getByRole("link", { name: "Continuar minha jornada" }).click();
-  await expect(page).toHaveURL(/\/onboarding$/);
+  // This route is compiled on first use in the isolated development runtime.
+  await expect(page).toHaveURL(/\/onboarding$/, { timeout: 20000 });
   await expect(page.getByRole("heading", { name: "Sua entrada no Yas" })).toBeVisible();
 });

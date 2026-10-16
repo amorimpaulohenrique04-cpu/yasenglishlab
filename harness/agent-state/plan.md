@@ -107,3 +107,7 @@ D e F deixam de estar adiados nesta sessão. Implementar admin_plan_list/set_ent
 Plano: 1 SQL D/F com negativos/atomicidade/histórico; 2 adaptadores e UI usando primitivos atuais; 3 testes focados, prova E2E/a11y/screenshots; 4 documentação/evidência, commits e atualização da PR.
 
 Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adiava foi revogado de fato. D e F entram nesta PR. Falta UI de C/E (trilha admin, matricular, trilha do aluno), docs e gates finais.
+
+## Retomada: duas falhas finais do CI
+
+Corrigir o bloqueio de chunks minificados no teste de hidratação e executar apenas o checkout FAKE em servidor dev isolado, preservando a proibição de FAKE em produção. Validar os dois casos, controles e CI completo.

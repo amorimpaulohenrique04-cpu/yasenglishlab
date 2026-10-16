@@ -225,3 +225,5 @@ Os helpers de domínio reutilizam em memória a sessão real AAL2 obtida pela UI
 Cada golden é um teste independente por tela e viewport. O E2E canônico conserva as provas de persistência, retomada, conclusão e navegação mobile; passeios de capturas repetidos foram consolidados nas suítes golden, a11y e responsivas. As referências HTML aprovadas estão versionadas em `artifacts/design-proposal/` e não são formatadas.
 
 Para executar sem disputar tipos ou build com um servidor dev aberto, defina `YAS_ISOLATED_VERIFY=1`; a verificação usa `tsconfig.verify.json` e `.next-p18-build`. `verify:full` aceita `YAS_SUPABASE_WORKDIR` apontando para uma stack de teste exclusiva; esse banco será resetado e parado ao final.
+
+Exceção explícita: o projeto `chromium-commercial` executa somente `commercial.spec.ts` em `next dev` isolado (porta principal + 1 e APP_URL correspondente). O provedor FAKE recusa produção por contrato; essa proteção permanece intacta. Os outros E2E e as suítes a11y/golden continuam no build de produção. Ambos os projetos alimentam o mesmo relatório obrigatório.
