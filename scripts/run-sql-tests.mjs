@@ -29,6 +29,8 @@ const suites = {
     "supabase/tests/access_closure.sql",
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
+    "supabase/tests/practice_items.sql",
+    "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
     "supabase/tests/cohort_path_admin.sql",
@@ -56,6 +58,8 @@ const suites = {
     "supabase/tests/access_closure.sql",
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
+    "supabase/tests/practice_items.sql",
+    "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
     "supabase/tests/cohort_path_admin.sql",
@@ -84,6 +88,8 @@ const suites = {
   "access-closure": ["supabase/tests/access_closure.sql"],
   "practice-authoring": ["supabase/tests/practice_authoring.sql"],
   "practice-lifecycle": ["supabase/tests/practice_lifecycle.sql"],
+  "practice-items": ["supabase/tests/practice_items.sql"],
+  "practice-review-schedule": ["supabase/tests/practice_review_schedule.sql"],
   "assessment-authoring": ["supabase/tests/assessment_authoring.sql"],
   "cohort-path": ["supabase/tests/cohort_path.sql"],
   "cohort-path-admin": ["supabase/tests/cohort_path_admin.sql"],
@@ -94,7 +100,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
   );
   process.exit(2);
 }

@@ -4,7 +4,7 @@ Classification: state
 Status: resolved  
 Repeatable: yes  
 Date: 2026-10-16  
-PR/commit related: branch feat/practice-10-phase-0 (practice-10-phase-0)  
+PR/commit related: branch feat/practice-10-phase-0 (practice-10-phase-0)
 
 ## Symptom
 

@@ -609,6 +609,15 @@
       "dependencies": ["ui-redesign-approved-proposal"],
       "evidence": ["harness/goals/practice-10-phase-0.md"],
       "updated_at": "2026-10-16T18:00:00.000Z"
+    },
+    {
+      "id": "practice-10-v3",
+      "title": "Prática v3: várias perguntas, feedback por pergunta, revisão espaçada e autoria",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["practice-10-phase-0"],
+      "evidence": ["harness/goals/practice-10-v3.md"],
+      "updated_at": "2026-10-16T22:00:00.000Z"
     }
   ]
 }

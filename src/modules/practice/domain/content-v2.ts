@@ -44,7 +44,7 @@ const choiceOptionSchema = z
 
 const assetIdSchema = z.uuid();
 
-const stimulusSchema = z.discriminatedUnion("type", [
+export const practiceStimulusV2Schema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("NONE") }).strict(),
   z.object({ type: z.literal("TEXT"), text: z.string().trim().min(1).max(2000) }).strict(),
   z
@@ -70,7 +70,7 @@ const stimulusSchema = z.discriminatedUnion("type", [
     .strict(),
 ]);
 
-const responseSchema = z.discriminatedUnion("type", [
+export const practiceResponseV2Schema = z.discriminatedUnion("type", [
   z
     .object({
       type: z.literal("CHOICE_SINGLE"),
@@ -111,10 +111,10 @@ function modeMatchesResponse(content: {
 
 const contentShape = {
   version: z.literal(2),
-  stimulus: stimulusSchema,
+  stimulus: practiceStimulusV2Schema,
   prompt: z.string().trim().min(1).max(600),
   instructions: z.string().max(600).optional(),
-  response: responseSchema,
+  response: practiceResponseV2Schema,
 };
 
 /** Publication-ready content. `evaluationMode` is optional on input: the SQL derives it from the response type. */

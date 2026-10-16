@@ -25,6 +25,7 @@ Make the Student Practice journey trustworthy before the multi-question engine: 
 - `supabase/migrations/20261014120000_stage_11_access_closure.sql` (start_practice_attempt), `20261015120000_stage_12c1_cohort_path_model.sql` (student_path_available, can_view_practice_activity), `20261015100000_stage_12a_practice_authoring.sql` (cohort_practice_assignments).
 
 Decisions (approved with the plan):
+
 - A. Teacher-assigned practices bypass lesson gating.
 - C. An IN_PROGRESS attempt with activity in the last 24h is resumed; older ones become ABANDONED on the next start (lazy, no cron).
 
