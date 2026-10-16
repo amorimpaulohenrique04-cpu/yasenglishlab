@@ -85,7 +85,7 @@ test.describe("Stage 12A teacher practices", () => {
       .filter({ has: student.getByRole("heading", { name: title, exact: true }) });
     await expect(card).toBeVisible();
     await card.getByRole("button", { name: "Começar →", exact: true }).click();
-    await expect(student).toHaveURL(/attempt=/);
+    await expect(student).toHaveURL(/\/pratica\/[0-9a-f-]+$/i);
     await student.getByLabel("Hello", { exact: true }).check();
     await student.getByRole("button", { name: "Enviar resposta", exact: true }).click();
     await expect(student.getByText("Resposta correta", { exact: false }).first()).toBeVisible();

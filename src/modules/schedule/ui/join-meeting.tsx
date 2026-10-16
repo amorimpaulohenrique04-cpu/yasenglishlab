@@ -1,7 +1,9 @@
 "use client";
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui";
+import { Button, Icon } from "@/components/ui";
 import type { JoinAccess } from "@/modules/schedule/application/meeting-provider";
+
+import styles from "./schedule.module.css";
 
 const labels = {
   NOT_AUTHORIZED: "Acesso não autorizado.",
@@ -22,11 +24,12 @@ export function JoinMeeting({
   const [error, setError] = useState(false);
   const [pending, startTransition] = useTransition();
   return (
-    <div>
+    <div className={styles.join}>
       <Button
         size="sm"
-        variant="outline"
+        variant="secondary"
         disabled={pending}
+        leadingIcon={<Icon name="video" size={16} />}
         onClick={() =>
           startTransition(async () => {
             setError(false);
@@ -40,11 +43,16 @@ export function JoinMeeting({
       >
         {pending ? "Consultando acesso…" : "Entrar no encontro"}
       </Button>
-      <div role="status">
+      <div role="status" className={styles.joinStatus}>
         {error ? (
           "Não foi possível consultar o acesso. Tente novamente."
         ) : result?.status === "AVAILABLE" ? (
-          <a href={result.url} target="_blank" rel="noopener noreferrer">
+          <a
+            className="yas-button yas-button--primary yas-button--sm"
+            href={result.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Abrir reunião
           </a>
         ) : result ? (

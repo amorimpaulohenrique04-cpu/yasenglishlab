@@ -1,12 +1,10 @@
-import { randomUUID } from "node:crypto";
-
 import Link from "next/link";
-import type { CSSProperties } from "react";
+import { redirect } from "next/navigation";
+import { ViewTransition, type CSSProperties } from "react";
 
 import {
   Alert,
   Badge,
-  Button,
   Card,
   EmptyState,
   ErrorState,
@@ -14,8 +12,7 @@ import {
   Icon,
   IconBadge,
   PageHeader,
-  Radio,
-  Textarea,
+  type IconName,
 } from "@/components/ui";
 import {
   practiceHistoryStatus,
@@ -23,26 +20,24 @@ import {
   type AssignedPractice,
   type AssignedPracticeStatus,
   type PracticeActivityItem,
-  type PracticeAttemptView,
   type PracticeSkillCatalogItem,
 } from "@/modules/practice";
+import type { PracticeSkill } from "@/modules/domain";
+import { loadLearningCourses } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
-import { getPracticeStimulusUrl } from "@/server/practice/assets";
 import { listCurrentStudentAssignedPractices, loadPracticePage } from "@/server/practice/practice";
+import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 
 import {
-  startPracticeAction,
-  submitPracticeAction,
-  uploadPracticeAudioAction,
-  completePracticeAudioAction,
-  submitPracticeV2Action,
-} from "./actions";
-import { AudioResponse } from "@/modules/practice/ui/audio-response";
-import { PracticePlayer } from "@/modules/practice/ui/practice-player";
-import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
-import { loadCurrentStudentManualFeedback } from "@/server/practice/manual-feedback";
-import { RUBRIC_LABELS } from "@/modules/practice/domain/rubric";
+  groupActivitiesByLesson,
+  groupStateLabel,
+  sectionsByModule,
+  type LessonGroupState,
+  type LessonPracticeGroupView,
+  type ModulePracticeSection,
+} from "./_practice/grouping";
+import { StartPracticeForm } from "./_practice/start-practice-form";
 
 interface PracticePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -60,223 +55,268 @@ function availabilityLabel(item: PracticeSkillCatalogItem): string {
   return "Ainda sem conteúdo";
 }
 
-function SkillCard({ item, selected }: { item: PracticeSkillCatalogItem; selected: boolean }) {
-  const available = item.availability !== "UNSUPPORTED";
-  const visual = practiceSkillVisual[item.skill];
-  const content = (
-    <>
-      <IconBadge icon={visual.icon} tone="white" />
-      <span className="yas-practice-skill-copy">
-        <strong>
-          {item.label}
-          {available && <Icon name="arrow" size={16} />}
-        </strong>
-        <small>{item.description}</small>
-        <em>{availabilityLabel(item)}</em>
-      </span>
-    </>
-  );
-
-  return available ? (
+/**
+ * Porta de entrada da biblioteca: resume tudo o que existe (atividades, aulas, habilidades)
+ * e abre a visão completa organizada por aula.
+ */
+function PracticeLibraryTeaser({
+  groups,
+  activities,
+}: {
+  groups: LessonPracticeGroupView[];
+  activities: PracticeActivityItem[];
+}) {
+  const lessons = groups.filter((group) => group.state !== "free").length;
+  const minutes = activities.reduce((sum, activity) => sum + activity.estimatedMinutes, 0);
+  const skills = [...new Set(activities.map((activity) => activity.skill))];
+  return (
     <Link
-      className="yas-practice-skill-card"
-      data-tint={visual.tint}
-      data-selected={selected}
-      href={`/pratica?skill=${item.skill}`}
-      aria-current={selected ? "page" : undefined}
+      className="yas-practice-library yas-reveal"
+      style={reveal(8)}
+      href="/pratica?todas=1#praticas"
     >
-      {content}
+      <span className="yas-practice-library-stack" aria-hidden="true">
+        {skills.slice(0, 4).map((skill) => (
+          <span key={skill} data-tint={practiceSkillVisual[skill].tint}>
+            <Icon name={practiceSkillVisual[skill].icon} size={18} />
+          </span>
+        ))}
+      </span>
+      <span className="yas-practice-library-copy">
+        <small>Biblioteca de práticas</small>
+        <strong>Ver todas as práticas por aula</strong>
+        <span>
+          {activities.length} {activities.length === 1 ? "atividade" : "atividades"}
+          {lessons > 0 && ` em ${lessons} ${lessons === 1 ? "aula" : "aulas"}`} · {minutes} min no
+          total
+        </span>
+      </span>
+      <span className="yas-practice-library-cta">
+        Explorar
+        <Icon name="arrow" size={18} />
+      </span>
     </Link>
-  ) : (
-    <div
-      className="yas-practice-skill-card"
-      data-tint={visual.tint}
-      data-disabled="true"
-      aria-disabled="true"
-    >
-      {content}
+  );
+}
+
+/** Filtro por habilidade em chips; habilidades sem conteúdo ficam desativadas e explicadas. */
+function SkillFilter({
+  catalog,
+  selected,
+  showAll,
+}: {
+  catalog: PracticeSkillCatalogItem[];
+  selected: PracticeSkill | null | undefined;
+  showAll: boolean;
+}) {
+  const unsupported = catalog.filter((item) => item.availability === "UNSUPPORTED");
+  return (
+    <div className="yas-practice-filter">
+      <h3 id="practice-skills-title">Escolha uma habilidade</h3>
+      <nav className="yas-practice-chips" aria-labelledby="practice-skills-title">
+        <Link
+          className="yas-practice-chip"
+          href={showAll ? "/pratica?todas=1#praticas" : "/pratica#praticas"}
+          aria-current={selected ? undefined : "page"}
+        >
+          <Icon name="grid" size={16} />
+          Todas
+        </Link>
+        {catalog.map((item) => {
+          const visual = practiceSkillVisual[item.skill];
+          return item.availability === "UNSUPPORTED" ? (
+            <span
+              key={item.skill}
+              className="yas-practice-chip"
+              data-disabled="true"
+              aria-disabled="true"
+              title={availabilityLabel(item)}
+            >
+              <Icon name={visual.icon} size={16} />
+              {item.label}
+            </span>
+          ) : (
+            <Link
+              key={item.skill}
+              className="yas-practice-chip"
+              data-tint={visual.tint}
+              href={`/pratica?skill=${item.skill}#praticas`}
+              aria-current={selected === item.skill ? "page" : undefined}
+              title={`${item.description} ${availabilityLabel(item)}.`}
+            >
+              <Icon name={visual.icon} size={16} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      {unsupported.length > 0 && (
+        <p className="yas-practice-muted">
+          {unsupported.map((item) => item.label).join(", ")}: ainda sem conteúdo publicado.
+        </p>
+      )}
     </div>
   );
 }
 
-function StartPracticeForm({
-  activity,
-  label = "Praticar",
-  large = false,
-  soft = false,
+function ModulePracticeBlock({
+  section,
+  index,
 }: {
-  activity: Pick<PracticeActivityItem, "id">;
-  label?: string;
-  large?: boolean;
-  soft?: boolean;
+  section: ModulePracticeSection;
+  index: number;
 }) {
+  const activities = section.lessons.reduce((sum, lesson) => sum + lesson.activities.length, 0);
+  const minutes = section.lessons.reduce(
+    (sum, lesson) =>
+      sum + lesson.activities.reduce((total, item) => total + item.estimatedMinutes, 0),
+    0,
+  );
+  const current = section.lessons.some((lesson) => lesson.state === "current");
   return (
-    <form className="yas-practice-start" action={startPracticeAction}>
-      <input type="hidden" name="activityId" value={activity.id} />
-      <input type="hidden" name="idempotencyKey" value={randomUUID()} />
-      <Button type="submit" variant={soft ? "soft" : "primary"} size={large ? "lg" : "sm"}>
-        {label} →
-      </Button>
-    </form>
+    <section
+      className="yas-practice-module yas-reveal"
+      style={reveal(index + 1)}
+      data-current={current || undefined}
+      aria-labelledby={`practice-module-${section.key}`}
+    >
+      <header className="yas-practice-module-head">
+        <span className="yas-practice-module-number" aria-hidden="true">
+          {section.module ? section.module.position : <Icon name="spark" size={18} />}
+        </span>
+        <div>
+          <small>
+            {section.module ? `Módulo ${section.module.position}` : "Sem aula específica"}
+            {current && <em>Você está aqui</em>}
+          </small>
+          <h3 id={`practice-module-${section.key}`}>
+            {section.module ? section.module.title : "Prática livre"}
+          </h3>
+        </div>
+        <span className="yas-practice-module-meta">
+          {section.module &&
+            `${section.lessons.length} ${section.lessons.length === 1 ? "aula" : "aulas"} · `}
+          {activities} {activities === 1 ? "atividade" : "atividades"} · {minutes} min
+        </span>
+      </header>
+      <div className="yas-practice-module-lessons">
+        {section.lessons.map((lesson) => (
+          <LessonPracticeGroup key={lesson.key} group={lesson} featured={false} open />
+        ))}
+      </div>
+    </section>
   );
 }
 
-async function AttemptPanel({ attempt }: { attempt: PracticeAttemptView }) {
-  const { activity } = attempt;
-  const visual = practiceSkillVisual[activity.skill];
+const groupIcon: Record<LessonGroupState, IconName> = {
+  current: "play-c",
+  done: "check-c",
+  upcoming: "book",
+  free: "spark",
+};
 
-  if (attempt.status === "SUBMITTED" && attempt.result) {
-    const review =
-      attempt.result.evaluationStatus === "MANUAL_REVIEWED"
-        ? await loadCurrentStudentManualFeedback(attempt.id)
-        : null;
-    const tone =
-      attempt.result.evaluationStatus === "CORRECT"
-        ? "success"
-        : attempt.result.evaluationStatus === "INCORRECT"
-          ? "warning"
-          : "info";
+function ActivityTile({ activity, index }: { activity: PracticeActivityItem; index: number }) {
+  const visual = practiceSkillVisual[activity.skill];
+  return (
+    <li
+      className="yas-practice-activity-card yas-reveal"
+      style={reveal(index + 2)}
+      data-tint={visual.tint}
+    >
+      <div className="yas-practice-activity-top">
+        <IconBadge icon={visual.icon} tone={visual.tint} shape="square" />
+        <span className="yas-practice-activity-skill">{practiceSkillLabel(activity.skill)}</span>
+        <span className="yas-practice-activity-time">
+          <Icon name="clock" size={14} />
+          {activity.estimatedMinutes} min
+        </span>
+      </div>
+      <div className="yas-practice-activity-body">
+        <h3>{activity.title}</h3>
+        <p>{activity.content.prompt}</p>
+      </div>
+      <StartPracticeForm activity={activity} soft />
+    </li>
+  );
+}
+
+/**
+ * Aula em destaque (primeiro grupo) fica sempre aberta com CTA próprio; as demais
+ * aulas são cartões recolhíveis com o mesmo grid de atividades.
+ */
+function LessonPracticeGroup({
+  group,
+  featured,
+  open,
+}: {
+  group: LessonPracticeGroupView;
+  featured: boolean;
+  open: boolean;
+}) {
+  const minutes = group.activities.reduce((sum, activity) => sum + activity.estimatedMinutes, 0);
+  const count = group.activities.length;
+  const countLabel = `${count} ${count === 1 ? "atividade" : "atividades"} · ${minutes} min`;
+  const lessonLink = group.lessonHref && (
+    <Link className="yas-practice-lesson-link" href={group.lessonHref}>
+      {group.state === "done" ? "Rever a aula" : "Ir para a aula"}
+      <Icon name="arrow" size={16} />
+    </Link>
+  );
+  const tiles = (
+    <ul className="yas-practice-tiles">
+      {group.activities.map((activity, index) => (
+        <ActivityTile key={activity.id} activity={activity} index={index} />
+      ))}
+    </ul>
+  );
+
+  if (featured) {
+    const first = group.activities[0];
     return (
-      <Card className="yas-practice-attempt" aria-labelledby="practice-result-title">
-        <div className="yas-practice-attempt-heading">
-          <IconBadge icon={visual.icon} tone={visual.tint} shape="square" size="lg" />
-          <div>
-            <Badge tone={tone}>
-              {practiceHistoryStatus({
-                id: attempt.id,
-                activityId: activity.id,
-                activityTitle: activity.title,
-                skill: activity.skill,
-                status: attempt.status,
-                startedAt: attempt.startedAt,
-                submittedAt: attempt.submittedAt,
-                evaluationStatus: attempt.result.evaluationStatus,
-              })}
-            </Badge>
-            <h2 id="practice-result-title">{activity.title}</h2>
+      <article
+        className="yas-practice-lesson yas-practice-lesson--featured"
+        data-state={group.state}
+        aria-labelledby={`practice-lesson-${group.key}`}
+      >
+        <header className="yas-practice-lesson-hero">
+          <span className="yas-practice-lesson-kicker">
+            <Icon name={groupIcon[group.state]} size={15} />
+            {groupStateLabel[group.state]} · {group.context}
+          </span>
+          <h3 id={`practice-lesson-${group.key}`}>{group.title}</h3>
+          <p>{countLabel} com o conteúdo desta aula.</p>
+          <div className="yas-practice-lesson-actions">
+            {first && <StartPracticeForm activity={first} label="Começar a praticar" />}
+            {lessonLink}
           </div>
-          <Link className="yas-dialog-close" href="/pratica" aria-label="Fechar">
-            <Icon name="x" size={18} />
-          </Link>
-        </div>
-        <p className="yas-practice-feedback">{attempt.result.feedback}</p>
-        {review && (
-          <div className="yas-practice-review">
-            <p>
-              Rubric {review.rubric_version} · Revisado em{" "}
-              {new Date(review.reviewed_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}
-            </p>
-            <ul>
-              {Object.entries(review.ratings as Record<string, string>).map(
-                ([dimension, level]) => (
-                  <li key={dimension}>
-                    <span>{RUBRIC_LABELS[dimension]}</span>
-                    <Badge tone="info">{RUBRIC_LABELS[level]}</Badge>
-                  </li>
-                ),
-              )}
-            </ul>
-          </div>
-        )}
-        <p className="yas-practice-boundary-note">
-          <Icon name="spark" size={16} />
-          Este resultado pertence somente à prática. Ele não altera seu progresso no curso nem
-          define proficiência CEFR.
-        </p>
-      </Card>
+        </header>
+        {tiles}
+      </article>
     );
   }
 
-  const v2 = activity.content.kind === "V2" ? activity.content : null;
-  let stimulusUrl: string | null = null;
-  if (v2 && v2.stimulus.type !== "NONE" && v2.stimulus.type !== "TEXT") {
-    try {
-      stimulusUrl = await getPracticeStimulusUrl(v2.stimulus.assetId);
-    } catch {
-      stimulusUrl = null;
-    }
-  }
-
   return (
-    <Card className="yas-practice-attempt" aria-labelledby="practice-attempt-title">
-      <div className="yas-practice-attempt-heading">
-        <IconBadge icon={visual.icon} tone={visual.tint} shape="square" size="lg" />
-        <div>
-          <Badge tone={activity.content.evaluationMode === "DETERMINISTIC" ? "success" : "info"}>
-            {activity.content.evaluationMode === "DETERMINISTIC"
-              ? "Resposta verificável"
-              : "Sem score automático"}
-          </Badge>
-          <h2 id="practice-attempt-title">{activity.title}</h2>
-          <p>{activity.content.prompt}</p>
-        </div>
-        <Link className="yas-dialog-close" href="/pratica" aria-label="Fechar">
-          <Icon name="x" size={18} />
-        </Link>
+    <details className="yas-practice-lesson" data-state={group.state} open={open}>
+      <summary>
+        <span className="yas-practice-lesson-icon" aria-hidden="true">
+          <Icon name={groupIcon[group.state]} size={18} />
+        </span>
+        <span className="yas-practice-lesson-copy">
+          {/* Dentro do bloco do módulo, basta a aula ("Aula 02"). */}
+          <small>
+            {groupStateLabel[group.state]} ·{" "}
+            {group.module ? group.context.split(" · ").at(-1) : group.context}
+          </small>
+          <strong>{group.title}</strong>
+        </span>
+        <span className="yas-practice-lesson-count">{countLabel}</span>
+        <Icon name="right" size={18} className="yas-practice-lesson-chevron" />
+      </summary>
+      <div className="yas-practice-lesson-body">
+        {tiles}
+        {lessonLink && <div className="yas-practice-lesson-footer">{lessonLink}</div>}
       </div>
-
-      {v2 ? (
-        <PracticePlayer
-          content={v2}
-          mode="live"
-          stimulusUrl={stimulusUrl}
-          onSubmit={submitPracticeV2Action.bind(null, attempt.id)}
-          spoken={{
-            attemptId: attempt.id,
-            upload: uploadPracticeAudioAction,
-            complete: completePracticeAudioAction,
-          }}
-          resultFooter={
-            <Link className="yas-button yas-button--soft" href="/pratica">
-              Voltar às práticas
-            </Link>
-          }
-        />
-      ) : (
-        <form className="yas-practice-response-form" action={submitPracticeAction}>
-          <input type="hidden" name="attemptId" value={attempt.id} />
-          {activity.content.kind === "MULTIPLE_CHOICE" ? (
-            <fieldset className="yas-practice-choices">
-              <legend>Escolha uma resposta</legend>
-              {activity.content.options.map((option) => (
-                <Radio
-                  key={option.id}
-                  name="optionId"
-                  value={option.id}
-                  label={option.label}
-                  required
-                />
-              ))}
-            </fieldset>
-          ) : activity.content.kind === "MANUAL_AUDIO" ? (
-            <>
-              <p className="yas-practice-manual-note">{activity.content.instructions}</p>
-              <AudioResponse
-                attemptId={attempt.id}
-                upload={uploadPracticeAudioAction}
-                complete={completePracticeAudioAction}
-              />
-            </>
-          ) : (
-            <>
-              <p className="yas-practice-manual-note">{activity.content.instructions}</p>
-              <Textarea
-                label="Seu registro da prática"
-                name="responseText"
-                rows={5}
-                maxLength={2000}
-                required
-              />
-            </>
-          )}
-          {activity.content.kind !== "MANUAL_AUDIO" && (
-            <Button type="submit" variant="primary">
-              Concluir prática
-            </Button>
-          )}
-        </form>
-      )}
-    </Card>
+    </details>
   );
 }
 
@@ -300,95 +340,157 @@ function formatDueDate(value: string): string {
   });
 }
 
+function duePieces(value: string) {
+  const date = new Date(value);
+  const part = (options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Recife", ...options })
+      .format(date)
+      .replace(".", "");
+  return {
+    day: part({ day: "2-digit" }),
+    month: part({ month: "short" }),
+    time: part({ hour: "2-digit", minute: "2-digit" }),
+  };
+}
+
 function AssignedPracticeCard({ item }: { item: AssignedPractice }) {
   const status = ASSIGNED_STATUS[item.status];
   const visual = practiceSkillVisual[item.skill];
+  const due = item.dueAt ? duePieces(item.dueAt) : null;
   return (
     <li>
-      <Card className="yas-practice-assigned-card yas-lift" data-status={item.status}>
-        <div className="yas-practice-assigned-header">
-          <IconBadge icon={visual.icon} tone={visual.tint} shape="square" size="sm" />
-          <Badge tone="neutral">{practiceSkillLabel(item.skill)}</Badge>
-          <Badge tone={status.tone} dot>
-            {status.label}
-          </Badge>
+      <article className="yas-practice-assigned-card" data-status={item.status}>
+        {/* Bloco de prazo à esquerda: a informação mais urgente da tarefa. */}
+        <div className="yas-practice-assigned-due" aria-hidden="true">
+          {due ? (
+            <>
+              <small>{due.month}</small>
+              <strong>{due.day}</strong>
+              <small>{due.time}</small>
+            </>
+          ) : (
+            <>
+              <Icon name="cal" size={20} />
+              <small>Livre</small>
+            </>
+          )}
         </div>
-        <h3>{item.title}</h3>
-        <ul className="yas-practice-assigned-meta">
-          <li>
-            <Icon name="users" size={15} />
-            Turma: {item.cohortName}
-          </li>
-          <li>
-            <Icon name="clock" size={15} />
-            Tempo: {item.estimatedMinutes} min
-          </li>
-          <li>
-            <Icon name="cal" size={15} />
-            {item.dueAt
-              ? `${item.status === "OVERDUE" ? "Prazo vencido em" : "Prazo:"} ${formatDueDate(item.dueAt)}`
-              : "Sem prazo"}
-          </li>
-        </ul>
-        {item.status === "DONE" ? (
-          item.attemptId ? (
+        <div className="yas-practice-assigned-body">
+          <div className="yas-practice-assigned-header">
+            <span className="yas-practice-activity-skill">
+              <Icon name={visual.icon} size={14} />
+              {practiceSkillLabel(item.skill)}
+            </span>
+            <Badge tone={status.tone} dot>
+              {status.label}
+            </Badge>
+          </div>
+          <h3>{item.title}</h3>
+          <p className="yas-practice-assigned-meta">
+            <span>
+              <Icon name="users" size={14} />
+              {item.cohortName}
+            </span>
+            <span>
+              <Icon name="clock" size={14} />
+              {item.estimatedMinutes} min
+            </span>
+            <span>
+              {item.dueAt
+                ? `${item.status === "OVERDUE" ? "Venceu em" : "Prazo:"} ${formatDueDate(item.dueAt)}`
+                : "Sem prazo"}
+            </span>
+          </p>
+        </div>
+        <div className="yas-practice-assigned-action">
+          {item.status === "DONE" ? (
+            item.attemptId ? (
+              <Link
+                className="yas-button yas-button--soft yas-button--sm"
+                href={`/pratica?attempt=${item.attemptId}`}
+              >
+                Ver resultado
+              </Link>
+            ) : null
+          ) : item.status === "IN_PROGRESS" && item.attemptId ? (
             <Link
-              className="yas-button yas-button--soft yas-button--sm"
+              className="yas-button yas-button--secondary yas-button--sm"
               href={`/pratica?attempt=${item.attemptId}`}
             >
-              Ver resultado
+              Continuar →
             </Link>
-          ) : null
-        ) : item.status === "IN_PROGRESS" && item.attemptId ? (
-          <Link
-            className="yas-button yas-button--secondary yas-button--sm"
-            href={`/pratica?attempt=${item.attemptId}`}
-          >
-            Continuar →
-          </Link>
-        ) : (
-          <StartPracticeForm
-            activity={{ id: item.practiceActivityId }}
-            label={item.status === "OVERDUE" ? "Fazer agora" : "Começar"}
-          />
-        )}
-      </Card>
+          ) : (
+            <StartPracticeForm
+              activity={{ id: item.practiceActivityId }}
+              label={item.status === "OVERDUE" ? "Fazer agora" : "Começar"}
+            />
+          )}
+        </div>
+      </article>
     </li>
   );
 }
 
+/**
+ * Tarefas do professor. Vazia, vira uma faixa discreta (sem roubar a atenção da prática);
+ * com itens, ganha destaque com contagem de pendentes e prazo em evidência.
+ */
 function AssignedPracticeSection({ assigned }: { assigned: AssignedPractice[] | null }) {
-  return (
-    <section className="yas-practice-section" aria-labelledby="practice-assigned-title">
-      <div className="yas-practice-section-heading">
+  if (assigned === null) {
+    return (
+      <Alert
+        tone="warning"
+        title="Não foi possível carregar suas atribuições"
+        description="Recarregue a página para tentar de novo."
+      />
+    );
+  }
+
+  if (assigned.length === 0) {
+    return (
+      <section className="yas-practice-assigned-empty" aria-labelledby="practice-assigned-title">
+        <span className="yas-practice-assigned-empty-icon" aria-hidden="true">
+          <Icon name="inbox" size={18} />
+        </span>
         <div>
           <h2 id="practice-assigned-title">Atribuídas a você</h2>
-          <p>Práticas que seu professor indicou para a sua turma.</p>
+          <p>
+            Nenhuma prática atribuída pelo seu professor. Quando houver, ela aparece aqui com o
+            prazo.
+          </p>
         </div>
+        <Badge tone="success" icon="check-c">
+          Em dia
+        </Badge>
+      </section>
+    );
+  }
+
+  const pending = assigned.filter((item) => item.status !== "DONE").length;
+  const overdue = assigned.filter((item) => item.status === "OVERDUE").length;
+  return (
+    <section
+      className="yas-practice-section yas-practice-assigned"
+      aria-labelledby="practice-assigned-title"
+    >
+      <div className="yas-practice-assigned-heading">
+        <div>
+          <span className="yas-practice-eyebrow">Do seu professor</span>
+          <h2 id="practice-assigned-title">Atribuídas a você</h2>
+        </div>
+        <span className="yas-practice-assigned-count" data-overdue={overdue > 0 || undefined}>
+          {overdue > 0
+            ? `${overdue} ${overdue === 1 ? "atrasada" : "atrasadas"}`
+            : pending > 0
+              ? `${pending} ${pending === 1 ? "pendente" : "pendentes"}`
+              : "Tudo concluído"}
+        </span>
       </div>
-      {assigned === null ? (
-        <Alert
-          tone="warning"
-          title="Não foi possível carregar suas atribuições"
-          description="Recarregue a página para tentar de novo."
-        />
-      ) : assigned.length === 0 ? (
-        <Card className="yas-practice-assigned-empty">
-          <IconBadge icon="inbox" />
-          <div>
-            <strong>Nenhuma prática atribuída</strong>
-            <p className="yas-practice-muted">
-              Quando seu professor atribuir uma prática à sua turma, ela aparece aqui com o prazo.
-            </p>
-          </div>
-        </Card>
-      ) : (
-        <ul className="yas-practice-assigned-list">
-          {assigned.map((item) => (
-            <AssignedPracticeCard key={`${item.practiceActivityId}:${item.cohortId}`} item={item} />
-          ))}
-        </ul>
-      )}
+      <ul className="yas-practice-assigned-list">
+        {assigned.map((item) => (
+          <AssignedPracticeCard key={`${item.practiceActivityId}:${item.cohortId}`} item={item} />
+        ))}
+      </ul>
     </section>
   );
 }
@@ -401,6 +503,12 @@ function formatHistoryDate(value: string): string {
 
 export default async function PracticePage({ searchParams }: PracticePageProps) {
   const params = await searchParams;
+  // Links antigos (`?attempt=`) abrem a prática na sua tela própria.
+  const legacyAttempt = firstValue(params.attempt);
+  if (legacyAttempt) {
+    const completed = firstValue(params.completed) === "1" ? "?completed=1" : "";
+    redirect(`/pratica/${encodeURIComponent(legacyAttempt)}${completed}`);
+  }
   const access = await loadCurrentSubscriptionAccess();
   // ?suspended=1 comes from an action that was refused mid-flow; the access state is the source of truth.
   if (access.kind === "suspended") {
@@ -411,10 +519,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
       </div>
     );
   }
-  const state = await loadPracticePage({
-    skill: firstValue(params.skill),
-    attemptId: firstValue(params.attempt),
-  });
+  const state = await loadPracticePage({ skill: firstValue(params.skill) });
 
   if (state.status === "unauthorized") {
     return (
@@ -447,236 +552,263 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     history,
     minutesThisWeek,
     recommendation,
-    selectedAttempt,
     selectedSkill,
   } = state.data;
   const assigned: AssignedPractice[] | null = await listCurrentStudentAssignedPractices().catch(
     () => null,
   );
-  const requestedAttempt = firstValue(params.attempt);
   const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
+  // Sem trilha carregada, tudo cai em "Prática livre": a página continua utilizável.
+  const learning = await loadLearningCourses().catch(() => null);
+  // Filtrar por habilidade já é explorar a biblioteca: abre a visão completa.
+  const showAll = firstValue(params.todas) === "1" || Boolean(selectedSkill);
+  const groups = groupActivitiesByLesson(
+    activities,
+    learning?.status === "success" ? learning.data : [],
+  );
 
   return (
-    <div className="yas-practice-page">
-      <PageHeader
-        title="Prática"
-        description="Treine um pouco todos os dias e ganhe mais confiança no inglês."
-        tagline
-      />
-
-      {firstValue(params.suspended) === "1" && (
-        <Alert
-          tone="info"
-          title="Sua atividade não foi registrada"
-          description="O acesso estava em pausa naquele momento. Se o pagamento já foi confirmado, você pode praticar de novo agora."
+    <ViewTransition
+      enter={{ "nav-back": "yas-page-back", default: "none" }}
+      exit={{ default: "none" }}
+      default="none"
+    >
+      <div className="yas-practice-page">
+        <PageHeader
+          title="Prática"
+          description="Treine um pouco todos os dias e ganhe mais confiança no inglês."
+          tagline
         />
-      )}
 
-      {requestedAttempt && !selectedAttempt ? (
-        <ErrorState
-          title="Tentativa indisponível"
-          description="Ela não existe ou não pertence à sua conta."
-        />
-      ) : selectedAttempt ? (
-        <AttemptPanel attempt={selectedAttempt} />
-      ) : null}
-      {requestedActivity && !selectedAttempt && (
-        <Card className="yas-practice-requested">
-          <IconBadge
-            icon={practiceSkillVisual[requestedActivity.skill].icon}
-            tone={practiceSkillVisual[requestedActivity.skill].tint}
-            shape="square"
+        {firstValue(params.suspended) === "1" && (
+          <Alert
+            tone="info"
+            title="Sua atividade não foi registrada"
+            description="O acesso estava em pausa naquele momento. Se o pagamento já foi confirmado, você pode praticar de novo agora."
           />
-          <div>
-            <h2 className="yas-card-title">{requestedActivity.title}</h2>
-            <p className="yas-practice-muted">{requestedActivity.content.prompt}</p>
-          </div>
-          <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
-        </Card>
-      )}
-
-      <div className="yas-practice-top-grid">
-        {recommendation ? (
-          <Hero
-            className="yas-reveal"
-            style={reveal(1)}
-            kicker="Prática de hoje"
-            kickerIcon="target"
-            title={`${recommendation.activity.estimatedMinutes} minutos para praticar agora`}
-            photo="/brand/hero-practice.webp"
-            actions={
-              <StartPracticeForm activity={recommendation.activity} label="Começar prática" large />
-            }
-          >
-            <div className="yas-practice-hero-chips">
-              <span className="yas-hero-chip">
-                <Icon name={practiceSkillVisual[recommendation.activity.skill].icon} size={15} />
-                {practiceSkillLabel(recommendation.activity.skill)}
-              </span>
-              <span className="yas-hero-chip">
-                <Icon name="book" size={15} />
-                {recommendation.activity.title}
-              </span>
-            </div>
-            <p className="yas-hero-text">{recommendation.explanation}</p>
-          </Hero>
-        ) : (
-          <Hero
-            className="yas-reveal"
-            style={reveal(1)}
-            kicker="Prática de hoje"
-            kickerIcon="target"
-            title="Sem recomendação disponível"
-            photo="/brand/hero-practice.webp"
-          >
-            <p className="yas-hero-text">Nenhuma atividade suportada foi publicada.</p>
-          </Hero>
         )}
 
-        <Card
-          className="yas-practice-week yas-reveal"
-          style={reveal(2)}
-          aria-labelledby="practice-week-title"
-        >
-          <div className="yas-card-header">
-            <h2 className="yas-card-title" id="practice-week-title">
-              Resumo da semana
-            </h2>
-            <Link className="yas-link" href="/progresso">
-              Ver progresso <Icon name="arrow" />
-            </Link>
-          </div>
-          <div className="yas-practice-week-stats">
+        {requestedActivity && (
+          <Card className="yas-practice-requested">
+            <IconBadge
+              icon={practiceSkillVisual[requestedActivity.skill].icon}
+              tone={practiceSkillVisual[requestedActivity.skill].tint}
+              shape="square"
+            />
             <div>
-              <IconBadge icon="clock" size="sm" />
-              <strong>{minutesThisWeek} min</strong>
-              <span>praticados</span>
+              <h2 className="yas-card-title">{requestedActivity.title}</h2>
+              <p className="yas-practice-muted">{requestedActivity.content.prompt}</p>
             </div>
-            <div>
-              <IconBadge icon="check-c" tone="blue" size="sm" />
-              <strong>{completedThisWeek}</strong>
-              <span>atividades concluídas</span>
-            </div>
-          </div>
-          <p className="yas-practice-week-note">
-            <Icon name="spark" size={16} />
-            Sinais de prática ficam separados do progresso do curso e do seu nível.
-          </p>
-        </Card>
-      </div>
+            <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
+          </Card>
+        )}
 
-      <AssignedPracticeSection assigned={assigned} />
-
-      <section className="yas-practice-section" aria-labelledby="practice-skills-title">
-        <div className="yas-practice-section-heading">
-          <div>
-            <h2 id="practice-skills-title">Escolha uma habilidade</h2>
-            <p>Habilidades sem conteúdo publicado aparecem desativadas.</p>
-          </div>
-          {selectedSkill && (
-            <Link className="yas-link" href="/pratica">
-              Ver todas <Icon name="arrow" />
-            </Link>
-          )}
-        </div>
-        <div className="yas-practice-skills">
-          {catalog.map((item) => (
-            <SkillCard key={item.skill} item={item} selected={selectedSkill === item.skill} />
-          ))}
-        </div>
-      </section>
-
-      <div className="yas-practice-content-grid">
-        <section className="yas-practice-section" aria-labelledby="practice-activities-title">
-          <div className="yas-practice-section-heading">
-            <div>
-              <h2 id="practice-activities-title">
-                {selectedSkill ? practiceSkillLabel(selectedSkill) : "Recomendado para você"}
-              </h2>
-              <p>Atividades publicadas para o seu curso.</p>
-            </div>
-          </div>
-          {activities.length === 0 ? (
-            <Card>
-              <EmptyState
-                title="Sem conteúdo suportado"
-                description="Esta habilidade ficará disponível quando houver conteúdo contratado."
-              />
-            </Card>
+        <div className="yas-practice-top-grid">
+          {recommendation ? (
+            <Hero
+              className="yas-reveal"
+              style={reveal(1)}
+              kicker="Prática de hoje"
+              kickerIcon="target"
+              title={`${recommendation.activity.estimatedMinutes} minutos para praticar agora`}
+              photo="/brand/hero-practice.webp"
+              actions={
+                <StartPracticeForm
+                  activity={recommendation.activity}
+                  label="Começar prática"
+                  large
+                />
+              }
+            >
+              <div className="yas-practice-hero-chips">
+                <span className="yas-hero-chip">
+                  <Icon name={practiceSkillVisual[recommendation.activity.skill].icon} size={15} />
+                  {practiceSkillLabel(recommendation.activity.skill)}
+                </span>
+                <span className="yas-hero-chip">
+                  <Icon name="book" size={15} />
+                  {recommendation.activity.title}
+                </span>
+              </div>
+              <p className="yas-hero-text">{recommendation.explanation}</p>
+            </Hero>
           ) : (
-            <div className="yas-practice-activities">
-              {activities.map((activity) => {
-                const visual = practiceSkillVisual[activity.skill];
-                return (
-                  <Card className="yas-practice-activity-card yas-lift" key={activity.id}>
-                    <span
-                      className="yas-practice-activity-thumb"
-                      data-tint={visual.tint}
-                      aria-hidden="true"
-                    >
-                      <Icon name={visual.icon} size={28} />
-                      <span>{activity.estimatedMinutes} min</span>
-                    </span>
-                    <div className="yas-practice-activity-body">
+            <Hero
+              className="yas-reveal"
+              style={reveal(1)}
+              kicker="Prática de hoje"
+              kickerIcon="target"
+              title="Sem recomendação disponível"
+              photo="/brand/hero-practice.webp"
+            >
+              <p className="yas-hero-text">Nenhuma atividade suportada foi publicada.</p>
+            </Hero>
+          )}
+
+          <Card
+            className="yas-practice-week yas-reveal"
+            style={reveal(2)}
+            aria-labelledby="practice-week-title"
+          >
+            <div className="yas-card-header">
+              <h2 className="yas-card-title" id="practice-week-title">
+                Resumo da semana
+              </h2>
+              <Link className="yas-link" href="/progresso">
+                Ver progresso <Icon name="arrow" />
+              </Link>
+            </div>
+            <div className="yas-practice-week-stats">
+              <div>
+                <IconBadge icon="clock" />
+                <span>
+                  <strong>
+                    {minutesThisWeek}
+                    <small> min</small>
+                  </strong>
+                  <span>praticados nos últimos 7 dias</span>
+                </span>
+              </div>
+              <div>
+                <IconBadge icon="check-c" tone="blue" />
+                <span>
+                  <strong>{completedThisWeek}</strong>
+                  <span>
+                    {completedThisWeek === 1 ? "atividade concluída" : "atividades concluídas"}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <div className="yas-reveal" style={reveal(3)}>
+          <AssignedPracticeSection assigned={assigned} />
+        </div>
+
+        <div className="yas-practice-content-grid">
+          <section
+            id="praticas"
+            className="yas-practice-section yas-practice-main yas-reveal"
+            style={reveal(4)}
+            aria-labelledby="practice-activities-title"
+          >
+            <div className="yas-practice-main-heading">
+              <span className="yas-practice-eyebrow">
+                {showAll ? "Biblioteca de práticas" : "Por aula"}
+              </span>
+              <div className="yas-practice-main-title">
+                <h2 id="practice-activities-title">
+                  {selectedSkill
+                    ? `${practiceSkillLabel(selectedSkill)} nas suas aulas`
+                    : showAll
+                      ? "Todas as práticas"
+                      : "Pratique o que você estudou"}
+                </h2>
+                {showAll && (
+                  <Link className="yas-practice-back" href="/pratica#praticas">
+                    <Icon name="left" size={16} />
+                    Voltar ao destaque
+                  </Link>
+                )}
+              </div>
+              <p>
+                {showAll
+                  ? `${activities.length} ${activities.length === 1 ? "atividade organizada" : "atividades organizadas"} pela aula em que o conteúdo aparece.`
+                  : "Cada aula tem atividades curtas com o conteúdo que você viu nela."}
+              </p>
+            </div>
+
+            <SkillFilter catalog={catalog} selected={selectedSkill} showAll={showAll} />
+
+            {activities.length === 0 ? (
+              <Card>
+                <EmptyState
+                  title="Sem conteúdo suportado"
+                  description="Esta habilidade ficará disponível quando houver conteúdo contratado."
+                />
+              </Card>
+            ) : (
+              /* Destaque ⇄ Biblioteca: o conteúdo troca com crossfade (mesma rota, chave diferente). */
+              <ViewTransition
+                key={showAll ? "library" : "featured"}
+                name="practice-main-content"
+                share="auto"
+                enter="auto"
+                default="none"
+              >
+                {showAll ? (
+                  <div className="yas-practice-modules">
+                    {sectionsByModule(groups).map((section, index) => (
+                      <ModulePracticeBlock key={section.key} section={section} index={index} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="yas-practice-lessons">
+                    {groups[0] && <LessonPracticeGroup group={groups[0]} featured open />}
+                    <PracticeLibraryTeaser groups={groups} activities={activities} />
+                  </div>
+                )}
+              </ViewTransition>
+            )}
+          </section>
+
+          <aside className="yas-reveal" style={reveal(5)} aria-labelledby="practice-history-title">
+            <Card className="yas-practice-history-card">
+              <div className="yas-card-header">
+                <h2 className="yas-card-title" id="practice-history-title">
+                  Histórico recente
+                </h2>
+              </div>
+              {history.length === 0 ? (
+                <p className="yas-practice-muted">Sua primeira prática aparecerá aqui.</p>
+              ) : (
+                <ol className="yas-list yas-practice-history-list">
+                  {history.map((item) => (
+                    <li key={item.id}>
+                      <IconBadge
+                        icon={practiceSkillVisual[item.skill].icon}
+                        tone={practiceSkillVisual[item.skill].tint}
+                        shape="square"
+                      />
+                      {item.status === "ABANDONED" ? (
+                        <span className="yas-list-text">
+                          <strong>{item.activityTitle}</strong>
+                          <small>{formatHistoryDate(item.submittedAt ?? item.startedAt)}</small>
+                        </span>
+                      ) : (
+                        /* Retomar uma prática em andamento ou rever o resultado. */
+                        <Link
+                          className="yas-list-text yas-practice-history-link"
+                          href={`/pratica/${item.id}`}
+                        >
+                          <strong>{item.activityTitle}</strong>
+                          <small>
+                            {formatHistoryDate(item.submittedAt ?? item.startedAt)} ·{" "}
+                            {item.status === "IN_PROGRESS" ? "Continuar" : "Ver resultado"}
+                          </small>
+                        </Link>
+                      )}
                       <Badge
                         tone={
-                          activity.content.evaluationMode === "DETERMINISTIC" ? "success" : "info"
+                          item.evaluationStatus === "CORRECT" ||
+                          item.evaluationStatus === "MANUAL_REVIEWED"
+                            ? "success"
+                            : item.evaluationStatus === "PENDING_MANUAL"
+                              ? "warning"
+                              : "muted"
                         }
                       >
-                        {practiceSkillLabel(activity.skill)}
+                        {practiceHistoryStatus(item)}
                       </Badge>
-                      <h3>{activity.title}</h3>
-                      <p>{activity.content.prompt}</p>
-                      <StartPracticeForm activity={activity} soft />
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        <aside aria-labelledby="practice-history-title">
-          <Card className="yas-practice-history-card">
-            <div className="yas-card-header">
-              <h2 className="yas-card-title" id="practice-history-title">
-                Histórico recente
-              </h2>
-            </div>
-            {history.length === 0 ? (
-              <p className="yas-practice-muted">Sua primeira prática aparecerá aqui.</p>
-            ) : (
-              <ol className="yas-list yas-practice-history-list">
-                {history.map((item) => (
-                  <li key={item.id}>
-                    <IconBadge
-                      icon={practiceSkillVisual[item.skill].icon}
-                      tone={practiceSkillVisual[item.skill].tint}
-                      shape="square"
-                    />
-                    <span className="yas-list-text">
-                      <strong>{item.activityTitle}</strong>
-                      <small>{formatHistoryDate(item.submittedAt ?? item.startedAt)}</small>
-                    </span>
-                    <Badge
-                      tone={
-                        item.evaluationStatus === "CORRECT" ||
-                        item.evaluationStatus === "MANUAL_REVIEWED"
-                          ? "success"
-                          : item.evaluationStatus === "PENDING_MANUAL"
-                            ? "warning"
-                            : "muted"
-                      }
-                    >
-                      {practiceHistoryStatus(item)}
-                    </Badge>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </Card>
-        </aside>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </Card>
+          </aside>
+        </div>
       </div>
-    </div>
+    </ViewTransition>
   );
 }

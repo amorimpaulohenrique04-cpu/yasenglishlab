@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 
-import { Alert, Badge, Button } from "@/components/ui";
+import { Alert, Badge, Button, Icon } from "@/components/ui";
 
 import {
   previewGrade,
@@ -14,11 +14,11 @@ import { AudioResponse } from "./audio-response";
 import {
   buildResponseInput,
   initialAnswerState,
-  outcomeTitle,
   type PlayerAnswerState,
   type PlayerOutcome,
 } from "./practice-player-logic";
 import { PracticeResponseFields } from "./practice-response-fields";
+import { PracticeResultHero } from "./practice-result";
 import { PracticeStimulus } from "./practice-stimulus";
 
 export type { PlayerOutcome as PracticePlayerOutcome } from "./practice-player-logic";
@@ -54,14 +54,6 @@ type Phase =
   | { name: "submitting" }
   | { name: "done"; outcome: PlayerOutcome; preview: boolean };
 
-const TONE: Record<PlayerOutcome["status"], "success" | "warning" | "info"> = {
-  CORRECT: "success",
-  INCORRECT: "warning",
-  PENDING_MANUAL: "info",
-  NOT_SCORED: "info",
-  MANUAL_REVIEWED: "info",
-};
-
 function ResultPanel({
   outcome,
   preview,
@@ -73,32 +65,21 @@ function ResultPanel({
   onRetry: (() => void) | null;
   footer: ReactNode;
 }) {
-  const pending = outcome.status === "PENDING_MANUAL";
   return (
     <div className="yas-practice-result" aria-live="polite">
       {preview && <Badge tone="neutral">Prévia do professor: nada é salvo</Badge>}
-      <Alert
-        tone={TONE[outcome.status]}
-        title={outcomeTitle(outcome.status)}
-        {...(outcome.feedback ? { description: outcome.feedback } : {})}
-      />
-      {pending && (
-        <p className="yas-practice-hint">
-          Sua resposta foi enviada e não recebe nota automática. O professor vai revisar.
-        </p>
-      )}
-      {!preview && (
-        <p className="yas-practice-boundary-note">
-          Este resultado pertence somente à prática. Ele não altera seu progresso no curso nem
-          define proficiência CEFR.
-        </p>
-      )}
-      {onRetry && (
-        <Button type="button" variant="outline" onClick={onRetry}>
-          Tentar de novo
-        </Button>
-      )}
-      {footer}
+      <PracticeResultHero status={outcome.status} feedback={outcome.feedback}>
+        {(onRetry || footer) && (
+          <div className="yas-practice-outcome-actions">
+            {onRetry && (
+              <Button type="button" variant="outline" onClick={onRetry}>
+                Tentar de novo
+              </Button>
+            )}
+            {footer}
+          </div>
+        )}
+      </PracticeResultHero>
     </div>
   );
 }
@@ -203,7 +184,13 @@ export function PracticePlayer({
         aria-busy={busy || undefined}
         noValidate
       >
-        {content.instructions && <p className="yas-practice-manual-note">{content.instructions}</p>}
+        {/* Resposta falada: o gravador já guia a tarefa, sem instrução repetida. */}
+        {content.instructions && response.type !== "SPOKEN" && (
+          <p className="yas-practice-instructions">
+            <Icon name="spark" size={16} />
+            {content.instructions}
+          </p>
+        )}
 
         {response.type === "SPOKEN" ? (
           spoken && !preview ? (
@@ -233,14 +220,22 @@ export function PracticePlayer({
         )}
 
         {response.type === "SPOKEN" && !preview ? null : (
-          <Button type="submit" variant="primary" loading={busy}>
-            {preview ? "Testar resposta" : "Enviar resposta"}
-          </Button>
-        )}
-        {busy && (
-          <p className="yas-practice-hint" role="status">
-            Enviando sua resposta…
-          </p>
+          <div className="yas-practice-actions">
+            <Button
+              type="submit"
+              variant="secondary"
+              size="lg"
+              loading={busy}
+              leadingIcon={<Icon name="check" size={18} strokeWidth={2.6} />}
+            >
+              {preview ? "Testar resposta" : "Enviar resposta"}
+            </Button>
+            {busy && (
+              <span className="yas-practice-visually-hidden" role="status">
+                Enviando sua resposta…
+              </span>
+            )}
+          </div>
         )}
       </form>
     </div>

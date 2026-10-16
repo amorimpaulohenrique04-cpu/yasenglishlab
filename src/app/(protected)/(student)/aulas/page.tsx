@@ -23,7 +23,7 @@ import {
   type LearningCourse,
   type LearningModule,
 } from "@/modules/learning";
-import { LessonRow, lessonState } from "@/modules/learning/ui/lesson-status";
+import { LessonRow, lessonAction, lessonState } from "@/modules/learning/ui/lesson-status";
 import { loadLearningAccess, loadLearningCourses } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
@@ -103,6 +103,9 @@ function CourseOverview({ course, index }: { course: LearningCourse; index: numb
               <Icon name="bars" size={18} />
               Resumo do curso
             </h2>
+            <Badge tone={course.completedAt ? "success" : "neutral"}>
+              {courseCompletion(course)}% concluído
+            </Badge>
           </div>
           <dl className="yas-learning-facts">
             <div>
@@ -130,7 +133,32 @@ function CourseOverview({ course, index }: { course: LearningCourse; index: numb
               </dd>
             </div>
           </dl>
-          {course.description && <p className="yas-learning-card-copy">{course.description}</p>}
+          {upNext ? (
+            <Link className="yas-learning-next" href={lessonHref(upNext.moduleId, upNext.slug)}>
+              <span className="yas-learning-next-icon" aria-hidden="true">
+                <Icon name="play-c" size={20} />
+              </span>
+              <span className="yas-learning-next-copy">
+                <small>{done > 0 ? "Continue de onde parou" : "Próxima aula"}</small>
+                <strong>{upNext.title}</strong>
+                <span>
+                  {currentModule ? `Módulo ${currentModule.position} · ` : ""}
+                  {upNext.estimatedMinutes ?? 10} min
+                </span>
+              </span>
+              <Icon name="arrow" size={18} />
+            </Link>
+          ) : course.completedAt ? (
+            <p className="yas-learning-next" data-complete="true">
+              <span className="yas-learning-next-icon" aria-hidden="true">
+                <Icon name="trophy" size={20} />
+              </span>
+              <span className="yas-learning-next-copy">
+                <strong>Curso concluído</strong>
+                <span>Revise qualquer aula quando quiser.</span>
+              </span>
+            </p>
+          ) : null}
         </Card>
       </div>
 
@@ -185,15 +213,22 @@ function CourseOverview({ course, index }: { course: LearningCourse; index: numb
                     As aulas deste módulo aparecerão aqui quando estiverem disponíveis.
                   </p>
                 ) : (
-                  <ol className="yas-lesson-list" aria-label={`Aulas de ${module.title}`}>
-                    {sortedLessons.map((lesson) => (
-                      <LessonRow
-                        key={lesson.id}
-                        lesson={lesson}
-                        href={lessonHref(module.id, lesson.slug)}
-                        state={lessonState(lesson, upNext?.id ?? null)}
-                      />
-                    ))}
+                  <ol
+                    className="yas-lesson-list yas-lesson-list--actions"
+                    aria-label={`Aulas de ${module.title}`}
+                  >
+                    {sortedLessons.map((lesson) => {
+                      const state = lessonState(lesson, upNext?.id ?? null);
+                      return (
+                        <LessonRow
+                          key={lesson.id}
+                          lesson={lesson}
+                          href={lessonHref(module.id, lesson.slug)}
+                          state={state}
+                          action={lessonAction(lesson, state)}
+                        />
+                      );
+                    })}
                   </ol>
                 )}
                 <div className="yas-learning-module-footer">

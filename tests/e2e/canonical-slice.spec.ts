@@ -252,11 +252,12 @@ test.describe("canonical learning vertical slice", () => {
     });
     await coreSession.getByRole("button", { name: "Reservar" }).click();
     await expect(page.getByText("Reserva confirmada")).toBeVisible();
-    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Entrar no encontro" })).toBeVisible();
     await captureEvidence(page, "agenda-desktop.png");
 
     await page.reload();
-    await expect(coreSession.getByRole("button", { name: "Reservado" })).toBeDisabled();
+    await expect(coreSession.getByRole("button", { name: "Entrar no encontro" })).toBeVisible();
+    await expect(coreSession.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
 
     await page.goto("/home");

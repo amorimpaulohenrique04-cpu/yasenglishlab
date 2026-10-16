@@ -90,16 +90,26 @@ export function RoleShell({
   const initials = initialsOf(displayName);
   const shortcuts = items.filter((item) => item.shortcut).slice(0, 5);
 
-  const sidebarItems = items.map((item) => ({
-    id: item.id,
-    label: item.label,
-    href: item.href,
-    group: item.group,
-    icon: <Icon name={item.icon} size={21} />,
-    active: isActive(item, pathname, homeHref),
-  }));
-
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
+
+  const sidebarItems = [
+    ...items.map((item) => ({
+      id: item.id,
+      label: item.label,
+      href: item.href,
+      group: item.group,
+      icon: <Icon name={item.icon} size={21} />,
+      active: isActive(item, pathname, homeHref),
+    })),
+    {
+      id: "profile",
+      label: "Perfil",
+      href: "/profile",
+      group: "Conta",
+      icon: <Icon name="user" size={21} />,
+      active: profileActive,
+    },
+  ];
 
   return (
     <AppShell

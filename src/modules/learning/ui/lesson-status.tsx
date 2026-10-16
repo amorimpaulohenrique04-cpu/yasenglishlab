@@ -42,6 +42,20 @@ const stateTone = {
   locked: "muted",
 } as const;
 
+/** Ação explícita da linha: convida a começar, continuar ou rever a aula. */
+export function lessonAction(lesson: LearningLesson, state: LessonState) {
+  const percent = lessonCompletion(lesson);
+  const label =
+    state === "done" || percent === 100
+      ? "Rever aula →"
+      : percent > 0
+        ? "Continuar →"
+        : state === "current"
+          ? "Começar aula →"
+          : "Abrir aula →";
+  return { label, primary: state === "current" };
+}
+
 /** Linha de aula com estado por ícone + texto (nunca só cor). */
 export function LessonRow({
   lesson,

@@ -39,7 +39,7 @@ export async function startPracticeAction(formData: FormData): Promise<void> {
   }
 
   revalidatePath("/pratica");
-  redirect(`/pratica?attempt=${attempt.id}`);
+  redirect(`/pratica/${attempt.id}`);
 }
 
 export async function submitPracticeAction(formData: FormData): Promise<void> {
@@ -60,7 +60,8 @@ export async function submitPracticeAction(formData: FormData): Promise<void> {
     throw error;
   }
   revalidatePath("/pratica");
-  redirect(`/pratica?attempt=${input.attemptId}&completed=1`);
+  revalidatePath(`/pratica/${input.attemptId}`);
+  redirect(`/pratica/${input.attemptId}?completed=1`);
 }
 
 /**

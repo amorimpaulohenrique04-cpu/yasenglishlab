@@ -27,7 +27,8 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   await card.getByRole("button", { name: "Reservar novamente" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Reserva confirmada" })).toBeVisible();
   await page.reload();
-  await expect(card.getByRole("button", { name: "Reservado", exact: true })).toBeDisabled();
+  await expect(card.getByRole("button", { name: "Entrar no encontro" })).toBeVisible();
+  await expect(card.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
   ).toEqual([]);

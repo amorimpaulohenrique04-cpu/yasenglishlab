@@ -93,8 +93,8 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
     await expect(activity).toBeVisible();
     await activity.getByRole("button", { name: "Praticar →" }).click();
 
-    await expect(page).toHaveURL(/\/pratica\?attempt=[0-9a-f-]+$/i);
-    const match = page.url().match(/attempt=([0-9a-f-]+)/i);
+    await expect(page).toHaveURL(/\/pratica\/[0-9a-f-]+$/i);
+    const match = page.url().match(/\/pratica\/([0-9a-f-]+)/i);
     if (!match?.[1]) throw new Error("Practice attempt id was not returned.");
     const attemptId = match[1];
 
@@ -103,12 +103,9 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       mimeType: "audio/wav",
       buffer: silentWav(),
     });
-    await page.getByRole("button", { name: "Enviar áudio", exact: true }).click();
-    await expect(page.getByRole("status")).toContainText(
-      "Áudio enviado. Agora envie sua resposta para revisão.",
-    );
-    await page.getByRole("button", { name: "Enviar resposta para revisão" }).click();
-    await expect(page).toHaveURL(new RegExp(`/pratica\\?attempt=${attemptId}&completed=1$`));
+    // Uma ação só: envia o áudio e conclui a resposta para revisão.
+    await page.getByRole("button", { name: "Enviar para revisão", exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/pratica/${attemptId}\\?completed=1$`));
 
     const { data: pending, error: pendingError } = await admin
       .from("practice_results")
@@ -180,7 +177,7 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
         await otherTeacherContext.close();
       }
 
-      await page.goto(`/pratica?attempt=${attemptId}`);
+      await page.goto(`/pratica/${attemptId}`);
       const feedbackResult = page.getByRole("region").filter({
         has: page.getByText(feedback, { exact: true }),
       });

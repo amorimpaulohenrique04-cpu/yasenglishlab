@@ -1,3 +1,15 @@
+# Plano — Refinamento UI aluno (student-ui-refinement)
+
+Goal: `harness/goals/student-ui-refinement.md`. Branch `feat/ui-redesign`. Só apresentação.
+
+Status 2026-10-15: A–F implementados; Prática refeita (aula em destaque + grade de atividades, filtro em painel) e Agenda com mais respiro após feedback. tsc/eslint dos arquivos alterados OK, unit learning-lesson-access OK. verify:ui/e2e NÃO rodados (usuário pediu sem testes grandes); e2e de Agenda atualizados para o card reservado sem botão "Reservado". Vínculo prática→aula já existe no construtor do professor ("Aula relacionada"). Rodada 4 (2026-10-16): prática em rota própria de tela cheia `/pratica/[attemptId]` (grupo `(practice-focus)`, mesma guarda de aluno; `?attempt=` legado redireciona); peças compartilhadas em `pratica/_practice/`. Player redesenhado para todos os tipos (opções em cartão A/B/C, V/F, lacunas, ordenação com setas, escrita, gravador com ação única), resultado premium com próxima atividade/praticar de novo, histórico retomável, biblioteca por módulo→aula, View Transitions (entrada/saída do palco, volta, crossfade destaque⇄biblioteca) e details animados. E2E ajustados às novas URLs/rótulos (não executados). Pendente: retomar tentativa IN_PROGRESS ao clicar Praticar (backend; hoje cria duplicatas). ADR 0024 da prova multi-etapas na branch claude/practice-exam-adr-710630 (proposto, não mesclado).
+
+Rodada 3: "Atribuídas" vira faixa discreta quando vazia e cards com prazo em destaque quando há tarefas; visão `/pratica?todas=1` (biblioteca por aula) com convite "Ver todas as práticas por aula"; filtro por habilidade abre a visão completa. tsc/eslint OK.
+
+A. Perfil na sidebar (RoleShell, todos os papéis). B. Aulas: CTA por aula, resumo sem descrição de seed. E. Progresso: painéis alinhados. D. Materiais: toolbar e colunas de linha. F. Agenda: hierarquia de ações. C. Prática: nota removida, "Pratique o que você estudou" por aula vinculada, habilidades em chips. Verificação: browser 3 viewports, verify:agent, verify:ui.
+
+---
+
 # Plano — PR 74 gates
 
 ## Active task

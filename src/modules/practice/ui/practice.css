@@ -62,219 +62,309 @@
 }
 
 .yas-practice-week-stats {
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
   gap: 0.75rem;
 }
 
 .yas-practice-week-stats > div {
-  display: grid;
-  justify-items: center;
-  gap: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  border: 1px solid var(--yas-color-border);
   border-radius: var(--yas-radius-lg);
-  background: var(--yas-color-surface-soft);
-  padding: 1rem 0.625rem;
-  text-align: center;
+  padding: 0.875rem 1rem;
+}
+
+.yas-practice-week-stats > div > span {
+  display: grid;
+  gap: 0.25rem;
 }
 
 .yas-practice-week-stats strong {
   font-family: var(--yas-font-display);
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   font-weight: var(--yas-weight-display);
   letter-spacing: -0.02em;
   line-height: 1;
 }
 
-.yas-practice-week-stats span {
+.yas-practice-week-stats strong small {
   color: var(--yas-color-muted);
-  font-size: 0.78125rem;
+  font-family: var(--yas-font-sans);
+  font-size: 0.875rem;
+  font-weight: var(--yas-weight-semibold);
+  letter-spacing: 0;
 }
 
-.yas-practice-week-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: auto 0 0;
-  border-top: 1px dashed var(--yas-color-border);
-  padding-top: 0.875rem;
-  color: var(--yas-color-ink-soft);
+.yas-practice-week-stats > div > span > span {
+  color: var(--yas-color-muted);
   font-size: 0.8125rem;
 }
 
-.yas-practice-week-note .yas-icon {
-  margin-top: 1px;
+/* ---------- Skill filter (chips) ---------- */
+/* Painel próprio: separa o filtro do título da seção. */
+.yas-practice-filter {
+  display: grid;
+  gap: 0.75rem;
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  padding: 0.875rem 1.125rem;
+}
+
+.yas-practice-filter h3 {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-filter > .yas-practice-muted {
+  margin-top: -0.25rem;
+}
+
+.yas-practice-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.yas-practice-chip {
+  min-height: 2.375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  border: 1px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-surface);
+  color: var(--yas-color-ink-soft);
+  padding: 0 0.875rem;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+  text-decoration: none;
+  transition:
+    background-color var(--yas-motion-standard) var(--yas-ease-standard),
+    border-color var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+a.yas-practice-chip:hover {
+  border-color: var(--yas-color-purple-200);
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+}
+
+a.yas-practice-chip:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.yas-practice-chip[aria-current="page"] {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-practice-chip[data-disabled="true"] {
+  border-style: dashed;
+  background: transparent;
+  color: var(--yas-color-muted);
+  cursor: not-allowed;
+}
+
+.yas-practice-filter .yas-practice-muted {
+  font-size: var(--yas-font-size-xs);
+}
+
+/* ---------- Assigned ---------- */
+/* Vazia: faixa discreta de uma linha. */
+.yas-practice-assigned-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  border: 1px dashed var(--yas-color-purple-200);
+  border-radius: var(--yas-radius-lg);
+  background: rgb(255 255 255 / 55%);
+  padding: 0.75rem 1rem;
+}
+
+.yas-practice-assigned-empty-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-purple-50);
   color: var(--yas-color-purple-600);
 }
 
-.yas-practice-week-stats + .yas-practice-week-note {
-  margin-top: 1rem;
-}
-
-/* ---------- Skills ---------- */
-.yas-practice-skills {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
-  gap: 1.125rem;
-}
-
-.yas-practice-skill-card {
-  --tint: var(--yas-tint-lilac);
-  --tint-ink: var(--yas-tint-lilac-ink);
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  border-radius: var(--yas-radius-lg);
-  background: var(--tint);
-  color: var(--yas-color-ink);
-  padding: 1rem;
-  text-decoration: none;
-  transition:
-    transform var(--yas-motion-slow) var(--yas-ease-standard),
-    box-shadow var(--yas-motion-slow) var(--yas-ease-standard);
-}
-
-.yas-practice-skill-card[data-tint="blue"] {
-  --tint: var(--yas-tint-blue);
-  --tint-ink: var(--yas-tint-blue-ink);
-}
-
-.yas-practice-skill-card[data-tint="yellow"] {
-  --tint: var(--yas-tint-yellow);
-  --tint-ink: var(--yas-tint-yellow-ink);
-}
-
-.yas-practice-skill-card[data-tint="green"] {
-  --tint: var(--yas-tint-green);
-  --tint-ink: var(--yas-tint-green-ink);
-}
-
-.yas-practice-skill-card[data-tint="pink"] {
-  --tint: var(--yas-tint-pink);
-  --tint-ink: var(--yas-tint-pink-ink);
-}
-
-.yas-practice-skill-card .yas-icon-badge {
-  color: var(--tint-ink);
-}
-
-a.yas-practice-skill-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--yas-shadow-hover);
-}
-
-a.yas-practice-skill-card:focus-visible {
-  outline: 2px solid var(--yas-color-focus);
-  outline-offset: 3px;
-}
-
-.yas-practice-skill-card[data-selected="true"] {
-  box-shadow: inset 0 0 0 2px var(--tint-ink);
-}
-
-.yas-practice-skill-card[data-disabled="true"] {
-  background: var(--yas-tint-grey);
-  color: var(--yas-color-muted);
-}
-
-.yas-practice-skill-card[data-disabled="true"] .yas-icon-badge {
-  color: var(--yas-color-muted);
-}
-
-.yas-practice-skill-copy {
+.yas-practice-assigned-empty > div {
+  flex: 1;
   min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+}
+
+.yas-practice-assigned-empty h2 {
+  margin: 0;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-assigned-empty p {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+/* Com tarefas: destaque com prazo em evidência. */
+.yas-practice-assigned {
+  gap: 0.875rem;
+}
+
+.yas-practice-assigned-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.yas-practice-assigned-heading > div {
   display: grid;
   gap: 0.25rem;
 }
 
-.yas-practice-skill-copy strong {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  margin-top: 0.125rem;
+.yas-practice-assigned-heading h2 {
+  margin: 0;
   font-family: var(--yas-font-display);
-  font-size: 0.9375rem;
-  font-weight: var(--yas-weight-bold);
+  font-size: 1.25rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
 }
 
-.yas-practice-skill-copy strong .yas-icon {
-  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
-}
-
-a.yas-practice-skill-card:hover strong .yas-icon {
-  transform: translateX(3px);
-}
-
-.yas-practice-skill-copy small {
-  color: var(--yas-color-ink-soft);
-  font-size: 0.78125rem;
-  line-height: 1.35;
-}
-
-.yas-practice-skill-copy em {
-  color: var(--tint-ink);
+.yas-practice-assigned-count {
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+  padding: 0.3125rem 0.75rem;
   font-size: var(--yas-font-size-xs);
-  font-style: normal;
   font-weight: var(--yas-weight-bold);
 }
 
-.yas-practice-skill-card[data-disabled="true"] em {
-  color: var(--yas-color-muted);
+.yas-practice-assigned-count[data-overdue="true"] {
+  background: var(--yas-color-error);
 }
 
-/* ---------- Assigned ---------- */
 .yas-practice-assigned-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap: 1.125rem;
+  grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  gap: 0.875rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .yas-practice-assigned-card {
+  --due-bg: var(--yas-color-purple-50);
+  --due-ink: var(--yas-color-purple-700);
   height: 100%;
   display: grid;
-  align-content: start;
-  justify-items: start;
-  gap: 0.625rem;
-  padding: 1.125rem;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: 0.875rem 1rem;
+  border: 1px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  padding: 1rem;
 }
 
 .yas-practice-assigned-card[data-status="OVERDUE"] {
-  box-shadow:
-    inset 0 0 0 1px #f1c1bc,
-    var(--yas-shadow-card);
+  --due-bg: var(--yas-tint-red);
+  --due-ink: var(--yas-color-error);
+  border-color: #f1c1bc;
+}
+
+.yas-practice-assigned-card[data-status="DONE"] {
+  --due-bg: var(--yas-tint-green);
+  --due-ink: var(--yas-tint-green-ink);
+}
+
+.yas-practice-assigned-due {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.125rem;
+  border-radius: var(--yas-radius-md);
+  background: var(--due-bg);
+  color: var(--due-ink);
+  padding: 0.625rem 0.25rem;
+  text-align: center;
+}
+
+.yas-practice-assigned-due strong {
+  font-family: var(--yas-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--yas-weight-display);
+  line-height: 1;
+}
+
+.yas-practice-assigned-due small {
+  font-size: 0.6875rem;
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.yas-practice-assigned-body {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.375rem;
 }
 
 .yas-practice-assigned-card h3 {
   margin: 0;
+  font-family: var(--yas-font-display);
   font-size: 0.96875rem;
+  line-height: 1.3;
 }
 
 .yas-practice-assigned-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
-.yas-practice-assigned-meta {
-  display: grid;
-  gap: 0.25rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  color: var(--yas-color-muted);
-  font-size: 0.8125rem;
-}
-
-.yas-practice-assigned-meta li {
-  display: flex;
+.yas-practice-assigned-header .yas-practice-activity-skill {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4375rem;
+  gap: 0.375rem;
+  flex: none;
 }
 
-.yas-practice-assigned-empty,
+.yas-practice-assigned-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.875rem;
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+}
+
+.yas-practice-assigned-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+}
+
+.yas-practice-assigned-action {
+  grid-column: 2;
+}
+
 .yas-practice-requested {
   display: flex;
   align-items: center;
@@ -289,86 +379,508 @@ a.yas-practice-skill-card:hover strong .yas-icon {
 /* ---------- Recommended + history ---------- */
 .yas-practice-content-grid {
   display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr);
   align-items: start;
   gap: 1.125rem;
 }
 
 .yas-practice-content-grid > aside {
-  margin-top: 3.25rem;
+  margin-top: 1rem;
 }
 
-.yas-practice-activities {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+/* ---------- Pratique por aula ---------- */
+.yas-practice-main {
   gap: 1.125rem;
+  scroll-margin-top: 5rem;
 }
 
-.yas-practice-activity-card {
+.yas-practice-main-heading {
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 1rem;
+}
+
+.yas-practice-eyebrow {
+  color: var(--yas-color-purple-600);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.yas-practice-main-heading h2 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: clamp(1.375rem, 2vw, 1.625rem);
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.yas-practice-main-heading p {
+  max-width: 36rem;
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-main-title {
   display: flex;
-  gap: 0.875rem;
-  padding: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
-.yas-practice-activity-thumb {
+.yas-practice-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-surface);
+  color: var(--yas-color-ink-soft);
+  padding: 0.4375rem 0.875rem;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+  text-decoration: none;
+}
+
+.yas-practice-back:hover {
+  border-color: var(--yas-color-purple-200);
+  color: var(--yas-color-purple-700);
+}
+
+.yas-practice-back:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.yas-practice-lessons {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Biblioteca: convite para a visão completa */
+.yas-practice-library {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--yas-radius-xl);
+  background:
+    linear-gradient(var(--yas-color-surface), var(--yas-color-surface)) padding-box,
+    linear-gradient(
+        120deg,
+        var(--yas-color-purple-200),
+        var(--yas-color-yellow-500) 55%,
+        var(--yas-color-purple-600)
+      )
+      border-box;
+  box-shadow: var(--yas-shadow-card);
+  color: var(--yas-color-ink);
+  padding: 1.25rem 1.5rem;
+  text-decoration: none;
+  transition:
+    transform var(--yas-motion-slow) var(--yas-ease-standard),
+    box-shadow var(--yas-motion-slow) var(--yas-ease-standard);
+}
+
+.yas-practice-library::after {
+  content: "";
+  position: absolute;
+  inset-block: -40% auto;
+  inset-inline-end: -4rem;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(96 36 247 / 9%), transparent 70%);
+  pointer-events: none;
+}
+
+.yas-practice-library:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--yas-shadow-hover);
+}
+
+.yas-practice-library:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+}
+
+.yas-practice-library-stack {
+  display: flex;
+  flex: none;
+}
+
+.yas-practice-library-stack > span {
   --tint: var(--yas-tint-lilac);
   --tint-ink: var(--yas-tint-lilac-ink);
-  position: relative;
-  width: 5.5rem;
-  min-height: 7rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: grid;
-  flex: none;
   place-items: center;
-  border-radius: var(--yas-radius-md);
+  border: 3px solid var(--yas-color-surface);
+  border-radius: 50%;
   background: var(--tint);
   color: var(--tint-ink);
 }
 
-.yas-practice-activity-thumb[data-tint="blue"] {
+.yas-practice-library-stack > span + span {
+  margin-inline-start: -0.75rem;
+}
+
+.yas-practice-library-stack > span[data-tint="blue"] {
   --tint: var(--yas-tint-blue);
   --tint-ink: var(--yas-tint-blue-ink);
 }
 
-.yas-practice-activity-thumb[data-tint="yellow"] {
+.yas-practice-library-stack > span[data-tint="yellow"] {
   --tint: var(--yas-tint-yellow);
   --tint-ink: var(--yas-tint-yellow-ink);
 }
 
-.yas-practice-activity-thumb[data-tint="green"] {
+.yas-practice-library-stack > span[data-tint="green"] {
   --tint: var(--yas-tint-green);
   --tint-ink: var(--yas-tint-green-ink);
 }
 
-.yas-practice-activity-thumb[data-tint="pink"] {
+.yas-practice-library-stack > span[data-tint="pink"] {
   --tint: var(--yas-tint-pink);
   --tint-ink: var(--yas-tint-pink-ink);
 }
 
-.yas-practice-activity-thumb > span {
-  position: absolute;
-  inset-inline-start: 0.5rem;
-  inset-block-end: 0.5rem;
-  border-radius: 6px;
-  background: rgb(15 6 38 / 72%);
-  color: var(--yas-color-white);
-  padding: 0.125rem 0.5rem;
-  font-size: 0.71875rem;
+.yas-practice-library-copy {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.1875rem;
+}
+
+.yas-practice-library-copy small {
+  color: var(--yas-color-purple-600);
+  font-size: var(--yas-font-size-xs);
   font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.yas-practice-library-copy strong {
+  font-family: var(--yas-font-display);
+  font-size: 1.125rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.01em;
+}
+
+.yas-practice-library-copy > span {
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+.yas-practice-library-cta {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-600);
+  box-shadow: var(--yas-shadow-violet);
+  color: var(--yas-color-white);
+  padding: 0.6875rem 1.25rem;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-library-cta .yas-icon {
+  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-practice-library:hover .yas-practice-library-cta .yas-icon {
+  transform: translateX(3px);
+}
+
+.yas-practice-lesson {
+  overflow: hidden;
+  border: 1px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+}
+
+/* Aula em destaque */
+.yas-practice-lesson--featured {
+  border-color: transparent;
+}
+
+.yas-practice-lesson-hero {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgb(249 201 51 / 22%), transparent 60%),
+    linear-gradient(120deg, var(--yas-color-purple-700, #4a1fb8), var(--yas-color-purple-600));
+  color: var(--yas-color-white);
+  padding: 1.5rem 1.625rem 1.375rem;
+}
+
+.yas-practice-lesson-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  border-radius: var(--yas-radius-pill);
+  background: rgb(255 255 255 / 14%);
+  padding: 0.3125rem 0.75rem;
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-lesson-hero h3 {
+  margin: 0.25rem 0 0;
+  font-family: var(--yas-font-display);
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.yas-practice-lesson-hero p {
+  margin: 0;
+  color: rgb(255 255 255 / 82%);
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-practice-lesson-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.625rem;
+}
+
+.yas-practice-lesson-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-purple-700);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+  text-decoration: none;
+}
+
+.yas-practice-lesson-link:hover {
+  text-decoration: underline;
+}
+
+.yas-practice-lesson-link:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.yas-practice-lesson-hero .yas-practice-lesson-link {
+  color: var(--yas-color-white);
+}
+
+.yas-practice-lesson-hero .yas-practice-lesson-link:focus-visible {
+  outline-color: var(--yas-color-yellow-500);
+}
+
+/* Demais aulas: cartão recolhível */
+.yas-practice-lesson summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.yas-practice-lesson summary::-webkit-details-marker {
+  display: none;
+}
+
+.yas-practice-lesson summary:hover {
+  background: #fbfaff;
+}
+
+.yas-practice-lesson summary:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: -2px;
+}
+
+.yas-practice-lesson-chevron {
+  color: var(--yas-color-muted);
+  transition: transform var(--yas-motion-slow) var(--yas-ease-standard);
+}
+
+.yas-practice-lesson[open] .yas-practice-lesson-chevron {
+  transform: rotate(90deg);
+}
+
+.yas-practice-lesson-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-tint-grey);
+  color: var(--yas-color-muted);
+}
+
+.yas-practice-lesson[data-state="current"] .yas-practice-lesson-icon {
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-practice-lesson[data-state="done"] .yas-practice-lesson-icon {
+  background: var(--yas-tint-green);
+  color: var(--yas-tint-green-ink);
+}
+
+.yas-practice-lesson[data-state="free"] .yas-practice-lesson-icon {
+  background: var(--yas-tint-yellow);
+  color: var(--yas-tint-yellow-ink);
+}
+
+.yas-practice-lesson-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.1875rem;
+}
+
+.yas-practice-lesson-copy small {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-practice-lesson-copy strong {
+  overflow: hidden;
+  font-family: var(--yas-font-display);
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yas-practice-lesson-count {
+  flex: none;
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-surface-soft);
+  color: var(--yas-color-ink-soft);
+  padding: 0.25rem 0.625rem;
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-practice-lesson-body {
+  border-top: var(--yas-border-subtle);
+}
+
+.yas-practice-lesson-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 1.25rem 1.125rem;
+}
+
+/* Grade de atividades */
+.yas-practice-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.875rem;
+  margin: 0;
+  padding: 1.25rem;
+  list-style: none;
+}
+
+.yas-practice-activity-card {
+  --tint-line: var(--yas-tint-lilac);
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  border: 1px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  padding: 1rem;
+  box-shadow: inset 0 3px 0 var(--tint-line);
+  transition:
+    transform var(--yas-motion-slow) var(--yas-ease-standard),
+    box-shadow var(--yas-motion-slow) var(--yas-ease-standard),
+    border-color var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-practice-activity-card[data-tint="blue"] {
+  --tint-line: var(--yas-tint-blue);
+}
+
+.yas-practice-activity-card[data-tint="yellow"] {
+  --tint-line: var(--yas-tint-yellow);
+}
+
+.yas-practice-activity-card[data-tint="green"] {
+  --tint-line: var(--yas-tint-green);
+}
+
+.yas-practice-activity-card[data-tint="pink"] {
+  --tint-line: var(--yas-tint-pink);
+}
+
+.yas-practice-activity-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--yas-color-purple-200);
+  box-shadow:
+    inset 0 3px 0 var(--tint-line),
+    var(--yas-shadow-hover);
+}
+
+.yas-practice-activity-top {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.yas-practice-activity-skill {
+  flex: 1;
+  color: var(--yas-color-ink-soft);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.yas-practice-activity-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+  font-weight: var(--yas-weight-semibold);
 }
 
 .yas-practice-activity-body {
   min-width: 0;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: grid;
+  align-content: start;
   gap: 0.375rem;
 }
 
 .yas-practice-activity-body h3 {
   margin: 0;
-  font-size: 0.90625rem;
-  line-height: 1.25;
+  font-family: var(--yas-font-display);
+  font-size: 0.96875rem;
+  font-weight: var(--yas-weight-bold);
+  line-height: 1.3;
 }
 
 .yas-practice-activity-body p {
@@ -376,20 +888,34 @@ a.yas-practice-skill-card:hover strong .yas-icon {
   margin: 0;
   overflow: hidden;
   color: var(--yas-color-muted);
-  font-size: 0.78125rem;
-  line-height: 1.35;
+  font-size: 0.8125rem;
+  line-height: 1.45;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
-.yas-practice-activity-body .yas-practice-start {
+.yas-practice-activity-card .yas-practice-start .yas-button {
   width: 100%;
-  margin-top: auto;
-  padding-top: 0.25rem;
 }
 
-.yas-practice-activity-body .yas-practice-start .yas-button {
-  width: 100%;
+.yas-practice-history-link {
+  border-radius: var(--yas-radius-sm);
+  color: inherit;
+  text-decoration: none;
+}
+
+.yas-practice-history-link small {
+  color: var(--yas-color-purple-600);
+}
+
+.yas-practice-history-link:hover strong {
+  color: var(--yas-color-purple-700);
+  text-decoration: underline;
+}
+
+.yas-practice-history-link:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
 }
 
 .yas-practice-history-list > li {
@@ -631,6 +1157,1009 @@ a.yas-practice-skill-card:hover strong .yas-icon {
   white-space: nowrap;
 }
 
+/* =====================================================================
+   Tela cheia da prática (rota /pratica/[attemptId])
+   ===================================================================== */
+.yas-practice-focus {
+  min-height: 100dvh;
+  overflow-x: clip;
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgb(96 36 247 / 10%), transparent 70%),
+    var(--yas-color-canvas);
+  padding: 0 clamp(1rem, 4vw, 2.5rem) 3rem;
+}
+
+.yas-practice-stage {
+  display: grid;
+  gap: 1.5rem;
+  animation: yas-reveal var(--yas-motion-reveal) var(--yas-ease-standard) both;
+}
+
+/* Barra fixa de borda a borda (vidro fosco); o conteúdo segue alinhado ao cartão. */
+.yas-practice-stage-top {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  --stage-gutter: clamp(1rem, 4vw, 2.5rem);
+  margin-inline: calc(-1 * var(--stage-gutter));
+  border-bottom: 1px solid rgb(96 36 247 / 10%);
+  background: rgb(243 239 253 / 82%);
+  backdrop-filter: saturate(160%) blur(14px);
+  padding: 0.875rem max(var(--stage-gutter), calc((100% - 48rem) / 2 + var(--stage-gutter)));
+}
+
+.yas-practice-stage-close {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--yas-color-border);
+  border-radius: 50%;
+  background: var(--yas-color-surface);
+  color: var(--yas-color-ink-soft);
+  box-shadow: var(--yas-shadow-card);
+  transition:
+    background-color var(--yas-motion-standard) var(--yas-ease-standard),
+    color var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-practice-stage-close:hover {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+}
+
+.yas-practice-stage-close:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+}
+
+.yas-practice-stage-context {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.yas-practice-stage-skill {
+  --tint: var(--yas-tint-lilac);
+  --tint-ink: var(--yas-tint-lilac-ink);
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--yas-radius-pill);
+  background: var(--tint);
+  color: var(--tint-ink);
+  padding: 0.3125rem 0.75rem;
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-stage-skill[data-tint="blue"] {
+  --tint: var(--yas-tint-blue);
+  --tint-ink: var(--yas-tint-blue-ink);
+}
+
+.yas-practice-stage-skill[data-tint="yellow"] {
+  --tint: var(--yas-tint-yellow);
+  --tint-ink: var(--yas-tint-yellow-ink);
+}
+
+.yas-practice-stage-skill[data-tint="green"] {
+  --tint: var(--yas-tint-green);
+  --tint-ink: var(--yas-tint-green-ink);
+}
+
+.yas-practice-stage-skill[data-tint="pink"] {
+  --tint: var(--yas-tint-pink);
+  --tint-ink: var(--yas-tint-pink-ink);
+}
+
+.yas-practice-stage-lesson {
+  overflow: hidden;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.yas-practice-stage-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-stage-bar {
+  width: 7.5rem;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-100);
+}
+
+.yas-practice-stage-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--yas-color-purple-600), var(--yas-color-yellow-500));
+  transition: width 600ms var(--yas-ease-standard);
+}
+
+.yas-practice-stage > :not(.yas-practice-stage-top) {
+  width: min(100%, 48rem);
+  margin-inline: auto;
+}
+
+.yas-practice-stage-card {
+  display: grid;
+  gap: 1.5rem;
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-surface);
+  box-shadow: 0 24px 60px rgb(31 13 57 / 10%);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.yas-practice-stage-intro {
+  display: grid;
+  justify-items: start;
+  gap: 0.625rem;
+}
+
+.yas-practice-stage-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-tint-green);
+  color: var(--yas-tint-green-ink);
+  padding: 0.25rem 0.625rem;
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-stage-mode[data-mode="manual"] {
+  background: var(--yas-tint-blue);
+  color: var(--yas-tint-blue-ink);
+}
+
+.yas-practice-stage-intro h2 {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-stage-question {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-family: var(--yas-font-display);
+  font-size: clamp(1.375rem, 3vw, 1.875rem);
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* Instrução de apoio: linha discreta, sem caixa, para não competir com o enunciado. */
+.yas-practice-instructions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: -0.5rem 0 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-instructions .yas-icon {
+  margin-top: 2px;
+  color: var(--yas-color-purple-600);
+}
+
+/* Estímulo (texto, imagem, áudio, vídeo) */
+.yas-practice-stage-card .yas-practice-stimulus {
+  border: 0;
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-purple-50);
+  padding: 1.125rem 1.25rem;
+}
+
+.yas-practice-stage-card .yas-practice-stimulus-text {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+
+.yas-practice-stage-card .yas-practice-stimulus-media {
+  border-radius: var(--yas-radius-md);
+  box-shadow: 0 12px 30px rgb(31 13 57 / 18%);
+}
+
+/* Legenda dos grupos de resposta */
+.yas-practice-fieldset > legend {
+  margin-bottom: 0.875rem;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Opções como cartões grandes com letra (A, B, C…) */
+.yas-practice-options {
+  display: grid;
+  gap: 0.75rem;
+  counter-reset: yas-option;
+}
+
+.yas-practice-options .yas-check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  border: 2px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  padding: 0.9375rem 1.125rem;
+  color: var(--yas-color-ink);
+  font-size: 1rem;
+  font-weight: var(--yas-weight-semibold);
+  counter-increment: yas-option;
+  transition:
+    border-color var(--yas-motion-standard) var(--yas-ease-standard),
+    background-color var(--yas-motion-standard) var(--yas-ease-standard),
+    transform var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.yas-practice-options .yas-check::before {
+  content: counter(yas-option, upper-alpha);
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border: 1.5px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-options .yas-check > span {
+  flex: 1;
+}
+
+.yas-practice-options .yas-check-control {
+  order: 2;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+}
+
+.yas-practice-options .yas-check:hover {
+  border-color: var(--yas-color-purple-200);
+  background: #fbfaff;
+}
+
+.yas-practice-options .yas-check:active {
+  transform: scale(0.99);
+}
+
+.yas-practice-options .yas-check:has(.yas-check-control:checked) {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-50);
+  box-shadow: 0 6px 18px rgb(96 36 247 / 14%);
+}
+
+.yas-practice-options .yas-check:has(.yas-check-control:checked)::before {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-practice-options .yas-check:has(.yas-check-control:focus-visible) {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+/* Verdadeiro / falso lado a lado, com a afirmação em destaque */
+.yas-practice-options--binary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.yas-practice-options--binary > legend {
+  grid-column: 1 / -1;
+  color: var(--yas-color-ink);
+  font-size: 1.125rem;
+  font-weight: var(--yas-weight-semibold);
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-transform: none;
+}
+
+/* Lacunas */
+.yas-practice-fieldset--cloze .yas-practice-cloze {
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface-soft);
+  padding: 1.25rem 1.375rem;
+  color: var(--yas-color-ink);
+  font-size: 1.125rem;
+  line-height: 2.6;
+}
+
+.yas-practice-fieldset--cloze .yas-practice-cloze-input {
+  min-height: 0;
+  height: 2.25rem;
+  border: 0;
+  border-bottom: 2px solid var(--yas-color-purple-600);
+  border-radius: 8px 8px 0 0;
+  background: var(--yas-color-surface);
+  padding: 0 0.5rem;
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-bold);
+  text-align: center;
+}
+
+.yas-practice-fieldset--cloze .yas-practice-cloze-input:focus {
+  background: var(--yas-color-purple-50);
+  outline: none;
+  box-shadow: 0 2px 0 var(--yas-color-yellow-500);
+}
+
+/* Ordenação */
+.yas-practice-fieldset--ordering .yas-practice-ordering-item {
+  border: 2px solid var(--yas-color-border);
+  border-radius: var(--yas-radius-lg);
+  padding: 0.625rem 0.75rem 0.625rem 0.625rem;
+  font-weight: var(--yas-weight-semibold);
+  transition: border-color var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-practice-fieldset--ordering .yas-practice-ordering-item:focus-within {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-50);
+}
+
+.yas-practice-ordering-move {
+  width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+}
+
+.yas-practice-ordering-up {
+  transform: rotate(180deg);
+}
+
+/* Escrita */
+.yas-practice-written .yas-field-control {
+  min-height: 10rem;
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface-soft);
+  padding: 1rem 1.125rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.yas-practice-written .yas-field-control:focus {
+  background: var(--yas-color-surface);
+}
+
+/* Barra de ação principal (fica visível ao rolar o cartão) */
+/* Ação de envio: um botão pílula centralizado, igual em todos os tipos de prática.
+   Fica à vista ao rolar, com um esmaecido leve em vez de barra pesada. */
+.yas-practice-actions {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0.25rem calc(-1 * clamp(1.25rem, 4vw, 2.5rem)) calc(-1 * clamp(1.25rem, 4vw, 2.5rem));
+  border-radius: 0 0 var(--yas-radius-xl) var(--yas-radius-xl);
+  background: linear-gradient(rgb(255 255 255 / 0%), var(--yas-color-surface) 45%);
+  padding: 1.5rem clamp(1.25rem, 4vw, 2.5rem) clamp(1.25rem, 4vw, 2rem);
+}
+
+.yas-practice-actions .yas-button {
+  border-radius: var(--yas-radius-pill);
+}
+
+.yas-practice-actions-hint {
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-practice-actions .yas-button {
+  min-width: 12rem;
+}
+
+.yas-practice-response-form,
+.yas-practice-stage-card .yas-practice-player {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.yas-practice-stage-card .yas-practice-response-form {
+  justify-items: stretch;
+}
+
+/* Gravador (resposta falada) */
+.yas-practice-recorder {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* No gravador, as ações são etapas: ficam no fluxo e não cobrem o microfone. */
+.yas-practice-recorder .yas-practice-actions {
+  position: static;
+  justify-content: flex-end;
+  margin: 0;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+  padding: 0;
+}
+
+/* Stepper de largura total: etapas ligadas por uma linha que preenche ao avançar. */
+.yas-practice-steps {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-practice-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.yas-practice-steps li + li {
+  flex: 1;
+}
+
+.yas-practice-steps li + li::before {
+  content: "";
+  flex: 1;
+  min-width: 1rem;
+  height: 2px;
+  margin-inline: 0.875rem;
+  border-radius: 2px;
+  background: var(--yas-color-border);
+}
+
+.yas-practice-steps li[data-done="true"] + li::before,
+.yas-practice-steps li[aria-current="step"]:not(:first-child)::before {
+  background: linear-gradient(90deg, var(--yas-tint-green-ink), var(--yas-color-purple-600));
+}
+
+.yas-practice-steps li > span {
+  width: 1.625rem;
+  height: 1.625rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border: 1.5px solid var(--yas-color-border);
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+.yas-practice-steps li[aria-current="step"] {
+  color: var(--yas-color-ink);
+}
+
+.yas-practice-steps li[aria-current="step"] > span {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-practice-steps li[data-done="true"] > span {
+  border-color: var(--yas-tint-green-ink);
+  background: var(--yas-tint-green);
+  color: var(--yas-tint-green-ink);
+}
+
+.yas-practice-recorder-stage {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  border-radius: var(--yas-radius-xl);
+  background:
+    radial-gradient(50% 70% at 50% 30%, rgb(96 36 247 / 10%), transparent 70%),
+    var(--yas-color-surface-soft);
+  padding: 1.75rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.yas-practice-mic.yas-button {
+  height: auto;
+  min-height: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  background: transparent;
+  box-shadow: none;
+  padding: 0.25rem;
+}
+
+.yas-practice-mic.yas-button > span {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+}
+
+.yas-practice-mic-disc {
+  width: 5.5rem;
+  height: 5.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--yas-color-purple-600), var(--yas-color-purple-700));
+  box-shadow:
+    0 0 0 10px rgb(96 36 247 / 10%),
+    0 14px 30px rgb(96 36 247 / 35%);
+  color: var(--yas-color-white);
+  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-practice-mic:hover .yas-practice-mic-disc {
+  transform: scale(1.05);
+}
+
+.yas-practice-recorder[data-state="recording"] .yas-practice-mic-disc {
+  background: linear-gradient(140deg, #e5484d, var(--yas-color-error));
+  animation: yas-practice-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes yas-practice-pulse {
+  50% {
+    box-shadow:
+      0 0 0 18px rgb(229 72 77 / 14%),
+      0 14px 30px rgb(229 72 77 / 35%);
+  }
+}
+
+.yas-practice-mic-label {
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-recorder-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.yas-practice-rec-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--yas-color-error);
+  animation: yas-practice-blink 1s steps(2) infinite;
+}
+
+@keyframes yas-practice-blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.yas-practice-recorder-preview {
+  width: min(100%, 26rem);
+}
+
+/* Regravar + Enviar: mesmo tamanho e formato, centralizados no palco. */
+.yas-practice-recorder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.yas-practice-recorder-actions .yas-button {
+  min-width: 11rem;
+  border-radius: var(--yas-radius-pill);
+}
+
+.yas-practice-recorder-actions .yas-button--outline {
+  background: var(--yas-color-surface);
+}
+
+.yas-practice-recorder-alt {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+.yas-practice-recorder-alt::before,
+.yas-practice-recorder-alt::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--yas-color-border);
+}
+
+.yas-practice-file {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1.5px dashed var(--yas-color-purple-200);
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-surface);
+  color: var(--yas-color-purple-700);
+  padding: 0.5625rem 1rem;
+  font-weight: var(--yas-weight-semibold);
+  cursor: pointer;
+}
+
+.yas-practice-file:hover {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-practice-file:focus-within {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.yas-practice-file input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.yas-practice-recorder-message {
+  margin: -0.25rem 0 0;
+  color: var(--yas-color-ink-soft);
+  font-size: var(--yas-font-size-sm);
+  text-align: center;
+}
+
+.yas-practice-recorder-message:empty {
+  display: none;
+}
+
+/* Resultado */
+.yas-practice-player > .yas-practice-result {
+  justify-items: stretch;
+}
+
+.yas-practice-outcome {
+  --tone: var(--yas-color-purple-600);
+  --tone-soft: var(--yas-color-purple-50);
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  animation: yas-reveal var(--yas-motion-reveal) var(--yas-ease-standard) both;
+}
+
+.yas-practice-outcome[data-tone="success"] {
+  --tone: var(--yas-tint-green-ink);
+  --tone-soft: var(--yas-tint-green);
+}
+
+.yas-practice-outcome[data-tone="warning"] {
+  --tone: var(--yas-tint-yellow-ink);
+  --tone-soft: var(--yas-tint-yellow);
+}
+
+.yas-practice-outcome[data-tone="info"] {
+  --tone: var(--yas-tint-blue-ink);
+  --tone-soft: var(--yas-tint-blue);
+}
+
+.yas-practice-outcome-icon {
+  width: 5rem;
+  height: 5rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.25rem;
+  border-radius: 50%;
+  background: var(--tone-soft);
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--tone-soft) 45%, transparent);
+  color: var(--tone);
+  animation: yas-practice-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes yas-practice-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+.yas-practice-outcome-kicker {
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yas-practice-outcome h2 {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-family: var(--yas-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+}
+
+.yas-practice-outcome-lead {
+  max-width: 30rem;
+  margin: 0;
+  color: var(--yas-color-ink-soft);
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-outcome-feedback {
+  width: 100%;
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  border-left: 3px solid var(--tone);
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-surface-soft);
+  padding: 1rem 1.125rem;
+  text-align: start;
+}
+
+.yas-practice-outcome-feedback > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--tone);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.yas-practice-outcome-feedback p {
+  margin: 0;
+  color: var(--yas-color-ink);
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-outcome .yas-practice-review {
+  width: 100%;
+  text-align: start;
+}
+
+.yas-practice-outcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.yas-practice-outcome .yas-practice-boundary-note {
+  justify-content: center;
+  margin-top: 0.5rem;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+}
+
+/* =====================================================================
+   Transições (View Transitions API via React <ViewTransition>)
+   ===================================================================== */
+
+/* Abrir a prática: a tela sobe ao palco (escala + esmaecer). */
+::view-transition-new(.yas-stage-in) {
+  animation: yas-vt-stage-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+::view-transition-old(.yas-stage-out) {
+  animation: yas-vt-fade-out 200ms ease-in both;
+}
+
+/* Voltar para a Prática: a lista retorna deslizando de leve. */
+::view-transition-new(.yas-page-back) {
+  animation: yas-vt-back-in 380ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
+
+@keyframes yas-vt-stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+}
+
+@keyframes yas-vt-back-in {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+
+@keyframes yas-vt-fade-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+/* Cliques durante a animação continuam chegando à página. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Aulas recolhíveis: altura animada ao abrir/fechar (melhoria progressiva). */
+.yas-practice-lesson {
+  interpolate-size: allow-keywords;
+}
+
+.yas-practice-lesson::details-content {
+  height: 0;
+  overflow: clip;
+  opacity: 0;
+  transition:
+    height 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease,
+    content-visibility 360ms allow-discrete;
+}
+
+.yas-practice-lesson[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+
+/* Barra de progresso da prática cresce ao entrar. */
+.yas-practice-stage-bar > span {
+  animation: yas-practice-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+  transform-origin: left center;
+}
+
+@keyframes yas-practice-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+
+  .yas-practice-lesson::details-content,
+  .yas-practice-stage-bar > span,
+  .yas-practice-stage,
+  .yas-practice-outcome,
+  .yas-practice-outcome-icon,
+  .yas-practice-mic-disc,
+  .yas-practice-rec-dot {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   Biblioteca por módulo e aula
+   ===================================================================== */
+.yas-practice-modules {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.yas-practice-module {
+  display: grid;
+  gap: 0.875rem;
+}
+
+.yas-practice-module-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.yas-practice-module-number {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  color: var(--yas-color-purple-700);
+  font-family: var(--yas-font-display);
+  font-size: 1.125rem;
+  font-weight: var(--yas-weight-display);
+}
+
+.yas-practice-module[data-current="true"] .yas-practice-module-number {
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+}
+
+.yas-practice-module-head > div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+}
+
+.yas-practice-module-head small {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--yas-color-purple-600);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.yas-practice-module-head small em {
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-yellow-500);
+  color: var(--yas-color-on-yellow);
+  padding: 0.0625rem 0.5rem;
+  font-style: normal;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.yas-practice-module-head h3 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.1875rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.01em;
+}
+
+.yas-practice-module-meta {
+  flex: none;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+/* Aulas do módulo ligadas por uma linha da trilha */
+.yas-practice-module-lessons {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding-inline-start: 1.375rem;
+}
+
+.yas-practice-module-lessons::before {
+  content: "";
+  position: absolute;
+  inset-block: 0.5rem;
+  inset-inline-start: 0.625rem;
+  width: 2px;
+  background: repeating-linear-gradient(var(--yas-color-purple-200) 0 5px, transparent 5px 10px);
+}
+
 @media (max-width: 73.75rem) {
   .yas-practice-top-grid,
   .yas-practice-content-grid {
@@ -643,17 +2172,141 @@ a.yas-practice-skill-card:hover strong .yas-icon {
 }
 
 @media (max-width: 47.99rem) {
-  .yas-practice-skills {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .yas-practice-filter {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.875rem 1rem;
+  }
+
+  .yas-practice-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -1rem;
+    padding: 0.125rem 1rem 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .yas-practice-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Esmaece a borda direita: indica que há mais habilidades ao rolar. */
+  .yas-practice-chips {
+    mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
+  }
+
+  .yas-practice-chip {
+    flex: none;
+  }
+
+  .yas-practice-lesson-hero {
+    padding: 1.25rem 1.125rem;
+  }
+
+  .yas-practice-lesson-actions,
+  .yas-practice-lesson-actions .yas-practice-start,
+  .yas-practice-lesson-actions .yas-button {
+    width: 100%;
+  }
+
+  .yas-practice-lesson summary {
+    flex-wrap: wrap;
     gap: 0.75rem;
+    padding: 1rem;
   }
 
-  .yas-practice-skill-card {
-    flex-direction: column;
-    gap: 0.625rem;
+  .yas-practice-lesson-chevron {
+    display: none;
   }
 
-  .yas-practice-activities,
+  .yas-practice-lesson-count {
+    order: 5;
+    margin-inline-start: 3.25rem;
+  }
+
+  .yas-practice-tiles {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1rem;
+  }
+
+  .yas-practice-library {
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    padding: 1.125rem;
+  }
+
+  .yas-practice-library-copy {
+    flex-basis: calc(100% - 8rem);
+  }
+
+  .yas-practice-library-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .yas-practice-assigned-empty {
+    flex-wrap: wrap;
+  }
+
+  .yas-practice-assigned-empty > .yas-badge {
+    margin-inline-start: 3.125rem;
+  }
+
+  .yas-practice-stage-top {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .yas-practice-recorder-actions,
+  .yas-practice-recorder-actions .yas-button {
+    width: 100%;
+  }
+
+  /* Stepper compacto: só a etapa atual mostra o rótulo. */
+  .yas-practice-steps li:not([aria-current="step"]) {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .yas-practice-stage-progress {
+    grid-column: 1 / -1;
+  }
+
+  .yas-practice-stage-bar {
+    flex: 1;
+  }
+
+  .yas-practice-stage-lesson {
+    display: none;
+  }
+
+  .yas-practice-actions .yas-button,
+  .yas-practice-outcome-actions,
+  .yas-practice-outcome-actions .yas-practice-start,
+  .yas-practice-outcome-actions .yas-button {
+    width: 100%;
+  }
+
+  .yas-practice-actions-hint {
+    width: 100%;
+    text-align: center;
+  }
+
+  .yas-practice-module-head {
+    flex-wrap: wrap;
+  }
+
+  .yas-practice-module-meta {
+    width: 100%;
+    padding-inline-start: 3.75rem;
+  }
+
+  .yas-practice-module-lessons {
+    padding-inline-start: 0;
+  }
+
+  .yas-practice-module-lessons::before {
+    display: none;
+  }
+
   .yas-practice-assigned-list {
     grid-template-columns: minmax(0, 1fr);
   }
