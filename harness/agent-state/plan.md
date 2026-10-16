@@ -1,3 +1,13 @@
+# Plano — Prática 10/10 (practice-10-v3)
+
+## Active task
+
+**practice-10-v3**
+
+Goal: `harness/goals/practice-10-v3.md`. Fase 0 concluída em `practice-10-phase-0`; Fases 1–4 num PR único com commits por área, gates pesados no fim.
+
+---
+
 # Plano — Prática 10/10, Fase 0 (practice-10-phase-0)
 
 Goal: `harness/goals/practice-10-phase-0.md`. Branch `feat/practice-10-phase-0` a partir de `c98a33d` (redesign rodada 4). Plano completo: `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`.

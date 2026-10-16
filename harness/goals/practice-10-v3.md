@@ -17,8 +17,12 @@ Deliver phases 1–4 of the practice-10 plan in one PR (commits per area): a pra
 
 ## Relevant context
 
-- Contract: `docs/PRACTICE_V3.md`; plan `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`; decisions A–D in `harness/agent-state/decisions.md`.
-- Phase 0: `harness/goals/practice-10-phase-0.md` (commit bd5e81b).
+- Contract: `docs/PRACTICE_V3.md`; engine rules `docs/PRACTICE_ENGINE.md`; plan `C:UsersPAULO HENRIQUE.claudeplanscrie-um-plano-para-serialized-umbrella.md`; decisions A–D in `harness/agent-state/decisions.md`.
+- Phase 0: `harness/goals/practice-10-phase-0.md`.
+- Gates and done: `docs/TESTING.md`, `docs/DEFINITION_OF_DONE.md`.
+- UI: `docs/UI_CONTRACT.md`, `docs/DESIGN_SYSTEM.md`, `docs/ACCESSIBILITY.md`.
+- Security/data: `docs/SECURITY.md`, `docs/AUTH_RBAC_RLS.md` (new RPCs are security definer, auth.uid()-derived, keys private).
+- The PR also carries commit "student UI refinement round 4" from `harness/goals/student-ui-refinement.md` (presentation only), on which the practice work is built; its files are listed below.
 
 ## Acceptance criteria
 
@@ -30,10 +34,24 @@ Deliver phases 1–4 of the practice-10 plan in one PR (commits per area): a pra
 
 ## Allowed files / domains
 
-- `supabase/migrations/` (new), `supabase/tests/`, `supabase/seed.sql`, `scripts/run-sql-tests.mjs`
-- `src/modules/practice/**`, `src/server/practice/**`, student practice routes
-- `src/modules/teacher-operations/**`, `src/server/teacher-operations/**`, teacher practice/review routes
-- practice/teacher tests, `docs/PRACTICE_V3.md`, `docs/PRACTICE_ENGINE.md`, `harness/**`
+Practice and teacher authoring:
+
+- `supabase/migrations/` (new files only), `supabase/tests/`, `supabase/seed.sql`, `scripts/run-sql-tests.mjs`
+- `src/modules/practice/**`, `src/server/practice/**`
+- `src/app/(protected)/(student)/pratica/**`, `src/app/(protected)/(practice-focus)/**`
+- `src/modules/teacher-operations/**`, `src/server/teacher-operations/**`
+- `src/app/(protected)/(teacher)/teacher/praticas/**`, `src/app/(protected)/(teacher)/teacher/revisoes/**`
+- `tests/unit/practice*.test.ts`, `tests/integration/practice-application.test.ts`, `tests/integration/teacher-practice-commands.test.ts`, `tests/e2e/`
+- `docs/PRACTICE_V3.md`, `docs/PRACTICE_ENGINE.md`, `harness/**`
+
+Tooling fixes found by the gates (recorded in `harness/failure-log/`):
+
+- `eslint.config.mjs` (ignore local `.claude` worktrees), `vitest.config.ts` (timeout for process-spawning suites), `scripts/eval-agent.mjs` (git buffer)
+
+Student UI refinement round 4 (goal `student-ui-refinement`, presentation only):
+
+- `src/app/(protected)/(student)/agenda/page.tsx`, `src/app/(protected)/(student)/aulas/page.tsx`, `src/app/(protected)/(student)/aulas/[courseSlug]/modulos/[moduleId]/page.tsx`
+- `src/components/layout/role-shell.tsx`, `src/modules/learning/ui/learning.css`, `src/modules/learning/ui/lesson-status.tsx`, `src/modules/materials/ui/materials.css`, `src/modules/progress/ui/progress.css`, `src/modules/schedule/ui/join-meeting.tsx`, `src/modules/schedule/ui/schedule.module.css`
 
 ## Forbidden areas
 
