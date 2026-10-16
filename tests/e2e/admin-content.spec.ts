@@ -108,6 +108,53 @@ test.describe("Admin Content publication", () => {
       await studentPage.reload();
       await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toHaveCount(0);
       await captureEvidence(studentPage, "module-unpublished-student.png");
+
+      // Prove the persisted state and audit trail before afterEach removes this module.
+      const db = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { persistSession: false } },
+      );
+      const { data: module, error: moduleError } = await db
+        .from("modules")
+        .select("id,position,publication_status,published_at")
+        .eq("course_id", courseId)
+        .eq("title", moduleTitle)
+        .single();
+      expect(moduleError).toBeNull();
+      expect(module).toMatchObject({
+        position: 1,
+        publication_status: "DRAFT",
+        published_at: null,
+      });
+      const { data: users, error: usersError } = await db.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000,
+      });
+      expect(usersError).toBeNull();
+      const actor = users.users.find((user) => user.email === "canonical.admin@example.test");
+      expect(actor).toBeDefined();
+      const { data: audits, error: auditError } = await db
+        .from("audit_logs")
+        .select("action,entity_id,data")
+        .eq("entity_type", "modules")
+        .eq("actor_user_id", actor!.id)
+        .in("entity_id", [module!.id, courseId]);
+      expect(auditError).toBeNull();
+      for (const action of ["content_created", "content_published", "content_unpublished"]) {
+        expect(audits?.some((row) => row.entity_id === module!.id && row.action === action)).toBe(
+          true,
+        );
+      }
+      expect(
+        audits?.some(
+          (row) =>
+            row.action === "content_reordered" &&
+            row.entity_id === courseId &&
+            Array.isArray(row.data?.new_order) &&
+            row.data.new_order.includes(module!.id),
+        ),
+      ).toBe(true);
     } finally {
       await studentContext.close();
     }

@@ -17,3 +17,7 @@ Correções publicadas na PR #74, HEAD 0f67200f2b9934a924f8ef3e559274d181ea7f19.
 Quality, Supply Chain, Database, Guardrails, a11y, database-proofs e visual passaram. E2E: 35 passaram/2 falharam em 2,5 min (antes: 21,1 min). Correções restritas à infraestrutura e expectativas de teste: retenção de todos os chunks antes da hidratação; projeto comercial em dev isolado preservando o bloqueio FAKE em produção. Configuração e contratos comerciais: 7 testes aprovados; typecheck e contrato do harness aprovados. A primeira reprodução local passou hidratação e webhook; navegação final para onboarding excedeu 5 s devido à compilação inicial e recebeu limite explícito de 20 s, como os outros redirecionamentos comerciais. Confirmação e CI final pendentes.
 
 Confirmação local: os dois E2E falhos passaram integralmente, zero retries, em 1,7 min; typecheck, lint dos arquivos alterados, 7 unitários e verify:harness aprovados. CI do novo commit pendente.
+
+Run 38829445681: 37/37 E2E passaram sem retries em 2,6 min. Falha posterior: assert-canonical-e2e exigia o módulo removido pelo afterEach. Estado e auditoria de publicação agora são provados dentro do E2E, antes da limpeza; demais asserções pós-run preservadas. Typecheck, lint e verify:harness passaram após a mudança.
+
+Confirmação: cenário de publicação passou localmente em 59,1 s, incluindo estado persistido, ator e auditorias antes da limpeza.

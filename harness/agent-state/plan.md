@@ -111,3 +111,5 @@ Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adi
 ## Retomada: duas falhas finais do CI
 
 Corrigir o bloqueio de chunks minificados no teste de hidratação e executar apenas o checkout FAKE em servidor dev isolado, preservando a proibição de FAKE em produção. Validar os dois casos, controles e CI completo.
+
+Ajuste final de integração: mover a prova de persistência/audit de publicação do pós-run para o próprio cenário, antes de afterEach limpar o módulo. Manter as mesmas asserções e deixar os demais checks de persistência/analytics intactos.
