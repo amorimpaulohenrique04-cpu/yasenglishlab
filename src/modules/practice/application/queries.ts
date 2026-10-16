@@ -19,7 +19,9 @@ export interface PracticeView {
   selectedAttempt: PracticeAttemptView | null;
   selectedSkill: ReturnType<typeof normalizePracticeSkill>;
   completedThisWeek: number;
-  minutesThisWeek: number;
+  /** Sum of estimated minutes of activities submitted in the last 7 days (not measured time). */
+  estimatedMinutesThisWeek: number;
+  reachedActivityIds: string[];
 }
 
 export type PracticePageState =
@@ -34,11 +36,17 @@ export async function getPracticeView(
 ): Promise<PracticePageState> {
   if (!isStudent) return { status: "unauthorized" };
 
-  const [activities, history, recentLessonId] = await Promise.all([
-    repository.listActivities(),
-    repository.listHistory(userId),
-    repository.getRecentLessonId(userId),
-  ]);
+  const weekStart = new Date(now);
+  weekStart.setUTCDate(weekStart.getUTCDate() - 7);
+  const [activities, history, recentLessonId, submittedThisWeek, reachedActivityIds] =
+    await Promise.all([
+      repository.listActivities(),
+      repository.listHistory(userId),
+      repository.getRecentLessonId(userId),
+      repository.listSubmittedActivityIdsSince(userId, weekStart),
+      repository.listReachedActivityIds(),
+    ]);
+  const reached = new Set(reachedActivityIds);
   if (activities.length === 0) return { status: "empty" };
 
   const selectedSkill = normalizePracticeSkill(raw.skill);
@@ -47,14 +55,6 @@ export async function getPracticeView(
     : activities;
   const attemptId = typeof raw.attemptId === "string" ? raw.attemptId : null;
   const selectedAttempt = attemptId ? await repository.getAttempt(userId, attemptId) : null;
-  const weekStart = new Date(now);
-  weekStart.setUTCDate(weekStart.getUTCDate() - 7);
-  const completedThisWeekItems = history.filter(
-    (item) =>
-      item.status === "SUBMITTED" &&
-      item.submittedAt !== null &&
-      new Date(item.submittedAt).getTime() >= weekStart.getTime(),
-  );
   const minutesByActivity = new Map(
     activities.map((activity) => [activity.id, activity.estimatedMinutes]),
   );
@@ -65,16 +65,21 @@ export async function getPracticeView(
       catalog: buildPracticeCatalog(activities),
       activities: visibleActivities,
       recommendation: recommendPractice({
-        activities: activities.map(toPracticeRecommendationActivity),
+        // Só recomenda o que o aluno pode iniciar (aula alcançada ou prática atribuída).
+        activities: activities
+          .filter((activity) => reached.has(activity.id))
+          .map(toPracticeRecommendationActivity),
         history,
         recentLessonId,
       }),
       history: history.slice(0, 6),
       selectedAttempt,
       selectedSkill,
-      completedThisWeek: completedThisWeekItems.length,
-      minutesThisWeek: completedThisWeekItems.reduce(
-        (total, item) => total + (minutesByActivity.get(item.activityId) ?? 0),
+      reachedActivityIds,
+      completedThisWeek: submittedThisWeek.length,
+      // Estimativa: soma do tempo previsto de cada atividade enviada, não tempo medido.
+      estimatedMinutesThisWeek: submittedThisWeek.reduce(
+        (total, activityId) => total + (minutesByActivity.get(activityId) ?? 0),
         0,
       ),
     },

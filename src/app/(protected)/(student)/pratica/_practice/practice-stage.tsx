@@ -62,13 +62,21 @@ export async function PracticeStage({
           </span>
         )}
       </div>
-      <div className="yas-practice-stage-progress" aria-hidden="true">
+      {/* O texto e a barra são anunciados: a posição na aula não pode depender só do visual. */}
+      <div className="yas-practice-stage-progress">
         {step && (
           <span>
             Atividade {step.current} de {step.total}
           </span>
         )}
-        <span className="yas-practice-stage-bar">
+        <span
+          className="yas-practice-stage-bar"
+          role="progressbar"
+          aria-label="Avanço nas atividades da aula"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress}
+        >
           <span style={{ width: `${progress}%` }} />
         </span>
       </div>

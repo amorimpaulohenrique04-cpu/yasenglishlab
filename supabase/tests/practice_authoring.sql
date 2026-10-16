@@ -297,41 +297,41 @@ select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_single2
 select pg_temp.assert_true((select feedback='Great' and score=1 and max_score=1 from public.practice_results where practice_attempt_id=pg_temp.id('a_single2')),'correct feedback from the private key');
 -- CHOICE_MULTI: exact set only.
 insert into ids select 'a_multi1', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
-insert into ids select 'a_multi2', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
-insert into ids select 'a_multi3', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
-insert into ids select 'a_multi4', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi1'), '{"optionIds":["a"]}')).evaluation_status='INCORRECT','CHOICE_MULTI partial -> INCORRECT');
+insert into ids select 'a_multi2', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi2'), '{"optionIds":["a","c","b"]}')).evaluation_status='INCORRECT','CHOICE_MULTI superset -> INCORRECT');
+insert into ids select 'a_multi3', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"optionIds":["a","a"]}'')', pg_temp.id('a_multi3')))='23514','CHOICE_MULTI duplicated option rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"optionIds":[]}'')', pg_temp.id('a_multi3')))='23514','CHOICE_MULTI empty selection rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi3'), '{"optionIds":["c","a"]}')).evaluation_status='CORRECT','CHOICE_MULTI exact set (any order) -> CORRECT');
 select pg_temp.assert_true((select response->'optionIds'='["a","c"]'::jsonb from public.practice_responses where practice_attempt_id=pg_temp.id('a_multi3')),'CHOICE_MULTI response stored normalized');
+insert into ids select 'a_multi4', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
 -- TRUE_FALSE
 insert into ids select 'a_tf1', (public.start_practice_attempt(pg_temp.id('tf'), gen_random_uuid())).id;
-insert into ids select 'a_tf2', (public.start_practice_attempt(pg_temp.id('tf'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"value":"true"}'')', pg_temp.id('a_tf1')))='23514','TRUE_FALSE string value rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_tf1'), '{"value":false}')).evaluation_status='INCORRECT','TRUE_FALSE wrong');
+insert into ids select 'a_tf2', (public.start_practice_attempt(pg_temp.id('tf'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_tf2'), '{"value":true}')).evaluation_status='CORRECT','TRUE_FALSE right');
 -- CLOZE: trim + case-insensitive by default, any accepted item, case-sensitive blank honoured.
 insert into ids select 'a_cl1', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
-insert into ids select 'a_cl2', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
-insert into ids select 'a_cl3', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
-insert into ids select 'a_cl4', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl1'), '{"blanks":{"1":"  GO ","2":"School"}}')).evaluation_status='CORRECT','CLOZE trim + case-insensitive -> CORRECT');
+insert into ids select 'a_cl2', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl2'), '{"blanks":{"1":"Went","2":"School"}}')).evaluation_status='CORRECT','CLOZE any accepted item -> CORRECT');
+insert into ids select 'a_cl3', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl3'), '{"blanks":{"1":"go","2":"school"}}')).evaluation_status='INCORRECT','CLOZE case-sensitive blank -> INCORRECT');
+insert into ids select 'a_cl4', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"blanks":{"1":"go"}}'')', pg_temp.id('a_cl4')))='23514','CLOZE missing blank rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"blanks":{"1":"go","2":"School","3":"x"}}'')', pg_temp.id('a_cl4')))='23514','CLOZE extra blank rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl4'), '{"blanks":{"1":"walk","2":"School"}}')).evaluation_status='INCORRECT','CLOZE wrong word -> INCORRECT');
 -- ORDERING: exact sequence only; the student-visible order is not the key.
 select pg_temp.assert_true((select (select array_agg(i->>'id') from jsonb_array_elements(content->'response'->'items') i) is distinct from array['w1','w2','w3'] from public.practice_activities where id=pg_temp.id('order')),'Student sees items in a non-key order');
 insert into ids select 'a_or1', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
-insert into ids select 'a_or2', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
-insert into ids select 'a_or3', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"order":["w1","w2"]}'')', pg_temp.id('a_or1')))='23514','ORDERING missing item rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"order":["w1","w1","w2"]}'')', pg_temp.id('a_or1')))='23514','ORDERING duplicated item rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_or1'), '{"order":["w3","w2","w1"]}')).evaluation_status='INCORRECT','ORDERING wrong sequence -> INCORRECT');
+insert into ids select 'a_or2', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_or2'), '{"order":["w1","w2","w3"]}')).evaluation_status='CORRECT','ORDERING right sequence -> CORRECT');
+insert into ids select 'a_or3', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
 -- Result of a deterministic attempt reveals correctness only, never the key.
 select pg_temp.assert_true(not exists(select 1 from public.practice_results where metrics::text ~ '(optionId|accepted|order|answer)'),'result metrics carry no key');
 select pg_temp.assert_true((select status='DONE' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('single')),'assigned list: DONE after submission');

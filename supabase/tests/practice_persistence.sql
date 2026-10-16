@@ -24,6 +24,14 @@ values
   ('84000000-0000-0000-0000-000000000001', 'ADMIN_GRANT', 'fixture: paid access'),
   ('84000000-0000-0000-0000-000000000002', 'ADMIN_GRANT', 'fixture: paid access')
 on conflict (user_id) do nothing;
+-- Stage 13: the seeded activities belong to lesson 2 (42000000-...-02); a Student can only start a practice whose
+-- lesson was reached, so both Students have started that lesson.
+insert into public.lesson_progress (enrollment_id, lesson_id, user_id, status, completion_percent, started_at)
+select e.id, '42000000-0000-4000-8000-000000000002', e.user_id, 'IN_PROGRESS', 10, now()
+from public.enrollments e
+where e.user_id in ('84000000-0000-0000-0000-000000000001', '84000000-0000-0000-0000-000000000002')
+  and e.course_id = '40000000-0000-4000-8000-000000000001'
+on conflict (user_id, lesson_id) do nothing;
 
 set role authenticated;
 select set_config('request.jwt.claim.sub', '84000000-0000-0000-0000-000000000001', false);

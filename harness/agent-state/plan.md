@@ -1,3 +1,13 @@
+# Plano — Prática 10/10, Fase 0 (practice-10-phase-0)
+
+Goal: `harness/goals/practice-10-phase-0.md`. Branch `feat/practice-10-phase-0` a partir de `c98a33d` (redesign rodada 4). Plano completo: `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`.
+
+1. Migration `stage_13a_practice_lifecycle` (yas-database): colunas de tentativa, limpeza de duplicatas, índice único parcial, `practice_lesson_reached`, `start_practice_attempt` com retomada/expiração/bloqueio; teste SQL `practice_lifecycle.sql`.
+2. Domínio/UI: `grouping.ts` com `reachable`, chave de início estável, CTA primária única, resumo com janela de 7 dias e rótulo de estimativa, progresso acessível, texto do resultado incorreto.
+3. Testes unit/integration/a11y, gates verify:db/security/ui/agent, resolver os 3 registros de failure-log de 2026-10-16.
+
+---
+
 # Plano — Refinamento UI aluno (student-ui-refinement)
 
 Goal: `harness/goals/student-ui-refinement.md`. Branch `feat/ui-redesign`. Só apresentação.

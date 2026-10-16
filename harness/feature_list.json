@@ -600,6 +600,15 @@
       "dependencies": ["stage-12-lacunas-operacionais"],
       "evidence": ["harness/goals/ui-redesign-approved-proposal.md"],
       "updated_at": "2026-10-16T12:00:00.000Z"
+    },
+    {
+      "id": "practice-10-phase-0",
+      "title": "Prática: ciclo de vida da tentativa, bloqueio por aula e jornada",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["ui-redesign-approved-proposal"],
+      "evidence": ["harness/goals/practice-10-phase-0.md"],
+      "updated_at": "2026-10-16T18:00:00.000Z"
     }
   ]
 }

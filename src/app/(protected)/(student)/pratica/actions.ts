@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
-import { startPracticeInputSchema, submitPracticeInputSchema } from "@/modules/practice";
+import {
+  PracticeLessonNotReachedError,
+  startPracticeInputSchema,
+  submitPracticeInputSchema,
+} from "@/modules/practice";
 import type { PracticePlayerOutcome } from "@/modules/practice/ui/practice-player";
 import {
   startCurrentStudentPractice,
@@ -35,6 +39,7 @@ export async function startPracticeAction(formData: FormData): Promise<void> {
     attempt = await startCurrentStudentPractice(input);
   } catch (error) {
     if (error instanceof SubscriptionSuspendedError) redirect("/pratica?suspended=1");
+    if (error instanceof PracticeLessonNotReachedError) redirect("/pratica?bloqueada=1");
     throw error;
   }
 

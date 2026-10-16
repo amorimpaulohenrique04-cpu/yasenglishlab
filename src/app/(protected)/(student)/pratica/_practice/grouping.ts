@@ -6,7 +6,11 @@ import {
 } from "@/modules/learning";
 import type { PracticeActivityItem } from "@/modules/practice";
 
-export type LessonGroupState = "current" | "done" | "upcoming" | "free";
+/**
+ * `open`: aula alcançada (iniciada ou com prática atribuída) que não é a atual nem está concluída.
+ * `locked`: aula ainda não alcançada; as práticas aparecem sem ação de início.
+ */
+export type LessonGroupState = "current" | "done" | "open" | "locked" | "free";
 
 export interface LessonModuleRef {
   key: string;
@@ -24,6 +28,8 @@ export interface LessonPracticeGroupView {
   lessonHref: string | null;
   module: LessonModuleRef | null;
   activities: PracticeActivityItem[];
+  /** Atividades que o aluno pode iniciar (alcance calculado no banco). */
+  reachableIds: ReadonlySet<string>;
 }
 
 export interface ModulePracticeSection {
@@ -35,7 +41,8 @@ export interface ModulePracticeSection {
 export const groupStateLabel: Record<LessonGroupState, string> = {
   current: "Aula atual",
   done: "Aula estudada",
-  upcoming: "Ainda não estudada",
+  open: "Aula liberada",
+  locked: "Disponível quando você chegar a esta aula",
   free: "Revisão geral",
 };
 
@@ -47,7 +54,10 @@ export const groupStateLabel: Record<LessonGroupState, string> = {
 export function groupActivitiesByLesson(
   activities: PracticeActivityItem[],
   courses: LearningCourse[],
+  /** Ids alcançados (`student_practice_reach`); sem o conjunto, tudo é tratado como alcançado. */
+  reachedIds?: ReadonlySet<string>,
 ): LessonPracticeGroupView[] {
+  const reached = (id: string) => !reachedIds || reachedIds.has(id);
   const lessons = new Map<
     string,
     {
@@ -67,7 +77,7 @@ export function groupActivitiesByLesson(
       const parent = modules.get(lesson.moduleId);
       lessons.set(lesson.id, {
         order: order++,
-        state: isLessonComplete(lesson) ? "done" : lesson.id === currentId ? "current" : "upcoming",
+        state: isLessonComplete(lesson) ? "done" : lesson.id === currentId ? "current" : "open",
         title: lesson.title,
         context: `Módulo ${parent?.position ?? "–"} · Aula ${String(lesson.position).padStart(2, "0")}`,
         href: `/aulas/${course.slug}/modulos/${lesson.moduleId}/aulas/${lesson.slug}`,
@@ -96,6 +106,7 @@ export function groupActivitiesByLesson(
             lessonHref: lesson.href,
             module: lesson.module,
             activities: [],
+            reachableIds: new Set<string>(),
           }
         : {
             key,
@@ -106,12 +117,25 @@ export function groupActivitiesByLesson(
             lessonHref: null,
             module: null,
             activities: [],
+            reachableIds: new Set<string>(),
           });
     group.activities.push(activity);
+    if (reached(activity.id)) (group.reachableIds as Set<string>).add(activity.id);
     groups.set(key, group);
   }
 
-  const rank: Record<LessonGroupState, number> = { current: 0, done: 1, upcoming: 2, free: 3 };
+  // Aula sem nenhuma prática alcançada fica bloqueada (nunca vira destaque).
+  for (const group of groups.values()) {
+    if (group.state !== "free" && group.reachableIds.size === 0) group.state = "locked";
+  }
+
+  const rank: Record<LessonGroupState, number> = {
+    current: 0,
+    done: 1,
+    open: 2,
+    free: 3,
+    locked: 4,
+  };
   return [...groups.values()].sort(
     (a, b) =>
       rank[a.state] - rank[b.state] || (a.state === "done" ? b.order - a.order : a.order - b.order),
@@ -137,9 +161,15 @@ export function stageContext(groups: LessonPracticeGroupView[], activityId: stri
   );
   const group = index >= 0 ? groups[index]! : null;
   const position = group ? group.activities.findIndex((item) => item.id === activityId) : -1;
+  // A próxima sugerida é sempre uma atividade que o aluno pode iniciar.
   const next =
-    (group && group.activities[position + 1]) ??
-    groups.slice(index + 1).find((item) => item.activities.length > 0)?.activities[0] ??
+    (group &&
+      group.activities.slice(position + 1).find((item) => group.reachableIds.has(item.id))) ??
+    groups
+      .slice(index + 1)
+      .flatMap((item) =>
+        item.activities.filter((activity) => item.reachableIds.has(activity.id)),
+      )[0] ??
     null;
   return {
     group,

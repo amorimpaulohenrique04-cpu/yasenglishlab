@@ -8,6 +8,8 @@ import {
 } from "@/modules/billing/domain/access";
 import {
   assignedPracticeFromRow,
+  isPracticeLessonNotReachedError,
+  PracticeLessonNotReachedError,
   normalizePracticeSkill,
   type AssignedPractice,
   type PracticeAssignmentRepository,
@@ -205,6 +207,26 @@ export class SupabasePracticeRepository
     });
   }
 
+  async listSubmittedActivityIdsSince(userId: string, since: Date): Promise<string[]> {
+    const { data, error } = await this.client
+      .from("practice_attempts")
+      .select("practice_activity_id")
+      .eq("user_id", userId)
+      .eq("status", "SUBMITTED")
+      .gte("submitted_at", since.toISOString());
+
+    if (error) throw new Error("Unable to load weekly practice summary.");
+    return (data ?? []).map((row) => String(row.practice_activity_id));
+  }
+
+  async listReachedActivityIds(): Promise<string[]> {
+    const { data, error } = await this.client.rpc("student_practice_reach");
+    if (error) throw new Error("Unable to load practice availability.");
+    return ((data ?? []) as Row[])
+      .filter((row) => row.reached === true)
+      .map((row) => String(row.practice_activity_id));
+  }
+
   async getRecentLessonId(userId: string): Promise<string | null> {
     const { data, error } = await this.client
       .from("lesson_progress")
@@ -267,6 +289,7 @@ export class SupabasePracticeRepository
       p_idempotency_key: input.idempotencyKey,
     });
     if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (isPracticeLessonNotReachedError(error)) throw new PracticeLessonNotReachedError();
     if (error || !data) throw new Error("Unable to start practice attempt.");
 
     const row = data as unknown as Row;

@@ -123,3 +123,15 @@ describe("practice domain", () => {
     ).toThrow();
   });
 });
+
+describe("practice lesson gate error", () => {
+  it("recognizes only the database not-reached signal", async () => {
+    const { isPracticeLessonNotReachedError } = await import("@/modules/practice");
+    expect(
+      isPracticeLessonNotReachedError({ code: "YP001", hint: "PRACTICE_LESSON_NOT_REACHED" }),
+    ).toBe(true);
+    expect(isPracticeLessonNotReachedError({ code: "42501", hint: null })).toBe(false);
+    expect(isPracticeLessonNotReachedError({ code: "YP001", hint: "OTHER" })).toBe(false);
+    expect(isPracticeLessonNotReachedError(null)).toBe(false);
+  });
+});

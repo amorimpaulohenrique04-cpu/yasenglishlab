@@ -333,3 +333,18 @@ export function normalizePracticeSkill(value: unknown): PracticeSkill | null {
   if (typeof value !== "string") return null;
   return PRACTICE_SKILLS.includes(value as PracticeSkill) ? (value as PracticeSkill) : null;
 }
+
+/** The database refuses to start a practice whose lesson the Student has not reached yet. */
+export class PracticeLessonNotReachedError extends Error {
+  constructor() {
+    super("PRACTICE_LESSON_NOT_REACHED");
+    this.name = "PracticeLessonNotReachedError";
+  }
+}
+
+// start_practice_attempt raises SQLSTATE YP001 (hint PRACTICE_LESSON_NOT_REACHED) for this case.
+export function isPracticeLessonNotReachedError(
+  error: { code?: string | null; hint?: string | null } | null | undefined,
+): boolean {
+  return error?.code === "YP001" && error.hint === "PRACTICE_LESSON_NOT_REACHED";
+}

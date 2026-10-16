@@ -208,14 +208,46 @@ function ModulePracticeBlock({
   );
 }
 
+const FEATURED_HEADING: Record<LessonGroupState, { title: string; description: string }> = {
+  done: {
+    title: "Pratique o que você estudou",
+    description: "Cada aula tem atividades curtas com o conteúdo que você viu nela.",
+  },
+  current: {
+    title: "Pratique a aula atual",
+    description: "Atividades curtas com o conteúdo da aula em que você está.",
+  },
+  open: {
+    title: "Pratique uma aula liberada",
+    description: "Atividades curtas de uma aula que você já abriu ou que o professor atribuiu.",
+  },
+  free: {
+    title: "Pratique o conteúdo do curso",
+    description: "Atividades curtas que não dependem de uma aula específica.",
+  },
+  locked: {
+    title: "Pratique o conteúdo do curso",
+    description: "As práticas de cada aula liberam quando você chega nela.",
+  },
+};
+
 const groupIcon: Record<LessonGroupState, IconName> = {
   current: "play-c",
   done: "check-c",
-  upcoming: "book",
+  open: "book",
+  locked: "lock",
   free: "spark",
 };
 
-function ActivityTile({ activity, index }: { activity: PracticeActivityItem; index: number }) {
+function ActivityTile({
+  activity,
+  index,
+  locked,
+}: {
+  activity: PracticeActivityItem;
+  index: number;
+  locked: boolean;
+}) {
   const visual = practiceSkillVisual[activity.skill];
   return (
     <li
@@ -235,7 +267,14 @@ function ActivityTile({ activity, index }: { activity: PracticeActivityItem; ind
         <h3>{activity.title}</h3>
         <p>{activity.content.prompt}</p>
       </div>
-      <StartPracticeForm activity={activity} soft />
+      {locked ? (
+        <p className="yas-practice-muted yas-practice-activity-locked">
+          <Icon name="lock" size={14} />
+          Libera quando você chegar a esta aula
+        </p>
+      ) : (
+        <StartPracticeForm activity={activity} soft />
+      )}
     </li>
   );
 }
@@ -265,7 +304,12 @@ function LessonPracticeGroup({
   const tiles = (
     <ul className="yas-practice-tiles">
       {group.activities.map((activity, index) => (
-        <ActivityTile key={activity.id} activity={activity} index={index} />
+        <ActivityTile
+          key={activity.id}
+          activity={activity}
+          index={index}
+          locked={!group.reachableIds.has(activity.id)}
+        />
       ))}
     </ul>
   );
@@ -284,9 +328,13 @@ function LessonPracticeGroup({
             {groupStateLabel[group.state]} · {group.context}
           </span>
           <h3 id={`practice-lesson-${group.key}`}>{group.title}</h3>
-          <p>{countLabel} com o conteúdo desta aula.</p>
+          <p>
+            {countLabel}
+            {group.state === "free" ? " sem aula específica." : " com o conteúdo desta aula."}
+          </p>
           <div className="yas-practice-lesson-actions">
-            {first && <StartPracticeForm activity={first} label="Começar a praticar" />}
+            {/* A ação primária da página é a do hero; aqui ela é secundária. */}
+            {first && <StartPracticeForm activity={first} label="Praticar esta aula" soft />}
             {lessonLink}
           </div>
         </header>
@@ -550,7 +598,8 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     catalog,
     completedThisWeek,
     history,
-    minutesThisWeek,
+    estimatedMinutesThisWeek,
+    reachedActivityIds,
     recommendation,
     selectedSkill,
   } = state.data;
@@ -565,7 +614,11 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
   const groups = groupActivitiesByLesson(
     activities,
     learning?.status === "success" ? learning.data : [],
+    new Set(reachedActivityIds),
   );
+  // O destaque é sempre uma aula que o aluno pode praticar; o título acompanha o estado dela.
+  const featured = groups.find((group) => group.state !== "locked") ?? null;
+  const featuredHeading = featured ? FEATURED_HEADING[featured.state] : FEATURED_HEADING.locked;
 
   return (
     <ViewTransition
@@ -585,6 +638,14 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
             tone="info"
             title="Sua atividade não foi registrada"
             description="O acesso estava em pausa naquele momento. Se o pagamento já foi confirmado, você pode praticar de novo agora."
+          />
+        )}
+
+        {firstValue(params.bloqueada) === "1" && (
+          <Alert
+            tone="info"
+            title="Esta prática ainda não está liberada"
+            description="Ela abre quando você chegar à aula dela. Continue pela aula atual."
           />
         )}
 
@@ -663,10 +724,10 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                 <IconBadge icon="clock" />
                 <span>
                   <strong>
-                    {minutesThisWeek}
+                    ≈ {estimatedMinutesThisWeek}
                     <small> min</small>
                   </strong>
-                  <span>praticados nos últimos 7 dias</span>
+                  <span>estimados nos últimos 7 dias</span>
                 </span>
               </div>
               <div>
@@ -674,7 +735,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                 <span>
                   <strong>{completedThisWeek}</strong>
                   <span>
-                    {completedThisWeek === 1 ? "atividade concluída" : "atividades concluídas"}
+                    {completedThisWeek === 1 ? "atividade enviada" : "atividades enviadas"}
                   </span>
                 </span>
               </div>
@@ -703,7 +764,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                     ? `${practiceSkillLabel(selectedSkill)} nas suas aulas`
                     : showAll
                       ? "Todas as práticas"
-                      : "Pratique o que você estudou"}
+                      : featuredHeading.title}
                 </h2>
                 {showAll && (
                   <Link className="yas-practice-back" href="/pratica#praticas">
@@ -715,7 +776,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
               <p>
                 {showAll
                   ? `${activities.length} ${activities.length === 1 ? "atividade organizada" : "atividades organizadas"} pela aula em que o conteúdo aparece.`
-                  : "Cada aula tem atividades curtas com o conteúdo que você viu nela."}
+                  : featuredHeading.description}
               </p>
             </div>
 
@@ -745,7 +806,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                   </div>
                 ) : (
                   <div className="yas-practice-lessons">
-                    {groups[0] && <LessonPracticeGroup group={groups[0]} featured open />}
+                    {featured && <LessonPracticeGroup group={featured} featured open />}
                     <PracticeLibraryTeaser groups={groups} activities={activities} />
                   </div>
                 )}

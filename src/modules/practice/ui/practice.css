@@ -752,6 +752,13 @@ a.yas-practice-chip:focus-visible {
   color: var(--yas-tint-yellow-ink);
 }
 
+/* Aula ainda não alcançada: conteúdo visível, sem ação de início. */
+.yas-practice-activity-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--yas-space-1);
+}
+
 .yas-practice-lesson-copy {
   flex: 1;
   min-width: 0;

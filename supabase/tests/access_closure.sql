@@ -171,6 +171,8 @@ set local role authenticated;
 select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'granted Student reads lesson asset');
 select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'granted Student reads material');
 select public.record_lesson_progress('42000000-0000-4000-8000-000000000001',10,5);
+-- Stage 13: the seed activity belongs to lesson 2, so the Student must have reached it (started it) first.
+select public.record_lesson_progress('42000000-0000-4000-8000-000000000002',10,5);
 select pg_temp.assert_true((public.start_practice_attempt('83000000-0000-4000-8000-000000000001',gen_random_uuid())).id is not null,'granted Student starts practice (enrolled in the activity course)');
 select pg_temp.assert_true(public.book_live_session('ac600000-0000-4000-8000-000000000001') is not null,'granted Student books');
 select pg_temp.assert_true((select count(*)=1 from public.complimentary_access_grants),'granted Student sees only the own grant row');
@@ -399,6 +401,8 @@ insert into auth.users(id,email) values('ac000000-0000-4000-8000-000000000013','
 insert into public.user_roles(user_id,role) values('ac000000-0000-4000-8000-000000000013','STUDENT');
 insert into public.complimentary_access_grants(user_id,reason,note) values('ac000000-0000-4000-8000-000000000013','ADMIN_GRANT','history');
 insert into public.enrollments(id,user_id,course_id,status) values('ac300000-0000-4000-8000-000000000013','ac000000-0000-4000-8000-000000000013','40000000-0000-4000-8000-000000000001','ACTIVE');
+-- Stage 13: lesson 2 (the activity's lesson) must have been reached before the practice can start.
+insert into public.lesson_progress(enrollment_id,lesson_id,user_id,status,completion_percent,started_at) values('ac300000-0000-4000-8000-000000000013','42000000-0000-4000-8000-000000000002','ac000000-0000-4000-8000-000000000013','IN_PROGRESS',10,now());
 select pg_temp.login('ac000000-0000-4000-8000-000000000013');
 set local role authenticated;
 select pg_temp.assert_true((public.start_practice_attempt('83000000-0000-4000-8000-000000000002',gen_random_uuid())).id is not null,'enrolled Student starts practice before the transfer');

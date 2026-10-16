@@ -12,7 +12,11 @@ import type {
 export interface PracticeRepository {
   listActivities(): Promise<PracticeActivityItem[]>;
   listHistory(userId: string): Promise<PracticeHistoryItem[]>;
+  /** Activity ids of the attempts submitted since `since` (not capped by the history list). */
+  listSubmittedActivityIdsSince(userId: string, since: Date): Promise<string[]>;
   getRecentLessonId(userId: string): Promise<string | null>;
+  /** Activities the signed-in Student may start (lesson reached or assigned), from the database. */
+  listReachedActivityIds(): Promise<string[]>;
   getAttempt(userId: string, attemptId: string): Promise<PracticeAttemptView | null>;
   startAttempt(input: { activityId: string; idempotencyKey: string }): Promise<PracticeAttemptView>;
   submitAttempt(input: {

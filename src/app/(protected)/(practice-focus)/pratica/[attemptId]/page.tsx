@@ -55,6 +55,7 @@ export default async function PracticeAttemptPage({ params }: PracticeAttemptPag
   const groups = groupActivitiesByLesson(
     state.data.activities,
     learning?.status === "success" ? learning.data : [],
+    new Set(state.data.reachedActivityIds),
   );
 
   return (

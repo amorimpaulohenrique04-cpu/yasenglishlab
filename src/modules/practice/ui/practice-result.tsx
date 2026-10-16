@@ -11,7 +11,8 @@ const VISUAL: Record<OutcomeStatus, { icon: IconName; tone: string; lead: string
   INCORRECT: {
     icon: "redo",
     tone: "warning",
-    lead: "Faz parte do aprendizado. Leia o feedback e siga para a próxima.",
+    // Convida a reprocessar o erro, não a passar adiante (Metcalfe, 2017).
+    lead: "Errar faz parte. Leia com atenção o porquê e diga a forma certa em voz alta antes de seguir.",
   },
   PENDING_MANUAL: {
     icon: "clock",

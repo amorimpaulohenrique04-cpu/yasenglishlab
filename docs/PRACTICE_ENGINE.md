@@ -73,3 +73,10 @@ O formato v2 combina estímulo NONE/TEXT/IMAGE/AUDIO/VIDEO com resposta CHOICE_S
 Uploads de imagem, áudio e vídeo usam armazenamento privado e autorização por prática antes da emissão de URL assinada. Vídeo de prática usa arquivo protegido sem transcodificação (ADR 0020). O fluxo Mux das aulas permanece separado. Pré-visualização do professor não cria tentativa nem resultado.
 
 O aluno vê as práticas atribuídas à sua turma em /pratica; prazo, matrícula, entitlement e escopo continuam aplicados no servidor/banco. Revisão humana e desempenho de prática não alteram progresso de curso nem proficiência CEFR.
+
+## Etapa 13A — ciclo de vida da tentativa e alcance por aula (practice-10-phase-0)
+
+- Iniciar uma prática retoma a tentativa `IN_PROGRESS` do mesmo aluno e atividade quando houve atividade nas últimas 24h; uma tentativa aberta mais antiga vira `ABANDONED` no próximo início (sem rotina agendada). Um índice único parcial impede duas tentativas abertas para o mesmo (aluno, atividade, tipo).
+- O aluno só inicia práticas de aulas alcançadas: aula concluída, aula iniciada, a aula atual da trilha (primeira não concluída e disponível) ou prática sem vínculo de aula. Prática atribuída pelo professor à turma do aluno ignora esse bloqueio. O banco aplica a regra em `start_practice_attempt` e a expõe em `student_practice_reach()`; a UI só a espelha.
+- Aulas não alcançadas aparecem na Prática como bloqueadas, sem ação de início, e nunca como destaque. A recomendação considera apenas atividades alcançadas.
+- O resumo semanal mostra minutos **estimados** (soma do tempo previsto das atividades enviadas nos últimos 7 dias, por consulta própria) e atividades enviadas; não é tempo medido.

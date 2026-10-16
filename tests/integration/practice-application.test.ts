@@ -44,7 +44,9 @@ function repository(): PracticeRepository {
   return {
     listActivities: vi.fn(async () => [activity]),
     listHistory: vi.fn(async () => []),
+    listSubmittedActivityIdsSince: vi.fn(async () => []),
     getRecentLessonId: vi.fn(async () => null),
+    listReachedActivityIds: vi.fn(async () => [activity.id]),
     getAttempt: vi.fn(async () => attempt),
     startAttempt: vi.fn(async () => attempt),
     submitAttempt: vi.fn(async () => ({
@@ -65,6 +67,24 @@ describe("practice application", () => {
   it("fails closed for non-student page access", async () => {
     await expect(getPracticeView(repository(), userId, false, {})).resolves.toEqual({
       status: "unauthorized",
+    });
+  });
+
+  it("summarizes the last 7 days from a dated query, not from the capped history list", async () => {
+    const repo = repository();
+    // The history list may hold only open attempts; the week summary must still see submissions.
+    repo.listSubmittedActivityIdsSince = vi.fn(async () => [activity.id, activity.id]);
+    const now = new Date("2026-10-16T12:00:00Z");
+
+    const state = await getPracticeView(repo, userId, true, {}, now);
+
+    expect(repo.listSubmittedActivityIdsSince).toHaveBeenCalledWith(
+      userId,
+      new Date("2026-10-09T12:00:00Z"),
+    );
+    expect(state).toMatchObject({
+      status: "success",
+      data: { completedThisWeek: 2, estimatedMinutesThisWeek: 10 },
     });
   });
 
