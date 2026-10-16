@@ -1,120 +1,79 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
-import { AppShell, ContentContainer, Sidebar, Topbar } from "@/components/layout";
-import { Avatar, Drawer, IconButton } from "@/components/ui";
+import { RoleShell, type RoleNavItem } from "@/components/layout";
+import { Avatar } from "@/components/ui";
 
-import styles from "./teacher-operations.module.css";
+const placementPath = "/teacher/revisoes/placement";
 
-const navigation = [
-  { id: "home", label: "Início", href: "/teacher" },
-  { id: "sessions", label: "Sessões", href: "/teacher/sessoes" },
-  { id: "cohorts", label: "Turmas", href: "/teacher/turmas" },
-  { id: "students", label: "Alunos", href: "/teacher/alunos" },
-  { id: "practices", label: "Práticas", href: "/teacher/praticas" },
-  { id: "reviews", label: "Revisões", href: "/teacher/revisoes" },
-  { id: "availability", label: "Disponibilidade", href: "/teacher/disponibilidade" },
-] as const;
-
-function CalendarIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-    >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M8 3v4M16 3v4M3 10h18" />
-    </svg>
-  );
-}
+const navigation: readonly RoleNavItem[] = [
+  { id: "home", label: "Início", href: "/teacher", icon: "grid" },
+  { id: "sessions", label: "Sessões", href: "/teacher/sessoes", icon: "video", group: "Aulas" },
+  { id: "cohorts", label: "Turmas", href: "/teacher/turmas", icon: "layers", group: "Aulas" },
+  { id: "students", label: "Alunos", href: "/teacher/alunos", icon: "users", group: "Aulas" },
+  {
+    id: "reviews",
+    label: "Revisões",
+    href: "/teacher/revisoes",
+    icon: "mic",
+    group: "Revisões",
+    match: (pathname) =>
+      pathname === "/teacher/revisoes" ||
+      (pathname.startsWith("/teacher/revisoes/") && !pathname.startsWith(placementPath)),
+  },
+  { id: "placement", label: "Entrada", href: placementPath, icon: "inbox", group: "Revisões" },
+  { id: "practices", label: "Práticas", href: "/teacher/praticas", icon: "pen", group: "Revisões" },
+  {
+    id: "availability",
+    label: "Disponibilidade",
+    href: "/teacher/disponibilidade",
+    icon: "cal",
+    group: "Agenda",
+  },
+];
 
 export function TeacherShell({
   displayName,
+  verifiedSession = false,
   children,
 }: {
   displayName: string;
+  verifiedSession?: boolean;
   children: ReactNode;
 }) {
-  const pathname = usePathname();
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const initials = displayName
     .split(/\s+/)
+    .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0])
     .join("")
     .toUpperCase();
 
-  const sidebarItems = navigation.map((item) => ({
-    ...item,
-    icon: <CalendarIcon />,
-    active:
-      pathname === item.href || (item.href !== "/teacher" && pathname.startsWith(item.href + "/")),
-  }));
-
   return (
-    <AppShell
-      sidebar={
-        <Sidebar
-          ariaLabel="Navegação do professor"
-          brand={
-            <Link className={styles.brand} href="/teacher">
-              <span>Yas</span>
-              <small>English Lab · Professor</small>
-            </Link>
-          }
-          items={sidebarItems}
-          footer={<span>Teacher Operations</span>}
-        />
-      }
-      topbar={
-        <Topbar
-          start={
-            <>
-              <span className={styles.mobileMenu}>
-                <IconButton
-                  label="Abrir navegação do professor"
-                  onClick={() => setDrawerOpen(true)}
-                >
-                  ☰
-                </IconButton>
-              </span>
-              <span className={styles.topbarLabel}>Área do professor</span>
-            </>
-          }
-          end={
-            <Link className={styles.profileLink} href="/profile">
-              <Avatar fallback={initials || "YA"} label={displayName} size="sm" />
-              <span>{displayName}</span>
-            </Link>
-          }
-        />
+    <RoleShell
+      displayName={displayName}
+      homeHref="/teacher"
+      items={navigation}
+      role="Professor"
+      roleIcon="teacher"
+      sidebarLabel="Navegação do professor"
+      menuButtonLabel="Abrir navegação do professor"
+      drawerTitle="Navegação do professor"
+      drawerDescription="Acesse suas operações de aula."
+      drawerNavLabel="Navegação mobile do professor"
+      verifiedSession={verifiedSession}
+      sidebarFooter={
+        <div className="yas-sidebar-card">
+          <Avatar fallback={initials || "YA"} label={displayName} size="sm" />
+          <span>
+            <strong>{displayName}</strong>
+            <small>Professor</small>
+          </span>
+        </div>
       }
     >
-      <ContentContainer>{children}</ContentContainer>
-      <Drawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        title="Navegação do professor"
-        description="Acesse suas operações de aula."
-      >
-        <nav className={styles.drawerNav} aria-label="Navegação mobile do professor">
-          {navigation.map((item) => (
-            <Link key={item.id} href={item.href} onClick={() => setDrawerOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/profile" onClick={() => setDrawerOpen(false)}>
-            Perfil
-          </Link>
-        </nav>
-      </Drawer>
-    </AppShell>
+      {children}
+    </RoleShell>
   );
 }

@@ -10,3 +10,6 @@ playwright-report
 test-results
 package-lock.json
 docs
+
+# Generated evidence and byte-preserved approved HTML references
+artifacts/

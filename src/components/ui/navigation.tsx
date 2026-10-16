@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
+import { Icon } from "./icons";
 import { cx } from "./utils";
 
 export interface TabItem {
@@ -151,7 +152,7 @@ export function Dropdown({ label, items }: DropdownProps) {
         }}
       >
         {label}
-        <span aria-hidden="true">⌄</span>
+        <Icon name="down" size={16} />
       </button>
       {open && (
         <div className="yas-dropdown-menu" role="menu" aria-label={label}>

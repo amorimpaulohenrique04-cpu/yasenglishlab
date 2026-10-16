@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { Button } from "./controls";
+import { Icon } from "./icons";
 import { cx } from "./utils";
 
 export interface TooltipProps {
@@ -101,7 +102,7 @@ function Modal({
             aria-label={closeLabel}
             onClick={() => onOpenChange(false)}
           >
-            ×
+            <Icon name="x" size={18} />
           </button>
         </div>
         <div>{children}</div>

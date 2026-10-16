@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
+import { rememberCanonicalSession, restoreCanonicalSession } from "./canonical-session";
 
 export const canonicalAdminEmail = "canonical.admin@example.test";
 
@@ -89,9 +90,22 @@ async function resolveTotpSecret(page: Page, path = secretPath): Promise<string>
 export async function loginCanonicalAdmin(
   page: Page,
   password: string,
-  options: { email?: string; next?: string; destination?: RegExp; multi?: boolean } = {},
+  options: {
+    email?: string;
+    next?: string;
+    destination?: RegExp;
+    multi?: boolean;
+    forceFresh?: boolean;
+  } = {},
 ): Promise<void> {
   const next = options.next ?? "/admin/content?kind=modules";
+  const identity = options.email ?? canonicalAdminEmail;
+  const destination = options.destination ?? /\/admin\/content\?kind=modules$/;
+  if (
+    !options.forceFresh &&
+    (await restoreCanonicalSession(page, identity, next || "/auth/continue", destination))
+  )
+    return;
   await page.goto(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
   await page.getByLabel("E-mail").fill(options.email ?? canonicalAdminEmail);
   await page.getByLabel("Senha").fill(password);
@@ -115,4 +129,5 @@ export async function loginCanonicalAdmin(
   await expect(page).toHaveURL(options.destination ?? /\/admin\/content\?kind=modules$/, {
     timeout: 60_000,
   });
+  await rememberCanonicalSession(page, identity);
 }

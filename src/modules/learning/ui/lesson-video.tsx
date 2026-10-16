@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, Icon } from "@/components/ui";
 import { NoCohortNotice } from "./no-cohort-notice";
 import type { VideoPlayback } from "@/modules/learning/application/video-provider";
 import {
@@ -12,7 +12,11 @@ import {
 } from "@/app/(protected)/(student)/aulas/video-actions";
 const MuxPlayer = dynamic(() => import("@mux/mux-player-react"), {
   ssr: false,
-  loading: () => <p>Carregando player…</p>,
+  loading: () => (
+    <div className="yas-lesson-player">
+      <p className="yas-lesson-player-caption">Carregando player…</p>
+    </div>
+  ),
 });
 export function LessonVideo({
   assetId,
@@ -138,17 +142,19 @@ export function LessonVideo({
   }, [playback, load]);
   if (suspended)
     return (
-      <p role="status">
-        O acesso ao vídeo está em pausa por enquanto. Seu progresso continua guardado.
-      </p>
+      <div className="yas-lesson-player">
+        <p className="yas-lesson-player-caption" role="status">
+          O acesso ao vídeo está em pausa por enquanto. Seu progresso continua guardado.
+        </p>
+      </div>
     );
   return (
-    <div>
+    <div className="yas-lesson-video">
       {noCohort && <NoCohortNotice />}
       <div role="status">{error}</div>
       {error && playback && <Button onClick={load}>Renovar acesso ao vídeo</Button>}
       {playback?.captions && (
-        <p>
+        <p className="yas-lesson-video-note">
           {playback.captions.status === "READY"
             ? `Legendas disponíveis (${playback.captions.language}) no player.`
             : playback.captions.status === "PROCESSING"
@@ -157,7 +163,12 @@ export function LessonVideo({
         </p>
       )}
       {!playback ? (
-        <Button onClick={load}>Carregar vídeo</Button>
+        <div className="yas-lesson-player">
+          <Button onClick={load} leadingIcon={<Icon name="play-c" size={34} />}>
+            Carregar vídeo
+          </Button>
+          <p className="yas-lesson-player-caption">Toque para carregar o vídeo da aula.</p>
+        </div>
       ) : (
         <MuxPlayer
           ref={player}

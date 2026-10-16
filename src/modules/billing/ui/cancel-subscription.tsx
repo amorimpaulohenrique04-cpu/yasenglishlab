@@ -62,7 +62,7 @@ export function CancelSubscription({
   return (
     <div className={styles.cancelArea}>
       <div>
-        <Button variant="secondary" onClick={() => setOpen(true)}>
+        <Button variant="danger" onClick={() => setOpen(true)}>
           Cancelar assinatura
         </Button>
       </div>

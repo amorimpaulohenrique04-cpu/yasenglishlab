@@ -42,6 +42,20 @@ function run(statuses: Status[] | null, env: Record<string, string> = {}) {
 }
 
 describe("Playwright results gate", () => {
+  it("rejects global setup errors even with successful test entries", () => {
+    const file = join(dir, "global-error.json");
+    writeFileSync(
+      file,
+      JSON.stringify({ ...report(["expected"]), errors: [{ message: "setup failed" }] }),
+    );
+    const result = spawnSync(process.execPath, [script, file, "Suite"], { encoding: "utf8" });
+    expect(result.status).toBe(1);
+  });
+
+  it("rejects an empty report", () => {
+    expect(run([]).code).toBe(1);
+  });
+
   it("passes a clean report", () => {
     const result = run(["expected", "expected"]);
     expect(result.code).toBe(0);

@@ -1,6 +1,40 @@
-# Plano - Etapa 12 (stage-12-lacunas-operacionais)
+# Plano — PR 74 gates
 
 ## Active task
+
+**pr74-gates**
+
+Goal: `harness/goals/pr74-gates.md`.
+
+1. Reproduzir falhas em stack local isolada.
+2. Corrigir contraste, reflow, foco e expectativas de UI; isolar dados mutáveis.
+3. Separar goldens e atualizar referências aprovadas após revisão.
+4. Eliminar retries, centralizar setup Preview, validar relatórios e agregadores.
+5. Verificar agent/UI/full; publicar e acompanhar CI; registrar evidência.
+
+---
+
+# Plano - Redesign da UI (ui-redesign-approved-proposal)
+
+## Active task
+
+**ui-redesign-approved-proposal**
+
+Goal: `harness/goals/ui-redesign-approved-proposal.md`. Branch `feat/ui-redesign` a partir de `main` (30aa75a, Etapa 12 mergeada). Commits por fase.
+
+0. Fundação: tokens remapeados, Montserrat + Inter via next/font/local, assets placeholder em `public/brand`, ícones, shell (sidebar/topbar/tab bar), nav centralizada por papel, primitivos, Storybook.
+1. Aluno: home, aulas, aula, prática, materiais, progresso, agenda, perfil/support/onboarding, gate de assinatura.
+2. Professor: início, sessões, nova sessão, turmas, alunos, revisões, entrada, disponibilidade, práticas.
+3. Admin: visão geral, matrículas, alunos, turmas, professores, leads, pagamentos, conteúdos, teste de entrada.
+   Por fase: typecheck, lint, unit, storybook:build, e2e/a11y das áreas, goldens das telas redesenhadas, evidência em `harness/evidence/ui-redesign-approved-proposal/`.
+
+Regra: só apresentação; sem dado inventado; sem tocar server/RLS/actions.
+
+---
+
+# Plano anterior - Etapa 12 (stage-12-lacunas-operacionais)
+
+## Previous task
 
 **stage-12-lacunas-operacionais**
 
@@ -73,3 +107,9 @@ D e F deixam de estar adiados nesta sessão. Implementar admin_plan_list/set_ent
 Plano: 1 SQL D/F com negativos/atomicidade/histórico; 2 adaptadores e UI usando primitivos atuais; 3 testes focados, prova E2E/a11y/screenshots; 4 documentação/evidência, commits e atualização da PR.
 
 Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adiava foi revogado de fato. D e F entram nesta PR. Falta UI de C/E (trilha admin, matricular, trilha do aluno), docs e gates finais.
+
+## Retomada: duas falhas finais do CI
+
+Corrigir o bloqueio de chunks minificados no teste de hidratação e executar apenas o checkout FAKE em servidor dev isolado, preservando a proibição de FAKE em produção. Validar os dois casos, controles e CI completo.
+
+Ajuste final de integração: mover a prova de persistência/audit de publicação do pós-run para o próprio cenário, antes de afterEach limpar o módulo. Manter as mesmas asserções e deixar os demais checks de persistência/analytics intactos.

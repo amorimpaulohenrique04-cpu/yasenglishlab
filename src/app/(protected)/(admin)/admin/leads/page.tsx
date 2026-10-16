@@ -63,7 +63,7 @@ export default async function AdminLeadsPage({
           description="Confira as regras do lead e tente novamente."
         />
       )}
-      <section className="yas-stack" aria-label="Criar lead">
+      <section className="yas-cluster" aria-label="Criar lead">
         <FormDialog trigger="Novo lead" title="Criar lead">
           <form action={crmAction} className="yas-grid">
             <input type="hidden" name="operation" value="CREATE" />

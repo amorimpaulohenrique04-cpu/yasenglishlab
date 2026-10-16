@@ -10,7 +10,12 @@ export default async function ReviewsPage() {
         title="Revisões"
         description="Responda primeiro às práticas enviadas há mais tempo."
       />
-      <Link href="/teacher/revisoes/placement">Revisões de entrada</Link>
+      <Link
+        className="yas-button yas-button--soft yas-button--sm"
+        href="/teacher/revisoes/placement"
+      >
+        Ver revisões de entrada →
+      </Link>
       {items.length === 0 && (
         <EmptyState
           title="Nenhuma revisão pendente"

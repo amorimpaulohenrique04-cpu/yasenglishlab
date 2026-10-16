@@ -16,5 +16,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     typeof profile?.display_name === "string" && profile.display_name.trim()
       ? profile.display_name
       : auth.email?.split("@")[0] || "Admin Yas";
-  return <AdminShell displayName={displayName}>{children}</AdminShell>;
+  return (
+    <AdminShell displayName={displayName} verifiedSession={auth.aal === "aal2"}>
+      {children}
+    </AdminShell>
+  );
 }

@@ -41,3 +41,6 @@ pnpm-debug.log*
 
 .next/
 .next-*/
+
+# Isolated PR verification runtime (generated credentials and copied database)
+/artifacts/pr74-local/

@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
@@ -29,6 +30,28 @@ async function loginStudent(page: Page): Promise<void> {
 
 test.describe("Admin Content publication", () => {
   test.setTimeout(120_000);
+  async function cleanupModule() {
+    const db = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } },
+    );
+    const { error } = await db
+      .from("modules")
+      .delete()
+      .eq("course_id", courseId)
+      .eq("title", moduleTitle);
+    if (error) throw error;
+    // Reordering also shifts the original module: restore it for the next run.
+    const { error: restoreError } = await db
+      .from("modules")
+      .update({ position: 1 })
+      .eq("course_id", courseId)
+      .eq("id", "41000000-0000-4000-8000-000000000001");
+    if (restoreError) throw restoreError;
+  }
+  test.beforeEach(cleanupModule);
+  test.afterEach(cleanupModule);
 
   test("Admin publishes, reorders and unpublishes a module; Student visibility follows publication", async ({
     page,
@@ -74,18 +97,14 @@ test.describe("Admin Content publication", () => {
       await loginStudent(studentPage);
       await studentPage.goto("/aulas");
       await expect(studentPage.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toHaveCount(0);
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toHaveCount(0);
 
       await page.goto("/admin/content?kind=modules");
       await page.getByRole("button", { name: `Publicar ${moduleTitle}` }).click();
       await expect(page.getByRole("status")).toContainText("Conteúdo publicado");
 
       await studentPage.reload();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toBeVisible();
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toBeVisible();
       await captureEvidence(studentPage, "module-published-student.png");
 
       await page.getByRole("button", { name: `Mover ${moduleTitle} para cima` }).click();
@@ -94,10 +113,55 @@ test.describe("Admin Content publication", () => {
       await expect(page.getByRole("status")).toContainText("Publicação retirada");
 
       await studentPage.reload();
-      await expect(
-        studentPage.getByRole("heading", { name: moduleTitle, exact: true }),
-      ).toHaveCount(0);
+      await expect(studentPage.locator("summary").filter({ hasText: moduleTitle })).toHaveCount(0);
       await captureEvidence(studentPage, "module-unpublished-student.png");
+
+      // Prove the persisted state and audit trail before afterEach removes this module.
+      const db = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        { auth: { persistSession: false } },
+      );
+      const { data: module, error: moduleError } = await db
+        .from("modules")
+        .select("id,position,publication_status,published_at")
+        .eq("course_id", courseId)
+        .eq("title", moduleTitle)
+        .single();
+      expect(moduleError).toBeNull();
+      expect(module).toMatchObject({
+        position: 1,
+        publication_status: "DRAFT",
+        published_at: null,
+      });
+      const { data: users, error: usersError } = await db.auth.admin.listUsers({
+        page: 1,
+        perPage: 1000,
+      });
+      expect(usersError).toBeNull();
+      const actor = users.users.find((user) => user.email === "canonical.admin@example.test");
+      expect(actor).toBeDefined();
+      const { data: audits, error: auditError } = await db
+        .from("audit_logs")
+        .select("action,entity_id,data")
+        .eq("entity_type", "modules")
+        .eq("actor_user_id", actor!.id)
+        .in("entity_id", [module!.id, courseId]);
+      expect(auditError).toBeNull();
+      for (const action of ["content_created", "content_published", "content_unpublished"]) {
+        expect(audits?.some((row) => row.entity_id === module!.id && row.action === action)).toBe(
+          true,
+        );
+      }
+      expect(
+        audits?.some(
+          (row) =>
+            row.action === "content_reordered" &&
+            row.entity_id === courseId &&
+            Array.isArray(row.data?.new_order) &&
+            row.data.new_order.includes(module!.id),
+        ),
+      ).toBe(true);
     } finally {
       await studentContext.close();
     }

@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useSyncExternalStore } from "react";
 import { useFormStatus } from "react-dom";
 import { Alert, Button, Card, Input, Select, Textarea } from "@/components/ui";
 import {
@@ -8,6 +8,10 @@ import {
   type AssessmentFormState,
 } from "../domain/models";
 import styles from "@/modules/admin-content/ui/admin-content.module.css";
+
+const subscribeHydration = () => () => {};
+const clientHydrated = () => true;
+const serverHydrated = () => false;
 
 type Question = {
   key: string;
@@ -87,6 +91,7 @@ export function AssessmentEditor({
   const [purpose, setPurpose] = useState(detail?.purpose ?? "");
   const [items, setItems] = useState(() => initial(detail));
   const [state, formAction, pending] = useActionState(action, {});
+  const hydrated = useSyncExternalStore(subscribeHydration, clientHydrated, serverHydrated);
   const readOnly = !!detail && (detail.version?.status !== "DRAFT" || detail.version.hasAttempts);
   function change(index: number, patch: Partial<Question>) {
     setItems((current) => current.map((q, i) => (i === index ? { ...q, ...patch } : q)));
@@ -138,7 +143,7 @@ export function AssessmentEditor({
           description="Crie uma nova versão para editar. Tentativas e versões publicadas são preservadas."
         />
       )}
-      <fieldset disabled={readOnly || pending} className={styles.editorForm}>
+      <fieldset disabled={!hydrated || readOnly || pending} className={styles.editorForm}>
         <legend>Dados e questões da avaliação</legend>
         <Input
           label="Título da avaliação"

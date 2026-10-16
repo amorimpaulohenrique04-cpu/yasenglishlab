@@ -1,11 +1,21 @@
 import Link from "next/link";
 
-import { Badge, Card, EmptyState, MetricCard, PageHeader } from "@/components/ui";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  Hero,
+  Icon,
+  IconBadge,
+  MetricCard,
+  PageHeader,
+} from "@/components/ui";
 import {
   teacherSessionStatusLabel,
   teacherSessionTypeLabel,
   type TeacherSessionStatus,
 } from "@/modules/teacher-operations";
+import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
 import { loadTeacherUpcomingSessions } from "@/server/teacher-operations/teacher-operations";
 import { loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
@@ -17,6 +27,13 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   day: "2-digit",
   month: "short",
   year: "numeric",
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  timeZone: "America/Recife",
+  weekday: "short",
+  day: "2-digit",
+  month: "short",
 });
 
 const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -37,6 +54,8 @@ export default async function TeacherHomePage() {
     loadTeacherReviews(),
     loadPlacementQueue("TEACHER", "REVIEW_PENDING"),
   ]);
+  const next = upcoming[0];
+  const pendingPractice = practiceReviews.filter((review) => review.status === "PENDING_MANUAL");
 
   return (
     <div className={styles.page}>
@@ -44,35 +63,168 @@ export default async function TeacherHomePage() {
         title="Próxima atividade"
         description="Prepare seu próximo encontro e acompanhe as revisões pendentes."
         actions={
-          <div className={styles.sessionMeta}>
-            <Link href="/teacher/revisoes">Revisões de prática</Link>
-            <Link href="/teacher/revisoes/placement">Revisões de entrada</Link>
-            <Link href="/teacher/alunos">Alunos</Link>
-            <Link href="/teacher/sessoes/nova">Criar encontro</Link>
-          </div>
+          <Link className="yas-button yas-button--primary" href="/teacher/sessoes/nova">
+            <Icon name="plus" size={18} />
+            Criar encontro
+          </Link>
         }
       />
 
+      <div className={styles.homeTop}>
+        {next ? (
+          <Hero
+            className="yas-reveal"
+            kicker="Próxima sessão"
+            kickerIcon="video"
+            title={next.title}
+            photo="/brand/hero-teacher.webp"
+            actions={
+              <Link
+                className="yas-button yas-button--primary yas-button--lg"
+                href={`/teacher/sessoes/${next.id}`}
+              >
+                Abrir sessão →
+              </Link>
+            }
+          >
+            <ul className="yas-hero-meta">
+              <li>
+                <Icon name="cal" size={17} />
+                <time dateTime={next.startsAt}>
+                  {dateFormatter.format(new Date(next.startsAt))}
+                </time>
+              </li>
+              <li>
+                <Icon name="clock" size={17} />
+                <span>
+                  <time dateTime={next.startsAt}>
+                    {timeFormatter.format(new Date(next.startsAt))}
+                  </time>
+                  {"–"}
+                  <time dateTime={next.endsAt}>
+                    {timeFormatter.format(new Date(next.endsAt))}
+                  </time>{" "}
+                  · Recife
+                </span>
+              </li>
+              <li>
+                <Icon name="users" size={17} />
+                {teacherSessionTypeLabel(next.sessionType)} · {next.participantCount}{" "}
+                {next.participantCount === 1 ? "participante" : "participantes"}
+              </li>
+            </ul>
+          </Hero>
+        ) : (
+          <Hero
+            className="yas-reveal"
+            kicker="Próxima sessão"
+            kickerIcon="video"
+            title="Nenhum encontro futuro"
+            photo="/brand/hero-teacher.webp"
+            actions={
+              <Link
+                className="yas-button yas-button--primary yas-button--lg"
+                href="/teacher/sessoes/nova"
+              >
+                Criar encontro →
+              </Link>
+            }
+          >
+            <p className="yas-hero-text">
+              Quando uma sessão estiver associada ao seu perfil de professor, ela aparecerá aqui.
+            </p>
+          </Hero>
+        )}
+
+        <Card className={`${styles.queueCard} yas-reveal`} aria-labelledby="teacher-queue-title">
+          <div className="yas-card-header">
+            <h2 className="yas-card-title" id="teacher-queue-title">
+              <Icon name="inbox" size={18} />
+              Fila de revisões
+            </h2>
+            <Link className="yas-link" href="/teacher/revisoes">
+              Ver todas <Icon name="arrow" />
+            </Link>
+          </div>
+          {pendingPractice.length === 0 && placementReviews.length === 0 ? (
+            <p className={styles.muted}>Nenhuma revisão pendente agora.</p>
+          ) : (
+            <ul className="yas-list">
+              {pendingPractice.slice(0, 3).map((review) => (
+                <li key={review.id}>
+                  <IconBadge
+                    icon={practiceSkillVisual[review.skill].icon}
+                    tone={practiceSkillVisual[review.skill].tint}
+                    shape="square"
+                    size="sm"
+                  />
+                  <span className="yas-list-text">
+                    <strong>{review.studentName ?? "Aluno"}</strong>
+                    <small>
+                      {review.title} · {shortDateFormatter.format(new Date(review.submittedAt))}
+                    </small>
+                  </span>
+                  <Link
+                    className="yas-button yas-button--soft yas-button--sm"
+                    href={`/teacher/revisoes/${review.id}`}
+                  >
+                    Revisar
+                  </Link>
+                </li>
+              ))}
+              {placementReviews.length > 0 && (
+                <li>
+                  <IconBadge icon="target" tone="yellow" shape="square" size="sm" />
+                  <span className="yas-list-text">
+                    <strong>
+                      {placementReviews.length}{" "}
+                      {placementReviews.length === 1 ? "teste de entrada" : "testes de entrada"}
+                    </strong>
+                    <small>
+                      {placementReviews[0]?.displayName ?? "Aluno"}
+                      {placementReviews.length > 1 ? " e outros aguardando" : " aguardando revisão"}
+                    </small>
+                  </span>
+                  <Link
+                    className="yas-button yas-button--soft yas-button--sm"
+                    href="/teacher/revisoes/placement"
+                  >
+                    Abrir fila
+                  </Link>
+                </li>
+              )}
+            </ul>
+          )}
+        </Card>
+      </div>
+
       <section className="yas-metric-strip" aria-label="Trabalho pendente">
         <MetricCard
+          icon="cal"
           label="Próxima sessão"
-          value={upcoming[0] ? dateFormatter.format(new Date(upcoming[0].startsAt)) : "—"}
-          detail={upcoming[0]?.title ?? "Nenhum encontro futuro"}
-          href={upcoming[0] ? `/teacher/sessoes/${upcoming[0].id}` : "/teacher/sessoes"}
+          value={next ? shortDateFormatter.format(new Date(next.startsAt)) : "—"}
+          detail={next?.title ?? "Nenhum encontro futuro"}
+          href={next ? `/teacher/sessoes/${next.id}` : "/teacher/sessoes"}
         />
         <MetricCard
+          icon="mic"
+          tone="yellow"
           label="Revisões de prática"
           value={practiceReviews.length}
-          detail="Na fila pedagógica autorizada"
+          detail="Na sua fila de revisão"
           href="/teacher/revisoes"
         />
         <MetricCard
+          icon="inbox"
+          tone="blue"
           label="Revisões de entrada"
           value={placementReviews.length}
-          detail="Casos disponíveis para revisão"
+          detail="Testes aguardando revisão"
           href="/teacher/revisoes/placement"
         />
         <MetricCard
+          icon="video"
+          tone="green"
           label="Encontros futuros"
           value={upcoming.length}
           detail="Sessões associadas ao seu perfil"
@@ -86,74 +238,52 @@ export default async function TeacherHomePage() {
           description="Quando uma sessão estiver associada ao seu perfil de professor, ela aparecerá aqui."
         />
       ) : (
-        <div className={styles.sessionGrid}>
-          {upcoming.slice(0, 3).map((session) => {
-            const start = new Date(session.startsAt);
-            const end = new Date(session.endsAt);
-            return (
-              <Card
-                key={session.id}
-                className={styles.sessionCard}
-                aria-labelledby={"teacher-session-" + session.id}
-              >
-                <div className={styles.sessionTopline}>
-                  <Badge tone={statusTone(session.status)}>
+        <Card aria-labelledby="teacher-agenda-title">
+          <div className="yas-card-header">
+            <h2 className="yas-card-title" id="teacher-agenda-title">
+              Próximos encontros
+            </h2>
+            <Link className="yas-link" href="/teacher/sessoes">
+              Ver sessões <Icon name="arrow" />
+            </Link>
+          </div>
+          <ul className={styles.agendaList}>
+            {upcoming.slice(0, 5).map((session) => {
+              const start = new Date(session.startsAt);
+              const end = new Date(session.endsAt);
+              return (
+                <li key={session.id}>
+                  <time className={styles.agendaTime} dateTime={session.startsAt}>
+                    {timeFormatter.format(start)}
+                    <small>{shortDateFormatter.format(start)}</small>
+                  </time>
+                  <span className={styles.agendaCopy}>
+                    <strong id={"teacher-session-" + session.id}>{session.title}</strong>
+                    <small>
+                      <span className={styles.typeChip} data-type={session.sessionType}>
+                        {teacherSessionTypeLabel(session.sessionType)}
+                      </span>
+                      {timeFormatter.format(start)}–{timeFormatter.format(end)} ·{" "}
+                      {session.participantCount}{" "}
+                      {session.participantCount === 1 ? "participante" : "participantes"} ·{" "}
+                      {session.attendanceMarkedCount} de {session.participantCount} com presença
+                      marcada
+                    </small>
+                  </span>
+                  <Badge tone={statusTone(session.status)} dot>
                     {teacherSessionStatusLabel(session.status)}
                   </Badge>
-                  <span className={styles.muted}>
-                    {teacherSessionTypeLabel(session.sessionType)}
-                  </span>
-                </div>
-
-                <div>
-                  <h2 className={styles.sessionTitle} id={"teacher-session-" + session.id}>
-                    {session.title}
-                  </h2>
-                  <div className={styles.sessionMeta}>
-                    <span>
-                      <time dateTime={session.startsAt}>{dateFormatter.format(start)}</time>
-                    </span>
-                    <span>
-                      <time dateTime={session.startsAt}>{timeFormatter.format(start)}</time>
-                      {"–"}
-                      <time dateTime={session.endsAt}>{timeFormatter.format(end)}</time>
-                    </span>
-                  </div>
-                </div>
-
-                <div className={styles.sessionMeta}>
-                  <span>
-                    {session.participantCount}{" "}
-                    {session.participantCount === 1 ? "participante" : "participantes"}
-                  </span>
-                  <span>
-                    {session.attendanceMarkedCount} de {session.participantCount} com presença
-                    marcada
-                  </span>
-                </div>
-
-                <Link className={styles.cardLink} href={"/teacher/sessoes/" + session.id}>
-                  Abrir sessão →
-                </Link>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-      {practiceReviews[0] && (
-        <Card className="yas-row-summary">
-          <h2>Próxima revisão de prática</h2>
-          <p>
-            {practiceReviews[0].studentName ?? "Aluno"} · {practiceReviews[0].title}
-          </p>
-          <Link href={`/teacher/revisoes/${practiceReviews[0].id}`}>Retomar revisão</Link>
-        </Card>
-      )}
-      {placementReviews[0] && (
-        <Card className="yas-row-summary">
-          <h2>Próxima revisão de entrada</h2>
-          <p>{placementReviews[0].displayName ?? "Aluno"}</p>
-          <Link href="/teacher/revisoes/placement">Abrir fila de Placement</Link>
+                  <Link
+                    className="yas-button yas-button--soft yas-button--sm"
+                    href={"/teacher/sessoes/" + session.id}
+                    aria-label={`Abrir sessão ${session.title}`}
+                  >
+                    Abrir
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </Card>
       )}
     </div>

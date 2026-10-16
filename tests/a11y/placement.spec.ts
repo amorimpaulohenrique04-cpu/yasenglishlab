@@ -1,3 +1,4 @@
+import { assertNoDocumentOverflow } from "../helpers/responsive";
 import AxeBuilder from "@axe-core/playwright";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
@@ -11,11 +12,7 @@ async function check(page: Page) {
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   expect(result.violations).toEqual([]);
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    ),
-  ).toBeLessThanOrEqual(1);
+  await assertNoDocumentOverflow(page);
 }
 async function login(page: Page, suffix: string) {
   await page.goto("/login");

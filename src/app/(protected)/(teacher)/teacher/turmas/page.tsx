@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-import { DataTable, EmptyState, PageHeader } from "@/components/ui";
+import { Card, EmptyState, Icon, PageHeader, ProgressRing } from "@/components/ui";
+import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
 import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
 
 const weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -10,7 +11,7 @@ const minuteTime = (minute: number) =>
 export default async function TeacherCohortsPage() {
   const context = await loadTeacherOperationContext();
   return (
-    <div className="yas-operational-surface">
+    <div className={styles.page}>
       <PageHeader title="Turmas" description="Turmas às quais você está vinculado atualmente." />
       {context.cohorts.length === 0 ? (
         <EmptyState
@@ -18,16 +19,8 @@ export default async function TeacherCohortsPage() {
           description="Seus vínculos ativos aparecerão aqui."
         />
       ) : (
-        <DataTable
-          caption="Turmas pedagógicas atribuídas"
-          columns={[
-            { id: "cohort", label: "Turma" },
-            { id: "occupancy", label: "Ocupação" },
-            { id: "schedule", label: "Horário recorrente" },
-            { id: "students", label: "Alunos no escopo" },
-            { id: "sessions", label: "Próximos encontros" },
-          ]}
-          rows={context.cohorts.map((item) => {
+        <ul className={styles.cohortGrid} aria-label="Turmas pedagógicas atribuídas">
+          {context.cohorts.map((item) => {
             const schedule = item.schedule.length
               ? item.schedule
                   .map(
@@ -36,66 +29,100 @@ export default async function TeacherCohortsPage() {
                   )
                   .join(" · ")
               : "Sem horário recorrente";
-            const roster = item.students.length ? (
-              <ul>
-                {item.students.map((student) => (
-                  <li key={student.id}>
-                    <Link href={`/teacher/alunos/${student.id}`}>{student.name ?? "Aluno"}</Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <span>Sem alunos ativos</span>
-            );
-            const sessions = item.next_sessions.length ? (
-              <ul>
-                {item.next_sessions.map((session) => (
-                  <li key={session.id}>
-                    <Link href={`/teacher/sessoes/${session.id}`}>
-                      {session.title} ·{" "}
-                      {new Date(session.starts_at).toLocaleString("pt-BR", {
-                        timeZone: item.timezone,
-                      })}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <span>Nenhum encontro agendado</span>
-            );
-            return {
-              id: item.id,
-              cells: [
-                <strong key="cohort">{item.name}</strong>,
-                `${item.occupancy}${item.capacity === null ? "" : ` de ${item.capacity}`} alunos`,
-                schedule,
-                roster,
-                sessions,
-              ],
-              mobile: (
-                <article className="yas-row-summary">
-                  <h2>{item.name}</h2>
-                  <div className="yas-row-summary-meta">
-                    <span>
-                      {item.occupancy}
-                      {item.capacity === null ? "" : ` de ${item.capacity}`} alunos
-                    </span>
-                    <span>Fuso: {item.timezone}</span>
+            const occupancy =
+              item.capacity && item.capacity > 0
+                ? Math.round((item.occupancy / item.capacity) * 100)
+                : null;
+            return (
+              <li key={item.id}>
+                <Card className={styles.cohortCard} aria-labelledby={`cohort-${item.id}`}>
+                  <div className={styles.cohortTop}>
+                    {occupancy !== null ? (
+                      <ProgressRing
+                        value={occupancy}
+                        size={72}
+                        stroke={9}
+                        label={`Ocupação de ${item.name}`}
+                      >
+                        <span>{occupancy}%</span>
+                      </ProgressRing>
+                    ) : null}
+                    <div>
+                      <h2 className={styles.sessionTitle} id={`cohort-${item.id}`}>
+                        {item.name}
+                      </h2>
+                      <ul className={styles.cohortMeta}>
+                        <li>
+                          <Icon name="users" size={14} />
+                          {item.occupancy}
+                          {item.capacity === null ? "" : ` de ${item.capacity}`} alunos
+                        </li>
+                        <li>
+                          <Icon name="clock" size={14} />
+                          {schedule}
+                        </li>
+                        <li>
+                          <Icon name="globe" size={14} />
+                          {item.timezone}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <p>{schedule}</p>
-                  <section>
+
+                  <section className={styles.cohortSection}>
                     <h3>Alunos</h3>
-                    {roster}
+                    {item.students.length ? (
+                      <ul>
+                        {item.students.map((student) => (
+                          <li key={student.id}>
+                            <Link
+                              className={styles.cardLink}
+                              href={`/teacher/alunos/${student.id}`}
+                            >
+                              {student.name ?? "Aluno"}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.muted}>Sem alunos ativos</p>
+                    )}
                   </section>
-                  <section>
+
+                  <section className={styles.cohortSection}>
                     <h3>Próximos encontros</h3>
-                    {sessions}
+                    {item.next_sessions.length ? (
+                      <ul>
+                        {item.next_sessions.map((session) => (
+                          <li key={session.id}>
+                            <Link
+                              className={styles.cardLink}
+                              href={`/teacher/sessoes/${session.id}`}
+                            >
+                              {session.title}
+                            </Link>
+                            <small>
+                              {new Date(session.starts_at).toLocaleString("pt-BR", {
+                                timeZone: item.timezone,
+                                weekday: "short",
+                                day: "2-digit",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </small>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.muted}>Nenhum encontro agendado</p>
+                    )}
                   </section>
-                </article>
-              ),
-            };
+                </Card>
+              </li>
+            );
           })}
-        />
+        </ul>
       )}
     </div>
   );

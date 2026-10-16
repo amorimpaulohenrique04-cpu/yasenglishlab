@@ -372,9 +372,10 @@ export default async function CohortsPage({
           })}
         />
       )}
-      <nav aria-label="Paginação de turmas" className="yas-stack">
+      <nav aria-label="Paginação de turmas" className="yas-cluster">
         {offset > 0 && (
           <Link
+            className="yas-button yas-button--soft yas-button--sm"
             href={`/admin/cohorts?offset=${previous}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
           >
             Página anterior
@@ -382,6 +383,7 @@ export default async function CohortsPage({
         )}
         {cohorts.length === limit && (
           <Link
+            className="yas-button yas-button--soft yas-button--sm"
             href={`/admin/cohorts?offset=${next}${query ? `&q=${encodeURIComponent(query)}` : ""}`}
           >
             Próxima página

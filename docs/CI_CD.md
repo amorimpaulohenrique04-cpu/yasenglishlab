@@ -171,3 +171,15 @@ Produção só é alcançável quando:
 O job `Preview` do Official CI agrega quatro suítes que rodam em paralelo, cada uma com seu próprio banco isolado: `database-proofs` (integração SQL, RLS e observabilidade), `e2e`, `accessibility` e `visual` (Storybook e goldens). O `CI Gate` continua exigindo `Preview` com sucesso; qualquer suíte vermelha ou ausente reprova o gate.
 
 O job `Detect code changes` só dispensa as suítes quando um pull request altera exclusivamente `docs/**`, `harness/**/*.md|json`, `README.md`, `AGENTS.md` ou `CLAUDE.md`. Supply Chain, Quality, Database e Guardrail Simulations continuam rodando. Qualquer outro arquivo (código, testes, migrations, scripts, workflows, dependências), diff vazio, push na `main` ou resultado inesperado executa o Preview completo.
+
+## Revisão dos gates — PR 74
+
+- O setup comum está em `.github/actions/preview-setup/action.yml`; cada job continua com seu próprio banco. Chromium usa cache por SO e lockfile.
+- E2E, a11y e goldens usam build de produção, um worker, zero retries e trace/screenshot na primeira falha. O build recebe as credenciais locais do próprio job.
+- Relatórios Playwright são obrigatórios e inspecionados mesmo quando a suíte falha. Os agregadores possuem testes para falha, cancelamento, ausência e dispensa explícita de documentação.
+- `format:check` verifica arquivos versionados com a API do Prettier, respeitando os ignores. Arquivos locais de ferramentas, downloads e evidências não entram na varredura.
+- Capturas genéricas repetidas do E2E canônico foram consolidadas nas suítes visuais/responsivas. Permanecem as provas de persistência, retomada, conclusão, publicação, feedback, autorização e reflow.
+
+Tempos observados e justificativas de consolidação estão em `harness/evidence/pr74-gates/README.md`. O pipeline completo permanece obrigatório para código, testes, configuração e dependências; nenhum gate foi convertido em aviso.
+
+Exceção explícita: o projeto `chromium-commercial` executa somente `commercial.spec.ts` em `next dev` isolado (porta principal + 1 e APP_URL correspondente). O provedor FAKE recusa produção por contrato; essa proteção permanece intacta. Os outros E2E e as suítes a11y/golden continuam no build de produção. Ambos os projetos alimentam o mesmo relatório obrigatório.

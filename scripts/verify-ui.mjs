@@ -1,3 +1,4 @@
+import { runPlaywrightSuite } from "./_playwright-suite.mjs";
 import { assert, exists, run, runNpm, success } from "./_verify-utils.mjs";
 
 const screens = ["login", "home", "aulas", "pratica", "materiais", "progresso", "agenda", "perfil"];
@@ -46,14 +47,16 @@ for (const platform of ["linux", "win32"]) {
   }
 }
 
+process.env.YAS_E2E_PRODUCTION = "1";
+runNpm(["run", "build"]);
 runNpm(["run", "storybook:build"]);
 if (canonicalE2e) prepareCanonicalFixture();
-runNpm(["run", "test:e2e"]);
+runPlaywrightSuite("test:e2e", "artifacts/e2e/results.json");
 if (canonicalE2e) prepareCanonicalFixture();
-runNpm(["run", "test:a11y"]);
-runNpm(["run", "test:visual:storybook"]);
+runPlaywrightSuite("test:a11y", "artifacts/a11y/results.json");
+runPlaywrightSuite("test:visual:storybook", "artifacts/storybook/results.json");
 if (canonicalE2e) prepareCanonicalFixture();
-runNpm(["run", "test:visual:golden"]);
+runPlaywrightSuite("test:visual:golden", "artifacts/golden/results.json");
 
 success(
   `UI verification passed with ${screens.length} approved references, 24 platform-specific product goldens, E2E, accessibility, Storybook and visual regression checks.`,

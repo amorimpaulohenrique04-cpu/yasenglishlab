@@ -204,7 +204,7 @@ test.describe("canonical learning vertical slice", () => {
     if (!primaryHref) throw new Error("Home primary learning action has no destination.");
     // Compile the cold dynamic route and verify its authenticated HTTP boundary
     // before measuring the browser navigation; keep the existing assertion timeout.
-    expect((await page.request.get(primaryHref)).status()).toBe(200);
+    expect((await page.request.get(primaryHref, { timeout: 60_000 })).status()).toBe(200);
     await primaryHomeAction.focus();
     await expect(primaryHomeAction).toBeFocused();
     await primaryHomeAction.click();
@@ -283,7 +283,14 @@ test.describe("canonical learning vertical slice", () => {
 
     await page.goto("/aulas");
 
-    await page.getByRole("link", { name: "Abrir módulo →" }).click();
+    // A completed module is collapsed; open its summary before following its link.
+    const firstModule = page
+      .locator("details")
+      .filter({ has: page.getByRole("link", { name: "Abrir módulo →", includeHidden: true }) })
+      .first();
+    if ((await firstModule.getAttribute("open")) === null)
+      await firstModule.locator("summary").click();
+    await firstModule.getByRole("link", { name: "Abrir módulo →" }).click();
     await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
     await captureEvidence(page, "module-desktop.png");
 
@@ -347,84 +354,26 @@ test.describe("canonical learning vertical slice", () => {
       "100",
     );
 
-    await page.setViewportSize({ width: 834, height: 1112 });
-    await page.goto("/home");
-    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
-    await captureEvidence(page, "home-tablet.png");
-
-    await page.goto("/aulas");
-    await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-    await captureEvidence(page, "aulas-tablet.png");
-
-    await page.goto("/materiais");
-    await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Materiais do curso" })).toBeVisible();
-    await captureEvidence(page, "materiais-tablet.png");
-
-    await page.goto("/pratica");
-    await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
-    await captureEvidence(page, "pratica-tablet.png");
-
-    await page.goto("/agenda");
-    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(
-      page
-        .getByRole("region", { name: "Core Class · Building confidence" })
-        .getByRole("button", { name: "Reservado" }),
-    ).toBeDisabled();
-    await captureEvidence(page, "agenda-tablet.png");
-
-    await page.goto("/progresso");
-    await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
-    await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
-    await captureEvidence(page, "progresso-tablet.png");
-
-    await page.goto("/aulas");
-
-    await page.getByRole("link", { name: "Abrir módulo →" }).click();
-    await captureEvidence(page, "module-tablet.png");
-    await page.getByRole("link", { name: "Rever aula →" }).first().click();
-    await captureEvidence(page, "lesson-tablet.png");
-
+    // Screen-wide viewport tours live in golden/a11y and p21-responsive suites.
+    // Keep the unique mobile drawer flow and completed-module disclosure here.
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/home");
-    await expect(page.getByRole("heading", { name: "Olá 👋" })).toBeVisible();
-    await captureEvidence(page, "home-mobile.png");
-
     await page.goto("/aulas");
-    await expect(page.getByRole("heading", { name: "Aulas", exact: true })).toBeVisible();
-    await captureEvidence(page, "aulas-mobile.png");
-
-    await page.goto("/materiais");
-    await expect(page.getByRole("heading", { name: "Materiais", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Materiais do curso" })).toBeVisible();
-    await captureEvidence(page, "materiais-mobile.png");
-
-    await page.goto("/pratica");
-    await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
-    await captureEvidence(page, "pratica-mobile.png");
-
-    await page.goto("/agenda");
-    await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
-    await expect(
-      page
-        .getByRole("region", { name: "Core Class · Building confidence" })
-        .getByRole("button", { name: "Reservado" }),
-    ).toBeDisabled();
-    await captureEvidence(page, "agenda-mobile.png");
-
     await page.getByRole("button", { name: "Abrir navegação" }).click();
-    const progressMobileNavigation = page.getByRole("navigation", { name: "Navegação mobile" });
-    await progressMobileNavigation.getByRole("link", { name: "Progresso", exact: true }).click();
+    await page
+      .getByRole("navigation", { name: "Navegação mobile", exact: true })
+      .getByRole("link", { name: "Progresso", exact: true })
+      .click();
     await expect(page.getByRole("heading", { name: "Progresso", exact: true })).toBeVisible();
-    await expect(page.getByText("Nível CEFR ainda não disponível")).toBeVisible();
-    await captureEvidence(page, "progresso-mobile.png");
-
     await page.goto("/aulas");
-
-    await page.getByRole("link", { name: "Abrir módulo →" }).click();
-    await captureEvidence(page, "module-mobile.png");
+    const completedModule = page
+      .locator("details")
+      .filter({ has: page.getByRole("link", { name: "Abrir módulo →", includeHidden: true }) })
+      .first();
+    await expect(completedModule).not.toHaveAttribute("open", "");
+    await completedModule.locator("summary").click();
+    await completedModule.getByRole("link", { name: "Abrir módulo →" }).click();
     await page.getByRole("link", { name: "Rever aula →" }).first().click();
-    await captureEvidence(page, "lesson-mobile.png");
+    await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
+    await captureEvidence(page, "completed-lesson-mobile.png");
   });
 });

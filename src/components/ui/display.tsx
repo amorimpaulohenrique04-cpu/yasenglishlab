@@ -1,28 +1,137 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 
+import { Icon, type IconName } from "./icons";
 import { clampProgress, cx } from "./utils";
 
 export interface CardProps extends HTMLAttributes<HTMLElement> {
   variant?: "default" | "soft" | "accent";
+  /** Levanta no hover (cards clicáveis). */
+  interactive?: boolean;
 }
 
-export function Card({ variant = "default", className, children, ...props }: CardProps) {
+export function Card({
+  variant = "default",
+  interactive = false,
+  className,
+  children,
+  ...props
+}: CardProps) {
   return (
     <section
       {...props}
-      className={cx("yas-card", variant !== "default" && `yas-card--${variant}`, className)}
+      className={cx(
+        "yas-card",
+        variant !== "default" && `yas-card--${variant}`,
+        interactive && "yas-card--interactive",
+        className,
+      )}
     >
       {children}
     </section>
   );
 }
 
+export type Tint = "lilac" | "blue" | "yellow" | "green" | "pink" | "red";
+
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  tone?: "neutral" | "success" | "warning" | "error" | "info";
+  tone?: "neutral" | "success" | "warning" | "error" | "info" | "muted" | "pink";
+  /** Ponto colorido antes do texto (densidade de operação). */
+  dot?: boolean;
+  icon?: IconName | undefined;
 }
 
-export function Badge({ tone = "neutral", className, ...props }: BadgeProps) {
-  return <span {...props} className={cx("yas-badge", className)} data-tone={tone} />;
+export function Badge({ tone = "neutral", dot, icon, className, children, ...props }: BadgeProps) {
+  return (
+    <span
+      {...props}
+      className={cx("yas-badge", className)}
+      data-tone={tone}
+      data-dot={dot || undefined}
+    >
+      {icon && <Icon name={icon} size={13} />}
+      {children}
+    </span>
+  );
+}
+
+export interface IconBadgeProps {
+  icon: IconName;
+  tone?: Tint | "white";
+  shape?: "circle" | "square";
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}
+
+/** Ícone sobre fundo pastel (tiles, listas, KPIs). Sempre decorativo. */
+export function IconBadge({
+  icon,
+  tone = "lilac",
+  shape = "circle",
+  size = "md",
+  className,
+}: IconBadgeProps) {
+  const pixels = size === "sm" ? 18 : size === "lg" ? 26 : 22;
+  return (
+    <span
+      className={cx("yas-icon-badge", className)}
+      data-tone={tone}
+      data-shape={shape}
+      data-size={size}
+      aria-hidden="true"
+    >
+      <Icon name={icon} size={pixels} />
+    </span>
+  );
+}
+
+export interface HeroProps extends Omit<HTMLAttributes<HTMLElement>, "title"> {
+  kicker?: ReactNode;
+  kickerIcon?: IconName;
+  title: ReactNode;
+  titleAs?: "h1" | "h2" | "h3";
+  /** Foto decorativa à direita (servida de /public/brand). */
+  photo?: string;
+  compact?: boolean;
+  actions?: ReactNode;
+}
+
+/** Faixa roxa com foto recortada: padrão das referências aprovadas. */
+export function Hero({
+  kicker,
+  kickerIcon,
+  title,
+  titleAs: Title = "h2",
+  photo,
+  compact,
+  actions,
+  className,
+  children,
+  ...props
+}: HeroProps) {
+  return (
+    <section
+      {...props}
+      className={cx("yas-hero", className)}
+      data-photo={photo ? "true" : "false"}
+      data-compact={compact || undefined}
+    >
+      {photo && (
+        // eslint-disable-next-line @next/next/no-img-element -- decorative cutout, fixed asset
+        <img className="yas-hero-photo" src={photo} alt="" aria-hidden="true" />
+      )}
+      <div className="yas-hero-copy">
+        {kicker && (
+          <span className="yas-hero-kicker">
+            {kickerIcon && <Icon name={kickerIcon} size={18} />}
+            {kicker}
+          </span>
+        )}
+        <Title className="yas-hero-title">{title}</Title>
+        {children}
+        {actions && <div className="yas-hero-actions">{actions}</div>}
+      </div>
+    </section>
+  );
 }
 
 export interface TagProps extends HTMLAttributes<HTMLSpanElement> {
@@ -88,7 +197,7 @@ export interface ProgressBarProps {
   label?: string;
   showLabel?: boolean;
   showValue?: boolean;
-  tone?: "default" | "priority";
+  tone?: "default" | "priority" | "success";
 }
 
 export function ProgressBar({
@@ -127,6 +236,8 @@ export interface ProgressRingProps {
   value: number;
   size?: number;
   label?: string;
+  tone?: "default" | "priority";
+  stroke?: number;
   children?: ReactNode;
 }
 
@@ -134,10 +245,11 @@ export function ProgressRing({
   value,
   size = 88,
   label = "Progresso",
+  tone = "default",
+  stroke = 8,
   children,
 }: ProgressRingProps) {
   const safe = clampProgress(value);
-  const stroke = 8;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (safe / 100) * circumference;
@@ -149,6 +261,7 @@ export function ProgressRing({
   return (
     <div
       className="yas-progress-ring"
+      data-tone={tone}
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}
@@ -177,6 +290,14 @@ export function ProgressRing({
       </svg>
       <span className="yas-progress-ring-content">{children ?? `${safe}%`}</span>
     </div>
+  );
+}
+
+export function AvatarStack({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <span className="yas-avatar-stack" role="group" aria-label={label}>
+      {children}
+    </span>
   );
 }
 
@@ -270,15 +391,22 @@ export function MetricCard({
   value,
   detail,
   href,
+  icon,
+  tone = "lilac",
 }: {
   label: string;
   value: ReactNode;
   detail?: ReactNode;
   href?: string;
+  icon?: IconName;
+  tone?: Tint;
 }) {
   const content = (
     <>
-      <span className="yas-metric-label">{label}</span>
+      <span className="yas-metric-label">
+        {icon && <IconBadge icon={icon} tone={tone} shape="square" size="sm" />}
+        {label}
+      </span>
       <strong className="yas-metric-value">{value}</strong>
       {detail && <span className="yas-metric-detail">{detail}</span>}
     </>

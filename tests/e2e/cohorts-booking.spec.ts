@@ -106,21 +106,16 @@ test("Admin drawer does not accept interaction before hydration", async ({ page 
   await loginCanonicalAdmin(page, password, { next: "", destination: /\/admin$/ });
   await expect(page.getByRole("heading", { name: "Visão geral" })).toBeVisible();
   let releaseScripts!: () => void;
-  let primitiveScriptHeld = false;
   const scriptsReady = new Promise<void>((resolve) => {
     releaseScripts = resolve;
   });
   await page.route("**/_next/static/chunks/*.js*", async (route) => {
-    const response = await route.fetch();
-    if ((await response.text()).includes("OperationOverlay")) {
-      primitiveScriptHeld = true;
-      await scriptsReady;
-    }
-    await route.fulfill({ response });
+    // Hold every client chunk: production minification removes component names.
+    await scriptsReady;
+    await route.continue();
   });
   try {
     await page.goto("/admin/cohorts", { waitUntil: "domcontentloaded" });
-    await expect.poll(() => primitiveScriptHeld).toBe(true);
     const trigger = page.getByRole("row", { name: /Cohort Basic/ }).getByRole("button", {
       name: "Gerenciar",
     });

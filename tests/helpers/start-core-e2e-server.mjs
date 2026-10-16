@@ -118,7 +118,14 @@ if (env.CANONICAL_E2E === "1") {
 }
 const child = spawn(
   process.execPath,
-  ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", port],
+  [
+    "node_modules/next/dist/bin/next",
+    env.YAS_E2E_PRODUCTION === "1" ? "start" : "dev",
+    "--hostname",
+    "127.0.0.1",
+    "--port",
+    port,
+  ],
   { env, stdio: "inherit" },
 );
 function stop() {

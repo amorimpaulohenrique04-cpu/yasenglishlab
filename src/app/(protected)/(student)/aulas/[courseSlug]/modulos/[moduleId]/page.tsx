@@ -1,7 +1,21 @@
 import Link from "next/link";
 
-import { Badge, Card, EmptyState, ErrorState, PageHeader, ProgressBar } from "@/components/ui";
-import { lessonCompletion, lessonLockMessage, moduleCompletion } from "@/modules/learning";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  ErrorState,
+  Icon,
+  PageHeader,
+  ProgressBar,
+} from "@/components/ui";
+import {
+  isLessonComplete,
+  lessonCompletion,
+  moduleCompletion,
+  nextLesson,
+} from "@/modules/learning";
+import { LessonRow, lessonState } from "@/modules/learning/ui/lesson-status";
 import { loadLearningAccess, loadLearningModule } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
@@ -35,87 +49,65 @@ export default async function ModulePage({ params }: ModulePageProps) {
   }
 
   const { course, module } = state.data;
+  const upNext = nextLesson(course);
+  const lessons = [...module.lessons].sort((a, b) => a.position - b.position);
+  const done = lessons.filter(isLessonComplete).length;
 
   return (
     <div className="yas-learning-page">
+      <Link className="yas-link yas-learning-back" href="/aulas">
+        <Icon name="left" size={16} />
+        Voltar para a trilha
+      </Link>
       <PageHeader
         title={module.title}
         description={module.description ?? `Módulo ${module.position} de ${course.title}`}
-        actions={<Badge>{course.title}</Badge>}
+        actions={<Badge icon="book">{course.title}</Badge>}
       />
 
-      <Card>
-        <div className="yas-learning-card-stack">
-          <ProgressBar value={moduleCompletion(module)} label="Progresso do módulo" />
-
-          {module.lessons.length === 0 ? (
-            <EmptyState
-              title="Nenhuma aula publicada"
-              description="As aulas deste módulo aparecerão aqui quando estiverem disponíveis."
-            />
-          ) : (
-            <ol className="yas-learning-lesson-list" aria-label="Aulas em ordem">
-              {module.lessons.map((lesson) => {
-                const percent = lessonCompletion(lesson);
-                const lockMessage = lessonLockMessage(lesson);
-                if (lockMessage) {
-                  return (
-                    <li key={lesson.id} aria-disabled="true">
-                      <Card variant="soft">
-                        <div className="yas-learning-lesson-row">
-                          <div>
-                            <p className="yas-learning-kicker">Aula {lesson.position}</p>
-                            <h2 className="yas-learning-card-title">{lesson.title}</h2>
-                            <div className="yas-learning-meta">
-                              <span>{lesson.estimatedMinutes ?? 10} min</span>
-                              <span>
-                                <span aria-hidden="true">🔒 </span>
-                                Bloqueada
-                              </span>
-                            </div>
-                            <p className="yas-learning-card-copy">{lockMessage}</p>
-                          </div>
-                        </div>
-                      </Card>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={lesson.id}>
-                    <Card variant={percent > 0 ? "accent" : "soft"}>
-                      <div className="yas-learning-lesson-row">
-                        <div>
-                          <p className="yas-learning-kicker">Aula {lesson.position}</p>
-                          <h2 className="yas-learning-card-title">{lesson.title}</h2>
-                          <div className="yas-learning-meta">
-                            <span>{lesson.estimatedMinutes ?? 10} min</span>
-                            <span>
-                              {percent === 100
-                                ? "Concluída"
-                                : percent > 0
-                                  ? `${percent}% concluído`
-                                  : "Disponível"}
-                            </span>
-                          </div>
-                        </div>
-                        <Link
-                          className="yas-learning-link"
-                          href={`/aulas/${course.slug}/modulos/${module.id}/aulas/${lesson.slug}`}
-                        >
-                          {percent === 100
-                            ? "Rever aula →"
-                            : percent > 0
-                              ? "Continuar →"
-                              : "Abrir aula →"}
-                        </Link>
-                      </div>
-                    </Card>
-                  </li>
-                );
-              })}
-            </ol>
-          )}
+      <Card className="yas-learning-module-card">
+        <div className="yas-learning-module-progress">
+          <span className="yas-learning-module-number" data-status="current">
+            {module.position}
+          </span>
+          <div>
+            <strong>
+              {done} de {lessons.length} aulas concluídas
+            </strong>
+            <ProgressBar value={moduleCompletion(module)} label="Progresso do módulo" />
+          </div>
         </div>
+
+        {lessons.length === 0 ? (
+          <EmptyState
+            title="Nenhuma aula publicada"
+            description="As aulas deste módulo aparecerão aqui quando estiverem disponíveis."
+          />
+        ) : (
+          <ol className="yas-lesson-list yas-lesson-list--actions" aria-label="Aulas em ordem">
+            {lessons.map((lesson) => {
+              const percent = lessonCompletion(lesson);
+              const state = lessonState(lesson, upNext?.id ?? null);
+              return (
+                <LessonRow
+                  key={lesson.id}
+                  lesson={lesson}
+                  href={`/aulas/${course.slug}/modulos/${module.id}/aulas/${lesson.slug}`}
+                  state={state}
+                  action={{
+                    label:
+                      percent === 100
+                        ? "Rever aula →"
+                        : percent > 0
+                          ? "Continuar →"
+                          : "Abrir aula →",
+                    primary: state === "current",
+                  }}
+                />
+              );
+            })}
+          </ol>
+        )}
       </Card>
     </div>
   );

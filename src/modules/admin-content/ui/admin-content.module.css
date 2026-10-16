@@ -163,6 +163,8 @@
 }
 .editorForm {
   display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--yas-space-5);
 }
 .secondaryLink {

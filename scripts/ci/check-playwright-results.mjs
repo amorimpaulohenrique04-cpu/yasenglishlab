@@ -21,10 +21,12 @@ try {
 }
 
 const found = { flaky: [], skipped: [], unexpected: [] };
+let total = 0;
 function walk(suite, parents = []) {
   const path = suite.title ? [...parents, suite.title] : parents;
   for (const spec of suite.specs ?? []) {
     for (const test of spec.tests ?? []) {
+      total++;
       const name = `${suite.file ?? spec.file ?? path[0] ?? "?"} › ${spec.title}`;
       if (test.status === "flaky") found.flaky.push(name);
       else if (test.status === "skipped") found.skipped.push(name);
@@ -54,6 +56,8 @@ console.log(summary);
 if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
 
 const problems = [];
+if (total === 0) problems.push("report contains no tests");
+if (report.errors?.length) problems.push(`${report.errors.length} global error(s)`);
 if (found.unexpected.length) problems.push(`${found.unexpected.length} failed test(s)`);
 if (found.skipped.length && process.env.YAS_ALLOW_SKIPPED !== "1") {
   problems.push(`${found.skipped.length} skipped test(s) (a skipped test hides coverage)`);

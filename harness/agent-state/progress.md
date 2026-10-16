@@ -683,3 +683,42 @@ A/B entregues localmente. Sem commit/build/deploy. Próximo escopo macro: UI C/E
 ## 2026-10-15 — conclusao da Etapa 12 (branch feat/etapa-12-conclusao)
 
 PR 72 mergeada (A, B, C1/C2, E SQL, D, F; CI verde). Nesta branch: UI admin de trilha da turma e matricula no proximo curso, seletor de publico (C3), app do aluno com aulas bloqueadas e aviso de curso concluido, docs de C/D/E/F. Checagens baratas passaram (typecheck, lint, 583 testes, verify:harness). e2e/a11y/screenshots de C/E e verify:full NAO foram executados por decisao de custo; Etapa 12 segue in_progress/verified:false.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 0
+
+- Branch `feat/ui-redesign` a partir de `main` (30aa75a).
+- Base local `yasenglishlab` (55321) estava 7 migrations atrás da main; aplicadas com `supabase migration up --local` (sem reset).
+- `setup-canonical-e2e.mjs` falha localmente com "Teacher session overlap" (dado residual de execuções anteriores). Investigar antes dos gates `verify:ui`.
+- Fundação aplicada: tokens, fontes, ícones, primitivos, shell e navegação centralizada. typecheck, lint (0 erros) e 273 testes unitários passaram. Capturas em `harness/evidence/ui-redesign-approved-proposal/phase-0/`.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 1 (aluno)
+
+- Home, Aulas, módulo, aula, Prática, Materiais, Progresso, Agenda, Perfil e Suporte recompostos no visual aprovado.
+- Verificado: typecheck (src), lint, 273 testes unitários e capturas locais pontuais. Por pedido do usuário (economia), e2e, a11y, goldens e verify:ui NÃO foram executados nesta fase; goldens das telas do aluno estão desatualizados e precisam ser regenerados antes de fechar a tarefa.
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 2 (professor)
+
+- Início (hero da próxima sessão, fila de revisões, indicadores, próximos encontros), Sessões (agrupadas por dia), Turmas (cartões com anel de ocupação). Demais telas herdam o visual pelos primitivos e pelo módulo CSS.
+- Teste `teacher-surfaces.spec.ts` ajustado: Turmas deixou de ser tabela; a asserção agora procura a região do cartão da turma.
+- Verificado: typecheck (src), lint e capturas pontuais. e2e/a11y/goldens não executados (pedido do usuário).
+
+## 2026-10-16 — ui-redesign-approved-proposal, Fase 3 (admin) e pendências
+
+- Tabela, kanban, cartões de linha, leads e indicadores restilizados em `operations.css` (vale para todas as telas admin); paginação e ações soltas viraram botões.
+- Pendente antes de marcar verificado: regenerar goldens (win32 e linux), rodar e2e/a11y e `verify:ui`/`verify:full`; resolver o "Teacher session overlap" do `setup-canonical-e2e.mjs` na base local; recomposições dedicadas ainda não feitas: onboarding/placement, detalhe de sessão do professor, construtor de práticas, conteúdos/turmas/matrículas do admin (hoje só herdam os primitivos).
+
+## PR 74 gates — in_progress (2026-10-15)
+
+Correções publicadas em aa13835 e 67abaa7. Visual Linux e database-proofs passaram no CI; seletores finais de módulo recolhido/feedback passaram localmente (2/2). Windows goldens, verify:agent/ui/full e CI final pendentes. Evidência em harness/evidence/pr74-gates/README.md; não concluir enquanto houver gate obrigatório vermelho.
+
+### Encerramento solicitado pelo usuário — 2026-10-15
+
+Correções publicadas na PR #74, HEAD 0f67200f2b9934a924f8ef3e559274d181ea7f19. Execução local final interrompida a pedido do usuário para encerrar a tarefa; verify:ui e verify:full não concluídos. CI 38827166316: Quality, Supply Chain, Database e Guardrail Simulations aprovados; quatro suítes Preview em execução na última consulta. Não há comprovação de todos os gates obrigatórios verdes; tarefa permanece não verificada.
+
+## Retomada PR 74
+
+Run 38827166316: somente dois E2E falharam; os demais jobs concretos passaram. Corrigidos teste SSR dependente de nome minificado e runtime indevido do checkout FAKE. Proibição de FAKE em produção preservada. 7 unitários, typecheck e contrato harness aprovados; confirmação E2E em curso.
+
+Confirmação local: os dois E2E falhos passaram integralmente, zero retries, em 1,7 min; typecheck, lint dos arquivos alterados, 7 unitários e verify:harness aprovados. CI do novo commit pendente.
+
+37/37 E2E passaram no CI 38829445681 (2,6 min). Corrigida incompatibilidade do pós-run com limpeza do módulo: provas de estado persistido e auditoria movidas para o cenário antes da remoção. Nenhuma prova funcional removida.

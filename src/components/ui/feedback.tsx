@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 
 import { Button, type ButtonProps } from "./controls";
+import { Icon, type IconName } from "./icons";
 
 type FeedbackTone = "neutral" | "success" | "warning" | "error" | "info";
 
-const symbols: Record<FeedbackTone, string> = {
-  neutral: "•",
-  success: "✓",
-  warning: "!",
-  error: "!",
-  info: "i",
+const symbols: Record<FeedbackTone, IconName> = {
+  neutral: "spark",
+  success: "check-c",
+  warning: "alert",
+  error: "alert",
+  info: "spark",
 };
 
 export interface AlertProps {
@@ -21,7 +22,7 @@ export interface AlertProps {
 export function Alert({ tone = "neutral", title, description }: AlertProps) {
   return (
     <div className="yas-alert" data-tone={tone} role={tone === "error" ? "alert" : "status"}>
-      <strong aria-hidden="true">{symbols[tone]}</strong>
+      <Icon name={symbols[tone]} size={18} />
       <div>
         <div className="yas-alert-title">{title}</div>
         {description && <div className="yas-alert-description">{description}</div>}
@@ -39,8 +40,15 @@ export interface ToastProps {
 
 export function Toast({ tone = "neutral", title, description, action }: ToastProps) {
   return (
-    <div className="yas-toast" role={tone === "error" ? "alert" : "status"} aria-live="polite">
-      <strong aria-hidden="true">{symbols[tone]}</strong>
+    <div
+      className="yas-toast"
+      data-tone={tone}
+      role={tone === "error" ? "alert" : "status"}
+      aria-live="polite"
+    >
+      <span className="yas-toast-mark" aria-hidden="true">
+        <Icon name={tone === "error" ? "x" : "check"} size={14} strokeWidth={3} />
+      </span>
       <div>
         <div className="yas-alert-title">{title}</div>
         {description && <div className="yas-alert-description">{description}</div>}
@@ -60,7 +68,7 @@ export function EmptyState({ title, description, action }: StateProps) {
   return (
     <div className="yas-state">
       <div className="yas-state-icon" aria-hidden="true">
-        +
+        <Icon name="spark" size={24} />
       </div>
       <h3 className="yas-state-title">{title}</h3>
       <p className="yas-state-description">{description}</p>
@@ -73,7 +81,7 @@ export function ErrorState({ title, description, action }: StateProps) {
   return (
     <div className="yas-state" data-tone="error" role="alert">
       <div className="yas-state-icon" aria-hidden="true">
-        !
+        <Icon name="alert" size={24} />
       </div>
       <h3 className="yas-state-title">{title}</h3>
       <p className="yas-state-description">{description}</p>

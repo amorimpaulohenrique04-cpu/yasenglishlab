@@ -251,6 +251,8 @@ jobs:
           fi
 
   preview-suite:
+    env:
+      YAS_E2E_PRODUCTION: "1"
     name: Preview (${{ matrix.suite }})
     needs: [changes, quality, database]
     if: needs.changes.outputs.code == 'true'
@@ -267,53 +269,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Use Node 24
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: npm
-      - name: Install locked dependencies
-        run: npm ci
-      - name: Apply reviewed dependency security patch
-        run: npm run security:patch-deps
-      - name: Install Supabase CLI
-        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
-        with:
-          version: 2.118.0
-      - name: Start isolated preview database
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -f supabase/config.toml ]; then
-            supabase init
-          fi
-          supabase start
-          supabase db reset
-          supabase status -o env > /tmp/yas-supabase.env
-          set -a
-          source /tmp/yas-supabase.env
-          set +a
-          rm /tmp/yas-supabase.env
-          PUBLIC_KEY="${PUBLISHABLE_KEY:-${ANON_KEY:-}}"
-          SERVER_KEY="${SECRET_KEY:-${SERVICE_ROLE_KEY:-}}"
-          test -n "${API_URL:-}"
-          test -n "$PUBLIC_KEY"
-          test -n "$SERVER_KEY"
-          E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
-          echo "::add-mask::$E2E_PASSWORD"
-          echo "::add-mask::$SERVER_KEY"
-          {
-            echo "APP_URL=http://127.0.0.1:3000"
-            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
-            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLIC_KEY"
-            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVER_KEY"
-            echo "SUPABASE_PROTECTED_ASSETS_BUCKET=yas-protected-assets"
-            echo "DATABASE_URL=$DB_URL"
-            echo "APP_ENV=preview"
-            echo "APP_VERSION=${{ github.sha }}"
-            echo "CANONICAL_E2E=1"
-            echo "CANONICAL_E2E_PASSWORD=$E2E_PASSWORD"
-          } >> "$GITHUB_ENV"
+      - name: Prepare isolated Preview
+        uses: ./.github/actions/preview-setup
       - name: Prove real database integration and booking concurrency
         if: matrix.suite == 'database-proofs'
         run: npm run test:integration:db
@@ -328,14 +285,23 @@ jobs:
       - name: Prepare canonical preview fixture
         if: matrix.suite != 'database-proofs'
         run: node scripts/setup-canonical-e2e.mjs
+      - name: Cache Playwright Chromium
+        if: matrix.suite != 'database-proofs'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright Chromium
         if: matrix.suite != 'database-proofs'
         run: npx playwright install chromium
+      - name: Build Preview app
+        if: matrix.suite != 'database-proofs'
+        run: npm run build
       - name: Critical E2E
         if: matrix.suite == 'e2e'
         run: npm run test:e2e
       - name: Reject skipped or retried-until-green E2E tests
-        if: matrix.suite == 'e2e'
+        if: ${{ !cancelled() && matrix.suite == 'e2e' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/e2e/results.json "Critical E2E"
       - name: Assert persistence and analytics
         if: matrix.suite == 'e2e'
@@ -344,7 +310,7 @@ jobs:
         if: matrix.suite == 'accessibility'
         run: npm run test:a11y
       - name: Reject skipped or retried-until-green accessibility tests
-        if: matrix.suite == 'accessibility'
+        if: ${{ !cancelled() && matrix.suite == 'accessibility' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/a11y/results.json "Accessibility checks"
       - name: Build Storybook
         if: matrix.suite == 'visual'
@@ -352,9 +318,15 @@ jobs:
       - name: Design-system visual checks
         if: matrix.suite == 'visual'
         run: npm run test:visual:storybook
+      - name: Validate Storybook results
+        if: ${{ !cancelled() && matrix.suite == 'visual' }}
+        run: node scripts/ci/check-playwright-results.mjs artifacts/storybook/results.json "Storybook"
       - name: Product golden visual checks
         if: matrix.suite == 'visual'
         run: npm run test:visual:golden
+      - name: Validate golden results
+        if: ${{ !cancelled() && matrix.suite == 'visual' }}
+        run: node scripts/ci/check-playwright-results.mjs artifacts/golden/results.json "Goldens"
       - name: Upload preview evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -377,16 +349,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Checkout gate policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Require every Preview suite
         env:
           CODE_CHANGED: ${{ needs.changes.outputs.code }}
           SUITES: ${{ needs.preview-suite.result }}
-        run: |
-          if [ "$CODE_CHANGED" = "false" ] && [ "$SUITES" = "skipped" ]; then
-            echo "Docs/harness-only change: Preview suites are not required."
-            exit 0
-          fi
-          test "$SUITES" = "success"
+        run: node scripts/ci/gate-results.mjs preview
 
   ci-gate:
     name: CI Gate
@@ -394,6 +365,10 @@ jobs:
     needs: [supply-chain, quality, database, guardrail-simulations, preview]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout gate policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Require every mandatory gate
         env:
           SUPPLY_CHAIN: ${{ needs.supply-chain.result }}
@@ -401,9 +376,4 @@ jobs:
           DATABASE: ${{ needs.database.result }}
           SIMULATIONS: ${{ needs.guardrail-simulations.result }}
           PREVIEW: ${{ needs.preview.result }}
-        run: |
-          test "$SUPPLY_CHAIN" = "success"
-          test "$QUALITY" = "success"
-          test "$DATABASE" = "success"
-          test "$SIMULATIONS" = "success"
-          test "$PREVIEW" = "success"
+        run: node scripts/ci/gate-results.mjs

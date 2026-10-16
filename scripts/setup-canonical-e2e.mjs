@@ -47,6 +47,13 @@ if (!url || !serviceRoleKey || !password) {
   throw new Error("Canonical E2E requires local Supabase credentials and generated password.");
 }
 
+if (
+  !/^https?:\/\/(127\.0\.0\.1|localhost)(:|\/)/.test(url) ||
+  !process.env.DATABASE_URL?.includes("127.0.0.1")
+) {
+  throw new Error("Canonical fixtures require an explicitly local database and Data API.");
+}
+
 const admin = createClient(url, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
@@ -164,6 +171,25 @@ if (p21VideoCleanupError) throw p21VideoCleanupError;
 const now = Date.now();
 const inDays = (days, extraMinutes = 0) =>
   new Date(now + days * 24 * 60 * 60 * 1000 + extraMinutes * 60 * 1000).toISOString();
+
+// Relative fixture times move on every run. Release only these fixture-owned
+// scheduled slots before moving them, so old and new time windows cannot overlap.
+const canonicalSessionIds = [
+  ...sessionIds,
+  teacherOpsSessionId,
+  teacherOtherSessionId,
+  progressSessionId,
+  homeNowSessionId,
+  homeCancelledSessionId,
+  homeCompletedSessionId,
+  ...[1, 2, 3, 4].map((index) => `9d400000-0000-4000-8000-00000000000${index}`),
+];
+const { error: releaseFixtureSlotsError } = await admin
+  .from("live_sessions")
+  .update({ status: "CANCELLED" })
+  .in("id", canonicalSessionIds)
+  .eq("status", "SCHEDULED");
+if (releaseFixtureSlotsError) throw releaseFixtureSlotsError;
 
 const operations = [
   admin.from("profiles").update({ display_name: "Ana Souza" }).eq("user_id", userId),

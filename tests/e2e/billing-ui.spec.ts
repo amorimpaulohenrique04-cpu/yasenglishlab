@@ -1,3 +1,4 @@
+import { assertNoDocumentOverflow } from "../helpers/responsive";
 import { randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -77,7 +78,7 @@ async function evidence(page: Page, name: string) {
         .analyze()
     ).violations,
   ).toEqual([]);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await assertNoDocumentOverflow(page);
   for (const control of await page.locator("main button, main select, main input, main a").all()) {
     const box = await control.boundingBox();
     if (box) {

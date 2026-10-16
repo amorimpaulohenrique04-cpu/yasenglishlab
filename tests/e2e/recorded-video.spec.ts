@@ -270,7 +270,9 @@ test.describe("P21.6 Recorded Video Learning V1", () => {
         .toBe(1);
 
       await studentPage.reload();
-      await expect(studentPage.getByText("Concluída", { exact: true })).toBeVisible();
+      await expect(
+        studentPage.getByRole("heading", { name: "Aula concluída", exact: true }),
+      ).toBeVisible();
 
       const deniedContext = await browser.newContext();
       try {

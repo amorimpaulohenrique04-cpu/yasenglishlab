@@ -12,7 +12,11 @@ const checks = [
 
 for (const check of checks) {
   console.log(`\n▶ npm run ${check}`);
-  const result = spawnNpmSync(["run", check], { stdio: "inherit" });
+  const args = ["run", check];
+  if (check === "typecheck" && process.env.YAS_ISOLATED_VERIFY === "1") {
+    args.push("--", "--project", "tsconfig.verify.json");
+  }
+  const result = spawnNpmSync(args, { stdio: "inherit" });
 
   if (result.status !== 0) {
     console.error(`\nVerification failed at: ${check}`);

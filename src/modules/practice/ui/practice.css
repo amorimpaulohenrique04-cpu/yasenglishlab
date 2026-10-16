@@ -1,282 +1,523 @@
+/* Student practice — artifacts/design-proposal/aluno.html#pratica */
+
 .yas-practice-page {
   display: grid;
-  gap: var(--yas-space-6);
+  gap: 1.125rem;
 }
 
-.yas-practice-top-grid,
-.yas-practice-content-grid {
+.yas-practice-muted {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-sm);
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-section {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 0.9fr);
-  align-items: start;
-  gap: var(--yas-space-5);
+  gap: 0.75rem;
 }
 
-.yas-practice-hero {
-  min-height: 14rem;
+.yas-practice-section-heading {
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  overflow: hidden;
-  background: linear-gradient(125deg, var(--yas-color-purple-950), var(--yas-color-purple-600));
-  color: var(--yas-color-white);
-  padding: var(--yas-space-6);
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.yas-practice-hero-copy {
-  max-width: 34rem;
+.yas-practice-section-heading h2 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+  font-weight: var(--yas-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.yas-practice-section-heading p {
+  margin: 0.125rem 0 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Top: hero + week ---------- */
+.yas-practice-top-grid {
   display: grid;
-  align-content: center;
-  justify-items: start;
-  gap: var(--yas-space-2);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 1.125rem;
 }
 
-.yas-practice-hero h2,
-.yas-practice-hero p,
-.yas-practice-hero small {
+.yas-practice-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.yas-practice-start {
   margin: 0;
 }
 
-.yas-practice-hero h2 {
-  max-width: 26rem;
-  color: inherit;
-  font-size: var(--yas-font-size-2xl);
-  line-height: var(--yas-line-tight);
-}
-
-.yas-practice-hero small {
-  color: var(--yas-color-purple-100);
-}
-.yas-practice-eyebrow {
-  font-size: var(--yas-font-size-xs);
-  font-weight: var(--yas-weight-bold);
-  text-transform: uppercase;
-}
-.yas-practice-hero-mark {
-  align-self: end;
-  color: var(--yas-color-warning);
-  font-size: var(--yas-font-size-3xl);
-  font-weight: var(--yas-weight-bold);
-  transform: rotate(-8deg);
-}
-
-.yas-practice-week,
-.yas-practice-history-card,
-.yas-practice-attempt {
-  padding: var(--yas-space-5);
+.yas-practice-week {
+  display: flex;
+  flex-direction: column;
 }
 
 .yas-practice-week-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--yas-space-3);
-  margin-top: var(--yas-space-5);
+  gap: 0.75rem;
 }
 
-.yas-practice-week-stats div {
-  min-height: 6rem;
+.yas-practice-week-stats > div {
   display: grid;
-  place-content: center;
-  text-align: center;
+  justify-items: center;
+  gap: 0.375rem;
   border-radius: var(--yas-radius-lg);
-  background: var(--yas-color-purple-50);
+  background: var(--yas-color-surface-soft);
+  padding: 1rem 0.625rem;
+  text-align: center;
 }
 
 .yas-practice-week-stats strong {
-  color: var(--yas-color-purple-800);
-  font-size: var(--yas-font-size-xl);
+  font-family: var(--yas-font-display);
+  font-size: 1.5rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
+
 .yas-practice-week-stats span {
   color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-xs);
+  font-size: 0.78125rem;
 }
 
-.yas-practice-section-heading {
+.yas-practice-week-note {
   display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: var(--yas-space-4);
-  margin-bottom: var(--yas-space-3);
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: auto 0 0;
+  border-top: 1px dashed var(--yas-color-border);
+  padding-top: 0.875rem;
+  color: var(--yas-color-ink-soft);
+  font-size: 0.8125rem;
 }
 
-.yas-practice-section-heading h2,
-.yas-practice-section-heading p {
-  margin: 0;
-}
-.yas-practice-section-heading h2 {
-  font-size: var(--yas-font-size-xl);
-}
-.yas-practice-section-heading p {
-  color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
-}
-.yas-practice-section-heading a,
-.yas-practice-close {
-  color: var(--yas-color-purple-700);
-  font-weight: var(--yas-weight-semibold);
-  text-decoration: none;
+.yas-practice-week-note .yas-icon {
+  margin-top: 1px;
+  color: var(--yas-color-purple-600);
 }
 
+.yas-practice-week-stats + .yas-practice-week-note {
+  margin-top: 1rem;
+}
+
+/* ---------- Skills ---------- */
 .yas-practice-skills {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--yas-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(11.5rem, 1fr));
+  gap: 1.125rem;
 }
 
 .yas-practice-skill-card {
-  min-height: 7rem;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--yas-space-3);
-  border: var(--yas-border-subtle);
+  --tint: var(--yas-tint-lilac);
+  --tint-ink: var(--yas-tint-lilac-ink);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
   border-radius: var(--yas-radius-lg);
-  background: var(--yas-color-surface);
-  padding: var(--yas-space-3);
+  background: var(--tint);
   color: var(--yas-color-ink);
+  padding: 1rem;
   text-decoration: none;
-  box-shadow: var(--yas-shadow-card);
+  transition:
+    transform var(--yas-motion-slow) var(--yas-ease-standard),
+    box-shadow var(--yas-motion-slow) var(--yas-ease-standard);
+}
+
+.yas-practice-skill-card[data-tint="blue"] {
+  --tint: var(--yas-tint-blue);
+  --tint-ink: var(--yas-tint-blue-ink);
+}
+
+.yas-practice-skill-card[data-tint="yellow"] {
+  --tint: var(--yas-tint-yellow);
+  --tint-ink: var(--yas-tint-yellow-ink);
+}
+
+.yas-practice-skill-card[data-tint="green"] {
+  --tint: var(--yas-tint-green);
+  --tint-ink: var(--yas-tint-green-ink);
+}
+
+.yas-practice-skill-card[data-tint="pink"] {
+  --tint: var(--yas-tint-pink);
+  --tint-ink: var(--yas-tint-pink-ink);
+}
+
+.yas-practice-skill-card .yas-icon-badge {
+  color: var(--tint-ink);
+}
+
+a.yas-practice-skill-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--yas-shadow-hover);
+}
+
+a.yas-practice-skill-card:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
 }
 
 .yas-practice-skill-card[data-selected="true"] {
-  border-color: var(--yas-color-purple-500);
-  background: var(--yas-color-purple-50);
-}
-.yas-practice-skill-card[data-disabled="true"] {
-  box-shadow: none;
-  opacity: 0.68;
-}
-.yas-practice-skill-card > span:nth-child(2) {
-  display: grid;
-  gap: 0.15rem;
-}
-.yas-practice-skill-card small {
-  color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-xs);
-  line-height: 1.3;
-}
-.yas-practice-skill-card em {
-  color: var(--yas-color-purple-700);
-  font-size: 0.7rem;
-  font-style: normal;
-  font-weight: var(--yas-weight-semibold);
+  box-shadow: inset 0 0 0 2px var(--tint-ink);
 }
 
-.yas-practice-skill-icon,
-.yas-practice-history-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--yas-color-purple-100);
-  color: var(--yas-color-purple-800);
+.yas-practice-skill-card[data-disabled="true"] {
+  background: var(--yas-tint-grey);
+  color: var(--yas-color-muted);
+}
+
+.yas-practice-skill-card[data-disabled="true"] .yas-icon-badge {
+  color: var(--yas-color-muted);
+}
+
+.yas-practice-skill-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.yas-practice-skill-copy strong {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+  font-family: var(--yas-font-display);
+  font-size: 0.9375rem;
   font-weight: var(--yas-weight-bold);
 }
 
-.yas-practice-activities {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--yas-space-4);
+.yas-practice-skill-copy strong .yas-icon {
+  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
 }
-.yas-practice-activity-card {
-  display: grid;
-  align-content: start;
-  gap: var(--yas-space-2);
-  padding: var(--yas-space-4);
+
+a.yas-practice-skill-card:hover strong .yas-icon {
+  transform: translateX(3px);
 }
-.yas-practice-activity-card h3,
-.yas-practice-activity-card p {
-  margin: 0;
+
+.yas-practice-skill-copy small {
+  color: var(--yas-color-ink-soft);
+  font-size: 0.78125rem;
+  line-height: 1.35;
 }
-.yas-practice-activity-card p {
-  color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
+
+.yas-practice-skill-copy em {
+  color: var(--tint-ink);
+  font-size: var(--yas-font-size-xs);
+  font-style: normal;
+  font-weight: var(--yas-weight-bold);
 }
-.yas-practice-activity-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--yas-space-3);
-  margin-top: auto;
-  padding-top: var(--yas-space-3);
-}
-.yas-practice-activity-footer small {
+
+.yas-practice-skill-card[data-disabled="true"] em {
   color: var(--yas-color-muted);
 }
 
-.yas-practice-history-list {
+/* ---------- Assigned ---------- */
+.yas-practice-assigned-list {
   display: grid;
-  gap: var(--yas-space-2);
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.125rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.yas-practice-history-list li {
+
+.yas-practice-assigned-card {
+  height: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--yas-space-2);
-  padding-block: var(--yas-space-2);
-  border-bottom: var(--yas-border-subtle);
-}
-.yas-practice-history-list li:last-child {
-  border-bottom: 0;
-}
-.yas-practice-history-list li > span:nth-child(2) {
-  display: grid;
-}
-.yas-practice-history-list small,
-.yas-practice-history-empty {
-  color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-xs);
+  align-content: start;
+  justify-items: start;
+  gap: 0.625rem;
+  padding: 1.125rem;
 }
 
-.yas-practice-attempt {
-  border: 2px solid var(--yas-color-purple-300);
+.yas-practice-assigned-card[data-status="OVERDUE"] {
+  box-shadow:
+    inset 0 0 0 1px #f1c1bc,
+    var(--yas-shadow-card);
 }
-.yas-practice-attempt-heading {
+
+.yas-practice-assigned-card h3 {
+  margin: 0;
+  font-size: 0.96875rem;
+}
+
+.yas-practice-assigned-header {
   display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: var(--yas-space-4);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
 }
-.yas-practice-attempt-heading h2 {
-  margin: var(--yas-space-2) 0 0;
-}
-.yas-practice-attempt-heading p {
-  margin: var(--yas-space-2) 0 0;
-  color: var(--yas-color-muted);
-}
-.yas-practice-response-form {
+
+.yas-practice-assigned-meta {
   display: grid;
-  gap: var(--yas-space-4);
-  margin-top: var(--yas-space-5);
-}
-.yas-practice-response-form fieldset {
-  display: grid;
-  gap: var(--yas-space-2);
-  border: 0;
+  gap: 0.25rem;
   margin: 0;
   padding: 0;
-}
-.yas-practice-response-form legend {
-  margin-bottom: var(--yas-space-2);
-  font-weight: var(--yas-weight-bold);
-}
-.yas-practice-manual-note,
-.yas-practice-feedback,
-.yas-practice-boundary-note {
-  margin: var(--yas-space-3) 0 0;
-}
-.yas-practice-manual-note,
-.yas-practice-boundary-note {
+  list-style: none;
   color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
-}
-.yas-practice-feedback {
-  font-weight: var(--yas-weight-semibold);
+  font-size: 0.8125rem;
 }
 
-/* Practice player (content v2) and assigned practices. */
+.yas-practice-assigned-meta li {
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+}
+
+.yas-practice-assigned-empty,
+.yas-practice-requested {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.yas-practice-requested > div {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- Recommended + history ---------- */
+.yas-practice-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.125rem;
+}
+
+.yas-practice-content-grid > aside {
+  margin-top: 3.25rem;
+}
+
+.yas-practice-activities {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.125rem;
+}
+
+.yas-practice-activity-card {
+  display: flex;
+  gap: 0.875rem;
+  padding: 0.75rem;
+}
+
+.yas-practice-activity-thumb {
+  --tint: var(--yas-tint-lilac);
+  --tint-ink: var(--yas-tint-lilac-ink);
+  position: relative;
+  width: 5.5rem;
+  min-height: 7rem;
+  display: grid;
+  flex: none;
+  place-items: center;
+  border-radius: var(--yas-radius-md);
+  background: var(--tint);
+  color: var(--tint-ink);
+}
+
+.yas-practice-activity-thumb[data-tint="blue"] {
+  --tint: var(--yas-tint-blue);
+  --tint-ink: var(--yas-tint-blue-ink);
+}
+
+.yas-practice-activity-thumb[data-tint="yellow"] {
+  --tint: var(--yas-tint-yellow);
+  --tint-ink: var(--yas-tint-yellow-ink);
+}
+
+.yas-practice-activity-thumb[data-tint="green"] {
+  --tint: var(--yas-tint-green);
+  --tint-ink: var(--yas-tint-green-ink);
+}
+
+.yas-practice-activity-thumb[data-tint="pink"] {
+  --tint: var(--yas-tint-pink);
+  --tint-ink: var(--yas-tint-pink-ink);
+}
+
+.yas-practice-activity-thumb > span {
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  inset-block-end: 0.5rem;
+  border-radius: 6px;
+  background: rgb(15 6 38 / 72%);
+  color: var(--yas-color-white);
+  padding: 0.125rem 0.5rem;
+  font-size: 0.71875rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-activity-body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+}
+
+.yas-practice-activity-body h3 {
+  margin: 0;
+  font-size: 0.90625rem;
+  line-height: 1.25;
+}
+
+.yas-practice-activity-body p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.yas-practice-activity-body .yas-practice-start {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.yas-practice-activity-body .yas-practice-start .yas-button {
+  width: 100%;
+}
+
+.yas-practice-history-list > li {
+  padding-inline: 0;
+}
+
+/* ---------- Attempt panel ---------- */
+.yas-practice-attempt {
+  display: grid;
+  gap: 1rem;
+  box-shadow:
+    inset 0 0 0 1px var(--yas-color-purple-200),
+    var(--yas-shadow-card);
+}
+
+.yas-practice-attempt-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+
+.yas-practice-attempt-heading > div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 0.375rem;
+}
+
+.yas-practice-attempt-heading h2 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.375rem;
+  font-weight: var(--yas-weight-display);
+  letter-spacing: -0.02em;
+}
+
+.yas-practice-attempt-heading p {
+  margin: 0;
+  color: var(--yas-color-ink-soft);
+}
+
+.yas-practice-attempt-heading .yas-dialog-close {
+  text-decoration: none;
+}
+
+.yas-practice-response-form {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+}
+
+.yas-practice-choices {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.yas-practice-choices legend {
+  margin-bottom: 0.5rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-practice-choices .yas-check {
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-white);
+  padding: 0.75rem 0.875rem;
+}
+
+.yas-practice-choices .yas-check:has(input:checked) {
+  border-color: var(--yas-color-purple-600);
+  background: var(--yas-color-purple-50);
+}
+
+.yas-practice-manual-note,
+.yas-practice-feedback {
+  margin: 0;
+  border-radius: var(--yas-radius-md);
+  background: var(--yas-color-surface-soft);
+  padding: 0.875rem 1rem;
+  line-height: var(--yas-line-body);
+}
+
+.yas-practice-review {
+  display: grid;
+  gap: 0.5rem;
+  font-size: var(--yas-font-size-sm);
+}
+
+.yas-practice-review p {
+  margin: 0;
+  color: var(--yas-color-muted);
+}
+
+.yas-practice-review ul {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-practice-review li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: var(--yas-border-subtle);
+  padding-bottom: 0.375rem;
+}
+
+.yas-practice-boundary-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--yas-color-ink-soft);
+  font-size: 0.8125rem;
+}
+
+.yas-practice-boundary-note .yas-icon {
+  margin-top: 1px;
+  color: var(--yas-color-purple-600);
+}
+
 .yas-practice-player {
   display: grid;
   gap: var(--yas-space-4);
@@ -390,79 +631,34 @@
   white-space: nowrap;
 }
 
-.yas-practice-assigned-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  gap: var(--yas-space-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.yas-practice-assigned-card {
-  display: grid;
-  align-content: start;
-  gap: var(--yas-space-2);
-  height: 100%;
-  padding: var(--yas-space-4);
-}
-.yas-practice-assigned-card h3,
-.yas-practice-assigned-card p {
-  margin: 0;
-}
-.yas-practice-assigned-card[data-status="OVERDUE"] {
-  border-color: var(--yas-color-error);
-}
-.yas-practice-assigned-meta {
-  display: grid;
-  gap: 0.15rem;
-  color: var(--yas-color-muted);
-  font-size: var(--yas-font-size-sm);
-}
-.yas-practice-assigned-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--yas-space-2);
-}
-
-@media (max-width: 74rem) {
-  .yas-practice-skills {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 63.99rem) {
+@media (max-width: 73.75rem) {
   .yas-practice-top-grid,
   .yas-practice-content-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
-  .yas-practice-skills {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  .yas-practice-content-grid > aside {
+    margin-top: 0;
   }
 }
 
 @media (max-width: 47.99rem) {
-  .yas-practice-hero {
-    min-height: 16rem;
+  .yas-practice-skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
-  .yas-practice-hero-mark {
-    display: none;
-  }
-  .yas-practice-skills,
-  .yas-practice-activities {
-    grid-template-columns: 1fr;
-  }
+
   .yas-practice-skill-card {
-    min-height: 5.75rem;
-  }
-  .yas-practice-attempt-heading {
     flex-direction: column;
+    gap: 0.625rem;
   }
-  .yas-practice-history-list li {
-    grid-template-columns: auto minmax(0, 1fr);
+
+  .yas-practice-activities,
+  .yas-practice-assigned-list {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .yas-practice-history-list .yas-badge {
-    grid-column: 2;
-    justify-self: start;
+
+  .yas-practice-requested {
+    flex-wrap: wrap;
   }
 }

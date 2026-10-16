@@ -1,3 +1,4 @@
+import { assertNoDocumentOverflow } from "../helpers/responsive";
 import { test as base, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { createClient } from "@supabase/supabase-js";
@@ -43,9 +44,7 @@ async function capture(page: Page, prefix: string) {
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(result.violations).toEqual([]);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
-      true,
-    );
+    await assertNoDocumentOverflow(page);
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: folder + "/" + prefix + "-" + name + ".png", fullPage: true });
   }

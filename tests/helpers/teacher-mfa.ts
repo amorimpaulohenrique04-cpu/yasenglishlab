@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
+import { rememberCanonicalSession, restoreCanonicalSession } from "./canonical-session";
 
 export const canonicalTeacherEmail = "canonical.teacher@example.test";
 export const canonicalOtherTeacherEmail = "canonical.teacher-b@example.test";
@@ -92,7 +93,13 @@ async function resolveTotpSecret(page: Page, email: string): Promise<string> {
   return readFileSync(secretPath, "utf8").trim();
 }
 
-async function loginTeacherAccount(page: Page, email: string, password: string): Promise<void> {
+async function loginTeacherAccount(
+  page: Page,
+  email: string,
+  password: string,
+  forceFresh = false,
+): Promise<void> {
+  if (!forceFresh && (await restoreCanonicalSession(page, email, "/teacher", /\/teacher$/))) return;
   await page.goto("/login?next=%2Fteacher");
   await page.getByLabel("E-mail").fill(email);
   await page.getByLabel("Senha").fill(password);
@@ -118,15 +125,15 @@ async function loginTeacherAccount(page: Page, email: string, password: string):
   await expect(page.getByRole("heading", { name: "Próxima atividade" })).toBeVisible({
     timeout: 30000,
   });
+  await rememberCanonicalSession(page, email);
 }
 
 export async function loginCanonicalTeacher(
   page: Page,
   password: string,
-  _options: { next?: string } = {},
+  options: { next?: string; forceFresh?: boolean } = {},
 ): Promise<void> {
-  void _options;
-  await loginTeacherAccount(page, canonicalTeacherEmail, password);
+  await loginTeacherAccount(page, canonicalTeacherEmail, password, options.forceFresh);
 }
 
 export async function loginCanonicalOtherTeacher(page: Page, password: string): Promise<void> {

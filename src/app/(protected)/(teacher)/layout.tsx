@@ -18,5 +18,9 @@ export default async function TeacherLayout({ children }: { children: ReactNode 
       ? profile.display_name
       : auth.email?.split("@")[0] || "Professor Yas";
 
-  return <TeacherShell displayName={displayName}>{children}</TeacherShell>;
+  return (
+    <TeacherShell displayName={displayName} verifiedSession={auth.aal === "aal2"}>
+      {children}
+    </TeacherShell>
+  );
 }
