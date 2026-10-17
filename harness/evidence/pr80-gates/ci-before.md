@@ -77,4 +77,3 @@ Compared jobs use Ubuntu 24, Node 24.21.0, npm ci and the same lockfile. Quality
   32 passed (1.6m)
 2026-10-17T05:08:11.0749656Z ✗ Accessibility checks: 2 failed test(s).
 ```
-
