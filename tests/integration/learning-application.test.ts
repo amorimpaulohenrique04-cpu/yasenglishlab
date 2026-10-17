@@ -149,6 +149,11 @@ describe("learning application integration", () => {
 
     await markLessonStarted(repository, analytics, userId, lessonId);
 
+    expect(repository.recordLessonProgress).toHaveBeenCalledWith({
+      lessonId,
+      completionPercent: 0,
+      lastPositionSeconds: null,
+    });
     expect(analytics.track).toHaveBeenCalledWith({
       event: "lesson_started",
       lessonId,
@@ -158,6 +163,16 @@ describe("learning application integration", () => {
     await expect(
       markLessonStarted(repository, analytics, userId, "42000000-0000-4000-8000-000000000099"),
     ).rejects.toThrow("Lesson is not available");
+  });
+
+  it("still tracks the start when access cannot be persisted yet (no cohort)", async () => {
+    const repository = makeRepository();
+    const analytics = makeAnalytics();
+    vi.mocked(repository.recordLessonProgress).mockRejectedValueOnce(new NoActiveCohortError());
+
+    await markLessonStarted(repository, analytics, userId, lessonId);
+
+    expect(analytics.track).toHaveBeenCalledTimes(1);
   });
 
   it("propagates NoActiveCohortError without tracking analytics", async () => {

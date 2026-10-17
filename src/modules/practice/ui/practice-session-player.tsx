@@ -405,6 +405,7 @@ export function PracticeSessionPlayer({
   live,
   previewKeys,
   skill,
+  manualReviews,
   resultFooter,
 }: PracticeSessionPlayerProps) {
   const preview = mode === "preview";
@@ -513,6 +514,11 @@ export function PracticeSessionPlayer({
         ? "INCORRECT"
         : "CORRECT";
   const itemsById = new Map(items.map((item) => [item.id, item]));
+  // A pending item whose review was published is shown with the Teacher's feedback, not as waiting.
+  const reviewFor = (itemId: string) => manualReviews?.[itemId];
+  const stillPending = summary.perItem.filter(
+    (entry) => entry.outcome === "PENDING_MANUAL" && !reviewFor(entry.itemId),
+  ).length;
   return (
     <div className="yas-practice-player yas-practice-session">
       {preview && <Badge tone="neutral">Prévia do professor: nada é salvo</Badge>}
@@ -535,17 +541,36 @@ export function PracticeSessionPlayer({
                 <span>
                   {index + 1}. {itemsById.get(entry.itemId)?.prompt}
                 </span>
-                <Badge tone={entry.outcome === "MISSED" ? "warning" : "muted"}>
-                  {OUTCOME_LABEL[entry.outcome]}
-                </Badge>
+                {entry.outcome === "PENDING_MANUAL" && reviewFor(entry.itemId) ? (
+                  <Badge tone="info">Revisada pelo professor</Badge>
+                ) : (
+                  <Badge tone={entry.outcome === "MISSED" ? "warning" : "muted"}>
+                    {OUTCOME_LABEL[entry.outcome]}
+                  </Badge>
+                )}
+                {reviewFor(entry.itemId) && (
+                  <div className="yas-practice-review">
+                    <p>{reviewFor(entry.itemId)?.feedback}</p>
+                    <ul>
+                      {Object.entries(reviewFor(entry.itemId)?.ratings ?? {}).map(
+                        ([dimension, level]) => (
+                          <li key={dimension}>
+                            <span>{RUBRIC_LABELS[dimension] ?? dimension}</span>
+                            <Badge tone="info">{RUBRIC_LABELS[level] ?? level}</Badge>
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
               </li>
             ))}
           </ol>
-          {summary.pendingManual > 0 && summary.objectiveTotal > 0 && (
+          {stillPending > 0 && summary.objectiveTotal > 0 && (
             <p className="yas-practice-hint">
-              {summary.pendingManual === 1
+              {stillPending === 1
                 ? "1 resposta aguarda a revisão do professor."
-                : `${summary.pendingManual} respostas aguardam a revisão do professor.`}
+                : `${stillPending} respostas aguardam a revisão do professor.`}
             </p>
           )}
           <div className="yas-practice-outcome-actions">

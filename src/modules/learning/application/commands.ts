@@ -1,3 +1,6 @@
+import { SubscriptionSuspendedError } from "@/modules/billing/domain/access";
+
+import { NoActiveCohortError } from "../domain/errors";
 import type { LessonProgressSnapshot } from "../domain/models";
 import {
   isModuleComplete,
@@ -67,6 +70,20 @@ export async function markLessonStarted(
   );
 
   if (!canAccessLesson) throw new Error("Lesson is not available to this student.");
+
+  // Opening a lesson records access at 0%: the row is never COMPLETED and never lowers progress, but it
+  // is what unlocks the lesson's practices (issue #77). Without a cohort or while suspended nothing is
+  // written and the lesson page already explains why.
+  try {
+    await repository.recordLessonProgress({
+      lessonId,
+      completionPercent: 0,
+      lastPositionSeconds: null,
+    });
+  } catch (error) {
+    if (!(error instanceof NoActiveCohortError || error instanceof SubscriptionSuspendedError))
+      throw error;
+  }
 
   await analytics.track({
     event: "lesson_started",

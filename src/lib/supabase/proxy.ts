@@ -8,6 +8,7 @@ const PROTECTED_PREFIXES = [
   "/pratica",
   "/agenda",
   "/progresso",
+  "/feedbacks",
   "/onboarding",
   "/checkout",
   "/billing",

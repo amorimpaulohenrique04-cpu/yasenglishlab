@@ -13,7 +13,10 @@ import { PracticeResultHero } from "@/modules/practice/ui/practice-result";
 import { PracticeSessionPlayer } from "@/modules/practice/ui/practice-session-player";
 import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 import { getPracticeStimulusUrl } from "@/server/practice/assets";
-import { loadCurrentStudentManualFeedback } from "@/server/practice/manual-feedback";
+import {
+  loadCurrentStudentItemReviews,
+  loadCurrentStudentManualFeedback,
+} from "@/server/practice/manual-feedback";
 import { loadCurrentStudentItemResults } from "@/server/practice/practice";
 
 import {
@@ -110,6 +113,7 @@ export async function PracticeStage({
   if (v3) {
     // v3: no immediate "Praticar de novo" (reinforcement round + spaced review replace it).
     const initialResults = await loadCurrentStudentItemResults(attempt.id).catch(() => []);
+    const manualReviews = await loadCurrentStudentItemReviews(attempt.id).catch(() => ({}));
     const stimulusUrls: Record<string, string | null> = {};
     await Promise.all(
       v3.items.map(async (item) => {
@@ -136,6 +140,7 @@ export async function PracticeStage({
             mode="live"
             skill={activity.skill}
             stimulusUrls={stimulusUrls}
+            manualReviews={manualReviews}
             live={{
               attemptId: attempt.id,
               submitItem: submitPracticeItemAction.bind(null, attempt.id),
