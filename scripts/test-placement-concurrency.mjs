@@ -28,7 +28,7 @@ insert into public.teachers(id,user_id) values('${teacher}','${teacherUser}');
 insert into public.teacher_student_assignments(teacher_id,student_user_id) values('${teacher}','${students[0]}'),('${teacher}','${students[1]}');
 insert into public.subscriptions(user_id,plan_id,provider,provider_subscription_id,status) values('${students[0]}','10000000-0000-0000-0000-000000000001','test','${students[0]}','ACTIVE'),('${students[1]}','10000000-0000-0000-0000-000000000001','test','${students[1]}','ACTIVE');
 insert into public.cohorts(id,course_id,name,code,status,starts_at) values('${cohort}','${course}','Last seat','${cohort}','ACTIVE',now()-interval '1 day');
-insert into public.cohort_placement_settings(cohort_id,capacity,schedule) values('${cohort}',1,'[{"weekday":1,"startMinute":1140,"endMinute":1200}]');
+insert into public.cohort_placement_settings(cohort_id,schedule) values('${cohort}','[{"weekday":1,"startMinute":1140,"endMinute":1200}]');
 insert into public.assessments(id,slug,title,purpose,is_placement) values('${assessment}','${assessment}','Race fixture','Synthetic',true);
 insert into public.assessment_versions(id,assessment_id,version_number,status,specification,scoring_config) values('${version}','${assessment}',1,'DRAFT','{}','{}');
 insert into public.assessment_items(id,assessment_version_id,position,skill,item_type,prompt,answer_key) values('${item}','${version}',1,'GRAMMAR','MULTIPLE_CHOICE','{"prompt":"Choose","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}','{"optionId":"a"}');
@@ -71,12 +71,10 @@ const result = await withBarrier(
   `select id from public.cohorts where id='${cohort}' for update`,
   operations,
 );
-if (
-  result.filter((r) => r.code === 0).length !== 1 ||
-  result.filter((r) => r.stderr.includes("cohort_capacity_exhausted")).length !== 1
-)
-  throw new Error(`Last-seat invariant failed: ${JSON.stringify(result)}`);
-const winner = result.findIndex((r) => r.code === 0);
+// Cohorts have no student ceiling: both concurrent confirmations must succeed, once each.
+if (result.some((r) => r.code !== 0))
+  throw new Error(`Concurrent confirmations failed: ${JSON.stringify(result)}`);
+const winner = 0;
 const retry = await withBarrier(
   `select id from public.placement_cases where id='${cases[winner]}' for update`,
   [operations[winner], operations[winner]],
@@ -85,21 +83,23 @@ if (retry.some((r) => r.code !== 0)) throw new Error("Concurrent identical choic
 if (
   scalar(
     `select count(*) from public.cohort_memberships where cohort_id='${cohort}' and status='ACTIVE'`,
-  ) !== "1"
+  ) !== "2"
 )
-  throw new Error("Overbooking or duplicate membership");
+  throw new Error("Missing or duplicate membership");
 if (
   scalar(
     `select count(*) from public.placement_decisions where placement_case_id in ('${cases[0]}','${cases[1]}')`,
-  ) !== "1"
+  ) !== "2"
 )
-  throw new Error("Loser gained decision");
+  throw new Error("Each confirming student must have exactly one decision");
 if (
-  scalar(`select count(*) from public.enrollments where user_id='${students[1 - winner]}'`) !== "0"
+  scalar(
+    `select count(*) from public.enrollments where user_id in ('${students[0]}','${students[1]}')`,
+  ) !== "2"
 )
-  throw new Error("Failed transaction left enrollment");
+  throw new Error("Each confirming student must have exactly one enrollment");
 console.log(
-  "PASS Placement real concurrency: two eligible Students, last seat, one winner; loser rolled back; identical review/choice retries stable; occupancy=1.",
+  "PASS Placement real concurrency: two eligible Students confirm the same cohort concurrently, both succeed once; identical review/choice retries stable; occupancy=2.",
 );
 
 // Retain evidence rows while excluding this synthetic version from later UI discovery.

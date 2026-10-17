@@ -24,7 +24,7 @@ import {
 } from "@/modules/placement";
 import { loadPlacementTeacherCandidates } from "@/server/placement/teacher-assignment";
 import { loadEnrollmentsWithoutActiveCohort } from "@/server/billing/complimentary-access";
-import { loadPlacementQueue, loadPlacementCohortSettings } from "@/server/placement/placement";
+import { loadPlacementQueuePage, loadPlacementCohortSettings } from "@/server/placement/placement";
 import {
   assignPlacementTeacherAction,
   configurePlacementCohortAction,
@@ -33,15 +33,21 @@ import {
 export default async function EnrollmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ state?: string; result?: string }>;
+  searchParams: Promise<{ state?: string; result?: string; page?: string }>;
 }) {
-  const { state, result } = await searchParams;
-  const [cases, cohorts, withoutCohort] = await Promise.all([
-    loadPlacementQueue("ADMIN", placementStates.some((s) => s === state) ? state : undefined),
+  const { state, result, page: pageParam } = await searchParams;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const activeState = placementStates.some((s) => s === state) ? state : undefined;
+  const [queue, cohorts, withoutCohort] = await Promise.all([
+    loadPlacementQueuePage("ADMIN", activeState, page),
     loadPlacementCohortSettings(),
     // Advisory panel: its failure must not take down the placement queue.
     loadEnrollmentsWithoutActiveCohort().catch(() => null),
   ]);
+  const cases = queue.items;
+  const pageCount = Math.max(1, Math.ceil(queue.total / queue.pageSize));
+  const pageHref = (target: number) =>
+    `/admin/enrollments?${new URLSearchParams({ ...(activeState ? { state: activeState } : {}), page: String(target) })}`;
   // Teacher candidates are only needed while a case waits for review. A failure must not hide the queue.
   const candidatesByCase = new Map(
     await Promise.all(
@@ -68,7 +74,7 @@ export default async function EnrollmentsPage({
           title={result === "error" ? "Operação não concluída" : "Operação registrada"}
           description={
             result === "error"
-              ? "Confira horário, capacidade e estado do caso. A operação não foi aplicada parcialmente."
+              ? "Confira horário e estado do caso. A operação não foi aplicada parcialmente."
               : "A alteração foi validada e auditada."
           }
         />
@@ -248,8 +254,8 @@ export default async function EnrollmentsPage({
                       />
                       <Button type="submit">Validar e transferir</Button>
                       <p>
-                        A recomendação original e a escolha inicial serão preservadas. Horário e
-                        capacidade serão validados novamente.
+                        A recomendação original e a escolha inicial serão preservadas. O horário
+                        será validado novamente.
                       </p>
                     </form>
                   )}
@@ -291,11 +297,25 @@ export default async function EnrollmentsPage({
           })}
         />
       )}
+      {queue.total > queue.pageSize && (
+        <nav className="yas-row-summary-meta" aria-label="Paginação da fila">
+          {page > 1 && (
+            <Link className="yas-focusable" href={pageHref(page - 1)} rel="prev">
+              Anterior
+            </Link>
+          )}
+          <span>
+            Página {page} de {pageCount} · {queue.total} casos
+          </span>
+          {page < pageCount && (
+            <Link className="yas-focusable" href={pageHref(page + 1)} rel="next">
+              Próxima
+            </Link>
+          )}
+        </nav>
+      )}
       <Card className="yas-stack">
-        <FormDialog
-          trigger="Preparar horário e capacidade para Placement"
-          title="Horário e capacidade de Placement"
-        >
+        <FormDialog trigger="Definir horários da turma" title="Horários da turma">
           <form action={configurePlacementCohortAction} className="yas-stack">
             <p>
               Configure somente horários recorrentes confirmados da turma. O horário não é inferido
@@ -307,15 +327,6 @@ export default async function EnrollmentsPage({
               options={cohorts.map((c) => ({ value: c.id, label: `${c.name} · ${c.timezone}` }))}
               required
             />
-            <Input
-              name="capacity"
-              label="Capacidade"
-              type="number"
-              min={1}
-              max={6}
-              required
-              defaultValue={6}
-            />
             <Select
               name="weekday"
               label="Dia recorrente"
@@ -324,7 +335,7 @@ export default async function EnrollmentsPage({
             />
             <Input label="Início do encontro" name="start" type="time" required />
             <Input label="Fim do encontro" name="end" type="time" required />
-            <Button type="submit">Salvar horário e capacidade</Button>
+            <Button type="submit">Salvar horário</Button>
           </form>
         </FormDialog>
       </Card>

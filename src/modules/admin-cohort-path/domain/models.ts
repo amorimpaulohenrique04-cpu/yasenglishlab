@@ -91,7 +91,6 @@ export type EnrollFormState = { error?: string; receipt?: EnrollReceipt };
 
 /** Maps a database error message to PT-BR copy for the enrollment form. */
 export function enrollErrorMessage(message: string): string {
-  if (message.includes("cohort_capacity_exhausted")) return "A turma não tem mais vagas.";
   if (message.includes("Active compatible cohort required"))
     return "A turma precisa estar ativa e pertencer ao curso escolhido.";
   if (message.includes("Published active course required"))
@@ -102,8 +101,7 @@ export function enrollErrorMessage(message: string): string {
   if (message.includes("Conflicting enrollment retry"))
     return "Este envio conflita com uma operação anterior. Recarregue a página e tente de novo.";
   if (message.includes("Student required")) return "O usuário informado não é aluno.";
-  if (message.includes("Configured cohort capacity"))
-    return "A turma não tem capacidade configurada.";
+  if (message.includes("Configured cohort schedule")) return "A turma não tem horário configurado.";
   return "Não foi possível matricular o aluno. Confira os dados e tente novamente.";
 }
 

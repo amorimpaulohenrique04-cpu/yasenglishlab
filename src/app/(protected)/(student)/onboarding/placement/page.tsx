@@ -61,7 +61,6 @@ export default async function PlacementPage({
               {candidates.map((c) => (
                 <Card className="yas-stack" key={c.id}>
                   <SectionHeader title={`${c.name}`} />
-                  <p>{c.capacity - c.occupancy} vaga(s) disponível(is)</p>
                   <ul>
                     {c.schedule.map((w, i) => (
                       <li key={i}>

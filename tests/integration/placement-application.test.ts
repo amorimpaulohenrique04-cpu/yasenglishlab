@@ -46,6 +46,7 @@ function repository(): PlacementRepository {
     getOwn: vi.fn(async () => view),
     getCase: vi.fn(async () => view),
     listCases: vi.fn(async () => [view]),
+    countCases: vi.fn(async () => 1),
     getCandidates: vi.fn(async () => []),
   };
 }

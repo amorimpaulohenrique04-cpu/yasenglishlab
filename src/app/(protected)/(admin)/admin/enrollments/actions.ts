@@ -19,7 +19,6 @@ export async function configurePlacementCohortAction(form: FormData) {
   try {
     await configureCurrentPlacementCohort({
       cohortId: form.get("cohortId"),
-      capacity: Number(form.get("capacity")),
       schedule: [
         {
           weekday: Number(form.get("weekday")),

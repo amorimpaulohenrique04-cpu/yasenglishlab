@@ -58,29 +58,82 @@ export const candidateSchema = z.object({
   courseId: z.uuid(),
   timezone: z.string(),
   schedule: z.array(scheduleWindowSchema).min(1),
-  capacity: z.number().int().min(1).max(6),
   occupancy: z.number().int().nonnegative(),
   startsAt: z.string(),
 });
 export type PlacementCandidate = z.infer<typeof candidateSchema>;
+const zoneParts = (instant: Date, timeZone: string) => {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hourCycle: "h23",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      weekday: "short",
+    })
+      .formatToParts(instant)
+      .map((p) => [p.type, p.value]),
+  );
+  return {
+    y: Number(parts.year),
+    m: Number(parts.month),
+    d: Number(parts.day),
+    minute: Number(parts.hour) * 60 + Number(parts.minute),
+    weekday: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(String(parts.weekday)),
+  };
+};
+/** The instant at which the wall clock of `timeZone` reads the given date and minute. */
+function wallClockInstant(timeZone: string, y: number, m: number, d: number, minute: number) {
+  const wanted = Date.UTC(y, m - 1, d, 0, minute);
+  let guess = wanted;
+  for (let i = 0; i < 3; i += 1) {
+    const p = zoneParts(new Date(guess), timeZone);
+    guess += wanted - Date.UTC(p.y, p.m - 1, p.d, 0, p.minute);
+  }
+  return new Date(guess);
+}
+/**
+ * Whether a recurring cohort window falls inside the student's availability. Both sides are compared
+ * as instants: the next occurrence of the window is projected into the student's own timezone.
+ */
+export function windowFitsPreference(
+  window: { weekday: number; startMinute: number; endMinute: number },
+  cohortTimezone: string,
+  preference: SchedulePreference,
+  now: Date = new Date(),
+) {
+  const today = zoneParts(now, cohortTimezone);
+  const ahead = (window.weekday - today.weekday + 7) % 7;
+  const start = wallClockInstant(
+    cohortTimezone,
+    today.y,
+    today.m,
+    today.d + ahead,
+    window.startMinute,
+  );
+  const local = zoneParts(start, preference.timezone);
+  const minutes = window.endMinute - window.startMinute;
+  return (
+    preference.weekday === local.weekday &&
+    preference.startMinute <= local.minute &&
+    preference.endMinute >= local.minute + minutes
+  );
+}
 export function filterCandidates(
   candidates: readonly PlacementCandidate[],
   recommendedCourseId: string,
   preferences: readonly SchedulePreference[],
+  now: Date = new Date(),
 ) {
   return candidates
     .filter(
       (c) =>
         c.courseId === recommendedCourseId &&
-        c.occupancy < c.capacity &&
         c.schedule.every((w) =>
-          preferences.some(
-            (p) =>
-              p.timezone === c.timezone &&
-              p.weekday === w.weekday &&
-              p.startMinute <= w.startMinute &&
-              p.endMinute >= w.endMinute,
-          ),
+          preferences.some((p) => windowFitsPreference(w, c.timezone, p, now)),
         ),
     )
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt) || a.id.localeCompare(b.id));
@@ -105,7 +158,6 @@ export const transferInputSchema = z
 export const settingsInputSchema = z
   .object({
     cohortId: z.uuid(),
-    capacity: z.number().int().min(1).max(6),
     schedule: z.array(scheduleWindowSchema).min(1).max(7),
   })
   .strict();

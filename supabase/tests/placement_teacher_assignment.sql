@@ -49,6 +49,12 @@ select pg_temp.assert_true(public.assign_placement_teacher(current_setting('pta.
 -- A different teacher cannot be stacked on an already assigned student.
 select pg_temp.denied(format('select public.assign_placement_teacher(%L,%L)',current_setting('pta.case'),'99110000-0000-4000-8000-000000000001'),'23514');
 
+-- Queue pagination: deterministic pages, a real total, and no silent truncation.
+select pg_temp.assert_true(public.count_placement_queue(null,'ADMIN')>=2,'queue total counts every case');
+select pg_temp.assert_true((select count(*)=1 from public.get_placement_queue(null,'ADMIN',1,0)),'page size honoured');
+select pg_temp.assert_true((select count(*)=0 from public.get_placement_queue(null,'ADMIN',100,public.count_placement_queue(null,'ADMIN'))),'offset past the end is empty');
+select pg_temp.denied('select * from public.get_placement_queue(null,''ADMIN'',101,0)','22023');
+select pg_temp.denied('select * from public.get_placement_queue(null,''ADMIN'',10,-1)','22023');
 reset role;
 select pg_temp.assert_true((select count(*)=1 from public.teacher_student_assignments where student_user_id='99100000-0000-4000-8000-000000000001'),'single assignment');
 select pg_temp.assert_true((select count(*)=1 from public.audit_logs where action='placement_teacher_assigned' and entity_id=current_setting('pta.case')::uuid),'single audit entry');

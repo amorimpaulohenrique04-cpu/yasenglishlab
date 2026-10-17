@@ -8,7 +8,7 @@ export const alertKinds = [
   "COMPLETED_WITHOUT_NEXT",
 ] as const;
 export const alertReasons = {
-  MISSING_SETTINGS: "Turma sem capacidade e horários de entrada configurados.",
+  MISSING_SETTINGS: "Turma sem horários de entrada configurados.",
   MISSING_RECOMMENDATION: "Recomendação pedagógica ainda indisponível.",
   COURSE_UNAVAILABLE: "Curso recomendado inativo ou não publicado.",
   NO_COHORT: "Nenhuma turma ativa do curso recomendado.",

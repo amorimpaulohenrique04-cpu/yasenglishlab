@@ -7,6 +7,7 @@ import type {
   transferInputSchema,
   settingsInputSchema,
 } from "../domain/models";
+export type QueuePage = { limit: number; offset: number };
 export interface PlacementRepository {
   begin(): Promise<string>;
   savePreferences(input: SchedulePreference): Promise<string>;
@@ -18,6 +19,7 @@ export interface PlacementRepository {
   configure(input: z.infer<typeof settingsInputSchema>): Promise<void>;
   getOwn(): Promise<PlacementView | null>;
   getCase(id: string): Promise<PlacementView | null>;
-  listCases(state?: string): Promise<PlacementView[]>;
+  listCases(state?: string, page?: QueuePage): Promise<PlacementView[]>;
+  countCases(state?: string): Promise<number>;
   getCandidates(caseId: string): Promise<PlacementCandidate[]>;
 }

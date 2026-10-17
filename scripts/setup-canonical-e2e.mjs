@@ -478,12 +478,10 @@ const { error: cohortSettingsError } = await admin.from("cohort_placement_settin
   [
     {
       cohort_id: cohortIds[0],
-      capacity: 6,
       schedule: [{ weekday: 1, startMinute: 1080, endMinute: 1140 }],
     },
     {
       cohort_id: cohortIds[1],
-      capacity: 6,
       schedule: [{ weekday: 2, startMinute: 1080, endMinute: 1140 }],
     },
   ],
@@ -882,9 +880,9 @@ runAdmin(`update public.assessments set is_placement=false where is_placement an
  insert into public.cohorts(id,course_id,name,code,status,starts_at) values
  ('9a500000-0000-4000-8000-000000000001','${courseId}','Placement Monday','canonical-placement-monday','ACTIVE',now()-interval '1 day'),
  ('9a500000-0000-4000-8000-000000000002','${courseId}','Placement Tuesday','canonical-placement-tuesday','ACTIVE',now()-interval '1 day') on conflict(id) do nothing;
- insert into public.cohort_placement_settings(cohort_id,capacity,schedule) values
- ('9a500000-0000-4000-8000-000000000001',6,'[{"weekday":1,"startMinute":1140,"endMinute":1200}]'),
- ('9a500000-0000-4000-8000-000000000002',6,'[{"weekday":2,"startMinute":1140,"endMinute":1200}]') on conflict(cohort_id) do nothing;`);
+ insert into public.cohort_placement_settings(cohort_id,schedule) values
+ ('9a500000-0000-4000-8000-000000000001','[{"weekday":1,"startMinute":1140,"endMinute":1200}]'),
+ ('9a500000-0000-4000-8000-000000000002','[{"weekday":2,"startMinute":1140,"endMinute":1200}]') on conflict(cohort_id) do nothing;`);
 function placementActor(userId, sql, aal = "aal1") {
   return `set role authenticated;select set_config('request.jwt.claim.sub','${userId}',false);select set_config('request.jwt.claims','{"sub":"${userId}","aal":"${aal}"}',false);${sql};`;
 }

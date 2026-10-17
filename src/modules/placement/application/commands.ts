@@ -83,3 +83,16 @@ export async function getPlacement(repo: PlacementRepository, id?: string) {
 export async function getPlacementQueue(repo: PlacementRepository, state?: string) {
   return repo.listCases(state);
 }
+export const placementQueuePageSize = 25;
+export async function getPlacementQueuePage(
+  repo: PlacementRepository,
+  state: string | undefined,
+  page: number,
+) {
+  const offset = (Math.max(1, Math.floor(page) || 1) - 1) * placementQueuePageSize;
+  const [items, total] = await Promise.all([
+    repo.listCases(state, { limit: placementQueuePageSize, offset }),
+    repo.countCases(state),
+  ]);
+  return { items, total, pageSize: placementQueuePageSize };
+}

@@ -18,7 +18,6 @@ const candidate: PlacementCandidate = {
   courseId,
   timezone: "America/Recife",
   schedule: [{ weekday: 1, startMinute: 1140, endMinute: 1200 }],
-  capacity: 6,
   occupancy: 5,
   startsAt: "2026-10-01T00:00:00Z",
 };
@@ -31,10 +30,9 @@ describe("initial Placement contract", () => {
         );
     expect(canTransition("ENROLLED", "PAYMENT_CONFIRMED")).toBe(false);
   });
-  it("requires exact recommended course, every recurring window, timezone and free capacity", () => {
+  it("requires exact recommended course, every recurring window and the same instants", () => {
     const rejected = [
       { ...candidate, id: "99000000-0000-4000-8000-000000000002", courseId: id },
-      { ...candidate, occupancy: 6 },
       { ...candidate, timezone: "Europe/London" },
       {
         ...candidate,
@@ -45,6 +43,47 @@ describe("initial Placement contract", () => {
     expect(filterCandidates([candidate], courseId, [{ ...preference, endMinute: 1199 }])).toEqual(
       [],
     );
+  });
+  it("compares instants across timezones, including daylight saving", () => {
+    const london = {
+      ...candidate,
+      timezone: "Europe/London",
+      schedule: [{ weekday: 1, startMinute: 1320, endMinute: 1380 }],
+    };
+    // 22:00 London is 18:00 in Recife while London is on BST (UTC+1), and 19:00 after the clocks change.
+    const october = new Date("2026-10-15T12:00:00Z");
+    const november = new Date("2026-11-02T12:00:00Z");
+    expect(
+      filterCandidates(
+        [london],
+        courseId,
+        [{ ...preference, startMinute: 1080, endMinute: 1140 }],
+        october,
+      ),
+    ).toEqual([london]);
+    expect(
+      filterCandidates(
+        [london],
+        courseId,
+        [{ ...preference, startMinute: 1080, endMinute: 1140 }],
+        november,
+      ),
+    ).toEqual([]);
+    expect(
+      filterCandidates(
+        [london],
+        courseId,
+        [{ ...preference, startMinute: 1140, endMinute: 1200 }],
+        november,
+      ),
+    ).toEqual([london]);
+  });
+  it("matches a window that lands on another weekday in the student's timezone", () => {
+    const late = { ...candidate, schedule: [{ weekday: 1, startMinute: 1380, endMinute: 1440 }] };
+    const sydney = { timezone: "Australia/Sydney", weekday: 2, startMinute: 780, endMinute: 900 };
+    expect(filterCandidates([late], courseId, [sydney], new Date("2026-10-15T12:00:00Z"))).toEqual([
+      late,
+    ]);
   });
   it("ranks deterministically without mutating inputs", () => {
     const second = { ...candidate, id: "99000000-0000-4000-8000-000000000002" };
