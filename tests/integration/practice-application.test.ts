@@ -190,6 +190,32 @@ describe("practice application", () => {
     expect(repo.startReview).toHaveBeenCalled();
   });
 
+  it("does not announce completion analytics when finalization fails", async () => {
+    const repo = repository();
+    const events = analytics();
+    repo.finalizeAttempt = vi.fn(async () => {
+      throw new Error("incomplete attempt");
+    });
+    await expect(finalizePractice(repo, events, userId, { attemptId: attempt.id })).rejects.toThrow(
+      "incomplete attempt",
+    );
+    expect(events.track).not.toHaveBeenCalled();
+  });
+
+  it("reuses the same completion key when finalization is repeated", async () => {
+    const repo = repository();
+    const events = analytics();
+    await finalizePractice(repo, events, userId, { attemptId: attempt.id });
+    await finalizePractice(repo, events, userId, { attemptId: attempt.id });
+    expect(events.track).toHaveBeenCalledTimes(2);
+    for (const [event] of vi.mocked(events.track).mock.calls) {
+      expect(event).toMatchObject({
+        event: "practice_completed",
+        idempotencyKey: `practice_completed:${attempt.id}`,
+      });
+    }
+  });
+
   it("surfaces due reviews, weekly performance and degrades when v3 sources fail", async () => {
     const repo = repository();
     repo.listDueReviews = vi.fn(async () => [

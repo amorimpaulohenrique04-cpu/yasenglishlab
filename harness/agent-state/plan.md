@@ -1,3 +1,17 @@
+# Plano — PR #80 gates (pr80-gates)
+
+## Active task
+
+**pr80-gates** — goal: `harness/goals/pr80-gates.md`.
+
+1. Conferir logs originais, contratos, fixtures e implementação; preservar alterações preexistentes.
+2. Corrigir jornada canônica/retomada/persistência e estado de finalização com regressão.
+3. Preparar acesso legítimo de áudio e acompanhar navegação real no a11y; preservar negativos.
+4. Diagnosticar build visual comparando jobs e builds limpos; corrigir somente causa comprovada.
+5. Executar gates em stack descartável, inspecionar diferenças visuais e registrar bloqueios/aprovações pendentes.
+
+---
+
 # Plano — Prática 10/10 (practice-10-v3)
 
 ## Active task

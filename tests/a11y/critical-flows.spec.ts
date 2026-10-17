@@ -315,12 +315,17 @@ test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({
     has: page.getByRole("heading", { name: "Canonical Speaking Review", exact: true }),
   });
   await activity.getByRole("button", { name: "Praticar →" }).click();
+  await expect(page).toHaveURL(/\/pratica\/[0-9a-f-]+$/);
   const audio = page.getByLabel("Arquivo de áudio (até 25 MiB)");
   await expect(audio).toBeVisible();
   await audio.focus();
   await expect(audio).toBeFocused();
   await expect(page.getByRole("button", { name: "Gravar áudio" })).toBeVisible();
   await assertAxe(page);
+  await page.screenshot({
+    path: `harness/evidence/pr80-gates/audio-${test.info().project.name}.png`,
+    fullPage: true,
+  });
 });
 
 test("P21 recorded-video Admin upload state is accessible before publication", async ({ page }) => {

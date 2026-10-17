@@ -482,6 +482,29 @@ export function PracticeSessionPlayer({
     );
   }
 
+  // Answer persistence and attempt finalization are separate operations. Keep success
+  // actions hidden until the finalization (including completion analytics) resolves.
+  if (!preview && saving !== "done") {
+    return (
+      <div className="yas-practice-player yas-practice-session" aria-live="polite">
+        {saving === "error" ? (
+          <>
+            <Alert
+              tone="error"
+              title="Não foi possível salvar o resultado"
+              description="Suas respostas estão guardadas. Tente salvar de novo."
+            />
+            <Button type="button" variant="outline" onClick={() => setSaving("idle")}>
+              Tentar salvar de novo
+            </Button>
+          </>
+        ) : (
+          <p role="status">Salvando seu resultado…</p>
+        )}
+      </div>
+    );
+  }
+
   const summary = summarize(items, results);
   const status =
     summary.objectiveTotal === 0
@@ -524,23 +547,6 @@ export function PracticeSessionPlayer({
                 ? "1 resposta aguarda a revisão do professor."
                 : `${summary.pendingManual} respostas aguardam a revisão do professor.`}
             </p>
-          )}
-          {!preview && saving === "saving" && (
-            <p className="yas-practice-hint" role="status">
-              Salvando seu resultado…
-            </p>
-          )}
-          {!preview && saving === "error" && (
-            <Alert
-              tone="error"
-              title="Não foi possível salvar o resultado"
-              description="Suas respostas estão guardadas. Tente salvar de novo."
-            />
-          )}
-          {!preview && saving === "error" && (
-            <Button type="button" variant="outline" size="sm" onClick={() => setSaving("idle")}>
-              Tentar salvar de novo
-            </Button>
           )}
           <div className="yas-practice-outcome-actions">
             {preview && (

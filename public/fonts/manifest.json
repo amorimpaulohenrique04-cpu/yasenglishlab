@@ -1,0 +1,62 @@
+[
+  {
+    "file": "inter-cyrillic-ext.woff2",
+    "sha256": "fccca918fea40089dacadc7045861314d1a6bc91f1f323cc1eeb22ebcdb321b5",
+    "sourceBuildFile": "2c55a0e60120577a-s.0-dom-5bn10r2.woff2"
+  },
+  {
+    "file": "inter-cyrillic.woff2",
+    "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6",
+    "sourceBuildFile": "9c72aa0f40e4eef8-s.1y4-pdgsjb-pw.woff2"
+  },
+  {
+    "file": "inter-greek-ext.woff2",
+    "sha256": "a2e2c783ca6f9c20486e81e72a279203e86730bbf8f01ff6a5ee9dbd09e1c271",
+    "sourceBuildFile": "ad66f9afd8947f86-s.3lvt2whj97whp.woff2"
+  },
+  {
+    "file": "inter-greek.woff2",
+    "sha256": "46dd4cdca58c26ae87cc6927657bf83b2e8abfc39ffd0ab176e301a8d28d22bf",
+    "sourceBuildFile": "5476f68d60460930-s.2uwcyprjm3xu3.woff2"
+  },
+  {
+    "file": "inter-vietnamese.woff2",
+    "sha256": "8db00ff46c67b22cda8bed865acf7077651cac8d2841d5b40980556b48961931",
+    "sourceBuildFile": "2bbe8d2671613f1f-s.0k62hbripvv8p.woff2"
+  },
+  {
+    "file": "inter-latin-ext.woff2",
+    "sha256": "a28eb6d3ccb534ae0c94ca999371df024aab60b08c3c8a5720ee9e32fa0faaa2",
+    "sourceBuildFile": "1bffadaabf893a1e-s.3-6t-g6q0vh0a.woff2"
+  },
+  {
+    "file": "inter-latin.woff2",
+    "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
+    "sourceBuildFile": "83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2"
+  },
+  {
+    "file": "montserrat-cyrillic-ext.woff2",
+    "sha256": "744830a0e77dd14dd543a4230d6e3ce67ca961634074b5d536ebafc66c732301",
+    "sourceBuildFile": "8298327da6d5bcce-s.3q4n78m6muld7.woff2"
+  },
+  {
+    "file": "montserrat-cyrillic.woff2",
+    "sha256": "0b00fbd6edcc84cd5f77364bbeb06b75ed263c740061eba34511f1e2ac1a82d3",
+    "sourceBuildFile": "44fac91e6f2d2b1b-s.1d_6dtvtn9g3_.woff2"
+  },
+  {
+    "file": "montserrat-vietnamese.woff2",
+    "sha256": "9e2672d100bc36a37073fb250abfaa7394f5151bf5dda3f4d5fc281345eb391b",
+    "sourceBuildFile": "2b402d8aebffd579-s.16nfeub7ja6ze.woff2"
+  },
+  {
+    "file": "montserrat-latin-ext.woff2",
+    "sha256": "920711de9ae96c18970fa4faca73cd302b93ac5ed57ebeb6bfec2ddeff930082",
+    "sourceBuildFile": "a88409fdd7dc121c-s.1mvr14jy3vxq7.woff2"
+  },
+  {
+    "file": "montserrat-latin.woff2",
+    "sha256": "6438d7b8ea9c7c3992d5e2fd2afdb1ff948570a3ef0bedae76247b51632960ba",
+    "sourceBuildFile": "e8f2fbee2754df70-s.p.1dqa_6e_ad4sj.woff2"
+  }
+]

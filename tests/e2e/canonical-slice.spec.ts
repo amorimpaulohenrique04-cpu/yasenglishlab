@@ -238,6 +238,135 @@ test.describe("canonical learning vertical slice", () => {
     await page.getByRole("button", { name: "Enviar resposta" }).click();
     await expect(page.getByText("Resposta correta")).toBeVisible();
     await expect(page.getByText(/Nice to meet you é a forma natural/)).toBeVisible();
+    const attemptUrl = page.url();
+    const attemptId = new URL(attemptUrl).pathname.split("/").at(-1)!;
+    expect(attemptId).toMatch(/^[0-9a-f-]{36}$/);
+    const persistedPractice = () =>
+      JSON.parse(
+        execFileSync(
+          "psql",
+          [
+            `--dbname=${process.env.DATABASE_URL}`,
+            "-v",
+            "ON_ERROR_STOP=1",
+            "-At",
+            "-c",
+            `select jsonb_build_object(
+              'status', a.status,
+              'responses', (select count(*) from public.practice_item_responses r where r.practice_attempt_id = a.id),
+              'results', (select count(*) from public.practice_results r where r.practice_attempt_id = a.id),
+              'events', (select count(*) from public.product_analytics_events e where e.idempotency_key = 'practice_completed:' || a.id::text)
+            ) from public.practice_attempts a where a.id = '${attemptId}'::uuid`,
+          ],
+          { encoding: "utf8" },
+        ).trim(),
+      );
+    expect(persistedPractice()).toEqual({
+      status: "IN_PROGRESS",
+      responses: 1,
+      results: 0,
+      events: 0,
+    });
+
+    // Leave before Continue: the saved answer must survive a new page instance.
+    await page.goto("/pratica");
+    await page.goto(attemptUrl);
+    await expect(page.getByRole("heading", { name: "Pergunta 2 de 7" })).toBeVisible();
+    expect(persistedPractice()).toEqual({
+      status: "IN_PROGRESS",
+      responses: 1,
+      results: 0,
+      events: 0,
+    });
+    await page.getByRole("radio", { name: "I'm fine, thanks. And you?", exact: true }).check();
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await page.getByLabel("Lacuna 1", { exact: true }).fill("is");
+    await page.getByLabel("Lacuna 2", { exact: true }).fill("am");
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+
+    // A deliberate mistake proves the reinforcement round as well as the happy path.
+    await page.getByRole("radio", { name: "drink", exact: true }).check();
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await expect(page.getByText("Resposta incorreta", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await page.getByRole("checkbox", { name: "I live in Recife.", exact: true }).check();
+    await page.getByRole("checkbox", { name: "They study English.", exact: true }).check();
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await page.getByRole("radio", { name: "Verdadeiro", exact: true }).check();
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await page.getByRole("button", { name: "Subir: I", exact: true }).click();
+    await page.getByRole("button", { name: "Subir: I", exact: true }).click();
+    await page.getByRole("button", { name: "Subir: a", exact: true }).click();
+    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
+    await page.getByRole("button", { name: "Ir para o reforço", exact: true }).click();
+    await page.getByRole("radio", { name: "drinks", exact: true }).check();
+    await page.getByRole("button", { name: "Tentar de novo", exact: true }).click();
+    await expect(page.getByText("Resposta correta", { exact: true })).toBeVisible();
+
+    // Hold the real finalization request to prove success is not announced early.
+    let releaseFinalize!: () => void;
+    const finalizeGate = new Promise<void>((resolve) => {
+      releaseFinalize = resolve;
+    });
+    let failFinalize = true;
+    await page.route(`**/pratica/${attemptId}`, async (route) => {
+      const request = route.request();
+      if (request.method() === "POST") {
+        if (failFinalize) {
+          failFinalize = false;
+          await route.fulfill({ status: 503, body: "Finalization temporarily unavailable" });
+          return;
+        }
+        await finalizeGate;
+      }
+      await route.continue();
+    });
+    try {
+      await page.getByRole("button", { name: "Ver resumo", exact: true }).click();
+      await expect(
+        page.getByText("Não foi possível salvar o resultado", { exact: true }),
+      ).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Prática concluída" })).toHaveCount(0);
+      await captureEvidence(page, "pratica-finalizacao-erro.png");
+      expect(persistedPractice()).toEqual({
+        status: "IN_PROGRESS",
+        responses: 8,
+        results: 0,
+        events: 0,
+      });
+      await page.getByRole("button", { name: "Tentar salvar de novo", exact: true }).click();
+      await expect(page.getByRole("status")).toHaveText("Salvando seu resultado…");
+      await captureEvidence(page, "pratica-finalizacao-pendente.png");
+      await expect(page.getByRole("heading", { name: "Prática concluída" })).toHaveCount(0);
+      expect(persistedPractice()).toEqual({
+        status: "IN_PROGRESS",
+        responses: 8,
+        results: 0,
+        events: 0,
+      });
+    } finally {
+      releaseFinalize();
+    }
+    await expect(page.getByRole("heading", { name: "Prática concluída" })).toBeVisible();
+    expect(persistedPractice()).toEqual({
+      status: "SUBMITTED",
+      responses: 8,
+      results: 1,
+      events: 1,
+    });
+    await page.unroute(`**/pratica/${attemptId}`);
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "Prática concluída" })).toBeVisible();
+    expect(persistedPractice()).toEqual({
+      status: "SUBMITTED",
+      responses: 8,
+      results: 1,
+      events: 1,
+    });
     await captureEvidence(page, "pratica-resultado-desktop.png");
 
     await page.goto("/agenda");

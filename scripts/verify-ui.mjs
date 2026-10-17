@@ -52,6 +52,7 @@ runNpm(["run", "build"]);
 runNpm(["run", "storybook:build"]);
 if (canonicalE2e) prepareCanonicalFixture();
 runPlaywrightSuite("test:e2e", "artifacts/e2e/results.json");
+run(process.execPath, ["scripts/assert-canonical-e2e.mjs"]);
 if (canonicalE2e) prepareCanonicalFixture();
 runPlaywrightSuite("test:a11y", "artifacts/a11y/results.json");
 runPlaywrightSuite("test:visual:storybook", "artifacts/storybook/results.json");
