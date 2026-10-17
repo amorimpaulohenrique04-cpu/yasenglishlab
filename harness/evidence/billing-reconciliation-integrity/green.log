@@ -1,0 +1,15 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.worktrees/billing-reconciliation
+
+
+ Test Files  2 passed (2)
+      Tests  29 passed (29)
+   Start at  20:27:00
+   Duration  3.78s (transform 52%, import 37%, tests 10%, worker 1%)
+
+  Transform  transforming modules took 3.03s · 52% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns

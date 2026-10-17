@@ -12,6 +12,18 @@
   },
   "features": [
     {
+      "id": "billing-reconciliation-integrity",
+      "title": "Complete and failure-visible billing reconciliation",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/billing-reconciliation-integrity.md",
+        "harness/evidence/billing-reconciliation-integrity/README.md"
+      ],
+      "updated_at": "2026-10-17T12:00:00Z"
+    },
+    {
       "id": "pr74-gates",
       "title": "Corrigir redesign PR 74 e otimizar gates sem reduzir cobertura",
       "status": "in_progress",

@@ -731,3 +731,7 @@ Local: typecheck, lint, format, unit (338), integration (323), verify:db, verify
 ## 2026-10-18 — yas-billing-operations-closure (PR 2 of the 2-PR closure plan)
 
 Blocks 2A–2D on `feat/yas-billing-operations-closure` (from main after PR #81). Evidence: `docs/implementation/yas-closure-evidence.md`. PIX is BLOCKED/not enabled; production hosting, deploy, e-mail, backups, legal text and retention stay BLOCKED (docs/GO_LIVE_CHECKLIST.md). No real Asaas call was made.
+
+## 2026-10-17 — billing-reconciliation-integrity
+
+Base/main CI verified; regression red 18/29, green 29/29. Implementation complete; local real E2E/full and final CI/merge pending. No completion claim.

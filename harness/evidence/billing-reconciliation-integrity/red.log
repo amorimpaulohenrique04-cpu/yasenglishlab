@@ -1,0 +1,311 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.worktrees/billing-reconciliation
+
+ ❯ tests/integration/billing-reconciliation.test.ts (18 tests | 10 failed) 367ms
+   ❯ bounded reconciliation orchestration (13)
+     × examines all 0 subscriptions in batches without duplication 48ms
+     × examines all 50 subscriptions in batches without duplication 10ms
+     × examines all 51 subscriptions in batches without duplication 6ms
+     × examines all 120 subscriptions in batches without duplication 14ms
+     × keeps processing after getSubscriptionState fails without clearing that item's findings 21ms
+     × keeps processing after listChargesToRegularize fails without clearing that item's findings 3ms
+     × throws when record_billing_finding persistence fails 8ms
+     × throws when clear_billing_findings persistence fails 4ms
+     × throws when record_billing_reconciliation_run persistence fails 4ms
+     × rejects malformed cursors before querying 5ms
+ ❯ tests/integration/billing-reconciliation-ui.test.ts (11 tests | 8 failed) 386ms
+   ❯ reconciliation actions and visible states (11)
+     × redirects using the actual complete result and cursor 147ms
+     × redirects using the actual partial result and cursor 5ms
+     × does not declare success on reconciliation persistence failure 4ms
+     × rejects malformed submitted cursors without running reconciliation 3ms
+     × reports resolution errors before success invalidation 32ms
+     × resolves using the existing RPC after ADMIN+AAL2 authorization 5ms
+     × renders failed findings reads as unavailable instead of empty 158ms
+     × renders empty, partial, failed and resolution states with explicit batch controls 14ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 18 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > redirects using the actual complete result and cursor
+AssertionError: expected [Function] to throw error including 'REDIRECT:/admin/billing?result=comple…' but got 'REDIRECT:/admin/billing?result=reconc…'
+
+Expected: "REDIRECT:/admin/billing?result=complete&nextCursor=00000000-0000-0000-0000-000000000050"
+Received: "REDIRECT:/admin/billing?result=reconciled"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:82:50
+     80|       const form = new FormData();
+     81|       form.set("cursor", cursor);
+     82|       await expect(runReconciliationAction(form)).rejects.toThrow(
+       |                                                  ^
+     83|         `REDIRECT:/admin/billing?result=${status}&nextCursor=${cursor}…
+     84|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > redirects using the actual partial result and cursor
+AssertionError: expected [Function] to throw error including 'REDIRECT:/admin/billing?result=partia…' but got 'REDIRECT:/admin/billing?result=reconc…'
+
+Expected: "REDIRECT:/admin/billing?result=partial&nextCursor=00000000-0000-0000-0000-000000000050"
+Received: "REDIRECT:/admin/billing?result=reconciled"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:82:50
+     80|       const form = new FormData();
+     81|       form.set("cursor", cursor);
+     82|       await expect(runReconciliationAction(form)).rejects.toThrow(
+       |                                                  ^
+     83|         `REDIRECT:/admin/billing?result=${status}&nextCursor=${cursor}…
+     84|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > does not declare success on reconciliation persistence failure
+AssertionError: expected [Function] to throw error including 'REDIRECT:/admin/billing?result=failed' but got 'REDIRECT:/admin/billing?result=reconc…'
+
+Expected: "REDIRECT:/admin/billing?result=failed"
+Received: "REDIRECT:/admin/billing?result=reconcile-error"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:91:58
+     89|   it("does not declare success on reconciliation persistence failure",…
+     90|     boundary.run.mockRejectedValue(new Error("persistence failed"));
+     91|     await expect(runReconciliationAction(new FormData())).rejects.toTh…
+       |                                                          ^
+     92|       "REDIRECT:/admin/billing?result=failed",
+     93|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > rejects malformed submitted cursors without running reconciliation
+AssertionError: expected [Function] to throw error including 'result=failed' but got 'REDIRECT:/admin/billing?result=reconc…'
+
+Expected: "result=failed"
+Received: "REDIRECT:/admin/billing?result=reconcile-error"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:99:48
+     97|     const form = new FormData();
+     98|     form.set("cursor", "invalid");
+     99|     await expect(runReconciliationAction(form)).rejects.toThrow("resul…
+       |                                                ^
+    100|     expect(boundary.run).not.toHaveBeenCalled();
+    101|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > reports resolution errors before success invalidation
+AssertionError: expected [Function] to throw error including 'REDIRECT:/admin/billing?result=resolv…' but got '[\n  {\n    "origin": "string",\n    …'
+
+- Expected
++ Received
+
+- REDIRECT:/admin/billing?result=resolve-error
++ [
++   {
++     "origin": "string",
++     "code": "invalid_format",
++     "format": "uuid",
++     "pattern": "/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/",
++     "path": [],
++     "message": "Invalid UUID"
++   }
++ ]
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:105:64
+    103|   it("reports resolution errors before success invalidation", async ()…
+    104|     boundary.rpc.mockResolvedValue({ error: { message: "failed" } });
+    105|     await expect(resolveBillingFindingAction(resolutionForm())).reject…
+       |                                                                ^
+    106|       "REDIRECT:/admin/billing?result=resolve-error",
+    107|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > resolves using the existing RPC after ADMIN+AAL2 authorization
+AssertionError: expected [Function] to throw error including 'REDIRECT:/admin/billing' but got '[\n  {\n    "origin": "string",\n    …'
+
+- Expected
++ Received
+
+- REDIRECT:/admin/billing
++ [
++   {
++     "origin": "string",
++     "code": "invalid_format",
++     "format": "uuid",
++     "pattern": "/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/",
++     "path": [],
++     "message": "Invalid UUID"
++   }
++ ]
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:112:64
+    110|
+    111|   it("resolves using the existing RPC after ADMIN+AAL2 authorization",…
+    112|     await expect(resolveBillingFindingAction(resolutionForm())).reject…
+       |                                                                ^
+    113|       "REDIRECT:/admin/billing",
+    114|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > renders failed findings reads as unavailable instead of empty
+AssertionError: expected '<div class="_page_e6477f"><header cla…' to contain 'Divergências indisponíveis'
+
+Expected: "Divergências indisponíveis"
+Received: "<div class="_page_e6477f"><header class="yas-page-header"><div><h1>Pagamentos</h1><p class="yas-header-description">Acompanhe as assinaturas e os estados financeiros confirmados.</p></div></header><nav class="_tabs_f66ebf" aria-label="Áreas de pagamentos"><a class="_tab_f66ebf" aria-current="page" href="/admin/billing">Assinaturas e operação</a><a class="_tab_f66ebf" href="/admin/billing?tab=plans">Planos e direitos</a></nav><div class="_metrics_e6477f"><div class="yas-metric-card"><span class="yas-metric-label">Assinaturas ativas</span><strong class="yas-metric-value">0</strong></div><div class="yas-metric-card"><span class="yas-metric-label">Pagamentos pendentes</span><strong class="yas-metric-value">0</strong></div><div class="yas-metric-card"><span class="yas-metric-label">Cancelamentos agendados</span><strong class="yas-metric-value">0</strong><span class="yas-metric-detail">Assinaturas atuais com cancelamento registrado</span></div></div><section class="yas-card"><header class="yas-section-header"><div><h2>Assinaturas</h2><p class="yas-header-description">Valores históricos disponíveis apenas quando há snapshot de checkout.</p></div></header><form class="_filters_e6477f" method="get"><div class="yas-field" data-tone="default"><label class="yas-field-label" for="_R_2k_">Status</label><select name="status" id="_R_2k_" class="yas-field-control"><option value="" selected="">Todos os status</option><option value="ACTIVE">Ativa</option><option value="PAST_DUE">Pagamento pendente</option><option value="CANCELLED">Cancelada</option><option value="EXPIRED">Encerrada</option><option value="TRIALING">Em avaliação</option></select><span class="yas-field-message"></span></div><div class="yas-field" data-tone="default"><label class="yas-field-label" for="_R_4k_">Plano</label><select name="plan" id="_R_4k_" class="yas-field-control"><option value="" selected="">Todos os planos</option></select><span class="yas-field-message"></span></div><button type="submit" class="yas-button yas-button--secondary"><span>Filtrar assinaturas</span></button></form><div class="yas-state"><div class="yas-state-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="yas-icon"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"></path></svg></div><h3 class="yas-state-title">Nenhuma assinatura encontrada</h3><p class="yas-state-description">Revise os filtros ou consulte outra página.</p></div><nav class="_pagination_e6477f" aria-label="Paginação de assinaturas"><span>Página 1 · 0 assinaturas · até 25 por página</span><div></div></nav></section><section id="operacao" class="_page_e6477f"><header class="yas-section-header"><div><h2>Operação</h2><p class="yas-header-description">Itens que pedem atenção da equipe, em consulta somente leitura. Eventos obsoletos (STALE) não aparecem aqui, pois são registrados sem motivo de erro.</p></div></header><section class="yas-card"><header class="yas-section-header"><div><h2>Eventos rejeitados ou ignorados</h2><p class="yas-header-description">Eventos de pagamento que não puderam ser aplicados.</p></div><div class="yas-cluster"><span class="yas-badge" data-tone="success">0 nesta página</span></div></header><nav class="_pagination_e6477f" aria-label="Filtro de eventos"><div><a class="_link_e6477f" href="/admin/billing?page=1&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Todos</a><a class="_link_e6477f" href="/admin/billing?page=1&amp;eventStatus=REJECTED&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Rejeitados</a><a class="_link_e6477f" href="/admin/billing?page=1&amp;eventStatus=IGNORED&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Ignorados</a></div></nav><div class="yas-state"><div class="yas-state-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="yas-icon"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"></path></svg></div><h3 class="yas-state-title">Nenhum item — tudo em ordem</h3><p class="yas-state-description">Não há eventos rejeitados ou ignorados nesta página.</p></div><nav class="_pagination_e6477f" aria-label="Paginação de eventos"><span>Página 1 · até 25 por página</span><div></div></nav></section><section class="yas-card"><header class="yas-section-header"><div><h2>Checkouts travados</h2><p class="yas-header-description">Checkouts que não concluíram e podem exigir contato com o aluno.</p></div><div class="yas-cluster"><span class="yas-badge" data-tone="success">0 nesta página</span></div></header><div class="yas-state"><div class="yas-state-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="yas-icon"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"></path></svg></div><h3 class="yas-state-title">Nenhum item — tudo em ordem</h3><p class="yas-state-description">Não há checkouts travados nesta página.</p></div><nav class="_pagination_e6477f" aria-label="Paginação de checkouts"><span>Página 1 · até 25 por página</span><div></div></nav></section><section class="yas-card"><header class="yas-section-header"><div><h2>E-mails com falha ou atrasados</h2><p class="yas-header-description">Notificações que falharam ou aguardam nova tentativa.</p></div><div class="yas-cluster"><span class="yas-badge" data-tone="success">0 nesta página</span></div></header><nav class="_pagination_e6477f" aria-label="Filtro de e-mails"><div><a class="_link_e6477f" href="/admin/billing?page=1&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Todos</a><a class="_link_e6477f" href="/admin/billing?page=1&amp;emailStatus=FAILED&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Falhas</a><a class="_link_e6477f" href="/admin/billing?page=1&amp;emailStatus=PENDING&amp;eventPage=1&amp;checkoutPage=1&amp;emailPage=1#operacao">Atrasados</a></div></nav><div class="yas-state"><div class="yas-state-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="yas-icon"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"></path></svg></div><h3 class="yas-state-title">Nenhum item — tudo em ordem</h3><p class="yas-state-description">Não há e-mails com falha ou atrasados nesta página.</p></div><nav class="_pagination_e6477f" aria-label="Paginação de e-mails"><span>Página 1 · até 25 por página</span><div></div></nav></section></section><section aria-label="Conciliação com o provedor" class="yas-card yas-stack"><h2>Conciliação com o provedor</h2><p>Compara as assinaturas locais com o provedor de pagamento (somente leitura). Divergências ficam registradas aqui; nenhuma delas muda acesso, cobrança ou plano sozinha.</p><form action="javascript:throw new Error(&#x27;React form unexpectedly submitted.&#x27;)"><button type="submit" class="yas-button yas-button--outline"><span>Rodar conciliação (até 50 assinaturas)</span></button></form><p>Nenhuma divergência aberta.</p></section></div><script>addEventListener("submit",function(a){if(!a.defaultPrevented){var b=a.target,d=a.submitter,c=b.action,e=d;if(d){var f=d.getAttribute("formAction");null!=f&&(c=f,e=null)}"javascript:throw new Error('React form unexpectedly submitted.')"===c&&(a.preventDefault(),a=new FormData(b,e),c=b.ownerDocument||b,(c.$$reactFormReplay=c.$$reactFormReplay||[]).push(b,d,a))}});</script>"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:140:18
+    138|       await AdminBillingPage({ searchParams: Promise.resolve({}) }),
+    139|     );
+    140|     expect(html).toContain("Divergências indisponíveis");
+       |                  ^
+    141|     expect(html).not.toContain("Nenhuma divergência aberta");
+    142|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation-ui.test.ts > reconciliation actions and visible states > renders empty, partial, failed and resolution states with explicit batch controls
+AssertionError: expected '<section aria-label="Conciliação com …' to contain 'Conciliação parcial'
+
+Expected: "Conciliação parcial"
+Received: "<section aria-label="Conciliação com o provedor" class="yas-card yas-stack"><h2>Conciliação com o provedor</h2><p>Compara as assinaturas locais com o provedor de pagamento (somente leitura). Divergências ficam registradas aqui; nenhuma delas muda acesso, cobrança ou plano sozinha.</p><form action="javascript:throw new Error(&#x27;React form unexpectedly submitted.&#x27;)"><button type="submit" class="yas-button yas-button--outline"><span>Rodar conciliação (até 50 assinaturas)</span></button></form><p>Nenhuma divergência aberta.</p></section><script>addEventListener("submit",function(a){if(!a.defaultPrevented){var b=a.target,d=a.submitter,c=b.action,e=d;if(d){var f=d.getAttribute("formAction");null!=f&&(c=f,e=null)}"javascript:throw new Error('React form unexpectedly submitted.')"===c&&(a.preventDefault(),a=new FormData(b,e),c=b.ownerDocument||b,(c.$$reactFormReplay=c.$$reactFormReplay||[]).push(b,d,a))}});</script>"
+
+ ❯ tests/integration/billing-reconciliation-ui.test.ts:158:21
+    156|     expect(render()).not.toContain("Próximo lote");
+    157|     const partial = render("partial", cursor);
+    158|     expect(partial).toContain("Conciliação parcial");
+       |                     ^
+    159|     expect(partial).toContain("Reexecutar desde o início");
+    160|     expect(partial).toContain("Próximo lote");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > examines all 0 subscriptions in batches without duplication
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > examines all 50 subscriptions in batches without duplication
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > examines all 51 subscriptions in batches without duplication
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > examines all 120 subscriptions in batches without duplication
+AssertionError: expected undefined to be 'complete' // Object.is equality
+
+- Expected:
+"complete"
+
++ Received:
+undefined
+
+ ❯ tests/integration/billing-reconciliation.test.ts:152:31
+
+    150|       do {
+    151|         const result = await runBillingReconciliation(provider, cursor…
+    152|         expect(result.status).toBe("complete");
+       |                               ^
+    153|       expect(from.mock.results.at(-1)!.value.order).toHaveBeenCalledWi…
+    154|       expect(from.mock.results.at(-1)!.value.limit).toHaveBeenCalledWi…
+ Test Files  2 failed (2)
+      Tests  18 failed | 11 passed (29)
+   Start at  20:26:40
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > keeps processing after getSubscriptionState fails without clearing that item's findings
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > keeps processing after listChargesToRegularize fails without clearing that item's findings
+AssertionError: expected { checked: 2, findings: +0, …(1) } to match object { status: 'partial', checked: 2, …(1) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+    "checked": 2,
+    "providerErrors": 1,
+-   "status": "partial",
+  }
+
+ ❯ tests/integration/billing-reconciliation.test.ts:191:56
+    189|       }));
+    190|       vi.mocked(provider[method]).mockRejectedValueOnce(new Error("pro…
+    191|       expect(await runBillingReconciliation(provider)).toMatchObject({
+       |                                                        ^
+    192|         status: "partial",
+    193|         checked: 2,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > throws when record_billing_finding persistence fails
+AssertionError: promise resolved "{ checked: 1, findings: +0, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "checked": 1,
++   "findings": 0,
++   "providerErrors": 1,
+  }
+
+ ❯ tests/integration/billing-reconciliation.test.ts:217:53
+    215|       error: name === failure ? { message: "db failed" } : null,
+    216|     }));
+    217|     await expect(runBillingReconciliation(provider)).rejects.toThrow();
+       |                                                     ^
+    218|     if (failure === "record_billing_finding")
+    219|       expect(rpc.mock.calls.some(([name]) => name === "clear_billing_f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > throws when clear_billing_findings persistence fails
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > throws when record_billing_reconciliation_run persistence fails
+AssertionError: promise resolved "{ checked: 1, findings: 1, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "checked": 1,
++   "findings": 1,
++   "providerErrors": 0,
+  }
+
+ ❯ tests/integration/billing-reconciliation.test.ts:217:53
+    215|       error: name === failure ? { message: "db failed" } : null,
+    216|     }));
+    217|     await expect(runBillingReconciliation(provider)).rejects.toThrow();
+       |                                                     ^
+    218|     if (failure === "record_billing_finding")
+    219|       expect(rpc.mock.calls.some(([name]) => name === "clear_billing_f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯
+
+ FAIL  tests/integration/billing-reconciliation.test.ts > bounded reconciliation orchestration > rejects malformed cursors before querying
+AssertionError: promise resolved "{ checked: +0, findings: +0, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "checked": 0,
++   "findings": 0,
++   "providerErrors": 0,
+  }
+
+ ❯ tests/integration/billing-reconciliation.test.ts:223:64
+    221|
+    222|   it("rejects malformed cursors before querying", async () => {
+    223|     await expect(runBillingReconciliation(provider, "invalid")).reject…
+       |                                                                ^
+    224|     expect(from).not.toHaveBeenCalled();
+    225|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯
+
+   Duration  4.66s (transform 44%, import 43%, tests 13%, worker 1%)
+
+  Transform  transforming modules took 2.55s · 44% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns

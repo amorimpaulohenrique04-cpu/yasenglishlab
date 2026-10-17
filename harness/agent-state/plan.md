@@ -1,3 +1,15 @@
+# Plano — billing-reconciliation-integrity
+
+## Active task
+
+**billing-reconciliation-integrity**
+
+1. Base limpa e CI verde confirmados; registrar regressões vermelhas.
+2. Corrigir quatro arquivos existentes e feedback, sem SQL ou mutações financeiras.
+3. Gates locais, E2E/UI quando aptos, revisão do diff, PR único, CI final e merge condicionado.
+
+---
+
 # Plano — PR #80 gates (pr80-gates)
 
 ## Active task

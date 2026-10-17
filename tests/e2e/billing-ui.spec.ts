@@ -99,7 +99,16 @@ test("Admin AAL2 billing filters, table and mobile list", async ({ page }) => {
   test.setTimeout(120000);
   const suffix = randomUUID().slice(0, 8),
     name = `Aluno pendente ${suffix}`;
-  await fixture("PAST_DUE", name);
+  const pending = await fixture("PAST_DUE", name);
+  expect(
+    (
+      await pending.admin.rpc("record_billing_finding", {
+        p_subscription: pending.subscriptionId,
+        p_kind: "PAST_DUE_WITHOUT_OVERDUE_CHARGE",
+        p_detail: { provider_status: "ACTIVE" },
+      })
+    ).error,
+  ).toBeNull();
   await fixture("ACTIVE", `Aluno ativo ${suffix}`);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await loginCanonicalAdmin(page, process.env.CANONICAL_E2E_PASSWORD!, {
@@ -146,6 +155,44 @@ test("Admin AAL2 billing filters, table and mobile list", async ({ page }) => {
   );
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
+  const panel = page.getByLabel("Conciliação com o provedor", { exact: true });
+  const cursor = "00000000-0000-0000-0000-000000000050";
+  await page.goto(`/admin/billing?result=partial&nextCursor=${cursor}`);
+  await expect(panel.getByText("Conciliação parcial", { exact: true })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Reexecutar desde o início" })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Próximo lote" })).toBeVisible();
+  await expect(panel.getByText("Lote conciliado", { exact: true })).toHaveCount(0);
+  for (const [width, file] of [
+    [1440, "reconciliation-desktop.png"],
+    [1024, "reconciliation-tablet.png"],
+    [390, "reconciliation-mobile.png"],
+  ] as const) {
+    await page.setViewportSize({ width, height: 1000 });
+    await evidence(page, file);
+  }
+  // Validation failure travels through the real authenticated action and must never show success.
+  await page.locator('input[name="cursor"]').evaluate((input: HTMLInputElement) => {
+    input.value = "invalid";
+  });
+  await panel.getByRole("button", { name: "Próximo lote" }).click();
+  await expect(page).toHaveURL(/result=failed/);
+  await expect(panel.getByText("Conciliação indisponível", { exact: true })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Próximo lote" })).toHaveCount(0);
+  const finding = panel.getByRole("listitem").filter({ hasText: pending.subscriptionId });
+  await finding.getByLabel("Como foi resolvido").fill("Verificado no teste local.");
+  await finding.locator('input[name="findingId"]').evaluate((input: HTMLInputElement) => {
+    input.value = "00000000-0000-0000-0000-000000000050";
+  });
+  await finding.getByRole("button", { name: "Marcar como resolvida" }).click();
+  await expect(page).toHaveURL(/result=resolve-error/);
+  await expect(
+    panel.getByText("Não foi possível resolver a divergência", { exact: true }),
+  ).toBeVisible();
+  await expect(finding).toBeVisible();
+  await finding.getByLabel("Como foi resolvido").fill("Verificado no teste local.");
+  await finding.getByRole("button", { name: "Marcar como resolvida" }).click();
+  await expect(page).toHaveURL(/\/admin\/billing$/);
+  await expect(finding).toHaveCount(0);
 });
 test("Student profile owns its subscription and hides provider internals", async ({ page }) => {
   test.skip(process.env.CANONICAL_E2E !== "1", "Requires local Supabase");
