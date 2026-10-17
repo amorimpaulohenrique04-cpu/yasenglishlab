@@ -26,6 +26,14 @@ const navigation: readonly RoleNavItem[] = [
   { id: "leads", label: "Leads", href: "/admin/leads", icon: "funnel", group: "Comercial" },
   { id: "billing", label: "Pagamentos", href: "/admin/billing", icon: "card", group: "Comercial" },
   {
+    id: "incidents",
+    label: "Ocorrências",
+    href: "/admin/ocorrencias",
+    icon: "alert",
+    group: "Comercial",
+  },
+  { id: "support", label: "Suporte", href: "/admin/suporte", icon: "chat", group: "Comercial" },
+  {
     id: "content",
     label: "Conteúdos",
     href: "/admin/content?kind=courses",

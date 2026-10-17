@@ -1,3 +1,6 @@
+import { ReconciliationPanel } from "@/modules/billing/ui/reconciliation-panel";
+import { loadOpenBillingFindings } from "@/server/billing/reconciliation";
+import { resolveBillingFindingAction, runReconciliationAction } from "./actions";
 import { BillingTabs } from "@/modules/admin-plans/ui/billing-tabs";
 import { PlanAdministration } from "@/modules/admin-plans/ui/plan-administration";
 import Link from "next/link";
@@ -49,9 +52,10 @@ export default async function AdminBillingPage({
         <PlanAdministration />
       </div>
     );
-  const [model, ops] = await Promise.all([
+  const [model, ops, findings] = await Promise.all([
     loadAdminBilling(query),
     loadAdminBillingOperations(query),
+    loadOpenBillingFindings().catch(() => []),
   ]);
   function hrefWith(overrides: Record<string, string | null>) {
     const params = new URLSearchParams();
@@ -305,6 +309,12 @@ export default async function AdminBillingPage({
           />
         </Card>
       </section>
+      <ReconciliationPanel
+        findings={findings}
+        runAction={runReconciliationAction}
+        resolveAction={resolveBillingFindingAction}
+        result={typeof query.result === "string" ? query.result : undefined}
+      />
     </div>
   );
 }

@@ -32,13 +32,13 @@ describe("SubscriptionSuspendedNotice", () => {
   });
 
   // Etapa 11: the only link is the internal guidance-only /support page; no invented external channel.
-  it("PAST_DUE explains pending payment, links only to /support and offers no checkout CTA", () => {
+  it("PAST_DUE explains pending payment, links only to the profile charge view and offers no checkout CTA", () => {
     const html = render(pastDue);
     expect(html).toContain("Pagamento pendente");
     expect(html).toContain("suporte");
     expect(html).toContain("Nada foi apagado");
     expect(html.match(/<a /g)).toHaveLength(1);
-    expect(html).toContain('href="/support"');
+    expect(html).toContain('href="/profile"');
     expect(html).not.toMatch(/https?:|mailto:|wa\.me|tel:/);
     expect(html).not.toContain("/checkout");
   });

@@ -149,3 +149,11 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
 ## Direitos de plano editáveis (Etapa 12D)
 
 ADMIN com AAL2 agenda mudança de limite e cadência de um direito de plano em `/admin/billing?tab=plans`, sempre com vigência futura (`admin_plan_set_entitlement`). A linha vigente é fechada e a nova entra na data; reservas já feitas mantêm o snapshot do direito usado. Preço e reajuste continuam fora desta tela (decisão separada, ver `OPEN_QUESTIONS.md`). Atenção: `supabase db reset` reaplica `seed.sql` (`on conflict … do update`) e desfaz edições locais de direitos.
+
+## PR2 — recuperação, conciliação, troca de plano e PIX
+
+- **Regularização:** o perfil do aluno `PAST_DUE` lista as cobranças pendentes do **próprio** provider subscription (lido por RLS, nunca do cliente) com link do provedor, restrito a hosts `asaas.com`/`sandbox.asaas.com`. O acesso só volta pelo evento financeiro verificado (`reconcile_billing_event`); abrir o link ou voltar do checkout não libera nada. Sem link seguro, o aluno é enviado ao suporte.
+- **Conciliação:** `/admin/billing` → "Conciliação com o provedor" (ADMIN+AAL2) faz apenas `GET` no Asaas (até 50 assinaturas) e registra divergências deduplicadas em `billing_reconciliation_findings`. Nunca altera assinatura, acesso ou entitlement e nunca faz `POST` (um timeout não pode duplicar cobrança). Uma nova checagem que não vê mais a divergência a fecha; resolver manualmente exige nota e fica auditado. Não há agendamento: a infraestrutura de jobs ainda não foi escolhida.
+- **Períodos financeiros:** inalterado. `nextDueDate` não é fim de período; continuam `current_period_*` nulos até haver fonte autoritativa.
+- **Troca de plano:** `request_plan_change` registra um **pedido para a próxima renovação** (sem cobrança, sem pró-rata, sem alterar `plan_id`/entitlements/cotas). Aplicar o pedido é uma etapa futura aprovada pela equipe, dependente da política comercial.
+- **PIX:** **não habilitado.** Contrato exigido antes de ligar: modalidade explícita por assinatura (cartão recorrente × PIX mensal × PIX Automático), pagamento PIX pendente nunca ativa a assinatura, confirmação duplicada não duplica ciclo, expiração/estorno retiram acesso pela mesma regra de eventos. Depende de homologação no sandbox do Asaas (`NOT_RUN_EXTERNAL`).

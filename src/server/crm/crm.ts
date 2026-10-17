@@ -81,3 +81,18 @@ export async function mutateAdminLead(
   if (error) throw new Error(`CRM mutation failed: ${error.code}`);
   return z.uuid().parse(data);
 }
+
+const funnelRow = z.object({
+  stage: z.string(),
+  leads: z.coerce.number(),
+  confirmed_sales: z.coerce.number(),
+});
+
+/** Leads per stage and how many are backed by a payment CONFIRMED by the provider. Counts only. */
+export async function loadCrmFunnel() {
+  await assertRole("ADMIN");
+  const client = await createSupabaseServerClient();
+  const { data, error } = await client.rpc("admin_crm_funnel");
+  if (error) throw new Error("Funnel unavailable.");
+  return z.array(funnelRow).parse(data ?? []);
+}

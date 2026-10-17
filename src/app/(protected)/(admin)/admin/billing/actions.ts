@@ -1,5 +1,9 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { createSupabaseServerClient } from "@/server/supabase/server";
+import { runBillingReconciliation } from "@/server/billing/reconciliation";
 import { assertRole } from "@/server/auth/guards";
 import { setAdminPlanEntitlement } from "@/server/admin-plans/admin-plans";
 import { localEntitlementDate, type PlanFormState } from "@/modules/admin-plans/domain/models";
@@ -31,4 +35,27 @@ export async function schedulePlanEntitlementAction(
         "Não foi possível agendar. Confira o limite, a recorrência e uma data futura posterior à última versão.",
     };
   }
+}
+
+export async function runReconciliationAction() {
+  await assertRole("ADMIN");
+  let ok = true;
+  try {
+    await runBillingReconciliation();
+  } catch {
+    ok = false;
+  }
+  revalidatePath("/admin/billing");
+  redirect(`/admin/billing?result=${ok ? "reconciled" : "reconcile-error"}`);
+}
+
+export async function resolveBillingFindingAction(form: FormData) {
+  await assertRole("ADMIN");
+  const client = await createSupabaseServerClient();
+  await client.rpc("resolve_billing_finding", {
+    p_id: z.uuid().parse(form.get("findingId")),
+    p_note: z.string().trim().min(1).max(1000).parse(form.get("note")),
+  });
+  revalidatePath("/admin/billing");
+  redirect("/admin/billing");
 }

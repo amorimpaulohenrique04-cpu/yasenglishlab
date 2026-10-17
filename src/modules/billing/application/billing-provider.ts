@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { PendingCharge, ProviderSubscriptionState } from "../domain/regularization";
+
 // Trusted server input only: amount/name come from the reserved Plan snapshot.
 export const checkoutInputSchema = z.object({
   sessionId: z.uuid(),
@@ -24,4 +26,8 @@ export interface BillingProvider {
   // Stops recurrence at the provider. Idempotent: an already removed/unknown subscription is success.
   // Throws a generic error (no provider body/headers) on any other outcome; the caller must compensate.
   cancelSubscription(providerSubscriptionId: string): Promise<void>;
+  // Read-only. Charges of this subscription that still wait for payment (PENDING/OVERDUE), never other accounts'.
+  listChargesToRegularize(providerSubscriptionId: string): Promise<PendingCharge[]>;
+  // Read-only. The provider's own view of the subscription; 404 maps to NOT_FOUND.
+  getSubscriptionState(providerSubscriptionId: string): Promise<ProviderSubscriptionState>;
 }
