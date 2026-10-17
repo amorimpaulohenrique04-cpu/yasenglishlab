@@ -69,6 +69,7 @@ export const adminContentSaveSchemas = {
       title: z.string().trim().min(1).max(160),
       estimated_minutes: nullablePositiveInt,
       audience: contentAudience.optional(),
+      welcome: z.boolean().optional(),
     })
     .strict(),
   lesson_assets: z
@@ -101,6 +102,7 @@ export const adminContentSaveSchemas = {
       active: z.boolean(),
       required_entitlement_key: z.string().trim().min(1).max(64).nullable().optional(),
       audience: contentAudience.optional(),
+      welcome: z.boolean().optional(),
     })
     .strict(),
   practice_activities: z

@@ -95,7 +95,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       .in("status", ["ACTIVE", "COMPLETED"]);
 
     if (enrollmentError) throw new Error("Unable to load enrollments.");
-    if (!enrollmentRows || enrollmentRows.length === 0) return [];
+    if (!enrollmentRows || enrollmentRows.length === 0) return this.getWelcomeCourses(userId);
 
     const courseIds = enrollmentRows.map((row) => String(row.course_id));
     const completedAtByCourse = new Map(
@@ -243,6 +243,93 @@ export class SupabaseLearningRepository implements LearningRepository {
     }));
   }
 
+  /**
+   * Catalog for a paying student who is still waiting for the placement review. Row-level security only
+   * returns lessons an Admin flagged as welcome (and only in the pre-enrollment placement states), so the
+   * plain selects below cannot widen access. Progress lives in welcome_lesson_progress until enrollment.
+   */
+  private async getWelcomeCourses(userId: string): Promise<LearningCourse[]> {
+    const [lessons, progress] = await Promise.all([
+      this.client
+        .from("lessons")
+        .select("id, module_id, position, slug, title, estimated_minutes")
+        .eq("welcome", true)
+        .eq("publication_status", "PUBLISHED")
+        .order("position")
+        .order("id"),
+      this.client
+        .from("welcome_lesson_progress")
+        .select(
+          "lesson_id, user_id, status, completion_percent, last_position_seconds, started_at, last_accessed_at, completed_at, updated_at",
+        )
+        .eq("user_id", userId),
+    ]);
+    if (lessons.error || progress.error) throw new Error("Unable to load welcome lessons.");
+    const lessonRows = lessons.data ?? [];
+    if (lessonRows.length === 0) return [];
+    const moduleIds = [...new Set(lessonRows.map((row) => String(row.module_id)))];
+    const { data: moduleRows, error: moduleError } = await this.client
+      .from("modules")
+      .select("id, course_id, position, title, description")
+      .in("id", moduleIds)
+      .eq("publication_status", "PUBLISHED")
+      .order("position")
+      .order("id");
+    if (moduleError) throw new Error("Unable to load welcome modules.");
+    const courseIds = [...new Set((moduleRows ?? []).map((row) => String(row.course_id)))];
+    const { data: courseRows, error: courseError } = await this.client
+      .from("courses")
+      .select("id, slug, title, description")
+      .in("id", courseIds)
+      .order("slug")
+      .order("id");
+    if (courseError) throw new Error("Unable to load welcome courses.");
+    const progressByLesson = new Map(
+      (progress.data ?? []).map((row) => [
+        String(row.lesson_id),
+        progressFromRow({ ...row, id: row.lesson_id, enrollment_id: "welcome" }),
+      ]),
+    );
+    const lessonsByModule = new Map<string, LearningLesson[]>();
+    for (const row of lessonRows) {
+      const moduleId = String(row.module_id);
+      const list = lessonsByModule.get(moduleId) ?? [];
+      list.push({
+        id: String(row.id),
+        moduleId,
+        position: Number(row.position),
+        slug: String(row.slug),
+        title: String(row.title),
+        estimatedMinutes:
+          row.estimated_minutes === null || row.estimated_minutes === undefined
+            ? null
+            : Number(row.estimated_minutes),
+        progress: progressByLesson.get(String(row.id)) ?? null,
+      });
+      lessonsByModule.set(moduleId, list);
+    }
+    return (courseRows ?? []).map((course) => ({
+      id: String(course.id),
+      slug: String(course.slug),
+      title: String(course.title),
+      description: course.description ? String(course.description) : null,
+      welcome: true,
+      completedAt: null,
+      modules: (moduleRows ?? [])
+        .filter((row) => String(row.course_id) === String(course.id))
+        .map((row) => ({
+          id: String(row.id),
+          courseId: String(row.course_id),
+          position: Number(row.position),
+          title: String(row.title),
+          description: row.description ? String(row.description) : null,
+          lessons: (lessonsByModule.get(String(row.id)) ?? []).sort(
+            (a, b) => a.position - b.position,
+          ),
+        })),
+    }));
+  }
+
   async getLessonContentForStudent(
     _userId: string,
     lessonId: string,
@@ -275,7 +362,19 @@ export class SupabaseLearningRepository implements LearningRepository {
       .maybeSingle();
 
     if (error) throw new Error("Unable to load lesson progress.");
-    return data ? progressFromRow(data) : null;
+    if (data) return progressFromRow(data);
+    const welcome = await this.client
+      .from("welcome_lesson_progress")
+      .select(
+        "lesson_id, user_id, status, completion_percent, last_position_seconds, started_at, last_accessed_at, completed_at, updated_at",
+      )
+      .eq("user_id", userId)
+      .eq("lesson_id", lessonId)
+      .maybeSingle();
+    if (welcome.error) throw new Error("Unable to load lesson progress.");
+    return welcome.data
+      ? progressFromRow({ ...welcome.data, id: welcome.data.lesson_id, enrollment_id: "welcome" })
+      : null;
   }
 
   async recordLessonProgress(input: LessonProgressInput): Promise<LessonProgressSnapshot> {
@@ -287,11 +386,26 @@ export class SupabaseLearningRepository implements LearningRepository {
 
     if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
     if (isNoActiveCohortError(error)) throw new NoActiveCohortError();
+    if (error?.code === "42501" && /enrollment/i.test(error.message)) {
+      // No enrollment yet: a welcome lesson keeps its progress in the pre-enrollment table.
+      return this.recordWelcomeProgress(input);
+    }
     if (error || !data) throw new Error("Unable to persist lesson progress.");
 
     const row = Array.isArray(data) ? data[0] : data;
     if (!row) throw new Error("Lesson progress RPC returned no row.");
 
     return progressFromRow(row as Record<string, unknown>);
+  }
+
+  private async recordWelcomeProgress(input: LessonProgressInput): Promise<LessonProgressSnapshot> {
+    const { data, error } = await this.client.rpc("record_welcome_lesson_progress", {
+      p_lesson_id: input.lessonId,
+      p_completion_percent: input.completionPercent,
+      p_last_position_seconds: input.lastPositionSeconds ?? null,
+    });
+    if (error || !data) throw new Error("Unable to persist lesson progress.");
+    const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown>;
+    return progressFromRow({ ...row, id: row.lesson_id, enrollment_id: "welcome" });
   }
 }

@@ -118,6 +118,7 @@ describe("Admin Content application boundary", () => {
       title: "Lesson one",
       estimated_minutes: "10",
       audience: "COURSE",
+      welcome: false,
     });
     expect(
       adminContentFormToPayload(
@@ -165,6 +166,7 @@ describe("Admin Content application boundary", () => {
       active: true,
       required_entitlement_key: null,
       audience: "COURSE",
+      welcome: false,
     });
     expect(
       adminContentFormToPayload(

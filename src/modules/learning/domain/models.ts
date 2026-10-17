@@ -47,6 +47,8 @@ export interface LearningCourse {
   modules: LearningModule[];
   // enrollments.completed_at when the enrollment is COMPLETED (ADR 0018); null/absent while ACTIVE.
   completedAt?: string | null;
+  // True for the welcome catalog shown while the placement review is pending (no enrollment yet).
+  welcome?: boolean;
 }
 
 export interface LessonTextContent {

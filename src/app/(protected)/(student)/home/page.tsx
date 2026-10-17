@@ -23,6 +23,7 @@ import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-not
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadHomePage } from "@/server/home/home";
 import { loadStudentPlacement } from "@/server/placement/placement";
+import { PlacementDecisionDialog } from "@/modules/placement/ui/placement-decision-dialog";
 
 const sessionDate = new Intl.DateTimeFormat("pt-BR", {
   timeZone: YAS_SCHEDULE_TIME_ZONE,
@@ -51,8 +52,13 @@ export default async function StudentHomePage() {
   const placement = await loadStudentPlacement();
   if (placement && placement.case.state !== "ENROLLED") {
     const reviewing = placement.case.state === "REVIEW_PENDING";
+    const decisionPending =
+      placement.case.state === "PLACEMENT_READY" || placement.case.state === "STUDENT_DECISION";
     return (
       <div className="yas-home-page">
+        {decisionPending && (
+          <PlacementDecisionDialog recommendedTitle={placement.recommendedTitle} />
+        )}
         <PageHeader title="Sua entrada no Yas" description="Seu próximo passo está aqui." tagline />
         <Hero
           className="yas-reveal"
@@ -61,14 +67,21 @@ export default async function StudentHomePage() {
           title={reviewing ? "Sua avaliação está em andamento" : "Continue sua entrada"}
           photo="/brand/hero-teacher.webp"
           actions={
-            <Link className="yas-button yas-button--primary yas-button--lg" href="/onboarding">
-              Ver minha entrada →
-            </Link>
+            <>
+              <Link className="yas-button yas-button--primary yas-button--lg" href="/onboarding">
+                Ver minha entrada →
+              </Link>
+              {!decisionPending && (
+                <Link className="yas-button yas-button--secondary yas-button--lg" href="/aulas">
+                  Estudar o conteúdo inicial
+                </Link>
+              )}
+            </>
           }
         >
           <p className="yas-hero-text">
             {reviewing
-              ? "A equipe vai revisar seu teste e recomendar uma trilha antes da escolha de turma."
+              ? "Sua avaliação está em análise; em breve você receberá sua turma. Enquanto isso, você já pode estudar o conteúdo inicial."
               : "Confira o que já foi concluído e a próxima ação."}
           </p>
         </Hero>

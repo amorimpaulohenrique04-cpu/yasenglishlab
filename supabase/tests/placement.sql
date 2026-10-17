@@ -99,6 +99,7 @@ select pg_temp.assert_true(not exists(select 1 from public.get_placement_candida
 select pg_temp.denied('select public.get_placement_review_evidence(current_setting(''placement.test.case'')::uuid)');
 select pg_temp.denied('select public.confirm_placement_choice(''99050000-0000-4000-8000-000000000002'')','23514');
 reset role;
+select pg_temp.assert_true((select count(*)=1 from public.notifications where notification_type='PLACEMENT_READY' and event_key=current_setting('placement.test.case')||':PLACEMENT_READY'),'review completion notifies the student exactly once');
 -- Stage 11: confirmation follows private.has_paid_access (no start-date check); a PAST_DUE subscription is still denied.
 update public.subscriptions set status='PAST_DUE' where provider_subscription_id='placement-test-a';
 set local role authenticated;

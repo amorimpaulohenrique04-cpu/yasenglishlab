@@ -54,9 +54,14 @@ export default async function PlacementPage({
             <>
               {candidates.length === 0 && (
                 <EmptyState
-                  title="Nenhuma turma compatível com vaga agora"
-                  description="Sua recomendação está preservada. A equipe pode ajudar a encontrar outra disponibilidade."
+                  title="Nenhuma turma compatível agora"
+                  description="Sua recomendação está preservada. Fale com o suporte para encontrar outra disponibilidade."
                 />
+              )}
+              {candidates.length === 0 && (
+                <Link className="yas-button yas-button--secondary" href="/support">
+                  Falar com o suporte
+                </Link>
               )}
               {candidates.map((c) => (
                 <Card className="yas-stack" key={c.id}>
