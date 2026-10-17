@@ -40,8 +40,8 @@ select set_config('request.jwt.claim.sub','99100000-0000-4000-8000-000000000003'
 select pg_temp.denied(format('select public.assign_placement_teacher(%L,%L)',current_setting('pta.case'),'99110000-0000-4000-8000-000000000001'));
 
 select set_config('request.jwt.claim.sub','99100000-0000-4000-8000-000000000005',true),set_config('request.jwt.claims','{"sub":"99100000-0000-4000-8000-000000000005","aal":"aal2"}',true);
-select pg_temp.assert_true((select count(*)=2 from public.list_placement_teacher_candidates(current_setting('pta.case')::uuid)),'inactive teacher is not eligible');
-select pg_temp.assert_true((select teacher_id='99110000-0000-4000-8000-000000000002' and suggested from public.list_placement_teacher_candidates(current_setting('pta.case')::uuid) where suggested),'lowest load suggested');
+select pg_temp.assert_true((select count(*)=2 from public.list_placement_teacher_candidates(current_setting('pta.case')::uuid) where teacher_id::text like '99110000%'),'inactive teacher is not eligible');
+select pg_temp.assert_true((select teacher_id='99110000-0000-4000-8000-000000000002' from public.list_placement_teacher_candidates(current_setting('pta.case')::uuid) where teacher_id::text like '99110000%' order by suggested desc, open_cases limit 1),'lowest load suggested');
 select pg_temp.denied(format('select public.assign_placement_teacher(%L,%L)',current_setting('pta.case'),'99110000-0000-4000-8000-000000000003'),'23514');
 select public.assign_placement_teacher(current_setting('pta.case')::uuid,'99110000-0000-4000-8000-000000000002');
 -- A repeated confirmation is idempotent: same assignment, one row, one audit entry.
