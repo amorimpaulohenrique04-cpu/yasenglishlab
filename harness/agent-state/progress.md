@@ -727,3 +727,7 @@ Confirmação local: os dois E2E falhos passaram integralmente, zero retries, em
 
 Blocks 1A–1F implemented on `feat/yas-journey-pedagogy-closure` (from main 11f3a41). Evidence matrix: `docs/implementation/yas-closure-evidence.md`.
 Local: typecheck, lint, format, unit (338), integration (323), verify:db, verify:harness, verify:security, build PASS; new/affected SQL suites PASS on the dev database. NOT RUN locally: E2E, a11y, visual, verify:full (destructive; needs an isolated Supabase workdir). Linux `Official CI / CI Gate` is the release-grade proof.
+
+## 2026-10-18 — yas-billing-operations-closure (PR 2 of the 2-PR closure plan)
+
+Blocks 2A–2D on `feat/yas-billing-operations-closure` (from main after PR #81). Evidence: `docs/implementation/yas-closure-evidence.md`. PIX is BLOCKED/not enabled; production hosting, deploy, e-mail, backups, legal text and retention stay BLOCKED (docs/GO_LIVE_CHECKLIST.md). No real Asaas call was made.

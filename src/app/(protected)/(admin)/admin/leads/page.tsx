@@ -12,7 +12,7 @@ import {
   PageHeader,
   Select,
 } from "@/components/ui";
-import { loadAdminLeads } from "@/server/crm/crm";
+import { loadAdminLeads, loadCrmFunnel } from "@/server/crm/crm";
 import { nextCrmStages } from "@/modules/crm";
 import { crmAction } from "./actions";
 
@@ -40,12 +40,24 @@ export default async function AdminLeadsPage({
     boardStages.map((currentStage) => loadAdminLeads(query, currentStage, pageNumber)),
   );
   const leads = results.flatMap((result) => result.leads);
+  const funnel = await loadCrmFunnel().catch(() => []);
   return (
     <div className="yas-stack">
       <PageHeader
         title="Leads"
         description="Acompanhe contatos e próximos passos comerciais locais."
       />
+      {funnel.length > 0 && (
+        <p aria-label="Funil">
+          Funil:{" "}
+          {funnel
+            .map(
+              (row) =>
+                `${row.stage} ${row.leads}${row.confirmed_sales > 0 ? ` (${row.confirmed_sales} com pagamento confirmado)` : ""}`,
+            )
+            .join(" · ")}
+        </p>
+      )}
       {params.result === "saved" && (
         <Alert tone="success" title="Alteração registrada" description="O CRM foi atualizado." />
       )}
