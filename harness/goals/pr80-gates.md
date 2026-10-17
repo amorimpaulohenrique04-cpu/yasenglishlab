@@ -39,6 +39,7 @@ The canonical student completes and resumes a real multi-question attempt; compl
 
 ## Allowed files / domains
 
+- `tests/visual/goldens/*/{home,aulas,progresso}-linux.png` (approved 2026-10-17 from CI 39049818312 actuals)
 - `tests/visual/goldens/*/aulas-win32.png`, `tests/visual/goldens/*/progresso-win32.png` (reviewed 2026-10-17: intentional sidebar profile/help card, next-lesson panel and row actions from earlier redesign commits; fonts unchanged)
 - `tests/e2e/**`, `tests/a11y/**`, `tests/unit/**`, `tests/integration/**`
 - `scripts/setup-canonical-e2e.mjs`, `scripts/assert-canonical-e2e.mjs`, `scripts/verify-ui.mjs`
