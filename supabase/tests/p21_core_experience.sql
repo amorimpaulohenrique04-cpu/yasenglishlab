@@ -25,8 +25,8 @@ do $$begin begin perform public.manage_teacher_availability('CREATE',null,now()+
 do $$begin begin perform public.get_teacher_operation_context();raise exception 'AAL1 operation context allowed';exception when insufficient_privilege then null;end;end$$;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","aal":"aal2"}',true);
 select set_config('p21.availability',public.manage_teacher_availability('CREATE',null,now()+interval '1 minute',now()+interval '3 days')::text,true);
-select set_config('p21.group',public.manage_teacher_session(null,jsonb_build_object('title','P21 group','session_type','CORE_CLASS','starts_at',now()+interval '1 day','ends_at',now()+interval '1 day 1 hour','capacity',6,'cohort_id','a1300000-0000-4000-8000-000000000001','meeting_url','https://meet.example.test/p21'))::text,true);
-select set_config('p21.private',public.manage_teacher_session(null,jsonb_build_object('title','P21 private','session_type','PRIVATE_SESSION','starts_at',now()+interval '5 minutes','ends_at',now()+interval '50 minutes','capacity',1,'target_student_user_id','a1000000-0000-4000-8000-000000000001','meeting_url','https://meet.example.test/private'))::text,true);
+select set_config('p21.group',public.manage_teacher_session(null,jsonb_build_object('title','P21 group','session_type','CORE_CLASS','starts_at',now()+interval '1 day','ends_at',now()+interval '1 day 1 hour','capacity',6,'cohort_id','a1300000-0000-4000-8000-000000000001','meeting_url','https://meet.google.com/p21'))::text,true);
+select set_config('p21.private',public.manage_teacher_session(null,jsonb_build_object('title','P21 private','session_type','PRIVATE_SESSION','starts_at',now()+interval '5 minutes','ends_at',now()+interval '50 minutes','capacity',1,'target_student_user_id','a1000000-0000-4000-8000-000000000001','meeting_url','https://meet.google.com/private'))::text,true);
 do $$begin
  begin perform public.manage_teacher_session(null,jsonb_build_object('title','Foreign','session_type','CORE_CLASS','starts_at',now()+interval '2 days','ends_at',now()+interval '2 days 1 hour','capacity',6,'cohort_id','a1300000-0000-4000-8000-000000000002'));raise exception 'Foreign cohort allowed';exception when insufficient_privilege then null;end;
  begin perform public.manage_teacher_session(null,jsonb_build_object('title','Overlap','session_type','CORE_CLASS','starts_at',now()+interval '1 day 30 minutes','ends_at',now()+interval '1 day 90 minutes','capacity',6,'cohort_id','a1300000-0000-4000-8000-000000000001'));raise exception 'Overlap allowed';exception when check_violation then null;end;
@@ -66,7 +66,7 @@ insert into public.live_sessions(
   null,
   'SCHEDULED',
   'MANUAL_EXTERNAL',
-  'https://meet.example.test/p21-grace'
+  'https://meet.google.com/p21-grace'
 );
 insert into public.session_bookings(
   id,live_session_id,user_id,status

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  googleMeetUrlSchema,
   manualMeetingUrlSchema,
   teacherSessionInputSchema,
 } from "@/modules/teacher-operations/domain/session-input";
@@ -9,15 +10,22 @@ import { parsePracticeContent } from "@/modules/practice/domain/models";
 describe("Core experience boundaries", () => {
   it("rejects non-HTTPS, credentials, oversized URLs and control characters", () => {
     for (const value of [
-      "http://meet.example.test",
-      "https://user:password@meet.example.test",
-      "https://meet.example.test/\nsecret",
-      "https://meet.example.test/" + "a".repeat(2048),
+      "http://meet.google.com/abc-defg-hij",
+      "https://meet.google.com/",
+      "https://zoom.us/j/123",
+      "https://meet.google.com.evil.test/abc-defg-hij",
+      "https://user:password@meet.google.com",
+      "https://meet.google.com/\nsecret",
+      "https://meet.google.com/" + "a".repeat(2048),
     ])
-      expect(manualMeetingUrlSchema.safeParse(value).success).toBe(false);
-    expect(manualMeetingUrlSchema.parse("https://meet.example.test/room?token=test")).toBe(
-      "https://meet.example.test/room?token=test",
+      expect(googleMeetUrlSchema.safeParse(value).success).toBe(false);
+    expect(googleMeetUrlSchema.parse("https://meet.google.com/abc-defg-hij?authuser=1")).toBe(
+      "https://meet.google.com/abc-defg-hij?authuser=1",
     );
+  });
+  it("still reads legacy HTTPS links for joining", () => {
+    expect(manualMeetingUrlSchema.safeParse("https://meet.example.test/room").success).toBe(true);
+    expect(manualMeetingUrlSchema.safeParse("http://meet.example.test/room").success).toBe(false);
   });
   it("rejects browser authority and reversed intervals", () => {
     const input = {

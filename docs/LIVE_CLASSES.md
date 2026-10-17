@@ -79,3 +79,17 @@ P21.4 extends V1 without turning Teacher into Admin. See [ADR 0012](./adr/0012-p
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
 
+
+## Google Meet links (manual mode)
+
+- The Teacher creates the Meet room and pastes the link; the server accepts only `https://meet.google.com/…` links
+  and records, in the audit log, whether a save changed the link (never the link itself).
+- The link is revealed only through `get_live_session_join_access`, after checking reservation (or Teacher
+  ownership), session state and the join window.
+- **Limit:** once a Student sees the link, who may enter the room is controlled by Google Meet (host admission,
+  Workspace settings). The app does not and cannot guarantee one person per account inside Meet. Teachers should
+  turn on host admission in the room.
+- Teacher cancellation: every `BOOKED` reservation becomes `TEACHER_CANCELLED`, quota is released per existing
+  rules and only those Students get the notice "Esta aula foi cancelada. Nossa equipe entrará em contato para
+  informar uma nova data." The cancellation is audited (`TEACHER_SESSION_CANCELLED`, with the affected count).
+  No new date is proposed automatically.

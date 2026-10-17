@@ -99,6 +99,10 @@ select pg_temp.assert_true(private.booking_quota('9e000000-0000-4000-8000-000000
   (select starts_at from public.live_sessions where id='9e400000-0000-4000-8000-000000000001'))->>'used'='1','late cancellation keeps consuming quota after teacher cancellation');
 select pg_temp.assert_true(private.booking_quota('9e000000-0000-4000-8000-000000000001','weekly_core_classes',
   (select starts_at from public.live_sessions where id='9e400000-0000-4000-8000-000000000001'))->>'used'='0','teacher cancellation releases BOOKED quota');
+-- 1E: only the affected reservation is notified, with the agreed copy; the cancellation is audited once.
+select pg_temp.assert_true((select count(*)=1 from public.notifications where user_id='9e000000-0000-4000-8000-000000000001' and notification_type='LIVE_SESSION_CANCELLED' and body like 'Esta aula foi cancelada.%nova data.' and data->>'live_session_id'='9e400000-0000-4000-8000-000000000001'),'affected student gets the cancellation notice');
+select pg_temp.assert_true((select count(*)=0 from public.notifications where user_id='9e000000-0000-4000-8000-000000000002' and notification_type='LIVE_SESSION_CANCELLED' and data->>'live_session_id'='9e400000-0000-4000-8000-000000000001'),'unaffected student is not notified');
+select pg_temp.assert_true((select count(*)=1 and bool_and((data->>'affected_bookings')::int=1) from public.audit_logs where action='TEACHER_SESSION_CANCELLED' and entity_id='9e400000-0000-4000-8000-000000000001'),'cancellation is audited with the affected count');
 -- Idempotent retry: no error and no change.
 create temp table lbi_after as
   select b.id, b.status, b.cancelled_at, (select count(*) from public.audit_logs l where l.entity_id = b.id) as audit_count
