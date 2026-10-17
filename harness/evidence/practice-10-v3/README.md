@@ -27,3 +27,17 @@ Date: 2026-10-16. Branch `feat/practice-10-phase-0` (commits 61aaff7, 00ba810, 5
 ## Not run yet
 
 - Teacher builder in the browser, `verify:ui`, `verify:full`, Playwright e2e/a11y.
+
+## Release gate (2026-10-17)
+
+`npm run verify:full` on this branch:
+
+- PASS: format, lint, typecheck, unit + integration, `verify:db`, 35 integration SQL files, 27 RLS SQL files, ratchet (44 records), engineering system, platform, harness, security, `eval:agent` (10 rules).
+- Playwright e2e (full run, before the last fixes): 34 passed, 3 failed — canonical-slice, teacher-pedagogy, teacher-practices. Causes and fixes in commit 51814dd (Home recommendation gate, blank objective on v3 drafts, result card region, e2e following the new journey).
+- Targeted re-run after the fixes (fresh `next build`, canonical fixtures): e2e canonical-slice 5/5, teacher-pedagogy and teacher-practices passed; a11y Prática (desktop + mobile), MANUAL_AUDIO, practice builder and Home/Aulas passed; SQL practice-items and practice-authoring passed.
+- FAIL (intentional visual change, pending approval): golden `home` desktop + mobile — recommended practice card and the "Conta / Perfil" sidebar section. Tracked in issue #75; goldens were not updated.
+- NOT re-run after the fixes: the rest of the a11y suite, Storybook visual and the other golden screens (unaffected files).
+
+Environment notes: the PR 74 demo dev server was stopped (user-approved) because Next refuses a second dev server in the same directory; Playwright Chromium was reinstalled (the cache had been removed to free disk).
+
+Follow-ups opened: #75 (golden), #76 (per-item teacher feedback in v3 result), #77 (opening a lesson does not unlock its practices), #78 (E2E fixture title visible to the dev student), #79 (non-RFC UUID in dev seed).
