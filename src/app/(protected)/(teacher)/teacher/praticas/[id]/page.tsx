@@ -40,8 +40,19 @@ export default async function PracticePage({
     notFound();
   }
   const [scope, query] = await Promise.all([loadTeacherPracticeScope(), searchParams]);
-  const assetId = detail.content.stimulus.assetId;
+  const content = detail.content;
+  const assetId = "items" in content ? undefined : content.stimulus.assetId;
   const stimulusUrl = assetId ? await getPracticeStimulusUrl(assetId).catch(() => null) : null;
+  // Content v3: one signed URL per question asset, keyed by asset id (minted on the server, owner only).
+  const itemAssetIds =
+    "items" in content
+      ? [...new Set(content.items.map((item) => item.stimulus.assetId).filter(Boolean))]
+      : [];
+  const assetUrls = Object.fromEntries(
+    await Promise.all(
+      itemAssetIds.map(async (id) => [id, await getPracticeStimulusUrl(id!).catch(() => null)]),
+    ),
+  ) as Record<string, string | null>;
   const error = SAVE_ERROR_COPY[query.reason ?? ""] ?? SAVE_ERROR_COPY.UNAVAILABLE!;
   return (
     <>
@@ -55,6 +66,7 @@ export default async function PracticePage({
         detail={detail}
         scope={scope}
         stimulusUrl={stimulusUrl}
+        assetUrls={assetUrls}
         actions={{
           save: savePracticeAction,
           publish: publishPracticeAction,

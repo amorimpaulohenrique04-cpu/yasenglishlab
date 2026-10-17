@@ -1,0 +1,41 @@
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 204ms
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 error:
+[next]/internal/font/google/montserrat_ce99295.module.css:1:82
+Error: Module not found: Can't resolve '@vercel/turbopack-next/internal/font/google/font'
+> 1 | ... font-style: normal; font-weight: 700; src: url(@vercel/turbopack-next/internal/font/goo...
+    |                                                ^
+  2 | ...';
+  3 | ...
+  4 | ...
+
+next/font/google queries have exactly one entry
+
+Debug info:
+- Execution of *<ModuleAssetContext as AssetContext>::process_resolve_result failed
+- Execution of resolve failed
+- Execution of resolve_internal failed
+- Execution of <NextFontGoogleFontFileReplacer as ImportMappingReplacement>::result failed
+- next/font/google queries have exactly one entry
+Error while looking up import map: next/font/google queries have exactly one entry
+
+Debug info:
+- Execution of <NextFontGoogleFontFileReplacer as ImportMappingReplacement>::result failed
+- next/font/google queries have exactly one entry
+
+
+Import trace:
+  Server Component:
+    [next]/internal/font/google/montserrat_ce99295.module.css
+    [next]/internal/font/google/montserrat_ce99295.js
+    ./artifacts/pr74-local/pr80/font-repro/app/layout.js
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> ([next]/internal/font/google/montserrat_ce99295.module.css:1:82)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)

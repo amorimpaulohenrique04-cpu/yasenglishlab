@@ -56,6 +56,9 @@ function history(activityId: string): PracticeHistoryItem {
     startedAt: "2026-09-30T12:00:00Z",
     submittedAt: "2026-09-30T12:05:00Z",
     evaluationStatus: "CORRECT",
+    attemptKind: "FULL",
+    metrics: null,
+    lastActivityAt: null,
   };
 }
 
@@ -121,5 +124,17 @@ describe("practice domain", () => {
         prompt: "Score fluency",
       }),
     ).toThrow();
+  });
+});
+
+describe("practice lesson gate error", () => {
+  it("recognizes only the database not-reached signal", async () => {
+    const { isPracticeLessonNotReachedError } = await import("@/modules/practice");
+    expect(
+      isPracticeLessonNotReachedError({ code: "YP001", hint: "PRACTICE_LESSON_NOT_REACHED" }),
+    ).toBe(true);
+    expect(isPracticeLessonNotReachedError({ code: "42501", hint: null })).toBe(false);
+    expect(isPracticeLessonNotReachedError({ code: "YP001", hint: "OTHER" })).toBe(false);
+    expect(isPracticeLessonNotReachedError(null)).toBe(false);
   });
 });

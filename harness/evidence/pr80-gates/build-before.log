@@ -1,0 +1,91 @@
+
+> yasenglishlab@0.1.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 441ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForDev
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 53s
+  Running TypeScript ...
+  Finished TypeScript in 39.3s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/48) ...
+  Generating static pages using 7 workers (12/48) 
+  Generating static pages using 7 workers (24/48) 
+  Generating static pages using 7 workers (36/48) 
+✓ Generating static pages using 7 workers (48/48) in 1875ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/assessments
+├ ƒ /admin/assessments/[id]
+├ ƒ /admin/assessments/new
+├ ƒ /admin/billing
+├ ƒ /admin/cohorts
+├ ƒ /admin/cohorts/[id]/trilha
+├ ƒ /admin/content
+├ ƒ /admin/content/[id]
+├ ƒ /admin/content/[id]/preview
+├ ƒ /admin/content/new
+├ ƒ /admin/enrollments
+├ ƒ /admin/leads
+├ ƒ /admin/students
+├ ƒ /admin/students/[id]
+├ ƒ /admin/teachers
+├ ƒ /agenda
+├ ƒ /agenda/[sessionId]
+├ ƒ /api/cron/notifications
+├ ƒ /api/webhooks/asaas
+├ ƒ /api/webhooks/mux
+├ ƒ /aulas
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]/aulas/[lessonSlug]
+├ ƒ /auth/callback
+├ ƒ /auth/continue
+├ ƒ /billing/return
+├ ƒ /checkout
+├ ƒ /forgot-password
+├ ƒ /home
+├ ƒ /login
+├ ƒ /materiais
+├ ƒ /materiais/[materialId]/abrir
+├ ƒ /mfa
+├ ƒ /onboarding
+├ ƒ /onboarding/assessment
+├ ƒ /onboarding/placement
+├ ƒ /pratica
+├ ƒ /pratica/[attemptId]
+├ ƒ /profile
+├ ƒ /progresso
+├ ƒ /reset-password
+├ ƒ /signup
+├ ƒ /support
+├ ƒ /teacher
+├ ƒ /teacher/alunos
+├ ƒ /teacher/alunos/[studentId]
+├ ƒ /teacher/disponibilidade
+├ ƒ /teacher/praticas
+├ ƒ /teacher/praticas/[id]
+├ ƒ /teacher/praticas/nova
+├ ƒ /teacher/revisoes
+├ ƒ /teacher/revisoes/[attemptId]
+├ ƒ /teacher/revisoes/placement
+├ ƒ /teacher/revisoes/placement/[id]
+├ ƒ /teacher/sessoes
+├ ƒ /teacher/sessoes/[sessionId]
+├ ƒ /teacher/sessoes/nova
+├ ƒ /teacher/turmas
+├ ○ /test-billing/checkout
+└ ƒ /workspace
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

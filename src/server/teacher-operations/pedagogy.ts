@@ -11,6 +11,8 @@ const reviewSchema = z.object({
   skill: z.enum(PRACTICE_SKILLS),
   // Content v2 (WRITTEN/SPOKEN) or the legacy kind; absent on older payloads.
   responseType: z.string().nullable().optional(),
+  // Content v3: one review row per manual item (WRITTEN/SPOKEN); absent for v1/v2.
+  itemId: z.string().nullable().optional(),
   prompt: z.string(),
   response: z.record(z.string(), z.unknown()),
   submittedAt: z.string(),

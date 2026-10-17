@@ -82,7 +82,8 @@ select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-800
 select pg_temp.assert_true(exists(select 1 from public.lesson_assets where id='43000000-0000-4000-8000-000000000001'),'ACTIVE sees lesson asset row (RLS)');
 select pg_temp.assert_true(private.can_read_live_recording('9d500000-0000-4000-8000-000000000001'),'ACTIVE booked reads recording');
 select pg_temp.assert_true(private.can_read_session_resource('9d400000-0000-4000-8000-000000000001'),'ACTIVE booked reads session resource');
-select public.record_lesson_progress('42000000-0000-4000-8000-000000000001',10,30);
+-- Stage 13: the seed practice belongs to lesson 2; the Student must have reached it (started it) to start the practice.
+select public.record_lesson_progress('42000000-0000-4000-8000-000000000002',10,30);
 select set_config('gate.attempt',(public.start_practice_attempt('83000000-0000-4000-8000-000000000001',gen_random_uuid())).id::text,true);
 select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','ACTIVE booked joins the room');
 select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000002') is not null,'ACTIVE books');

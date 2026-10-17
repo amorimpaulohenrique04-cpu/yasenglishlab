@@ -162,7 +162,8 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
         student.getByRole("status").filter({ hasText: "Reserva confirmada" }),
       ).toBeVisible();
       await student.reload();
-      await expect(card.getByRole("button", { name: "Reservado", exact: true })).toBeDisabled();
+      await expect(card.getByRole("button", { name: "Entrar no encontro" })).toBeVisible();
+      await expect(card.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
 
       expect(
         (await new AxeBuilder({ page: student }).withTags(["wcag2a", "wcag2aa"]).analyze())

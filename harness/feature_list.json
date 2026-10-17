@@ -600,6 +600,33 @@
       "dependencies": ["stage-12-lacunas-operacionais"],
       "evidence": ["harness/goals/ui-redesign-approved-proposal.md"],
       "updated_at": "2026-10-16T12:00:00.000Z"
+    },
+    {
+      "id": "practice-10-phase-0",
+      "title": "Prática: ciclo de vida da tentativa, bloqueio por aula e jornada",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["ui-redesign-approved-proposal"],
+      "evidence": ["harness/goals/practice-10-phase-0.md"],
+      "updated_at": "2026-10-16T18:00:00.000Z"
+    },
+    {
+      "id": "practice-10-v3",
+      "title": "Prática v3: várias perguntas, feedback por pergunta, revisão espaçada e autoria",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["practice-10-phase-0"],
+      "evidence": ["harness/goals/practice-10-v3.md"],
+      "updated_at": "2026-10-16T22:00:00.000Z"
+    },
+    {
+      "id": "pr80-gates",
+      "title": "Restore PR 80 practice release gates",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["practice-10-v3"],
+      "evidence": ["harness/goals/pr80-gates.md"],
+      "updated_at": "2026-10-17T12:00:00Z"
     }
   ]
 }

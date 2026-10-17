@@ -33,5 +33,5 @@ Estados: default, hover, focus-visible, active, disabled, loading, error, succes
 ## Atualização 2026-10-16
 
 - Tokens medidos na proposta aprovada (`src/styles/tokens.css`): sidebar `#461d82`, ativo `#6132ad`, violeta `#6024f7`, amarelo `#f9c933`, canvas `#f3effd`; tints pastel com texto AA (`--yas-tint-*`).
-- Tipografia: Montserrat 700/800 para títulos (`--yas-font-display`) e Inter para corpo, via `next/font`.
+- Tipografia: Montserrat 700/800 para títulos (`--yas-font-display`) e Inter para corpo. WOFF2 versionados em `public/fonts/`, com subsets, métricas de fallback e preload Latin preservados em `src/app/fonts.css` e no layout. Isso evita o defeito de URLs Google Fonts no Next 16.3.8 (upstream #99114); os bytes e pesos da tipografia permanecem os mesmos.
 - Primitivos novos: `Icon` (conjunto linear da proposta), `IconBadge`, `Hero`, `AvatarStack`, `Button` variante `soft`, `Badge` com `dot`/`icon`, `MetricCard` com ícone, utilitários `.yas-list`, `.yas-link`, `.yas-timeline`, `.yas-switch`, `.yas-reveal`.

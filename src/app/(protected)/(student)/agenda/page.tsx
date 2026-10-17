@@ -190,11 +190,12 @@ function SessionCard({
     !suspended && session.availability === "AVAILABLE" && session.eligibility.canBook;
   const entitlementBlocked = session.eligibility.reason === "ENTITLEMENT_REQUIRED";
   const visual = typeVisual[session.sessionType];
+  const booked = session.availability === "BOOKED";
 
   return (
     <Card
       className={styles.sessionCard}
-      data-booked={session.availability === "BOOKED" || undefined}
+      data-booked={booked || undefined}
       aria-labelledby={`session-${session.id}`}
     >
       <div className={styles.sessionTime}>
@@ -261,21 +262,38 @@ function SessionCard({
         )}
       </div>
 
-      <div className={styles.sessionActions}>
-        <form action={bookLiveSessionAction}>
-          <input type="hidden" name="liveSessionId" value={session.id} />
-          <Button
-            type="submit"
-            variant={canSubmit ? "primary" : "outline"}
-            size="sm"
-            disabled={!canSubmit}
-            aria-describedby={
-              suspended && session.availability !== "BOOKED" ? `suspended-${session.id}` : undefined
-            }
-          >
-            {session.availability === "BOOKED"
-              ? "Reservado"
-              : suspended
+      {booked ? (
+        /* Reserva confirmada: entrar é a ação principal; recursos e cancelamento em seguida. */
+        <div className={styles.bookedActions}>
+          <JoinMeeting sessionId={session.id} action={joinLiveSessionAction} />
+          {session.ownBookingStatus === "BOOKED" && (
+            <Link
+              className="yas-button yas-button--outline yas-button--sm"
+              href={`/agenda/${session.id}`}
+            >
+              <Icon name="file" size={16} />
+              Recursos e tarefas
+            </Link>
+          )}
+          <form action={cancelLiveSessionAction} className={styles.cancelForm}>
+            <input type="hidden" name="liveSessionId" value={session.id} />
+            <Button type="submit" variant="ghost" size="sm" className={styles.cancelButton}>
+              Cancelar reserva
+            </Button>
+          </form>
+        </div>
+      ) : (
+        <div className={styles.sessionActions}>
+          <form action={bookLiveSessionAction}>
+            <input type="hidden" name="liveSessionId" value={session.id} />
+            <Button
+              type="submit"
+              variant={canSubmit ? "primary" : "outline"}
+              size="sm"
+              disabled={!canSubmit}
+              aria-describedby={suspended ? `suspended-${session.id}` : undefined}
+            >
+              {suspended
                 ? "Reservas em pausa"
                 : session.availability === "FULL"
                   ? "Lotado"
@@ -288,25 +306,10 @@ function SessionCard({
                         : session.ownBookingStatus === "CANCELLED"
                           ? "Reservar novamente"
                           : "Reservar"}
-          </Button>
-        </form>
-        {session.availability === "BOOKED" && (
-          <JoinMeeting sessionId={session.id} action={joinLiveSessionAction} />
-        )}
-        {session.ownBookingStatus === "BOOKED" && (
-          <Link className="yas-link" href={`/agenda/${session.id}`}>
-            Recursos e tarefas <Icon name="arrow" />
-          </Link>
-        )}
-        {session.availability === "BOOKED" && (
-          <form action={cancelLiveSessionAction}>
-            <input type="hidden" name="liveSessionId" value={session.id} />
-            <Button type="submit" variant="ghost" size="sm">
-              Cancelar reserva
             </Button>
           </form>
-        )}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }

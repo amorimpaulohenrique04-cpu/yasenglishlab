@@ -332,6 +332,140 @@ on conflict (practice_activity_id) do update set
   answer_key = excluded.answer_key,
   feedback = excluded.feedback;
 
+-- Practice v3 examples (docs/PRACTICE_V3.md section 7), linked to lesson 1 "Welcome to Yas" so a new Student reaches them.
+-- 1. Grammar/vocabulary: 7 mixed objective items with per-option explanations (English items, Portuguese feedback).
+-- 2. Pronunciation: AUDIO model + SPOKEN response per item (manual Teacher review, never scored automatically).
+-- The two model-audio assets are PLACEHOLDER rows: status READY so the practice publishes, but no file exists in the
+-- private storage bucket 'yas-practice-assets' (path seed/practice-pronunciation/*.mp3). Upload real audio under the same
+-- path, or duplicate the practice and attach new audio through the Teacher builder, before using it with real Students.
+insert into public.practice_activities (
+  id, slug, title, skill, cefr_target, difficulty, estimated_minutes, related_module_id, related_lesson_id, content, active
+)
+values
+  (
+    '83000000-0000-4000-8000-000000000005',
+    'welcome-greetings-present-simple',
+    'Cumprimentos e present simple',
+    'GRAMMAR',
+    'A1',
+    'FOUNDATION',
+    8,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
+    $json${
+      "version": 3,
+      "objective": "Ao final você consegue cumprimentar alguém e falar da sua rotina com o present simple.",
+      "askConfidence": true,
+      "instructions": "Responda uma pergunta por vez. Se errar, você revê a explicação e tenta de novo no final.",
+      "evaluationMode": "DETERMINISTIC",
+      "items": [
+        {"id": "greet-1", "prompt": "Você acabou de conhecer alguém. Qual frase é natural?", "stimulus": {"type": "NONE"},
+         "response": {"type": "CHOICE_SINGLE", "options": [
+           {"id": "a", "label": "Nice to meet you."}, {"id": "b", "label": "Nice to meeting you."}, {"id": "c", "label": "Nice to met you."}]}},
+        {"id": "greet-2", "prompt": "Qual resposta combina com a pergunta \"How are you?\"", "stimulus": {"type": "NONE"},
+         "response": {"type": "CHOICE_SINGLE", "options": [
+           {"id": "a", "label": "I'm fine, thanks. And you?"}, {"id": "b", "label": "I am name Ana."}, {"id": "c", "label": "Yes, I do."}]}},
+        {"id": "be-1", "prompt": "Complete a apresentação com a forma correta do verbo to be.", "stimulus": {"type": "NONE"},
+         "response": {"type": "CLOZE", "text": "My name {{1}} Ana and I {{2}} from Brazil."}},
+        {"id": "ps-1", "prompt": "Complete a frase sobre a rotina de Ana.", "stimulus": {"type": "TEXT", "text": "She ___ coffee every morning."},
+         "response": {"type": "CHOICE_SINGLE", "options": [
+           {"id": "a", "label": "drink"}, {"id": "b", "label": "drinks"}, {"id": "c", "label": "drinking"}]}},
+        {"id": "ps-2", "prompt": "Quais frases estão corretas no present simple? Marque todas.", "stimulus": {"type": "NONE"},
+         "response": {"type": "CHOICE_MULTI", "options": [
+           {"id": "a", "label": "I live in Recife."}, {"id": "b", "label": "She live in Recife."},
+           {"id": "c", "label": "They study English."}, {"id": "d", "label": "We studies English."}]}},
+        {"id": "ps-3", "prompt": "Esta frase está gramaticalmente correta?", "stimulus": {"type": "NONE"},
+         "response": {"type": "TRUE_FALSE", "statement": "He plays soccer on Sundays."}},
+        {"id": "order-1", "prompt": "Coloque as palavras em ordem para formar uma frase.", "stimulus": {"type": "NONE"},
+         "response": {"type": "ORDERING", "items": [
+           {"id": "w-am", "label": "am"}, {"id": "w-student", "label": "student"}, {"id": "w-i", "label": "I"}, {"id": "w-a", "label": "a"}]}}
+      ]
+    }$json$::jsonb,
+    true
+  ),
+  (
+    '83000000-0000-4000-8000-000000000006',
+    'welcome-repeat-after-the-model',
+    'Repita depois do modelo',
+    'PRONUNCIATION',
+    'A1',
+    'FOUNDATION',
+    5,
+    '41000000-0000-4000-8000-000000000001',
+    '42000000-0000-4000-8000-000000000001',
+    $json${
+      "version": 3,
+      "objective": "Ao final você consegue repetir cumprimentos com ritmo e entonação naturais.",
+      "askConfidence": false,
+      "instructions": "Ouça o modelo quantas vezes quiser, depois grave a sua versão. Seu professor vai ouvir e comentar.",
+      "evaluationMode": "MANUAL_PENDING",
+      "items": [
+        {"id": "say-1", "prompt": "Ouça o modelo e repita: \"Nice to meet you.\"",
+         "stimulus": {"type": "AUDIO", "assetId": "83100000-0000-4000-8000-000000000001", "transcript": "Nice to meet you."},
+         "response": {"type": "SPOKEN"}, "planningSeconds": 30},
+        {"id": "say-2", "prompt": "Ouça o modelo e repita: \"My name is Ana, and I live in Recife.\"",
+         "stimulus": {"type": "AUDIO", "assetId": "83100000-0000-4000-8000-000000000002", "transcript": "My name is Ana, and I live in Recife."},
+         "response": {"type": "SPOKEN"}, "planningSeconds": 30}
+      ]
+    }$json$::jsonb,
+    true
+  )
+on conflict (id) do update set
+  slug = excluded.slug,
+  title = excluded.title,
+  skill = excluded.skill,
+  cefr_target = excluded.cefr_target,
+  difficulty = excluded.difficulty,
+  estimated_minutes = excluded.estimated_minutes,
+  related_module_id = excluded.related_module_id,
+  related_lesson_id = excluded.related_lesson_id,
+  content = excluded.content,
+  active = excluded.active;
+
+insert into public.practice_activity_assets (id, practice_activity_id, asset_type, storage_path, provider, upload_status, metadata)
+values
+  ('83100000-0000-4000-8000-000000000001', '83000000-0000-4000-8000-000000000006', 'AUDIO',
+   'seed/practice-pronunciation/nice-to-meet-you.mp3', 'seed', 'READY', '{"mime_type":"audio/mpeg","placeholder":true}'::jsonb),
+  ('83100000-0000-4000-8000-000000000002', '83000000-0000-4000-8000-000000000006', 'AUDIO',
+   'seed/practice-pronunciation/my-name-is-ana.mp3', 'seed', 'READY', '{"mime_type":"audio/mpeg","placeholder":true}'::jsonb)
+on conflict (id) do update set
+  practice_activity_id = excluded.practice_activity_id,
+  asset_type = excluded.asset_type,
+  storage_path = excluded.storage_path,
+  provider = excluded.provider,
+  upload_status = excluded.upload_status,
+  metadata = excluded.metadata;
+
+insert into private.practice_item_keys (practice_activity_id, item_id, answer_key, feedback)
+values
+  ('83000000-0000-4000-8000-000000000005', 'greet-1', '{"optionId":"a"}'::jsonb,
+   '{"correct":"Isso! Nice to meet you é a forma natural de dizer prazer em conhecer.",
+     "incorrect":"Depois de to, o verbo vai na forma base: sem -ing e sem passado. Releia as opções com essa regra.",
+     "options":{"a":"Correto: to + verbo na forma base (to meet).","b":"A forma com -ing não combina com to aqui: depois de to vem a forma base do verbo.","c":"Essa é a forma do passado. Depois de to, use a forma base do verbo."}}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'greet-2', '{"optionId":"a"}'::jsonb,
+   '{"correct":"Muito bem: responder e devolver a pergunta soa natural.",
+     "incorrect":"How are you? pergunta como você está. Procure a resposta que diz como você está e devolve a pergunta.",
+     "options":{"a":"Correto: diz como você está e devolve a pergunta (And you?).","b":"Essa frase mistura duas ideias e não responde como você está.","c":"Yes, I do responde perguntas com Do you...? e não How are you?."}}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'be-1', '{"blanks":[{"id":"1","accepted":["is"]},{"id":"2","accepted":["am"]}]}'::jsonb,
+   '{"correct":"Perfeito: My name is... e I am from...","incorrect":"Use is com My name (terceira pessoa) e am com I."}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'ps-1', '{"optionId":"b"}'::jsonb,
+   '{"correct":"Com she, he e it o verbo ganha -s: she drinks.",
+     "incorrect":"Com she, he e it, o verbo do present simple muda na terminação. Observe o final de cada verbo.",
+     "options":{"a":"drink serve para I, you, we e they. Com she, falta o -s.","b":"Correto: she + verbo com -s (drinks).","c":"drinking é a forma -ing e pede o verbo to be (she is drinking)."}}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'ps-2', '{"optionIds":["a","c"]}'::jsonb,
+   '{"correct":"Isso: com I e they o verbo fica na forma base.",
+     "incorrect":"Com I, you, we e they o verbo fica na forma base; só he, she e it ganham -s.",
+     "options":{"a":"Correta: I + forma base (live).","b":"Incorreta: com she o verbo ganha -s (she lives).","c":"Correta: they + forma base (study).","d":"Incorreta: com we o verbo fica na forma base (we study)."}}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'ps-3', '{"value":true}'::jsonb,
+   '{"correct":"Isso mesmo: com he, o verbo ganha -s (plays).","incorrect":"Releia a frase com a regra: com he, she e it, o verbo do present simple ganha -s."}'::jsonb),
+  ('83000000-0000-4000-8000-000000000005', 'order-1', '{"order":["w-i","w-am","w-a","w-student"]}'::jsonb,
+   '{"correct":"Ótimo: sujeito + verbo to be + artigo + substantivo.","incorrect":"Pense na ordem: sujeito, verbo to be, artigo e substantivo."}'::jsonb),
+  ('83000000-0000-4000-8000-000000000006', 'say-1', null, '{}'::jsonb),
+  ('83000000-0000-4000-8000-000000000006', 'say-2', null, '{}'::jsonb)
+on conflict (practice_activity_id, item_id) do update set
+  answer_key = excluded.answer_key,
+  feedback = excluded.feedback;
+
 -- P18: explicitly publish canonical seed content after sources/answer keys exist.
 do $$
 declare t text; r record;

@@ -1,0 +1,76 @@
+[WebServer] (node:2520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2640) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:4000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:17976) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:18244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\canonical-slice.spec.ts:28:7 › canonical learning vertical slice › an unpaid Student without curriculum is invited to a first checkout (5.5s)
+  ok 2 [chromium] › tests\e2e\canonical-slice.spec.ts:59:7 › canonical learning vertical slice › a booked session happening now outranks Practice and navigates to Agenda (3.5s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '1024755886'
+[WebServer] }
+  ok 3 [chromium] › tests\e2e\canonical-slice.spec.ts:89:7 › canonical learning vertical slice › browser-visible Progress responses do not expose internal Assessment or service-role data (4.0s)
+  ok 4 [chromium] › tests\e2e\canonical-slice.spec.ts:136:7 › canonical learning vertical slice › browser-visible Home responses keep the projection DTO minimal (4.4s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '1024755886'
+[WebServer] }
+[WebServer] (node:8952) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  5 [chromium] › tests\e2e\canonical-slice.spec.ts:180:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume (1.3m)
+
+
+  1) [chromium] › tests\e2e\canonical-slice.spec.ts:180:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByRole('progressbar', { name: 'Conclusão da aula' })
+    Expected: "100"
+    Received: "50"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: 'Conclusão da aula' }) with timeout 5000ms
+      - waiting for getByRole('progressbar', { name: 'Conclusão da aula' })
+        13 × locator resolved to <div aria-valuemin="0" role="progressbar" aria-valuenow="50" aria-valuemax="100" class="yas-progress" data-tone="priority" aria-label="Conclusão da aula">…</div>
+           - unexpected value "50"
+
+
+      438 |
+      439 |     await page.getByRole("button", { name: "Concluir aula" }).click();
+    > 440 |     await expect(page.getByRole("progressbar", { name: "Conclusão da aula" })).toHaveAttribute(
+          |                                                                                ^
+      441 |       "aria-valuenow",
+      442 |       "100",
+      443 |     );
+        at C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\tests\e2e\canonical-slice.spec.ts:440:80
+
+    attachment #10: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\canonical-slice-canonical--bf905--→-login-→-persisted-resume-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\canonical-slice-canonical--bf905--→-login-→-persisted-resume-chromium\error-context.md
+
+    attachment #12: trace (application/zip) ────────────────────────────────────────────────────────
+    test-results\canonical-slice-canonical--bf905--→-login-→-persisted-resume-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\canonical-slice-canonical--bf905--→-login-→-persisted-resume-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\canonical-slice.spec.ts:180:7 › canonical learning vertical slice › login → progress → logout → login → persisted resume 
+  4 passed (2.4m)

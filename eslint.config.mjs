@@ -24,6 +24,8 @@ const eslintConfig = defineConfig([
     "test-results/**",
     "artifacts/**",
     ".venv-laya/**",
+    // Local Claude Code worktrees (untracked checkouts with their own builds).
+    ".claude/**",
     "next-env.d.ts",
   ]),
 ]);

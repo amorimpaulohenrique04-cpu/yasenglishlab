@@ -1,0 +1,110 @@
+{
+  "task": "pr80-gates",
+  "base": "HEAD",
+  "head": "b521448964ff55e61e93e034ed9e0860f2022e55",
+  "changed_files": [
+    "docs/DESIGN_SYSTEM.md",
+    "harness/agent-state/plan.md",
+    "harness/evidence/pr80-gates/README.md",
+    "harness/evidence/pr80-gates/ci-before.md",
+    "harness/failure-log/2026-10-17-pr80-gates-audio-fixture.md",
+    "harness/failure-log/2026-10-17-pr80-gates-font-resolver.md",
+    "harness/failure-log/2026-10-17-pr80-gates-incomplete-practice.md",
+    "harness/feature_list.json",
+    "harness/goals/pr80-gates.md",
+    "public/fonts/Inter-OFL.txt",
+    "public/fonts/Montserrat-OFL.txt",
+    "public/fonts/README.md",
+    "public/fonts/inter-cyrillic-ext.woff2",
+    "public/fonts/inter-cyrillic.woff2",
+    "public/fonts/inter-greek-ext.woff2",
+    "public/fonts/inter-greek.woff2",
+    "public/fonts/inter-latin-ext.woff2",
+    "public/fonts/inter-latin.woff2",
+    "public/fonts/inter-vietnamese.woff2",
+    "public/fonts/manifest.json",
+    "public/fonts/montserrat-cyrillic-ext.woff2",
+    "public/fonts/montserrat-cyrillic.woff2",
+    "public/fonts/montserrat-latin-ext.woff2",
+    "public/fonts/montserrat-latin.woff2",
+    "public/fonts/montserrat-vietnamese.woff2",
+    "scripts/assert-canonical-e2e.mjs",
+    "scripts/setup-canonical-e2e.mjs",
+    "scripts/verify-ui.mjs",
+    "src/app/fonts.css",
+    "src/app/layout.tsx",
+    "src/modules/practice/ui/practice-session-player.tsx",
+    "tests/a11y/critical-flows.spec.ts",
+    "tests/e2e/canonical-slice.spec.ts",
+    "tests/e2e/practice-access.spec.ts",
+    "tests/integration/practice-application.test.ts",
+    "tests/unit/font-assets.test.ts"
+  ],
+  "results": [
+    {
+      "name": "required documentation declared",
+      "pass": true,
+      "detail": "docs/TESTING.md, docs/DEFINITION_OF_DONE.md, docs/UI_CONTRACT.md, docs/DESIGN_SYSTEM.md, docs/ACCESSIBILITY.md",
+      "automated": true
+    },
+    {
+      "name": "changed files stay in declared scope",
+      "pass": true,
+      "detail": "36 changed file(s) covered",
+      "automated": true
+    },
+    {
+      "name": "no unreviewed duplicate UI primitive",
+      "pass": true,
+      "detail": "no new UI primitive files",
+      "automated": true
+    },
+    {
+      "name": "no newly ignored failing checks",
+      "pass": true,
+      "detail": "no new skip/fixme/failure suppression",
+      "automated": true
+    },
+    {
+      "name": "UI changes carry screenshot evidence",
+      "pass": true,
+      "detail": "visual test/evidence changed",
+      "automated": true
+    },
+    {
+      "name": "database schema changes include migration",
+      "pass": true,
+      "detail": "no schema-side change detected",
+      "automated": true
+    },
+    {
+      "name": "RLS changes include executable authorization test",
+      "pass": true,
+      "detail": "no RLS change",
+      "automated": true
+    },
+    {
+      "name": "no high-confidence secret in changed files",
+      "pass": true,
+      "detail": "clean",
+      "automated": true
+    },
+    {
+      "name": "task exists in feature registry",
+      "pass": true,
+      "detail": "in_progress",
+      "automated": true
+    },
+    {
+      "name": "no premature success claim",
+      "pass": true,
+      "detail": "status=in_progress, verified=false",
+      "automated": true
+    }
+  ],
+  "manual_review": [
+    "Confirm the agent actually understood and followed the declared documentation.",
+    "If a UI primitive was added, perform semantic duplicate review beyond file/name heuristics.",
+    "Compare the final narrative report with the real Git/CI state before accepting completion."
+  ]
+}

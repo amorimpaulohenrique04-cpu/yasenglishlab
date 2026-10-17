@@ -9,13 +9,8 @@ import {
   PageHeader,
   ProgressBar,
 } from "@/components/ui";
-import {
-  isLessonComplete,
-  lessonCompletion,
-  moduleCompletion,
-  nextLesson,
-} from "@/modules/learning";
-import { LessonRow, lessonState } from "@/modules/learning/ui/lesson-status";
+import { isLessonComplete, moduleCompletion, nextLesson } from "@/modules/learning";
+import { LessonRow, lessonAction, lessonState } from "@/modules/learning/ui/lesson-status";
 import { loadLearningAccess, loadLearningModule } from "@/server/learning/canonical-slice";
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 
@@ -86,7 +81,6 @@ export default async function ModulePage({ params }: ModulePageProps) {
         ) : (
           <ol className="yas-lesson-list yas-lesson-list--actions" aria-label="Aulas em ordem">
             {lessons.map((lesson) => {
-              const percent = lessonCompletion(lesson);
               const state = lessonState(lesson, upNext?.id ?? null);
               return (
                 <LessonRow
@@ -94,15 +88,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
                   lesson={lesson}
                   href={`/aulas/${course.slug}/modulos/${module.id}/aulas/${lesson.slug}`}
                   state={state}
-                  action={{
-                    label:
-                      percent === 100
-                        ? "Rever aula →"
-                        : percent > 0
-                          ? "Continuar →"
-                          : "Abrir aula →",
-                    primary: state === "current",
-                  }}
+                  action={lessonAction(lesson, state)}
                 />
               );
             })}

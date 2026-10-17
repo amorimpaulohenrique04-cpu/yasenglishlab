@@ -422,6 +422,19 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
     if (error) throw error;
   }
 }
+// Decision A: an explicit teacher assignment legitimately opens future-lesson
+// practice for this cohort, without changing lesson progress or access for cohort B.
+const { error: audioAssignmentError } = await admin.from("cohort_practice_assignments").upsert(
+  {
+    cohort_id: cohortIds[0],
+    practice_activity_id: p21AudioActivityId,
+    assigned_by_teacher_id: teacherId,
+    due_at: null,
+  },
+  { onConflict: "cohort_id,practice_activity_id" },
+);
+if (audioAssignmentError) throw audioAssignmentError;
+
 // Stage 06a: progress needs an ACTIVE cohort membership. Ana gets a dedicated cohort with no teacher,
 // sessions or placement settings so existing cohort/agenda/placement scenarios are unaffected.
 const anaCohortId = "9d200000-0000-4000-8000-000000000003";

@@ -2,6 +2,7 @@ import type { LearningCourse } from "@/modules/learning";
 import type {
   PracticeRecommendationActivity,
   PracticeRecommendationHistoryItem,
+  OpenPracticeAttempt,
 } from "@/modules/practice";
 import type { ScheduleOwnBookingFact } from "@/modules/schedule";
 
@@ -9,6 +10,8 @@ export interface HomePracticeInputs {
   activities: PracticeRecommendationActivity[];
   history: PracticeRecommendationHistoryItem[];
   recentLessonId: string | null;
+  /** Open attempts, so Home recommends resuming them first, like /pratica. */
+  openAttempts?: OpenPracticeAttempt[];
 }
 
 export interface HomeReadRepository {

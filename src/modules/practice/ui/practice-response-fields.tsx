@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useId, useRef, useState } from "react";
 
-import { Button, Checkbox, Radio, Textarea } from "@/components/ui";
+import { Button, Checkbox, Icon, Radio, Textarea } from "@/components/ui";
 
 import type { PracticeResponseV2 } from "../domain/content-v2";
 import {
@@ -58,9 +58,9 @@ function OrderingField({
   }
 
   return (
-    <fieldset className="yas-practice-fieldset">
+    <fieldset className="yas-practice-fieldset yas-practice-fieldset--ordering">
       <legend>Coloque os itens na ordem correta</legend>
-      <p className="yas-practice-hint">Use os botões Subir e Descer para reorganizar.</p>
+      <p className="yas-practice-hint">Use as setas para subir ou descer cada item.</p>
       <ol className="yas-practice-ordering" ref={list}>
         {state.order.map((id, index) => (
           <li key={id} className="yas-practice-ordering-item">
@@ -72,24 +72,26 @@ function OrderingField({
               <Button
                 data-move={`${id}:up`}
                 type="button"
-                variant="outline"
+                variant="soft"
                 size="sm"
+                className="yas-practice-ordering-move"
                 disabled={disabled || index === 0}
                 aria-label={`Subir: ${labelOf(id)}`}
                 onClick={() => move(index, "up")}
               >
-                Subir
+                <Icon name="down" size={16} className="yas-practice-ordering-up" />
               </Button>
               <Button
                 data-move={`${id}:down`}
                 type="button"
-                variant="outline"
+                variant="soft"
                 size="sm"
+                className="yas-practice-ordering-move"
                 disabled={disabled || index === state.order.length - 1}
                 aria-label={`Descer: ${labelOf(id)}`}
                 onClick={() => move(index, "down")}
               >
-                Descer
+                <Icon name="down" size={16} />
               </Button>
             </span>
           </li>
@@ -108,7 +110,7 @@ export function PracticeResponseFields({ response, state, onChange, disabled }: 
   switch (response.type) {
     case "CHOICE_SINGLE":
       return (
-        <fieldset className="yas-practice-fieldset" disabled={disabled}>
+        <fieldset className="yas-practice-fieldset yas-practice-options" disabled={disabled}>
           <legend>Escolha uma resposta</legend>
           {response.options.map((option) => (
             <Radio
@@ -124,7 +126,10 @@ export function PracticeResponseFields({ response, state, onChange, disabled }: 
       );
     case "CHOICE_MULTI":
       return (
-        <fieldset className="yas-practice-fieldset" disabled={disabled}>
+        <fieldset
+          className="yas-practice-fieldset yas-practice-options yas-practice-options--multi"
+          disabled={disabled}
+        >
           <legend>Escolha uma ou mais respostas</legend>
           {response.options.map((option) => (
             <Checkbox
@@ -142,7 +147,10 @@ export function PracticeResponseFields({ response, state, onChange, disabled }: 
       );
     case "TRUE_FALSE":
       return (
-        <fieldset className="yas-practice-fieldset" disabled={disabled}>
+        <fieldset
+          className="yas-practice-fieldset yas-practice-options yas-practice-options--binary"
+          disabled={disabled}
+        >
           <legend>{response.statement}</legend>
           <Radio
             name={name}
@@ -167,7 +175,10 @@ export function PracticeResponseFields({ response, state, onChange, disabled }: 
         if (segment.kind === "blank" && !numbering.includes(segment.id)) numbering.push(segment.id);
       }
       return (
-        <fieldset className="yas-practice-fieldset" disabled={disabled}>
+        <fieldset
+          className="yas-practice-fieldset yas-practice-fieldset--cloze"
+          disabled={disabled}
+        >
           <legend>Complete as lacunas</legend>
           <p className="yas-practice-cloze">
             {segments.map((segment, index) =>

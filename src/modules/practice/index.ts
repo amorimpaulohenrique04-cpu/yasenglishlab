@@ -3,4 +3,8 @@ export * from "./application/ports";
 export * from "./application/queries";
 export * from "./domain/assignments";
 export * from "./domain/content-v2";
+export * from "./domain/content-v3";
+export * from "./domain/item-results";
 export * from "./domain/models";
+export * from "./domain/session";
+export * from "./domain/spaced-review";

@@ -8,8 +8,25 @@ import {
 } from "@/modules/billing/domain/access";
 import {
   assignedPracticeFromRow,
+  dueReviewFromRow,
+  isPracticeLessonNotReachedError,
+  isPracticeNothingDueError,
+  itemResultFromResponseRow,
+  parseFinalizeResult,
+  parseItemResult,
+  parseMetrics,
+  PracticeLessonNotReachedError,
+  PracticeNothingDueError,
   normalizePracticeSkill,
   type AssignedPractice,
+  type DueReview,
+  type PracticeAttemptKind,
+  type PracticeAttemptMetrics,
+  type PracticeConfidence,
+  type PracticeFinalizeResult,
+  type PracticeItemInput,
+  type PracticeItemResult,
+  type PracticeItemRound,
   type PracticeAssignmentRepository,
   parsePracticeContent,
   practiceAvailabilityForEvaluationMode,
@@ -91,7 +108,18 @@ function resultFromRow(row: Row): PracticeResultView {
     feedback: typeof row.feedback === "string" ? row.feedback : null,
     evaluationStatus: evaluationStatusFromRow(row.evaluation_status),
     createdAt: String(row.created_at),
+    metrics: parseMetrics(row.metrics),
   };
+}
+
+function attemptKindFromRow(value: unknown): PracticeAttemptKind {
+  return value === "REVIEW" ? "REVIEW" : "FULL";
+}
+
+function itemIdsFromRow(value: unknown): string[] | null {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string")
+    ? (value as string[])
+    : null;
 }
 
 function attemptStatus(value: unknown): PracticeAttemptView["status"] {
@@ -159,7 +187,8 @@ export class SupabasePracticeRepository
     const [{ data: attempts, error: attemptError }, activities] = await Promise.all([
       this.client
         .from("practice_attempts")
-        .select("id, practice_activity_id, status, started_at, submitted_at")
+        // `*` keeps the page working while the v3 columns (attempt_kind, last_activity_at) roll out.
+        .select("*")
         .eq("user_id", userId)
         .order("started_at", { ascending: false })
         .limit(30),
@@ -174,7 +203,7 @@ export class SupabasePracticeRepository
         ? { data: [], error: null }
         : await this.client
             .from("practice_results")
-            .select("practice_attempt_id, evaluation_status")
+            .select("*")
             .in("practice_attempt_id", attemptIds);
     if (resultQuery.error) throw new Error("Unable to load practice results.");
 
@@ -182,7 +211,10 @@ export class SupabasePracticeRepository
     const resultsByAttempt = new Map(
       (resultQuery.data ?? []).map((row) => [
         String(row.practice_attempt_id),
-        evaluationStatusFromRow(row.evaluation_status),
+        {
+          status: evaluationStatusFromRow(row.evaluation_status),
+          metrics: parseMetrics(row.metrics),
+        },
       ]),
     );
 
@@ -199,10 +231,33 @@ export class SupabasePracticeRepository
           status: attemptStatus(row.status),
           startedAt: String(row.started_at),
           submittedAt: typeof row.submitted_at === "string" ? row.submitted_at : null,
-          evaluationStatus: resultsByAttempt.get(String(row.id)) ?? null,
+          evaluationStatus: resultsByAttempt.get(String(row.id))?.status ?? null,
+          attemptKind: attemptKindFromRow(row.attempt_kind),
+          metrics: resultsByAttempt.get(String(row.id))?.metrics ?? null,
+          lastActivityAt: typeof row.last_activity_at === "string" ? row.last_activity_at : null,
         },
       ];
     });
+  }
+
+  async listSubmittedActivityIdsSince(userId: string, since: Date): Promise<string[]> {
+    const { data, error } = await this.client
+      .from("practice_attempts")
+      .select("practice_activity_id")
+      .eq("user_id", userId)
+      .eq("status", "SUBMITTED")
+      .gte("submitted_at", since.toISOString());
+
+    if (error) throw new Error("Unable to load weekly practice summary.");
+    return (data ?? []).map((row) => String(row.practice_activity_id));
+  }
+
+  async listReachedActivityIds(): Promise<string[]> {
+    const { data, error } = await this.client.rpc("student_practice_reach");
+    if (error) throw new Error("Unable to load practice availability.");
+    return ((data ?? []) as Row[])
+      .filter((row) => row.reached === true)
+      .map((row) => String(row.practice_activity_id));
   }
 
   async getRecentLessonId(userId: string): Promise<string | null> {
@@ -221,7 +276,7 @@ export class SupabasePracticeRepository
   async getAttempt(userId: string, attemptId: string): Promise<PracticeAttemptView | null> {
     const { data: attempt, error: attemptError } = await this.client
       .from("practice_attempts")
-      .select("id, user_id, practice_activity_id, status, started_at, submitted_at")
+      .select("*")
       .eq("id", attemptId)
       .eq("user_id", userId)
       .maybeSingle();
@@ -241,7 +296,7 @@ export class SupabasePracticeRepository
           .maybeSingle(),
         this.client
           .from("practice_results")
-          .select("score, max_score, feedback, evaluation_status, created_at")
+          .select("*")
           .eq("practice_attempt_id", attempt.id)
           .maybeSingle(),
       ]);
@@ -255,6 +310,8 @@ export class SupabasePracticeRepository
       startedAt: String(attempt.started_at),
       submittedAt: typeof attempt.submitted_at === "string" ? attempt.submitted_at : null,
       result: result ? resultFromRow(result as Row) : null,
+      attemptKind: attemptKindFromRow(attempt.attempt_kind),
+      itemIds: itemIdsFromRow(attempt.item_ids),
     };
   }
 
@@ -267,6 +324,7 @@ export class SupabasePracticeRepository
       p_idempotency_key: input.idempotencyKey,
     });
     if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (isPracticeLessonNotReachedError(error)) throw new PracticeLessonNotReachedError();
     if (error || !data) throw new Error("Unable to start practice attempt.");
 
     const row = data as unknown as Row;
@@ -286,5 +344,90 @@ export class SupabasePracticeRepository
     if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
     if (error || !data) throw new Error("Unable to submit practice attempt.");
     return resultFromRow(data as unknown as Row);
+  }
+
+  async listDueReviews(): Promise<DueReview[]> {
+    const { data, error } = await this.client.rpc("student_due_reviews");
+    if (error || !Array.isArray(data)) throw new Error("Unable to load due reviews.");
+    return (data as Row[]).map(dueReviewFromRow);
+  }
+
+  async listSubmittedMetricsSince(userId: string, since: Date): Promise<PracticeAttemptMetrics[]> {
+    const { data: attempts, error } = await this.client
+      .from("practice_attempts")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("status", "SUBMITTED")
+      .gte("submitted_at", since.toISOString());
+    if (error) throw new Error("Unable to load weekly practice performance.");
+    const ids = (attempts ?? []).map((row) => String(row.id));
+    if (ids.length === 0) return [];
+
+    const { data: results, error: resultError } = await this.client
+      .from("practice_results")
+      .select("metrics")
+      .in("practice_attempt_id", ids);
+    if (resultError) throw new Error("Unable to load weekly practice performance.");
+    return (results ?? []).flatMap((row) => {
+      const metrics = parseMetrics((row as Row).metrics);
+      return metrics ? [metrics] : [];
+    });
+  }
+
+  async getItemResults(attemptId: string): Promise<PracticeItemResult[]> {
+    const { data, error } = await this.client
+      .from("practice_item_responses")
+      .select("item_id, round, evaluation_status, feedback, option_feedback, correct_answer")
+      .eq("practice_attempt_id", attemptId)
+      .order("created_at");
+    if (error) throw new Error("Unable to load practice item results.");
+    return ((data ?? []) as Row[]).map(itemResultFromResponseRow);
+  }
+
+  async submitItem(input: {
+    attemptId: string;
+    itemId: string;
+    round: PracticeItemRound;
+    response: PracticeItemInput;
+    confidence: PracticeConfidence | null;
+  }): Promise<PracticeItemResult> {
+    const { data, error } = await this.client.rpc("submit_practice_item", {
+      p_attempt: input.attemptId,
+      p_item_id: input.itemId,
+      p_round: input.round,
+      p_response: input.response,
+      p_confidence: input.confidence,
+    });
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (error || !data) throw new Error("Unable to submit practice item.");
+    return parseItemResult(data);
+  }
+
+  async finalizeAttempt(attemptId: string): Promise<PracticeFinalizeResult> {
+    const { data, error } = await this.client.rpc("finalize_practice_attempt", {
+      p_attempt: attemptId,
+    });
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (error || !data) throw new Error("Unable to finalize practice attempt.");
+    return parseFinalizeResult(data);
+  }
+
+  async startReview(input: {
+    activityId: string;
+    idempotencyKey: string;
+  }): Promise<PracticeAttemptView> {
+    const { data, error } = await this.client.rpc("start_practice_review", {
+      p_practice_activity_id: input.activityId,
+      p_idempotency_key: input.idempotencyKey,
+    });
+    if (isSubscriptionGateError(error)) throw new SubscriptionSuspendedError();
+    if (isPracticeLessonNotReachedError(error)) throw new PracticeLessonNotReachedError();
+    if (isPracticeNothingDueError(error)) throw new PracticeNothingDueError();
+    if (error || !data) throw new Error("Unable to start practice review.");
+
+    const row = data as unknown as Row;
+    const attempt = await this.getAttempt(String(row.user_id), String(row.id));
+    if (!attempt) throw new Error("Started practice review could not be loaded.");
+    return attempt;
   }
 }

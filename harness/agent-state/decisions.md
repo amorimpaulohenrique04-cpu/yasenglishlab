@@ -145,3 +145,12 @@ Keep prices/benefits as server-only database projections; no public SELECT polic
 ## 2026-10-15 — PR 74: gates do redesign
 
 Testar build de produção em CI e nos verificadores oficiais, mantendo next dev disponível para execução direta durante desenvolvimento. Manter todas as suítes obrigatórias e eliminar retries e capturas genéricas duplicadas. Versionar HTMLs aprovados byte a byte; revisar e atualizar PNGs por plataforma sem aumentar tolerância. Formatar arquivos versionados para não reescrever ferramentas locais. Liberar apenas horários pertencentes às fixtures antes de reposicioná-las. Gates de relatório locais/CI continuam fail-closed.
+
+## 2026-10-16 — practice-10 (Prática 10/10)
+
+Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`). Decisões do usuário: escopo total incluindo revisão espaçada; aluno só pratica aulas atual/estudadas; uma prática pode ter várias perguntas definidas pelo professor; conteúdo novo vem da autoria do professor.
+
+- A. Práticas atribuídas pelo professor ignoram o bloqueio por aula.
+- B. Na 1ª rodada o aluno vê veredito + explicação, sem gabarito; o gabarito aparece após a 2ª tentativa ou ao pular.
+- C. Tentativa IN_PROGRESS com atividade nas últimas 24h é retomada; mais antiga vira ABANDONED no próximo início (sem cron).
+- D. Itens WRITTEN/SPOKEN não entram na revisão espaçada.

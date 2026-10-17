@@ -1,3 +1,49 @@
+# Plano — PR #80 gates (pr80-gates)
+
+## Active task
+
+**pr80-gates** — goal: `harness/goals/pr80-gates.md`.
+
+1. Conferir logs originais, contratos, fixtures e implementação; preservar alterações preexistentes.
+2. Corrigir jornada canônica/retomada/persistência e estado de finalização com regressão.
+3. Preparar acesso legítimo de áudio e acompanhar navegação real no a11y; preservar negativos.
+4. Diagnosticar build visual comparando jobs e builds limpos; corrigir somente causa comprovada.
+5. Executar gates em stack descartável, inspecionar diferenças visuais e registrar bloqueios/aprovações pendentes.
+
+---
+
+# Plano — Prática 10/10 (practice-10-v3)
+
+## Active task
+
+**practice-10-v3**
+
+Goal: `harness/goals/practice-10-v3.md`. Fase 0 concluída em `practice-10-phase-0`; Fases 1–4 num PR único com commits por área, gates pesados no fim.
+
+---
+
+# Plano — Prática 10/10, Fase 0 (practice-10-phase-0)
+
+Goal: `harness/goals/practice-10-phase-0.md`. Branch `feat/practice-10-phase-0` a partir de `c98a33d` (redesign rodada 4). Plano completo: `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`.
+
+1. Migration `stage_13a_practice_lifecycle` (yas-database): colunas de tentativa, limpeza de duplicatas, índice único parcial, `practice_lesson_reached`, `start_practice_attempt` com retomada/expiração/bloqueio; teste SQL `practice_lifecycle.sql`.
+2. Domínio/UI: `grouping.ts` com `reachable`, chave de início estável, CTA primária única, resumo com janela de 7 dias e rótulo de estimativa, progresso acessível, texto do resultado incorreto.
+3. Testes unit/integration/a11y, gates verify:db/security/ui/agent, resolver os 3 registros de failure-log de 2026-10-16.
+
+---
+
+# Plano — Refinamento UI aluno (student-ui-refinement)
+
+Goal: `harness/goals/student-ui-refinement.md`. Branch `feat/ui-redesign`. Só apresentação.
+
+Status 2026-10-15: A–F implementados; Prática refeita (aula em destaque + grade de atividades, filtro em painel) e Agenda com mais respiro após feedback. tsc/eslint dos arquivos alterados OK, unit learning-lesson-access OK. verify:ui/e2e NÃO rodados (usuário pediu sem testes grandes); e2e de Agenda atualizados para o card reservado sem botão "Reservado". Vínculo prática→aula já existe no construtor do professor ("Aula relacionada"). Rodada 4 (2026-10-16): prática em rota própria de tela cheia `/pratica/[attemptId]` (grupo `(practice-focus)`, mesma guarda de aluno; `?attempt=` legado redireciona); peças compartilhadas em `pratica/_practice/`. Player redesenhado para todos os tipos (opções em cartão A/B/C, V/F, lacunas, ordenação com setas, escrita, gravador com ação única), resultado premium com próxima atividade/praticar de novo, histórico retomável, biblioteca por módulo→aula, View Transitions (entrada/saída do palco, volta, crossfade destaque⇄biblioteca) e details animados. E2E ajustados às novas URLs/rótulos (não executados). Pendente: retomar tentativa IN_PROGRESS ao clicar Praticar (backend; hoje cria duplicatas). ADR 0024 da prova multi-etapas na branch claude/practice-exam-adr-710630 (proposto, não mesclado).
+
+Rodada 3: "Atribuídas" vira faixa discreta quando vazia e cards com prazo em destaque quando há tarefas; visão `/pratica?todas=1` (biblioteca por aula) com convite "Ver todas as práticas por aula"; filtro por habilidade abre a visão completa. tsc/eslint OK.
+
+A. Perfil na sidebar (RoleShell, todos os papéis). B. Aulas: CTA por aula, resumo sem descrição de seed. E. Progresso: painéis alinhados. D. Materiais: toolbar e colunas de linha. F. Agenda: hierarquia de ações. C. Prática: nota removida, "Pratique o que você estudou" por aula vinculada, habilidades em chips. Verificação: browser 3 viewports, verify:agent, verify:ui.
+
+---
+
 # Plano — PR 74 gates
 
 ## Active task

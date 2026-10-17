@@ -130,7 +130,19 @@ test("Prática exposes skill availability, keyboard controls and WCAG A/AA compl
   await expect(vocabulary).toBeFocused();
   await assertAxe(page);
 
-  await page.getByRole("button", { name: "Começar prática →" }).click();
+  // The hero starts the recommended practice, or resumes it when another project already opened it.
+  await page
+    .getByRole("button", { name: "Começar prática →", exact: true })
+    .or(page.getByRole("link", { name: "Continuar →", exact: true }))
+    .first()
+    .click();
+  // Multi-question practices open on a pre-task screen first.
+  const start = page.getByRole("button", { name: "Começar", exact: true });
+  await expect(start.or(page.getByRole("radio").first())).toBeVisible();
+  if (await start.isVisible()) {
+    await assertAxe(page);
+    await start.click();
+  }
   const answer = page.getByRole("radio").first();
   await answer.focus();
   await expect(answer).toBeFocused();
@@ -303,12 +315,17 @@ test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({
     has: page.getByRole("heading", { name: "Canonical Speaking Review", exact: true }),
   });
   await activity.getByRole("button", { name: "Praticar →" }).click();
+  await expect(page).toHaveURL(/\/pratica\/[0-9a-f-]+$/);
   const audio = page.getByLabel("Arquivo de áudio (até 25 MiB)");
   await expect(audio).toBeVisible();
   await audio.focus();
   await expect(audio).toBeFocused();
   await expect(page.getByRole("button", { name: "Gravar áudio" })).toBeVisible();
   await assertAxe(page);
+  await page.screenshot({
+    path: `harness/evidence/pr80-gates/audio-${test.info().project.name}.png`,
+    fullPage: true,
+  });
 });
 
 test("P21 recorded-video Admin upload state is accessible before publication", async ({ page }) => {
