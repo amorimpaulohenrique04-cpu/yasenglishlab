@@ -4,7 +4,8 @@ import { assertRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 
 const planRow = z.object({
-  id: z.uuid(),
+  // Seeded plan ids are not RFC 4122 versions; accept any GUID shape like the rest of the billing code.
+  id: z.guid(),
   code: z.string(),
   name: z.string(),
   amount_cents: z.number(),

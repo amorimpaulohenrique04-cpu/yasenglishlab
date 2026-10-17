@@ -11,7 +11,7 @@ export const reconciliationBatchSize = 50;
 
 const localStatus = z.enum(["ACTIVE", "PAST_DUE", "TRIALING", "CANCELLED", "EXPIRED"]);
 const subscriptionRow = z.object({
-  id: z.uuid(),
+  id: z.guid(),
   provider_subscription_id: z.string(),
   status: localStatus,
 });
@@ -75,8 +75,8 @@ export async function runBillingReconciliation(provider: BillingProvider = comme
 }
 
 const findingSchema = z.object({
-  id: z.uuid(),
-  subscription_id: z.uuid(),
+  id: z.guid(),
+  subscription_id: z.guid(),
   kind: z.string(),
   detail: z.record(z.string(), z.unknown()),
   first_seen_at: z.string(),
