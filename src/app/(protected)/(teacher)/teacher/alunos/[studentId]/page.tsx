@@ -4,7 +4,7 @@ import { Alert, Badge, Button, Card, Textarea, PageHeader, SectionHeader } from 
 import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
 import { loadTeacherStudentProjection } from "@/server/teacher-operations/student-projection";
 import { createSupabaseServerClient } from "@/server/supabase/server";
-import { createNoteAction } from "../actions";
+import { createNoteAction, requestReassessmentAction } from "../actions";
 export default async function TeacherStudentPage({
   params,
   searchParams,
@@ -28,6 +28,13 @@ export default async function TeacherStudentPage({
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) throw new Error("Notas indisponíveis.");
+  const { data: reassessments } = await client
+    .from("reassessment_requests")
+    .select("id,reason,status,created_at,resolution_note")
+    .eq("student_user_id", id)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  const openReassessment = reassessments?.find((item) => item.status === "OPEN");
   return (
     <>
       <PageHeader
@@ -41,6 +48,49 @@ export default async function TeacherStudentPage({
           description="Confira seu vínculo com este aluno."
         />
       )}
+      {(await searchParams).save === "reassessment" && (
+        <Alert
+          tone="success"
+          title="Pedido registrado"
+          description="A equipe vai avaliar o pedido. O curso e a turma do aluno não mudam."
+        />
+      )}
+      <Card className="yas-stack">
+        <SectionHeader title="Pedir novo teste" />
+        <p>
+          O pedido fica no histórico e não substitui o resultado anterior. Ele não inicia um teste
+          nem muda o curso do aluno.
+        </p>
+        {openReassessment ? (
+          <p>
+            Pedido em aberto desde{" "}
+            {new Date(openReassessment.created_at).toLocaleDateString("pt-BR", {
+              timeZone: "America/Recife",
+            })}
+            : {openReassessment.reason}
+          </p>
+        ) : (
+          <form action={requestReassessmentAction} className="yas-stack">
+            <input type="hidden" name="studentId" value={id} />
+            <Textarea
+              name="reason"
+              label="Justificativa (10 a 1000 caracteres)"
+              required
+              minLength={10}
+              maxLength={1000}
+            />
+            <Button type="submit">Pedir novo teste</Button>
+          </form>
+        )}
+        {(reassessments ?? [])
+          .filter((item) => item.status === "RESOLVED")
+          .map((item) => (
+            <p key={item.id}>
+              Tratado em {new Date(item.created_at).toLocaleDateString("pt-BR")}: {item.reason} —{" "}
+              {item.resolution_note}
+            </p>
+          ))}
+      </Card>
       <Card>
         <SectionHeader title="Matrículas e trilhas" />
         {projection.enrollments.length ? (

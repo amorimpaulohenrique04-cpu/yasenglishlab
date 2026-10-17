@@ -15,3 +15,15 @@ export async function createNoteAction(form: FormData) {
   revalidatePath(`/teacher/alunos/${id}`);
   redirect(`/teacher/alunos/${id}?save=${error ? "error" : "success"}`);
 }
+
+export async function requestReassessmentAction(form: FormData) {
+  await assertRole("TEACHER");
+  const id = z.uuid().parse(form.get("studentId"));
+  const client = await createSupabaseServerClient();
+  const { error } = await client.rpc("request_reassessment", {
+    p_student: id,
+    p_reason: z.string().trim().min(10).max(1000).parse(form.get("reason")),
+  });
+  revalidatePath(`/teacher/alunos/${id}`);
+  redirect(`/teacher/alunos/${id}?save=${error ? "error" : "reassessment"}`);
+}

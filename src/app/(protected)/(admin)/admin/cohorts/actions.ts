@@ -67,7 +67,6 @@ const timeToMinute = (value: FormDataEntryValue | null) => {
 export async function configureCohortAction(form: FormData) {
   await assertRole("ADMIN");
   const cohortId = uuid.safeParse(form.get("cohortId"));
-  const capacity = z.coerce.number().int().min(1).max(6).safeParse(form.get("capacity"));
   const schedule: { weekday: number; startMinute: number; endMinute: number }[] = [];
   let invalid = false;
   for (let slot = 0; slot < 7; slot += 1) {
@@ -89,11 +88,11 @@ export async function configureCohortAction(form: FormData) {
     }
     schedule.push({ weekday: weekday.data, startMinute, endMinute });
   }
-  if (!cohortId.success || !capacity.success || invalid || schedule.length === 0) {
+  if (!cohortId.success || invalid || schedule.length === 0) {
     redirect(cohortReturnUrl(form, "invalid"));
   }
   try {
-    await configureCurrentAdminCohort(cohortId.data, capacity.data, schedule);
+    await configureCurrentAdminCohort(cohortId.data, schedule);
   } catch {
     redirect(cohortReturnUrl(form, "error"));
   }

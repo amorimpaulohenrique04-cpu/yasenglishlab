@@ -11,6 +11,7 @@ import {
   configureCohort,
   getPlacement,
   getPlacementQueue,
+  getPlacementQueuePage,
   placementStateSchema,
 } from "@/modules/placement";
 import { SupabaseProductAnalytics } from "@/server/analytics/supabase-product-analytics";
@@ -58,6 +59,14 @@ export async function loadStudentCandidates() {
 export async function loadPlacementQueue(role: "TEACHER" | "ADMIN", state?: string) {
   const { repo } = await context(role);
   return getPlacementQueue(repo, state ? placementStateSchema.parse(state) : undefined);
+}
+export async function loadPlacementQueuePage(
+  role: "TEACHER" | "ADMIN",
+  state: string | undefined,
+  page: number,
+) {
+  const { repo } = await context(role);
+  return getPlacementQueuePage(repo, state ? placementStateSchema.parse(state) : undefined, page);
 }
 export async function loadTeacherPlacement(id: string) {
   const { repo, client } = await context("TEACHER");

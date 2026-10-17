@@ -44,6 +44,17 @@ function options(records: AdminContentRecord[] | undefined) {
   }));
 }
 
+function WelcomeCheckbox({ record }: { record: AdminContentRecord | null }) {
+  return (
+    <Checkbox
+      name="welcome"
+      value="true"
+      defaultChecked={record?.welcome === true}
+      label="Conteúdo inicial: liberado para alunos pagantes enquanto aguardam a turma"
+    />
+  );
+}
+
 function AudienceSelect({ record }: { record: AdminContentRecord | null }) {
   return (
     <Select
@@ -216,6 +227,7 @@ export function ContentEditor({
                 defaultValue={value(record, "estimated_minutes")}
               />
               <AudienceSelect record={record} />
+              <WelcomeCheckbox record={record} />
             </>
           )}
 
@@ -344,6 +356,7 @@ export function ContentEditor({
                 </p>
               )}
               <AudienceSelect record={record} />
+              <WelcomeCheckbox record={record} />
             </>
           )}
 

@@ -12,6 +12,8 @@ const navigation: readonly RoleNavItem[] = [
   { id: "practice", label: "Prática", href: "/pratica", icon: "headphones", shortcut: true },
   { id: "materials", label: "Materiais", href: "/materiais", icon: "file" },
   { id: "progress", label: "Progresso", href: "/progresso", icon: "bars", shortcut: true },
+  { id: "feedbacks", label: "Feedbacks", href: "/feedbacks", icon: "chat" },
+  { id: "notices", label: "Avisos", href: "/avisos", icon: "bell" },
   { id: "schedule", label: "Agenda", href: "/agenda", icon: "cal", shortcut: true },
 ];
 

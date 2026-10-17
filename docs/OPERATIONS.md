@@ -70,3 +70,10 @@ O workflow roda a cada 5 minutos, falha visivelmente se a URL ou o secret faltar
 - O agendador chama a rota a cada 1–5 minutos com `Authorization: Bearer <secret>`. Sem header válido: `401`.
 - Cada chamada processa um lote fixo (20); a resposta traz apenas contagens (`claimed/sent/pending/failed/lost`). Claim com lease torna chamadas concorrentes ou repetidas seguras; o backoff é persistido na delivery.
 - Não registre o secret em logs do agendador; rotacione trocando o valor no host e no agendador.
+
+## Content readiness report
+
+`psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f scripts/sql/content-readiness.sql` lists published content that is
+incomplete (empty courses/modules/lessons, assets without body or source, materials without a file, practices
+without content, welcome-flagged items that Students cannot open). It is read-only. Missing production
+content must be authored in Admin Content; the system never invents lessons.

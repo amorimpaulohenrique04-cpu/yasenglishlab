@@ -99,6 +99,7 @@ select pg_temp.assert_true(not exists(select 1 from public.get_placement_candida
 select pg_temp.denied('select public.get_placement_review_evidence(current_setting(''placement.test.case'')::uuid)');
 select pg_temp.denied('select public.confirm_placement_choice(''99050000-0000-4000-8000-000000000002'')','23514');
 reset role;
+select pg_temp.assert_true((select count(*)=1 from public.notifications where notification_type='PLACEMENT_READY' and event_key=current_setting('placement.test.case')||':PLACEMENT_READY'),'review completion notifies the student exactly once');
 -- Stage 11: confirmation follows private.has_paid_access (no start-date check); a PAST_DUE subscription is still denied.
 update public.subscriptions set status='PAST_DUE' where provider_subscription_id='placement-test-a';
 set local role authenticated;
@@ -122,7 +123,7 @@ select pg_temp.denied('select public.transfer_placement_cohort(current_setting('
 select pg_temp.assert_true((select chosen_cohort_id='99050000-0000-4000-8000-000000000001' from public.placement_decisions where placement_case_id=current_setting('placement.test.case')::uuid),'initial choice preserved after transfer');
 select pg_temp.assert_true((select recommended_course_id='40000000-0000-4000-8000-000000000001' from public.placement_reviews where placement_case_id=current_setting('placement.test.case')::uuid),'recommendation preserved');
 select pg_temp.assert_true((select count(*)=1 from public.audit_logs where action='placement_cohort_transferred' and entity_id=current_setting('placement.test.case')::uuid),'transfer audit exactly once');
-select pg_temp.denied('select public.configure_cohort_placement(''99050000-0000-4000-8000-000000000003'',6,''[{"weekday":2,"startMinute":1140,"endMinute":1200}]'')','23514');
+select pg_temp.denied('select public.configure_cohort_schedule(''99050000-0000-4000-8000-000000000003'',''[{"weekday":2,"startMinute":1140,"endMinute":1200}]'')','23514');
 reset role;
 insert into public.user_roles(user_id,role) values('99000000-0000-4000-8000-000000000004','ADMIN');
 set local role authenticated;

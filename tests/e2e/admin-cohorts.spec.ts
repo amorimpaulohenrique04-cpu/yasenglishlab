@@ -19,7 +19,7 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await expect(page.getByRole("heading", { name: "Turmas", exact: true })).toBeVisible();
   const cohortRow = page.getByRole("row", { name: /Cohort Basic/ });
   await expect(cohortRow).toBeVisible();
-  await expect(cohortRow).toContainText("1 de 6");
+  await expect(cohortRow).toContainText("1");
   await cohortRow.getByRole("button", { name: "Gerenciar" }).click();
   const drawer = page.getByRole("dialog");
   await expect(
@@ -28,10 +28,9 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await expect(drawer.getByText("Segunda-feira 18:00–19:00")).toBeVisible();
   await expect(drawer.getByText(/Professor A|Yasmin/).first()).toBeVisible();
 
-  const capacity = drawer.getByLabel("Capacidade máxima");
-  await capacity.selectOption("5");
-  await drawer.getByRole("button", { name: "Salvar capacidade e horário" }).click();
-  await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1 de 5");
+  await expect(drawer.getByLabel("Capacidade máxima")).toHaveCount(0);
+  await drawer.getByRole("button", { name: "Salvar horário" }).click();
+  await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
   const desktopViolations = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
@@ -42,9 +41,8 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
     .getByRole("button", { name: "Gerenciar" })
     .click();
   const restoreDrawer = page.getByRole("dialog");
-  await restoreDrawer.getByLabel("Capacidade máxima").selectOption("6");
-  await restoreDrawer.getByRole("button", { name: "Salvar capacidade e horário" }).click();
-  await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1 de 6");
+  await restoreDrawer.getByRole("button", { name: "Salvar horário" }).click();
+  await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
 
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileList = page.getByRole("list", { name: "Turmas operacionais" });

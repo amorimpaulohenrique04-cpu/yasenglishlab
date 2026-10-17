@@ -67,7 +67,7 @@ select pg_temp.ok((select jsonb_array_length(a->'items')=10 and (a->>'count')::i
 select pg_temp.ok(pg_temp.item(doc,'COHORT_CONFIGURATION',pg_temp.id(302))->>'reason'='MISSING_SETTINGS','missing cohort configuration') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=1))->>'reason'='NO_COHORT','course has no active cohort') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=2))->>'reason'='NO_SCHEDULE','cohort has no placement schedule') from view;
-select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=3))->>'reason'='NO_CAPACITY','compatible cohort full') from view;
+select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=3)) is null,'compatible cohort has no student limit') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=4))->>'reason'='NO_COMPATIBILITY','availability mismatch') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=5)) is null,'eligible case is absent from alerts') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=6))->>'reason'='NO_AVAILABILITY','missing Student preference') from view;
@@ -80,7 +80,7 @@ select pg_temp.ok(pg_temp.item(doc,'COMPLETED_WITHOUT_NEXT',pg_temp.id(21)) is n
 select pg_temp.ok(pg_temp.item(doc,'COMPLETED_WITHOUT_NEXT',pg_temp.id(22)) is null,'next active enrollment suppresses completed warning') from view;
 select pg_temp.ok(not exists(select 1 from jsonb_array_elements(doc->'alerts')a where jsonb_array_length(a->'items')>10),'bounded detail rows') from view;
 select pg_temp.ok((select count(*) from public.get_placement_candidates((select id from cases where n=5)))>0,'same actual placement eligibility allows candidate');
-select pg_temp.ok((select count(*) from public.get_placement_candidates((select id from cases where n=3)))=0,'same actual placement eligibility rejects full candidate');
+select pg_temp.ok((select count(*) from public.get_placement_candidates((select id from cases where n=3)))>0,'same actual placement eligibility keeps a populated cohort');
 reset role;
 select pg_temp.ok((select count(*)=(select total from before_audit) from public.audit_logs),'alert read has no write/audit side effect');
 update public.placement_cases set state_changed_at=now()-interval '3 days 1 second' where id=(select id from cases where n=7);

@@ -56,7 +56,7 @@ function CourseOverview({ course, index }: { course: LearningCourse; index: numb
         <Hero
           className="yas-reveal"
           style={reveal(index + 1)}
-          kicker="Seu curso"
+          kicker={course.welcome ? "Conteúdo inicial" : "Seu curso"}
           kickerIcon="book"
           title={<span id={`course-${course.id}`}>{course.title}</span>}
           photo="/brand/hero-course.webp"

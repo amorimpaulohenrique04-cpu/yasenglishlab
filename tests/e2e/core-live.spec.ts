@@ -128,7 +128,7 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
     await page.getByLabel("Término (data e hora com fuso)").fill(sessionEnd.toISOString());
     await page.getByLabel("Capacidade").fill("6");
     await page.getByLabel("Turma (encontros em grupo)").selectOption({ label: "Cohort Basic" });
-    await page.getByLabel("URL HTTPS da reunião").fill("https://meet.example.test/p21-core-live");
+    await page.getByLabel("Link do Google Meet").fill("https://meet.google.com/p21-core-live");
     await page.getByRole("button", { name: "Salvar encontro" }).click();
 
     await expect(page).toHaveURL(/\/teacher\/sessoes\/[0-9a-f-]+\?save=success$/i);

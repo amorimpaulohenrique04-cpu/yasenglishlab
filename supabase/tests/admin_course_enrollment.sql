@@ -114,8 +114,8 @@ select pg_temp.ok(pg_temp.state('select pg_temp.enroll(5,602,801)')='23514','ret
 select pg_temp.ok(pg_temp.state($q$select pg_temp.enroll(5,601,801,'Different reason')$q$)='23514','retry changed reason denied');
 select pg_temp.ok(pg_temp.state($q$select public.admin_enroll_in_course(pg_temp.id(5),pg_temp.id(104),pg_temp.id(601),pg_temp.id(801),'Proximo curso')$q$)='23514',
   'retry changed course denied');
-select pg_temp.ok(pg_temp.state('select pg_temp.enroll(7,601,802)')='23514','last vacancy consumed; another student denied');
-select pg_temp.ok(pg_temp.enroll(5,601,803,'Confirmar matricula')->>'reusedMembership'='true','existing member may be reused in a full cohort');
+select pg_temp.ok(pg_temp.state('select pg_temp.enroll(7,601,802)')='OK','cohort has no student limit; another student accepted');
+select pg_temp.ok(pg_temp.enroll(5,601,803,'Confirmar matricula')->>'reusedMembership'='true','existing member may be reused');
 reset role;
 select pg_temp.ok((select to_jsonb(e)=(select v from snapshots where k='completed') from public.enrollments e where id=pg_temp.id(505)),
   'completed enrollment including completed_at preserved exactly');

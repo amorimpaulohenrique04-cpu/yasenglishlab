@@ -136,7 +136,7 @@ describe("enrollment form validation", () => {
     ).toBe("ok");
   });
   it("maps database errors to PT-BR without leaking raw text", () => {
-    expect(enrollErrorMessage("cohort_capacity_exhausted")).toBe("A turma não tem mais vagas.");
+    expect(enrollErrorMessage("cohort_capacity_exhausted")).not.toContain("vagas");
     expect(enrollErrorMessage("Active compatible cohort required")).toContain("pertencer ao curso");
     expect(enrollErrorMessage("Target course is already completed")).toContain("já concluiu");
     expect(enrollErrorMessage("boom secret")).not.toContain("secret");

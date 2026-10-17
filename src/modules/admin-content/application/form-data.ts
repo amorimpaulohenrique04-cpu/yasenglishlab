@@ -42,6 +42,7 @@ export function adminContentFormToPayload(
         title: one(formData, "title"),
         estimated_minutes: one(formData, "estimated_minutes"),
         audience: one(formData, "audience") || "COURSE",
+        welcome: one(formData, "welcome") === "true",
       };
     case "lesson_assets":
       return {
@@ -64,6 +65,7 @@ export function adminContentFormToPayload(
         active: one(formData, "active") === "true",
         required_entitlement_key: nullable(one(formData, "required_entitlement_key")),
         audience: one(formData, "audience") || "COURSE",
+        welcome: one(formData, "welcome") === "true",
       };
     case "practice_activities":
       return {

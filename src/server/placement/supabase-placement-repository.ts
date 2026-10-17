@@ -90,9 +90,8 @@ export class SupabasePlacementRepository implements PlacementRepository {
     );
   }
   async configure(input: Parameters<PlacementRepository["configure"]>[0]) {
-    await this.rpc("configure_cohort_placement", {
+    await this.rpc("configure_cohort_schedule", {
       p_cohort_id: input.cohortId,
-      p_capacity: input.capacity,
       p_schedule: input.schedule,
     });
   }
@@ -108,13 +107,25 @@ export class SupabasePlacementRepository implements PlacementRepository {
   async getCase(id: string): Promise<PlacementView | null> {
     return projectionSchema.parse(await this.rpc("get_placement_projection", { p_case_id: id }));
   }
-  async listCases(state?: string) {
+  async listCases(state?: string, page?: { limit: number; offset: number }) {
     return z.array(projectionSchema).parse(
       await this.rpc("get_placement_queue", {
         p_state: state ?? null,
         p_workspace: this.workspace,
+        ...(page ? { p_limit: page.limit, p_offset: page.offset } : {}),
       }),
     );
+  }
+  async countCases(state?: string) {
+    return z
+      .number()
+      .int()
+      .parse(
+        await this.rpc("count_placement_queue", {
+          p_state: state ?? null,
+          p_workspace: this.workspace,
+        }),
+      );
   }
   async getCandidates(caseId: string) {
     return z

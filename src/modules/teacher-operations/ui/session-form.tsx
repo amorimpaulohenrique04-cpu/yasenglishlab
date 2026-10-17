@@ -92,11 +92,11 @@ export function SessionForm({
           </>
         )}
         <Input
-          label="URL HTTPS da reunião"
+          label="Link do Google Meet"
           name="meeting_url"
           type="url"
           maxLength={2048}
-          placeholder="https://…"
+          placeholder="https://meet.google.com/abc-defg-hij"
         />
         {session && <p>Informe a URL para atualizar a reunião.</p>}
         <Button type="submit">Salvar encontro</Button>

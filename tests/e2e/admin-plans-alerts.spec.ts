@@ -164,7 +164,7 @@ test.describe("Stage 12D/F Admin operations", () => {
       exact: true,
     });
     await expect(missing).toContainText(cohortName);
-    await expect(missing).toContainText("Turma sem capacidade e horários de entrada configurados.");
+    await expect(missing).toContainText("Turma sem horários de entrada configurados.");
     await expect(
       region.getByRole("heading", { name: "Teste de entrada não publicado", exact: true }),
     ).toBeVisible();

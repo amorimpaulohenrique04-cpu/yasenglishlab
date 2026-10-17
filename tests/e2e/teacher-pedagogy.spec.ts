@@ -7,7 +7,7 @@ const enabled = process.env.CANONICAL_E2E === "1";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const activityTitle = "Canonical Speaking Review";
+const activityTitle = "Falar sobre o seu dia";
 
 if (enabled && (!password || !url || !serviceRoleKey)) {
   throw new Error("Teacher Pedagogy E2E requires canonical local Supabase credentials.");

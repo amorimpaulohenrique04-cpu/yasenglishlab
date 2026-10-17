@@ -152,6 +152,19 @@ describe("P21 Home projection", () => {
     });
   });
 
+  it("keeps Start when the lesson was only opened (0% access row)", async () => {
+    const opened = lesson("opened", 1, progress("opened", 0, "2026-10-01T11:00:00Z"));
+    const state = await getHomeView(
+      repository({ loadLearning: vi.fn(async () => [course("course-1", [opened])]) }),
+      userId,
+      true,
+      now,
+    );
+
+    if (state.status !== "success") throw new Error("Expected success.");
+    expect(state.data.primaryAction).toMatchObject({ kind: "learning", label: "Começar aula" });
+  });
+
   it("turns an unstarted lesson into Start", async () => {
     const state = await getHomeView(repository(), userId, true, now);
 

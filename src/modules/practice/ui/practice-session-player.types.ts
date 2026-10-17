@@ -34,6 +34,14 @@ export interface PracticeSessionLiveFlow {
   itemIds?: string[] | null;
 }
 
+/** Teacher review of one manual (WRITTEN/SPOKEN) item, keyed by item id in `manualReviews`. */
+export interface PracticeItemReview {
+  feedback: string;
+  ratings: Record<string, string>;
+  rubricVersion: string;
+  reviewedAt: string;
+}
+
 export interface PracticeSessionPlayerProps {
   content: PracticeContentV3Student | PracticeContentV3;
   mode: "live" | "preview";
@@ -45,6 +53,8 @@ export interface PracticeSessionPlayerProps {
   previewKeys?: PracticeItemKeys;
   /** Practice skill; picks the rubric criteria shown for SPOKEN items (PRONUNCIATION vs SPEAKING). */
   skill?: string;
+  /** Reviews already published by the Teacher; a reviewed item is no longer "waiting". */
+  manualReviews?: Record<string, PracticeItemReview>;
   /** Rendered under the final summary (e.g. links back to the practice list). */
   resultFooter?: ReactNode;
 }

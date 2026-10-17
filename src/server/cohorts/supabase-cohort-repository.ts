@@ -71,15 +71,13 @@ export class SupabaseCohortRepository implements CohortRepository {
   }
   async configure(
     cohortId: string,
-    capacity: number,
     schedule: { weekday: number; startMinute: number; endMinute: number }[],
   ) {
-    const { error } = await this.client.rpc("configure_cohort_placement", {
+    const { error } = await this.client.rpc("configure_cohort_schedule", {
       p_cohort_id: cohortId,
-      p_capacity: capacity,
       p_schedule: schedule,
     });
-    if (error) throw new Error("Unable to configure cohort schedule or capacity.");
+    if (error) throw new Error("Unable to configure cohort schedule.");
   }
   async setPrimaryTeacher(cohortId: string, teacherId: string) {
     const { data, error } = await this.client.rpc("set_primary_cohort_teacher", {

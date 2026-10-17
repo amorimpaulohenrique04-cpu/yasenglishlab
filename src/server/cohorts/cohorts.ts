@@ -32,7 +32,6 @@ export async function manageCurrentAdminCohort(command: CohortCommand) {
 
 export async function configureCurrentAdminCohort(
   cohortId: string,
-  capacity: number,
   schedule: { weekday: number; startMinute: number; endMinute: number }[],
 ) {
   const auth = await assertRole("ADMIN");
@@ -45,7 +44,7 @@ export async function configureCurrentAdminCohort(
       impact: "user_blocked",
       userId: auth.userId,
     },
-    () => repository.configure(cohortId, capacity, schedule),
+    () => repository.configure(cohortId, schedule),
   );
 }
 

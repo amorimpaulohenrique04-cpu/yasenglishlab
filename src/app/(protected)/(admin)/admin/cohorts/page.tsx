@@ -52,10 +52,7 @@ export default async function CohortsPage({
         <p>
           {cohort.code} · {cohort.course_title} · {cohort.status} · {cohort.timezone}
         </p>
-        <p>
-          Ocupação: {cohort.occupancy}
-          {cohort.capacity ? ` de ${cohort.capacity}` : " · capacidade não configurada"}
-        </p>
+        <p>Alunos na turma: {cohort.occupancy}</p>
         <p>
           <Link href={`/admin/cohorts/${cohort.id}/trilha`}>Trilha da turma</Link>
         </p>
@@ -213,20 +210,11 @@ export default async function CohortsPage({
         <form
           action={configureCohortAction}
           className="yas-stack"
-          aria-label={`Configuração de capacidade e horário de ${cohort.name}`}
+          aria-label={`Configuração de horário de ${cohort.name}`}
         >
-          <h3>Configurar capacidade e horário recorrente</h3>
+          <h3>Configurar horário recorrente</h3>
           <CohortReturnContext query={query} offset={offset} />
           <input type="hidden" name="cohortId" value={cohort.id} />
-          <Select
-            name="capacity"
-            label="Capacidade máxima"
-            defaultValue={String(cohort.capacity ?? 6)}
-            options={[1, 2, 3, 4, 5, 6].map((value) => ({
-              value: String(value),
-              label: String(value),
-            }))}
-          />
           <fieldset className="yas-stack">
             <legend>Janelas semanais (1 a 7)</legend>
             {Array.from({ length: 7 }, (_, index) => {
@@ -263,7 +251,7 @@ export default async function CohortsPage({
             })}
           </fieldset>
           <Button type="submit" variant="secondary">
-            Salvar capacidade e horário
+            Salvar horário
           </Button>
           <p>
             Capacidade abaixo da ocupação ou alteração de horário com histórico de vínculos será
@@ -277,7 +265,7 @@ export default async function CohortsPage({
     <div className="yas-stack">
       <PageHeader
         title="Turmas"
-        description="Organize turmas, capacidade, horários recorrentes e vínculos operacionais."
+        description="Organize turmas, horários recorrentes e vínculos operacionais."
       />
       {result && (
         <Alert
@@ -346,7 +334,7 @@ export default async function CohortsPage({
                 cohort.name,
                 cohort.course_title,
                 cohort.status,
-                `${cohort.occupancy}${cohort.capacity ? ` de ${cohort.capacity}` : " · sem limite configurado"}`,
+                String(cohort.occupancy),
                 nextSession
                   ? `${nextSession.title} · ${new Date(nextSession.starts_at).toLocaleString("pt-BR", { timeZone: cohort.timezone })}`
                   : "Sem encontro agendado",
@@ -358,10 +346,7 @@ export default async function CohortsPage({
                   <span>
                     {cohort.course_title} · {cohort.status}
                   </span>
-                  <span>
-                    Ocupação: {cohort.occupancy}
-                    {cohort.capacity ? ` de ${cohort.capacity}` : " · sem limite configurado"}
-                  </span>
+                  <span>Alunos na turma: {cohort.occupancy}</span>
                   <span>
                     {nextSession ? `Próximo: ${nextSession.title}` : "Sem encontro agendado"}
                   </span>

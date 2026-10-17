@@ -48,13 +48,12 @@ select set_config('request.jwt.claim.sub','9d000000-0000-4000-8000-000000000001'
  set_config('request.jwt.claims','{"sub":"9d000000-0000-4000-8000-000000000001","aal":"aal2"}',true);
 select pg_temp.assert_true((select count(*)=1 from public.admin_cohort_directory(25,0,'Cohort V2')),'Admin AAL2 reads matching cohort projection');
 select pg_temp.assert_true(((select row->>'occupancy' from public.admin_cohort_directory(25,0,'Cohort V2 Test') row))::integer=1,'directory derives active membership occupancy');
-select pg_temp.assert_true(((select row->>'capacity' from public.admin_cohort_directory(25,0,'Cohort V2 Test') row))::integer=3,'directory uses authoritative placement capacity');
 select pg_temp.assert_true((((select row->'schedule'->0->>'weekday' from public.admin_cohort_directory(25,0,'Cohort V2 Test') row))::integer)=2,'directory returns recurring schedule settings');
 select pg_temp.assert_true((select count(*)=1 from public.admin_cohort_directory(1,0,'')),'bounded first page returned');
-select public.configure_cohort_placement('9d300000-0000-4000-8000-000000000001',4,'[{"weekday":2,"startMinute":600,"endMinute":660}]');
-select pg_temp.assert_true((select capacity=4 from public.cohort_placement_settings where cohort_id='9d300000-0000-4000-8000-000000000001'),'capacity update persists in authoritative setting');
-select pg_temp.assert_true((select count(*)=1 and bool_and(data ? 'schedule') from public.audit_logs where action='cohort_placement_configured' and entity_id='9d300000-0000-4000-8000-000000000001'),'schedule and capacity mutation audited');
-select pg_temp.denied('select public.configure_cohort_placement(''9d300000-0000-4000-8000-000000000001'',4,''[{"weekday":3,"startMinute":600,"endMinute":660}]'')','23514');
+select public.configure_cohort_schedule('9d300000-0000-4000-8000-000000000001','[{"weekday":2,"startMinute":600,"endMinute":660}]');
+select pg_temp.assert_true((select schedule->0->>'weekday'='2' from public.cohort_placement_settings where cohort_id='9d300000-0000-4000-8000-000000000001'),'schedule update persists in authoritative setting');
+select pg_temp.assert_true((select count(*)=0 from public.audit_logs where action='cohort_schedule_configured' and entity_id='9d300000-0000-4000-8000-000000000001'),'unchanged schedule is an unaudited no-op');
+select pg_temp.denied('select public.configure_cohort_schedule(''9d300000-0000-4000-8000-000000000001'',''[{"weekday":3,"startMinute":600,"endMinute":660}]'')','23514');
 select pg_temp.denied('select * from public.admin_cohort_directory(51,0,null)','22023');
 select pg_temp.denied('select * from public.admin_cohort_directory(25,-1,null)','22023');
 select public.set_primary_cohort_teacher('9d300000-0000-4000-8000-000000000001','9d100000-0000-4000-8000-000000000002');
