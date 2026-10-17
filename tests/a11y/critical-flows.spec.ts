@@ -312,7 +312,7 @@ test("P21 Student Agenda detail and MANUAL_AUDIO input are accessible", async ({
   await login(page, "canonical.cohort-student@example.test");
   await page.goto("/pratica?skill=SPEAKING");
   const activity = page.locator(".yas-practice-activity-card").filter({
-    has: page.getByRole("heading", { name: "Canonical Speaking Review", exact: true }),
+    has: page.getByRole("heading", { name: "Falar sobre o seu dia", exact: true }),
   });
   await activity.getByRole("button", { name: "Praticar →" }).click();
   await expect(page).toHaveURL(/\/pratica\/[0-9a-f-]+$/);

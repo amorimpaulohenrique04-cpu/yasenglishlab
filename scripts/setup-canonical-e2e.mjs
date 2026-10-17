@@ -310,7 +310,7 @@ const { error: p21AudioActivityError } = await admin.from("practice_activities")
   {
     id: p21AudioActivityId,
     slug: "canonical-speaking-review",
-    title: "Canonical Speaking Review",
+    title: "Falar sobre o seu dia",
     skill: "SPEAKING",
     cefr_target: null,
     difficulty: "FOUNDATION",

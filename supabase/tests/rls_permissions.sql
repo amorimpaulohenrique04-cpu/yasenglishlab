@@ -704,11 +704,17 @@ values (
 )
 on conflict (id) do nothing;
 
+-- Databases created by an older version of this fixture hold it under a non-RFC-4122 id (issue #79), which the app
+-- rejects. Retire that row (kept for its history) so the corrected fixture below can use the same slug.
+update public.practice_activities set publication_status = 'DRAFT', published_at = null
+ where id = '82600000-0000-0000-0000-000000000001' and publication_status = 'PUBLISHED';
+update public.practice_activities set slug = slug || '-retired', active = false
+ where id = '82600000-0000-0000-0000-000000000001';
 insert into public.practice_activities (
   id, slug, title, skill, estimated_minutes, content, active, publication_status, published_at
 )
 values (
-  '82600000-0000-0000-0000-000000000001',
+  '82600000-0000-4000-8000-000000000001',
   'p21-rls-speaking',
   'P21 RLS speaking',
   'SPEAKING',
@@ -829,7 +835,7 @@ begin
   end if;
 
   select (public.start_practice_attempt(
-    '82600000-0000-0000-0000-000000000001',
+    '82600000-0000-4000-8000-000000000001',
     '82800000-0000-0000-0000-000000000001'
   )).id into attempt_id;
   select public.reserve_practice_audio(attempt_id, 'audio/webm') into media_id;

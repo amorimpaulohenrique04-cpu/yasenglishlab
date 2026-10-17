@@ -1,6 +1,8 @@
 "use server";
 
+import { z } from "zod";
 import { assertRole } from "@/server/auth/guards";
+import { createSupabaseServerClient } from "@/server/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
@@ -62,4 +64,15 @@ export async function transferPlacementAction(form: FormData) {
   revalidatePath("/onboarding/placement");
   revalidatePath("/home");
   redirect("/admin/enrollments?result=transferred");
+}
+
+export async function resolveReassessmentAction(form: FormData) {
+  await assertRole("ADMIN");
+  const client = await createSupabaseServerClient();
+  const { error } = await client.rpc("resolve_reassessment", {
+    p_id: z.uuid().parse(form.get("requestId")),
+    p_note: z.string().trim().min(1).max(1000).parse(form.get("note")),
+  });
+  revalidatePath("/admin/enrollments");
+  redirect(`/admin/enrollments?result=${error ? "error" : "resolved"}`);
 }

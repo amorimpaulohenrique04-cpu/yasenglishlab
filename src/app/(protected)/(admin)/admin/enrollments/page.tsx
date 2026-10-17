@@ -22,11 +22,13 @@ import {
   reviewSlaStatus,
   weekdays,
 } from "@/modules/placement";
+import { loadOpenReassessments } from "@/server/placement/reassessments";
 import { loadPlacementTeacherCandidates } from "@/server/placement/teacher-assignment";
 import { loadEnrollmentsWithoutActiveCohort } from "@/server/billing/complimentary-access";
 import { loadPlacementQueuePage, loadPlacementCohortSettings } from "@/server/placement/placement";
 import {
   assignPlacementTeacherAction,
+  resolveReassessmentAction,
   configurePlacementCohortAction,
   transferPlacementAction,
 } from "./actions";
@@ -38,11 +40,12 @@ export default async function EnrollmentsPage({
   const { state, result, page: pageParam } = await searchParams;
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
   const activeState = placementStates.some((s) => s === state) ? state : undefined;
-  const [queue, cohorts, withoutCohort] = await Promise.all([
+  const [queue, cohorts, withoutCohort, reassessments] = await Promise.all([
     loadPlacementQueuePage("ADMIN", activeState, page),
     loadPlacementCohortSettings(),
     // Advisory panel: its failure must not take down the placement queue.
     loadEnrollmentsWithoutActiveCohort().catch(() => null),
+    loadOpenReassessments().catch(() => []),
   ]);
   const cases = queue.items;
   const pageCount = Math.max(1, Math.ceil(queue.total / queue.pageSize));
@@ -132,6 +135,32 @@ export default async function EnrollmentsPage({
               };
             })}
           />
+        </Card>
+      )}
+      {reassessments.length > 0 && (
+        <Card className="yas-stack">
+          <Badge tone="info">Pedidos de novo teste</Badge>
+          <p>
+            Pedidos de professores. Tratar um pedido não inicia teste nem muda o curso ou a turma do
+            aluno.
+          </p>
+          <ul className="yas-stack">
+            {reassessments.map((request) => (
+              <li key={request.id} className="yas-stack">
+                <strong>
+                  <Link className="yas-focusable" href={`/admin/students/${request.studentId}`}>
+                    {request.studentName}
+                  </Link>
+                </strong>
+                <span>{request.reason}</span>
+                <form action={resolveReassessmentAction} className="yas-stack">
+                  <input type="hidden" name="requestId" value={request.id} />
+                  <Textarea name="note" label="Como foi tratado" required maxLength={1000} />
+                  <Button type="submit">Marcar como tratado</Button>
+                </form>
+              </li>
+            ))}
+          </ul>
         </Card>
       )}
       <FilterBar action="/admin/enrollments" aria-label="Filtrar matrículas">

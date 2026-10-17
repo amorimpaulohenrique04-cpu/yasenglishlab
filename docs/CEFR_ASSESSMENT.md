@@ -51,3 +51,13 @@ Itens `MANUAL_TEXT` mantêm a tentativa em `SUBMITTED` por desenho no V1 (sem RP
 O Student recebe somente os campos públicos necessários para executar a versão publicada. `answer_key`, `rubric` e `scoring_config` ficam fora do acesso autenticado normal e são usados apenas no boundary server/database.
 
 P19 não cria UI de Progresso nem Assessment Authoring. Standard setting, reaplicação e o modelo futuro de avaliação de Speaking/Pronunciation continuam em `OPEN_QUESTIONS.md`.
+
+## Proficiency language (decision record, PR1)
+
+- The platform describes **evidence** (skills assessed, teacher review, practice results) against CEFR descriptors; it
+  does not claim an official CEFR, Cambridge or IELTS certification.
+- No score cut-offs are copied from third-party exams. Any cut score is a pedagogical decision that needs
+  validation with real students first; until then the model stays configurable and unset.
+- A retest is a **teacher request** (`request_reassessment`) with a written justification, recorded in an
+  append-only history and handled by an Admin. Nothing starts a test or changes a Student's course or cohort
+  automatically, and no fixed interval (the 90 days discussed is only a hypothesis) is enforced.
