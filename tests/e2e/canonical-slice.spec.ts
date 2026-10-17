@@ -229,16 +229,15 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByText("Ainda sem conteúdo")).toBeVisible();
     await captureEvidence(page, "pratica-desktop.png");
 
+    // Only practices of reached lessons are recommended: the current lesson's multi-question practice.
     await page.getByRole("button", { name: "Começar prática →" }).click();
-    await expect(
-      page.getByRole("heading", { level: 2, name: "Vocabulário para apresentações" }),
-    ).toBeVisible();
-    await page.getByRole("radio", { name: "meet", exact: true }).check();
-    await page.getByRole("button", { name: "Concluir prática" }).click();
-    await expect(page.getByText(/Nice to meet you é a expressão/)).toBeVisible();
-    await expect(
-      page.getByText(/não altera seu progresso no curso nem define proficiência CEFR/),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Antes de começar" })).toBeVisible();
+    await page.getByRole("button", { name: "Começar", exact: true }).click();
+    await expect(page.getByText("Pergunta 1 de 7")).toBeVisible();
+    await page.getByRole("radio", { name: "Nice to meet you.", exact: true }).check();
+    await page.getByRole("button", { name: "Enviar resposta" }).click();
+    await expect(page.getByText("Resposta correta")).toBeVisible();
+    await expect(page.getByText(/Nice to meet you é a forma natural/)).toBeVisible();
     await captureEvidence(page, "pratica-resultado-desktop.png");
 
     await page.goto("/agenda");
@@ -266,7 +265,7 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
     await expect(
-      page.getByText("Present simple em contexto", { exact: true }).first(),
+      page.getByText("Cumprimentos e present simple", { exact: true }).first(),
     ).toBeVisible();
     await expect(
       page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
@@ -295,7 +294,8 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Getting Started" })).toBeVisible();
     await captureEvidence(page, "module-desktop.png");
 
-    await page.getByRole("link", { name: "Abrir aula →" }).first().click();
+    // Each lesson row names its own action; the current lesson (Welcome) reads "Começar aula →".
+    await page.getByRole("link", { name: "Começar aula →" }).first().click();
     await expect(page.getByRole("heading", { level: 1, name: "Welcome to Yas" })).toBeVisible();
     await page.waitForLoadState("networkidle");
     await captureEvidence(page, "lesson-desktop.png");

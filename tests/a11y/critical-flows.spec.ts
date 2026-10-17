@@ -130,7 +130,19 @@ test("Prática exposes skill availability, keyboard controls and WCAG A/AA compl
   await expect(vocabulary).toBeFocused();
   await assertAxe(page);
 
-  await page.getByRole("button", { name: "Começar prática →" }).click();
+  // The hero starts the recommended practice, or resumes it when another project already opened it.
+  await page
+    .getByRole("button", { name: "Começar prática →", exact: true })
+    .or(page.getByRole("link", { name: "Continuar →", exact: true }))
+    .first()
+    .click();
+  // Multi-question practices open on a pre-task screen first.
+  const start = page.getByRole("button", { name: "Começar", exact: true });
+  await expect(start.or(page.getByRole("radio").first())).toBeVisible();
+  if (await start.isVisible()) {
+    await assertAxe(page);
+    await start.click();
+  }
   const answer = page.getByRole("radio").first();
   await answer.focus();
   await expect(answer).toBeFocused();

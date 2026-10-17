@@ -118,6 +118,12 @@ select pg_temp.ok((select r -> 'content' ->> 'evaluationMode' = 'MANUAL_PENDING'
 create function pg_temp.sv(content jsonb, keys jsonb default null, skill text default 'GRAMMAR') returns text language sql as $$
   select pg_temp.state(format('select public.teacher_practice_save_v3(null, %L::jsonb, %L::jsonb)', pg_temp.payload(content, skill), coalesce(keys, pg_temp.fit(content, pg_temp.keys()))));
 $$;
+-- An incomplete draft (empty objective) saves; publishing it is refused.
+create function pg_temp.draft_no_objective() returns jsonb language sql as $$
+  select jsonb_set(pg_temp.items(pg_temp.q('q1')), '{objective}', '""'::jsonb);
+$$;
+select pg_temp.ok(pg_temp.state(format('select public.teacher_practice_save_v3(null, %L::jsonb, %L::jsonb)', pg_temp.payload(pg_temp.draft_no_objective()), pg_temp.fit(pg_temp.draft_no_objective(), pg_temp.keys()))) = 'OK', 'draft without objective saves');
+select pg_temp.ok(pg_temp.state(format('select public.teacher_practice_publish(public.teacher_practice_save_v3(null, %L::jsonb, %L::jsonb))', pg_temp.payload(pg_temp.draft_no_objective()), pg_temp.fit(pg_temp.draft_no_objective(), pg_temp.keys()))) = '23514', 'publishing a practice without objective is refused');
 select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1'))) = 'OK', 'single-item v3 accepted');
 select pg_temp.ok(pg_temp.sv(replace(pg_temp.items(pg_temp.q('q1'))::text, '"id": "q1"', '"id": "Bad_ID"')::jsonb) = '23514', 'uppercase/underscore id rejected');
 select pg_temp.ok(pg_temp.sv(replace(pg_temp.items(pg_temp.q('q1'))::text, '"id": "q1"', '"id": ""')::jsonb) = '23514', 'empty id rejected');
@@ -128,7 +134,7 @@ select pg_temp.ok(pg_temp.sv((select jsonb_set(pg_temp.items(pg_temp.q('q1')), '
   from generate_series(1, 21) n), (select jsonb_object_agg('t' || n, '{"answerKey":{"value":true}}'::jsonb) from generate_series(1, 21) n)) = '23514', '21 items rejected');
 select pg_temp.ok(pg_temp.sv((select jsonb_set(pg_temp.items(pg_temp.q('q1')), '{items}', jsonb_agg(replace(pg_temp.q('q3'), '"q3"', '"t' || n || '"')::jsonb))
   from generate_series(1, 20) n), (select jsonb_object_agg('t' || n, '{"answerKey":{"value":true}}'::jsonb) from generate_series(1, 20) n)) = 'OK', '20 items accepted');
-select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1')) - 'objective') = '23514', 'objective required');
+select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1')) || '{"objective":5}') = '23514', 'non-string objective rejected');
 select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1')) || jsonb_build_object('objective', repeat('x', 201))) = '23514', 'objective over 200 chars rejected');
 select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1')) - 'askConfidence') = '23514', 'askConfidence required');
 select pg_temp.ok(pg_temp.sv(pg_temp.items(pg_temp.q('q1')) || '{"extra":1}') = '23514', 'unknown content field rejected');

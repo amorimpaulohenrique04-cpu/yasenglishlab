@@ -900,8 +900,12 @@ begin
     into v_items from jsonb_array_elements(v_content -> 'items') with ordinality t(i, ord);
   v_content := jsonb_set(v_content, '{items}', coalesce(v_items, '[]'::jsonb));
 
-  -- Content, keys and feedback must be complete and coherent now (assets are checked at publication).
-  perform private.validate_practice_v3(v_content, v_keys, v_skill, null);
+  -- Content, keys and feedback must be coherent now (assets are checked at publication). A draft may still
+  -- lack its objective: it is required when the Teacher publishes (private.validate_content).
+  perform private.validate_practice_v3(
+    case when coalesce(btrim(v_content ->> 'objective'), '') = ''
+         then jsonb_set(v_content, '{objective}', '"draft"'::jsonb) else v_content end,
+    v_keys, v_skill, null);
 
   if p_id is null then
     insert into public.practice_activities(id, slug, title, skill, cefr_target, difficulty, estimated_minutes, related_module_id,

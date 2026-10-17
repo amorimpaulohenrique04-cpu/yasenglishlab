@@ -59,6 +59,32 @@ async function canonicalCohortStudentId(): Promise<string> {
   return user.id;
 }
 
+/** Practices of a lesson unlock once the Student has reached it (stage 13A); the review practice is on lesson 2. */
+async function reachReviewLesson(): Promise<void> {
+  if (!admin) return;
+  const userId = await canonicalCohortStudentId();
+  const { data: enrollment, error: enrollmentError } = await admin
+    .from("enrollments")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("status", "ACTIVE")
+    .limit(1)
+    .single();
+  if (enrollmentError) throw enrollmentError;
+  const { error } = await admin.from("lesson_progress").upsert(
+    {
+      enrollment_id: enrollment.id,
+      user_id: userId,
+      lesson_id: "42000000-0000-4000-8000-000000000002",
+      status: "IN_PROGRESS",
+      completion_percent: 25,
+      started_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,lesson_id" },
+  );
+  if (error) throw error;
+}
+
 async function cleanupAttempts(): Promise<void> {
   if (!admin) return;
   const userId = await canonicalCohortStudentId();
@@ -72,6 +98,7 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
 
   test.beforeEach(async () => {
     await cleanupAttempts();
+    await reachReviewLesson();
   });
 
   test.afterEach(async () => {

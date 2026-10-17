@@ -23,13 +23,28 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
   }
 
   async loadPractice(userId: string): Promise<HomePracticeInputs> {
-    const [activities, history, recentLessonId] = await Promise.all([
+    const [activities, history, recentLessonId, reachedIds, fullHistory] = await Promise.all([
       this.practice.listRecommendationActivities(),
       this.practice.listRecommendationHistory(userId),
       this.practice.getRecentLessonId(userId),
+      this.practice.listReachedActivityIds(),
+      this.practice.listHistory(userId),
     ]);
+    // Same gate as /pratica: never recommend a practice of a lesson the Student has not reached.
+    const reached = new Set(reachedIds);
 
-    return { activities, history, recentLessonId };
+    return {
+      activities: activities.filter((activity) => reached.has(activity.id)),
+      history,
+      recentLessonId,
+      openAttempts: fullHistory
+        .filter((item) => item.status === "IN_PROGRESS")
+        .map((item) => ({
+          attemptId: item.id,
+          activityId: item.activityId,
+          lastActivityAt: item.lastActivityAt ?? item.startedAt,
+        })),
+    };
   }
 
   loadSchedule(userId: string, now: Date) {

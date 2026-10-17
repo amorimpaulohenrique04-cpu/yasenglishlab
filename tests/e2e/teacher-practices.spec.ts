@@ -31,6 +31,9 @@ test.describe("Stage 12A teacher practices", () => {
     const title = `Prática E2E ${Date.now()}`;
     await page.getByLabel("Título *", { exact: true }).fill(title);
     await page
+      .getByLabel("Objetivo *", { exact: true })
+      .fill("Ao final você consegue cumprimentar alguém em inglês.");
+    await page
       .getByLabel("Curso *", { exact: true })
       .selectOption("40000000-0000-4000-8000-000000000001");
     await page.getByRole("button", { name: "Salvar rascunho", exact: true }).click();
@@ -39,6 +42,8 @@ test.describe("Stage 12A teacher practices", () => {
     });
     const practiceUrl = page.url();
     await page.getByRole("button", { name: "5. Pré-visualização", exact: true }).click();
+    // Multi-question practices open on a pre-task screen (objective and rules).
+    await page.getByRole("button", { name: "Começar", exact: true }).click();
     await page.getByLabel("Hello", { exact: true }).check();
     await page.getByRole("button", { name: "Testar resposta", exact: true }).click();
     await expect(
@@ -86,6 +91,7 @@ test.describe("Stage 12A teacher practices", () => {
     await expect(card).toBeVisible();
     await card.getByRole("button", { name: "Começar →", exact: true }).click();
     await expect(student).toHaveURL(/\/pratica\/[0-9a-f-]+$/i);
+    await student.getByRole("button", { name: "Começar", exact: true }).click();
     await student.getByLabel("Hello", { exact: true }).check();
     await student.getByRole("button", { name: "Enviar resposta", exact: true }).click();
     await expect(student.getByText("Resposta correta", { exact: false }).first()).toBeVisible();

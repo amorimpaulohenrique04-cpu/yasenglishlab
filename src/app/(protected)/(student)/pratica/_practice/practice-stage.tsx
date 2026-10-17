@@ -171,7 +171,7 @@ export async function PracticeStage({
     return (
       <div className="yas-practice-stage">
         {topbar}
-        <article className="yas-practice-stage-card" aria-labelledby="practice-result-title">
+        <section className="yas-practice-stage-card" aria-labelledby="practice-result-title">
           <PracticeResultHero
             status={attempt.result.evaluationStatus}
             feedback={attempt.result.feedback}
@@ -200,7 +200,7 @@ export async function PracticeStage({
             )}
             <div className="yas-practice-outcome-actions">{nextActions}</div>
           </PracticeResultHero>
-        </article>
+        </section>
       </div>
     );
   }
