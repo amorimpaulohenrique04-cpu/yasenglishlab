@@ -2,6 +2,7 @@ import { StudentSubscription } from "@/modules/billing/ui/student-subscription";
 import { cancelSubscriptionAction } from "./subscription-actions";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadOwnSubscription } from "@/server/billing/own-subscription";
+import { loadOwnRegularization } from "@/server/billing/regularization";
 import { Alert, Avatar, Badge, Button, Card, Icon, Input, PageHeader } from "@/components/ui";
 import { requirePageAuth } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -114,6 +115,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             subscription={subscription}
             access={access}
             cancelAction={cancelSubscriptionAction}
+            regularization={
+              subscription?.status === "PAST_DUE" ? await loadOwnRegularization() : undefined
+            }
           />
         )}
       </div>

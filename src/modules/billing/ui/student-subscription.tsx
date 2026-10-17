@@ -6,16 +6,20 @@ import { billingAmount, billingDate, billingPeriod, billingStatuses } from "./pr
 import { SubscriptionSuspendedNotice } from "./suspension-notice";
 import { CancelSubscription, type CancelSubscriptionResult } from "./cancel-subscription";
 import { CancellationNotice } from "./cancellation-notice";
+import { RegularizationPanel } from "./regularization-panel";
+import type { OwnRegularization } from "@/server/billing/regularization";
 import styles from "./billing.module.css";
 
 export function StudentSubscription({
   subscription,
   access = { kind: "ok" },
   cancelAction,
+  regularization,
 }: {
   subscription: Awaited<ReturnType<typeof loadOwnSubscription>>;
   access?: SubscriptionAccessState;
   cancelAction?: () => Promise<CancelSubscriptionResult>;
+  regularization?: OwnRegularization | undefined;
 }) {
   return (
     <Card className={styles.subscription} aria-label="Assinatura">
@@ -32,6 +36,7 @@ export function StudentSubscription({
             </Badge>
           </div>
           <SubscriptionSuspendedNotice access={access} context="profile" headingLevel={3} />
+          {regularization && <RegularizationPanel regularization={regularization} />}
           {subscription.status === "PAST_DUE" && access.kind !== "suspended" && (
             <Alert
               tone="warning"

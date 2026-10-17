@@ -6,6 +6,11 @@ import {
   type BillingProvider,
   type CheckoutInput,
 } from "@/modules/billing/application/billing-provider";
+import {
+  safeInvoiceUrl,
+  type PendingCharge,
+  type ProviderSubscriptionState,
+} from "@/modules/billing/domain/regularization";
 
 export function billingConfiguration() {
   const environment = z.enum(["sandbox", "production"]).parse(process.env.ASAAS_ENVIRONMENT);
@@ -87,6 +92,82 @@ export class AsaasBillingProvider implements BillingProvider {
       throw new Error("Billing checkout response invalid; reconciliation required");
     }
     return { checkoutId: id, url: this.checkoutUrl(id) };
+  }
+
+  // Read-only GET. Responses are parsed into the minimum we need; nothing else is kept or logged.
+  private async get(path: string): Promise<{ status: number; body: unknown }> {
+    const { environment, apiKey } = billingConfiguration();
+    let response: Response;
+    try {
+      response = await this.request(
+        `https://${environment === "sandbox" ? "api-sandbox" : "api"}.asaas.com/v3${path}`,
+        {
+          method: "GET",
+          redirect: "error",
+          cache: "no-store",
+          signal: AbortSignal.timeout(15000),
+          headers: { access_token: apiKey, "User-Agent": "YasEnglishLab/1.0" },
+        },
+      );
+    } catch {
+      throw new Error("Billing provider read failed");
+    }
+    if (response.status === 404) return { status: 404, body: null };
+    if (!response.ok) throw new Error(`Billing provider read failed (${response.status})`);
+    try {
+      return { status: response.status, body: await response.json() };
+    } catch {
+      throw new Error("Billing provider response invalid");
+    }
+  }
+
+  // GET /v3/subscriptions/{id}/payments?status=PENDING|OVERDUE (to be confirmed in sandbox homologation).
+  async listChargesToRegularize(providerSubscriptionId: string): Promise<PendingCharge[]> {
+    const id = providerSubscriptionIdSchema.parse(providerSubscriptionId);
+    const schema = z.object({
+      data: z.array(
+        z.object({
+          id: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/),
+          dueDate: z.iso.date(),
+          value: z.number().positive(),
+          status: z.string(),
+          deleted: z.boolean().optional(),
+          invoiceUrl: z.string().nullish(),
+        }),
+      ),
+    });
+    const charges: PendingCharge[] = [];
+    for (const status of ["OVERDUE", "PENDING"] as const) {
+      const { body } = await this.get(
+        `/subscriptions/${encodeURIComponent(id)}/payments?status=${status}&limit=10`,
+      );
+      if (body === null) continue;
+      for (const row of schema.parse(body).data) {
+        if (row.deleted || row.status !== status) continue;
+        charges.push({
+          paymentId: row.id,
+          dueDate: row.dueDate,
+          amountCents: Math.round(row.value * 100),
+          status,
+          invoiceUrl: safeInvoiceUrl(row.invoiceUrl),
+        });
+      }
+    }
+    return charges.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+  }
+
+  // GET /v3/subscriptions/{id}: ACTIVE | INACTIVE | EXPIRED, `deleted` flag; 404 = gone.
+  async getSubscriptionState(providerSubscriptionId: string): Promise<ProviderSubscriptionState> {
+    const id = providerSubscriptionIdSchema.parse(providerSubscriptionId);
+    const { status, body } = await this.get(`/subscriptions/${encodeURIComponent(id)}`);
+    if (status === 404) return { status: "NOT_FOUND" };
+    const parsed = z
+      .object({
+        status: z.enum(["ACTIVE", "INACTIVE", "EXPIRED"]),
+        deleted: z.boolean().optional(),
+      })
+      .parse(body);
+    return { status: parsed.deleted ? "NOT_FOUND" : parsed.status };
   }
 
   // DELETE /v3/subscriptions/{id} (ADR 0013, "Cancel subscription"): stops recurrence. 404 means the

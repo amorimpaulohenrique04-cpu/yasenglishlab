@@ -39,6 +39,14 @@ class LocalBillingProvider implements BillingProvider {
   async cancelSubscription(providerSubscriptionId: string) {
     providerSubscriptionIdSchema.parse(providerSubscriptionId);
   }
+  async listChargesToRegularize(providerSubscriptionId: string) {
+    providerSubscriptionIdSchema.parse(providerSubscriptionId);
+    return [];
+  }
+  async getSubscriptionState(providerSubscriptionId: string) {
+    providerSubscriptionIdSchema.parse(providerSubscriptionId);
+    return { status: "ACTIVE" as const };
+  }
 }
 export function commercialProvider(): BillingProvider {
   if (fakeBillingAllowed()) return new LocalBillingProvider();

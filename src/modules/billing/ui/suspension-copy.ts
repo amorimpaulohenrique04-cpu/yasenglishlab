@@ -39,7 +39,7 @@ export function suspensionCopy(
       description: `${scope[context]} ${kept}`,
       guidance:
         "Assim que o pagamento for confirmado, o acesso volta sozinho. Se já pagou ou precisa da segunda via da cobrança, fale com o suporte da Yas.",
-      action: { label: "Como falar com o suporte", href: "/support" },
+      action: { label: "Ver cobrança pendente", href: "/profile" },
     };
   }
   if (access.reason === "NO_SUBSCRIPTION") {
