@@ -133,7 +133,8 @@ function homeLearningLesson(
     href: `/aulas/${course.slug}/modulos/${courseModule.id}/aulas/${lesson.slug}`,
     estimatedMinutes: lesson.estimatedMinutes,
     completionPercent: lesson.progress?.completionPercent ?? 0,
-    hasPersistedProgress: lesson.progress !== null,
+    // Opening a lesson stores a 0% access row (NOT_STARTED); only real progress counts here.
+    hasPersistedProgress: lesson.progress !== null && lesson.progress.status !== "NOT_STARTED",
   };
 }
 
@@ -237,7 +238,8 @@ function practiceSection(inputs: HomePracticeInputs): HomeView["practice"] {
 }
 
 function learningPrimaryAction(selection: LearningSelection): HomePrimaryAction {
-  const hasProgress = selection.lesson.progress !== null;
+  const hasProgress =
+    selection.lesson.progress !== null && selection.lesson.progress.status !== "NOT_STARTED";
   return {
     kind: "learning",
     label: hasProgress ? "Continuar aula" : "Começar aula",
