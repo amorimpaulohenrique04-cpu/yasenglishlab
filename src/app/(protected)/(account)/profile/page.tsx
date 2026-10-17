@@ -2,6 +2,9 @@ import { StudentSubscription } from "@/modules/billing/ui/student-subscription";
 import { cancelSubscriptionAction } from "./subscription-actions";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadOwnSubscription } from "@/server/billing/own-subscription";
+import { PlanChangePanel } from "@/modules/billing/ui/plan-change-panel";
+import { loadPlanChangeState } from "@/server/billing/plan-change";
+import { cancelPlanChangeAction, requestPlanChangeAction } from "./plan-change-actions";
 import { loadOwnRegularization } from "@/server/billing/regularization";
 import { Alert, Avatar, Badge, Button, Card, Icon, Input, PageHeader } from "@/components/ui";
 import { requirePageAuth } from "@/server/auth/guards";
@@ -118,6 +121,13 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             regularization={
               subscription?.status === "PAST_DUE" ? await loadOwnRegularization() : undefined
             }
+          />
+        )}
+        {isStudent && subscription?.status === "ACTIVE" && !subscription.cancellationState && (
+          <PlanChangePanel
+            state={await loadPlanChangeState(subscription.planName)}
+            requestAction={requestPlanChangeAction}
+            cancelAction={cancelPlanChangeAction}
           />
         )}
       </div>
