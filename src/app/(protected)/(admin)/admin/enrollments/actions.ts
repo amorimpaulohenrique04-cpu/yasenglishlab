@@ -7,6 +7,7 @@ import {
   configureCurrentPlacementCohort,
   transferCurrentPlacement,
 } from "@/server/placement/placement";
+import { assignPlacementTeacher } from "@/server/placement/teacher-assignment";
 function minutes(value: FormDataEntryValue | null) {
   const [h, m] = String(value ?? "")
     .split(":")
@@ -32,6 +33,20 @@ export async function configurePlacementCohortAction(form: FormData) {
   }
   revalidatePath("/onboarding/placement");
   redirect("/admin/enrollments?result=configured");
+}
+export async function assignPlacementTeacherAction(form: FormData) {
+  await assertRole("ADMIN");
+  try {
+    await assignPlacementTeacher({
+      caseId: form.get("caseId"),
+      teacherId: form.get("teacherId"),
+    });
+  } catch {
+    redirect("/admin/enrollments?result=error");
+  }
+  revalidatePath("/admin/enrollments");
+  revalidatePath("/teacher/revisoes/placement");
+  redirect("/admin/enrollments?result=assigned");
 }
 export async function transferPlacementAction(form: FormData) {
   await assertRole("ADMIN");

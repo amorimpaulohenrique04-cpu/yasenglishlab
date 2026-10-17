@@ -15,10 +15,21 @@ import {
   Select,
   Textarea,
 } from "@/components/ui";
-import { placementLabels, placementStates, weekdays } from "@/modules/placement";
+import {
+  placementLabels,
+  placementStates,
+  reviewSlaLabels,
+  reviewSlaStatus,
+  weekdays,
+} from "@/modules/placement";
+import { loadPlacementTeacherCandidates } from "@/server/placement/teacher-assignment";
 import { loadEnrollmentsWithoutActiveCohort } from "@/server/billing/complimentary-access";
 import { loadPlacementQueue, loadPlacementCohortSettings } from "@/server/placement/placement";
-import { configurePlacementCohortAction, transferPlacementAction } from "./actions";
+import {
+  assignPlacementTeacherAction,
+  configurePlacementCohortAction,
+  transferPlacementAction,
+} from "./actions";
 export default async function EnrollmentsPage({
   searchParams,
 }: {
@@ -31,6 +42,20 @@ export default async function EnrollmentsPage({
     // Advisory panel: its failure must not take down the placement queue.
     loadEnrollmentsWithoutActiveCohort().catch(() => null),
   ]);
+  // Teacher candidates are only needed while a case waits for review. A failure must not hide the queue.
+  const candidatesByCase = new Map(
+    await Promise.all(
+      cases
+        .filter((view) => view.case.state === "REVIEW_PENDING")
+        .map(
+          async (view) =>
+            [
+              view.case.id,
+              await loadPlacementTeacherCandidates(view.case.id).catch(() => null),
+            ] as const,
+        ),
+    ),
+  );
   return (
     <div className="yas-stack">
       <PageHeader
@@ -137,6 +162,53 @@ export default async function EnrollmentsPage({
             const since = new Date(view.case.state_changed_at).toLocaleString("pt-BR", {
               timeZone: "America/Recife",
             });
+            const sla =
+              view.case.state === "REVIEW_PENDING"
+                ? reviewSlaStatus(view.case.state_changed_at)
+                : null;
+            const candidates = candidatesByCase.get(view.case.id);
+            const assignedTeacher = candidates?.find((candidate) => candidate.assigned);
+            const suggestion = candidates?.find((candidate) => candidate.suggested);
+            const teacherPanel = sla && (
+              <div className="yas-stack">
+                <h3>Professor da revisão</h3>
+                <Badge
+                  tone={
+                    sla.status === "OVERDUE"
+                      ? "error"
+                      : sla.status === "APPROACHING"
+                        ? "warning"
+                        : "success"
+                  }
+                >
+                  {reviewSlaLabels[sla.status]}
+                </Badge>
+                {candidates === null && (
+                  <p>Não foi possível carregar os professores agora. Tente novamente.</p>
+                )}
+                {candidates && assignedTeacher && <p>Designado: {assignedTeacher.displayName}</p>}
+                {candidates && candidates.length === 0 && (
+                  <Badge tone="warning">Ação necessária: nenhum professor elegível</Badge>
+                )}
+                {candidates && !assignedTeacher && candidates.length > 0 && (
+                  <form action={assignPlacementTeacherAction} className="yas-stack">
+                    <input type="hidden" name="caseId" value={view.case.id} />
+                    <Select
+                      label="Professor"
+                      name="teacherId"
+                      defaultValue={suggestion?.teacherId}
+                      options={candidates.map((candidate) => ({
+                        value: candidate.teacherId,
+                        label: `${candidate.displayName}${candidate.suggested ? " (sugerido)" : ""} · ${candidate.openCases} revisões pendentes`,
+                      }))}
+                      required
+                    />
+                    <Button type="submit">Confirmar professor</Button>
+                    <p>A sugestão usa a menor carga atual. Você pode escolher outro professor.</p>
+                  </form>
+                )}
+              </div>
+            );
             const detail = (
               <DetailDrawer trigger="Detalhes da entrada" title={`${name} · Matrícula`}>
                 <div className="yas-stack">
@@ -151,6 +223,7 @@ export default async function EnrollmentsPage({
                   {view.review?.feedback && <p>{view.review.feedback}</p>}
                   <p>Escolha inicial: {view.chosenTitle ?? "Aguardando aluno"}</p>
                   <p>Turma atual: {view.currentCohort ?? "Ainda sem matrícula"}</p>
+                  {teacherPanel}
                   {view.case.state === "ENROLLED" && (
                     <form action={transferPlacementAction} className="yas-stack">
                       <h3>Transferir turma</h3>
