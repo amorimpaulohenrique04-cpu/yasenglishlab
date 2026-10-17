@@ -722,3 +722,8 @@ Run 38827166316: somente dois E2E falharam; os demais jobs concretos passaram. C
 Confirmação local: os dois E2E falhos passaram integralmente, zero retries, em 1,7 min; typecheck, lint dos arquivos alterados, 7 unitários e verify:harness aprovados. CI do novo commit pendente.
 
 37/37 E2E passaram no CI 38829445681 (2,6 min). Corrigida incompatibilidade do pós-run com limpeza do módulo: provas de estado persistido e auditoria movidas para o cenário antes da remoção. Nenhuma prova funcional removida.
+
+## 2026-10-17 — yas-journey-pedagogy-closure (PR 1 of the 2-PR closure plan)
+
+Blocks 1A–1F implemented on `feat/yas-journey-pedagogy-closure` (from main 11f3a41). Evidence matrix: `docs/implementation/yas-closure-evidence.md`.
+Local: typecheck, lint, format, unit (338), integration (323), verify:db, verify:harness, verify:security, build PASS; new/affected SQL suites PASS on the dev database. NOT RUN locally: E2E, a11y, visual, verify:full (destructive; needs an isolated Supabase workdir). Linux `Official CI / CI Gate` is the release-grade proof.
