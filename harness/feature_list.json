@@ -14,18 +14,31 @@
     {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
-      "status": "blocked",
-      "verified": false,
+      "status": "done",
+      "verified": true,
       "dependencies": [],
       "evidence": [
         "harness/goals/billing-reconciliation-integrity.md",
         "harness/evidence/billing-reconciliation-integrity/README.md",
-        "harness/failure-log/2026-10-17-billing-ci-rate-window-collision.md",
         "harness/failure-log/2026-10-17-billing-local-canonical-progress.md",
         "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/83",
-        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/39081037545"
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/39087265066"
       ],
-      "updated_at": "2026-10-17T12:00:00Z"
+      "updated_at": "2026-10-18T02:00:00Z"
+    },
+    {
+      "id": "rate-limit-window-identity",
+      "title": "Rate limiter counters keyed by window length",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["billing-reconciliation-integrity"],
+      "evidence": [
+        "harness/goals/rate-limit-window-identity.md",
+        "harness/evidence/rate-limit-window-identity/README.md",
+        "harness/failure-log/2026-10-17-billing-ci-rate-window-collision.md",
+        "supabase/migrations/20261018140000_rate_limit_window_identity.sql"
+      ],
+      "updated_at": "2026-10-18T02:00:00Z"
     },
     {
       "id": "pr74-gates",

@@ -1,7 +1,7 @@
 # Failure — pre-existing rate-window collision blocks billing PR
 
 Classification: architecture
-Status: open
+Status: fix implemented, awaiting official CI (see harness/goals/rate-limit-window-identity.md)
 Repeatable: yes
 Date: 2026-10-17
 PR/commit related: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/83
@@ -45,3 +45,7 @@ In a transaction, group generate_series(10,86400) by date_bin(make_interval(secs
 Before: Official CI failed with hits=6; local deterministic collision returned hits=2.
 
 After: Not fixed; remains OPEN/BLOCKED to preserve PR 1 scope and avoid unsafe migration assumptions.
+
+## Update 2026-10-18 — fix
+
+PR #83 was merged without touching the limiter (its CI passed in a window where the collision did not occur). Fix: additive migration `20261018140000_rate_limit_window_identity.sql` adds `window_seconds` to the primary key; `supabase/tests/rate_limit.sql` now asserts the identity deterministically and reproduces an equal-`date_bin` pair dynamically. Legacy rows (`window_seconds = 0`) are inert and cleaned by the existing cleanup; counters in flight restart once. Local before/after: old schema windows 84031 and 85527 gave hits=2; new schema gives hits=1.

@@ -46,6 +46,26 @@ begin
   -- a different window length is a different counter row
   r := public.consume_rate_limit('rltest_signup', k1, 3, 3600);
   if (r->>'hits')::int <> 1 then raise exception 'Window length not part of the counter: %', r; end if;
+  if (select count(distinct window_seconds) from public.rate_limit_counters where bucket = 'rltest_signup' and key_hash = k1) <> 2 then
+    raise exception 'Window length not stored in the counter identity';
+  end if;
+
+  -- regression (time independent): durations whose date_bin() start is identical at this instant must not share a counter.
+  -- 86391 candidates make such a pair near-certain; the row-count check above already proves identity deterministically.
+  declare
+    d1 integer; d2 integer;
+  begin
+    with starts as (
+      select d, date_bin(make_interval(secs => d), now(), timestamptz '2000-01-01 00:00:00+00') s from generate_series(10, 86400) d
+    )
+    select min(d), max(d) into d1, d2 from starts
+    where s = (select s from starts group by s having count(*) >= 2 order by s limit 1);
+    if d1 is not null then
+      perform public.consume_rate_limit('rltest_collide', k1, 10000, d1);
+      r := public.consume_rate_limit('rltest_collide', k1, 10000, d2);
+      if (r->>'hits')::int <> 1 then raise exception 'Windows % and % with equal start share a counter: %', d1, d2, r; end if;
+    end if;
+  end;
 
   -- invalid parameters: SQLSTATE 22023 with stable messages
   perform pg_temp.expect_invalid('ab', k1, 3, 60, 'Invalid rate limit bucket');
@@ -67,22 +87,22 @@ begin
 
   -- table shape: no free-text column that could hold an IP or e-mail; non-hash keys rejected by the constraint
   if (select array_agg(column_name::text order by column_name::text) from information_schema.columns
-      where table_schema = 'public' and table_name = 'rate_limit_counters') <> array['bucket','hits','key_hash','window_start'] then
+      where table_schema = 'public' and table_name = 'rate_limit_counters') <> array['bucket','hits','key_hash','window_seconds','window_start'] then
     raise exception 'Unexpected rate_limit_counters columns';
   end if;
   begin
-    insert into public.rate_limit_counters(bucket, key_hash, window_start, hits) values ('rltest_raw', 'person@example.test', now(), 1);
+    insert into public.rate_limit_counters(bucket, key_hash, window_start, window_seconds, hits) values ('rltest_raw', 'person@example.test', now(), 60, 1);
     raise exception 'Raw e-mail stored';
   exception when check_violation then null;
   end;
   begin
-    insert into public.rate_limit_counters(bucket, key_hash, window_start, hits) values ('rltest_raw', repeat('c', 64), now(), 0);
+    insert into public.rate_limit_counters(bucket, key_hash, window_start, window_seconds, hits) values ('rltest_raw', repeat('c', 64), now(), 60, 0);
     raise exception 'hits < 1 stored';
   exception when check_violation then null;
   end;
 
   -- opportunistic cleanup eventually removes expired rows (p = 0.02 per call; 1500 calls => miss chance ~ 1e-13)
-  insert into public.rate_limit_counters(bucket, key_hash, window_start, hits) values ('rltest_old', repeat('d', 64), now() - interval '3 days', 1);
+  insert into public.rate_limit_counters(bucket, key_hash, window_start, window_seconds, hits) values ('rltest_old', repeat('d', 64), now() - interval '3 days', 60, 1);
   for i in 1..1500 loop
     perform public.consume_rate_limit('rltest_clean', k1, 10000, 60);
     exit when not exists (select 1 from public.rate_limit_counters where bucket = 'rltest_old');
@@ -122,7 +142,7 @@ set local role authenticated;
 do $$ begin
   begin perform public.consume_rate_limit('rltest_signup', repeat('a', 64), 3, 60); raise exception 'authenticated executed RPC'; exception when insufficient_privilege then null; end;
   begin perform 1 from public.rate_limit_counters; raise exception 'authenticated read table'; exception when insufficient_privilege then null; end;
-  begin insert into public.rate_limit_counters(bucket, key_hash, window_start, hits) values ('rltest_x', repeat('e', 64), now(), 1); raise exception 'authenticated wrote table'; exception when insufficient_privilege then null; end;
+  begin insert into public.rate_limit_counters(bucket, key_hash, window_start, window_seconds, hits) values ('rltest_x', repeat('e', 64), now(), 60, 1); raise exception 'authenticated wrote table'; exception when insufficient_privilege then null; end;
 end $$;
 reset role;
 
