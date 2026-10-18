@@ -8,13 +8,13 @@ The shared local database was one migration behind main (20261018130000). To avo
 suite ran inside a single transaction that applied `20261018140000_rate_limit_window_identity.sql` and
 `20261018150000_placement_practice_dead_ends.sql`, then the test, then rolled back:
 
-| Suite | Result |
-| --- | --- |
-| `placement_practice_dead_ends.sql` (new) | pass |
-| `operational_alerts.sql` (7 categories) | pass |
-| `placement_teacher_assignment.sql` | pass |
-| `admin_course_enrollment.sql` | pass |
-| `function_privileges.sql` | pass |
+| Suite                                    | Result |
+| ---------------------------------------- | ------ |
+| `placement_practice_dead_ends.sql` (new) | pass   |
+| `operational_alerts.sql` (7 categories)  | pass   |
+| `placement_teacher_assignment.sql`       | pass   |
+| `admin_course_enrollment.sql`            | pass   |
+| `function_privileges.sql`                | pass   |
 
 ## App tests
 
@@ -31,10 +31,10 @@ The official proof is CI's clean preview database (`database-proofs`).
 
 ## Gates (local, Windows)
 
-| Gate | Result |
-| --- | --- |
-| `npm run verify:agent` | pass (format, lint, typecheck, 342 unit, 363 integration, verify:db, build, harness, ratchet, security, behavioral eval) |
-| `npm run verify:db` | pass (static contract, included in verify:agent) |
+| Gate                                | Result                                                                                                                                                                                                                                                                                               |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run verify:agent`              | pass (format, lint, typecheck, 342 unit, 363 integration, verify:db, build, harness, ratchet, security, behavioral eval)                                                                                                                                                                             |
+| `npm run verify:db`                 | pass (static contract, included in verify:agent)                                                                                                                                                                                                                                                     |
 | `CANONICAL_E2E=1 npm run verify:ui` | **blocked locally**: build and Storybook build pass; `scripts/setup-canonical-e2e.mjs` aborts with `23514 Unpublish before editing content` because the shared local DB is not freshly reset. Not resetting the user's local data; CI `Preview (e2e/accessibility/visual)` runs on a clean database. |
 
 No screenshots were captured: reaching the "no compatible cohort" and admin-enrolled states needs the
