@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { z } from "zod";
 import { Alert, Badge, Button, Card, Textarea } from "@/components/ui";
 import { reconciliationLabels, type ReconciliationKind } from "../domain/regularization";
+import styles from "./billing.module.css";
 
 export type FindingView = {
   id: string;
@@ -16,12 +18,16 @@ export function ReconciliationPanel({
   runAction,
   resolveAction,
   result,
+  nextCursor,
 }: {
-  findings: FindingView[];
-  runAction: () => Promise<void>;
+  findings: FindingView[] | null;
+  runAction: (form: FormData) => Promise<void>;
   resolveAction: (form: FormData) => Promise<void>;
   result?: string | undefined;
+  nextCursor?: string | undefined;
 }) {
+  const cursor = z.guid().safeParse(nextCursor);
+  const hasMore = (result === "complete" || result === "partial") && cursor.success;
   return (
     <Card className="yas-stack" aria-label="Conciliação com o provedor">
       <h2>Conciliação com o provedor</h2>
@@ -29,26 +35,60 @@ export function ReconciliationPanel({
         Compara as assinaturas locais com o provedor de pagamento (somente leitura). Divergências
         ficam registradas aqui; nenhuma delas muda acesso, cobrança ou plano sozinha.
       </p>
-      {result === "reconciled" && (
+      {result === "complete" && (
         <Alert
           tone="success"
-          title="Conciliação executada"
-          description="Veja as divergências abaixo."
+          title="Lote conciliado"
+          description={
+            hasMore
+              ? "Há mais assinaturas. Avance para o próximo lote."
+              : "Fim dos lotes. Veja as divergências abaixo."
+          }
         />
       )}
-      {result === "reconcile-error" && (
+      {result === "partial" && (
+        <Alert
+          tone="warning"
+          title="Conciliação parcial"
+          description="Falhou a consulta de uma ou mais assinaturas ao provedor. Reexecute desde o início para tentar novamente os itens com falha."
+        />
+      )}
+      {result === "failed" && (
         <Alert
           tone="error"
           title="Conciliação indisponível"
           description="Tente novamente em instantes."
         />
       )}
+      {result === "resolve-error" && (
+        <Alert
+          tone="error"
+          title="Não foi possível resolver a divergência"
+          description="A resolução não foi confirmada. Tente novamente em instantes."
+        />
+      )}
       <form action={runAction}>
         <Button type="submit" variant="outline">
-          Rodar conciliação (até 50 assinaturas)
+          {result === "partial"
+            ? "Reexecutar desde o início"
+            : "Rodar conciliação (até 50 assinaturas)"}
         </Button>
       </form>
-      {findings.length === 0 ? (
+      {hasMore && (
+        <form action={runAction}>
+          <input type="hidden" name="cursor" value={cursor.data} />
+          <Button type="submit" variant="outline">
+            Próximo lote
+          </Button>
+        </form>
+      )}
+      {findings === null ? (
+        <Alert
+          tone="error"
+          title="Divergências indisponíveis"
+          description="Não foi possível consultar as divergências. Tente novamente em instantes."
+        />
+      ) : findings.length === 0 ? (
         <p>Nenhuma divergência aberta.</p>
       ) : (
         <ul className="yas-stack">
@@ -63,7 +103,7 @@ export function ReconciliationPanel({
               </p>
               <p>
                 Assinatura <code>{finding.subscription_id}</code>.{" "}
-                <Link className="yas-focusable" href="/admin/billing">
+                <Link className={styles.link} href="/admin/billing">
                   Investigar nos eventos acima
                 </Link>
               </p>

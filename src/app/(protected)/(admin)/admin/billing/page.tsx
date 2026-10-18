@@ -55,7 +55,7 @@ export default async function AdminBillingPage({
   const [model, ops, findings] = await Promise.all([
     loadAdminBilling(query),
     loadAdminBillingOperations(query),
-    loadOpenBillingFindings().catch(() => []),
+    loadOpenBillingFindings().catch(() => null),
   ]);
   function hrefWith(overrides: Record<string, string | null>) {
     const params = new URLSearchParams();
@@ -314,6 +314,7 @@ export default async function AdminBillingPage({
         runAction={runReconciliationAction}
         resolveAction={resolveBillingFindingAction}
         result={typeof query.result === "string" ? query.result : undefined}
+        nextCursor={typeof query.nextCursor === "string" ? query.nextCursor : undefined}
       />
     </div>
   );

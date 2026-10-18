@@ -37,25 +37,36 @@ export async function schedulePlanEntitlementAction(
   }
 }
 
-export async function runReconciliationAction() {
+export async function runReconciliationAction(form: FormData) {
   await assertRole("ADMIN");
-  let ok = true;
+  const params = new URLSearchParams({ result: "failed" });
   try {
-    await runBillingReconciliation();
+    const cursor = z
+      .guid()
+      .optional()
+      .parse(form.get("cursor") ?? undefined);
+    const result = await runBillingReconciliation(undefined, cursor);
+    params.set("result", result.status);
+    if (result.hasMore && result.nextCursor) params.set("nextCursor", result.nextCursor);
   } catch {
-    ok = false;
+    params.set("result", "failed");
   }
   revalidatePath("/admin/billing");
-  redirect(`/admin/billing?result=${ok ? "reconciled" : "reconcile-error"}`);
+  redirect(`/admin/billing?${params}`);
 }
 
 export async function resolveBillingFindingAction(form: FormData) {
   await assertRole("ADMIN");
-  const client = await createSupabaseServerClient();
-  await client.rpc("resolve_billing_finding", {
-    p_id: z.uuid().parse(form.get("findingId")),
-    p_note: z.string().trim().min(1).max(1000).parse(form.get("note")),
-  });
+  try {
+    const client = await createSupabaseServerClient();
+    const { error } = await client.rpc("resolve_billing_finding", {
+      p_id: z.guid().parse(form.get("findingId")),
+      p_note: z.string().trim().min(1).max(1000).parse(form.get("note")),
+    });
+    if (error) throw new Error("Resolution unavailable.");
+  } catch {
+    redirect("/admin/billing?result=resolve-error");
+  }
   revalidatePath("/admin/billing");
   redirect("/admin/billing");
 }

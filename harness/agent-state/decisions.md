@@ -154,3 +154,7 @@ Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-
 - B. Na 1ª rodada o aluno vê veredito + explicação, sem gabarito; o gabarito aparece após a 2ª tentativa ou ao pular.
 - C. Tentativa IN_PROGRESS com atividade nas últimas 24h é retomada; mais antiga vira ABANDONED no próximo início (sem cron).
 - D. Itens WRITTEN/SPOKEN não entram na revisão espaçada.
+
+## 2026-10-17 — billing-reconciliation-integrity
+
+PR 1 isolates UUID cursor batches and explicit failure states in existing billing code. SQL, provider writes, auth/RLS, rate-limit and role helpers stay unchanged. Legacy role helpers have no external callers. Evidence and gates: harness/evidence/billing-reconciliation-integrity/README.md; go-live remains BLOCKED.
