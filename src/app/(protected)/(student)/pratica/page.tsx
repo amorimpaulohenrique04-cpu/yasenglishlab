@@ -659,6 +659,10 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     recommendation,
     selectedSkill,
   } = state.data;
+  const accuracyPercent =
+    objectiveQuestionsThisWeek > 0
+      ? Math.round((firstTryCorrectThisWeek / objectiveQuestionsThisWeek) * 100)
+      : null;
   const reviewTitles = new Map(activities.map((item) => [item.id, item.title]));
   const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
   // Sem trilha carregada, tudo cai em "Prática livre": a página continua utilizável.
@@ -801,51 +805,61 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
               <h2 className="yas-card-title" id="practice-week-title">
                 Resumo da semana
               </h2>
-              <Link className="yas-link" href="/progresso">
-                Ver progresso <Icon name="arrow" />
-              </Link>
+              <span className="yas-practice-week-period">7 dias</span>
             </div>
-            <div className="yas-practice-week-stats">
-              <div>
-                <IconBadge icon="clock" />
-                <span>
-                  <strong>
-                    ≈ {estimatedMinutesThisWeek}
-                    <small> min</small>
-                  </strong>
-                  <span>estimados nos últimos 7 dias</span>
+            <div className="yas-practice-week-body">
+              <div
+                className="yas-practice-week-ring"
+                style={{ "--yas-ring-value": accuracyPercent ?? 0 } as CSSProperties}
+                role="img"
+                aria-label={
+                  accuracyPercent === null
+                    ? "Sem perguntas objetivas nos últimos 7 dias"
+                    : `${firstTryCorrectThisWeek} de ${objectiveQuestionsThisWeek} acertos na primeira tentativa`
+                }
+              >
+                <span aria-hidden="true">
+                  {accuracyPercent === null ? (
+                    <Icon name="target" size={22} />
+                  ) : (
+                    <strong>{accuracyPercent}%</strong>
+                  )}
+                  <small>acertos</small>
                 </span>
               </div>
-              <div>
-                <IconBadge icon="check-c" tone="blue" />
-                <span>
-                  <strong>{completedThisWeek}</strong>
+              <ul className="yas-practice-week-kpis">
+                <li>
+                  <IconBadge icon="clock" />
                   <span>
-                    {completedThisWeek === 1 ? "atividade enviada" : "atividades enviadas"}
+                    <strong>
+                      {estimatedMinutesThisWeek}
+                      <small>min</small>
+                    </strong>
+                    <span>de prática</span>
                   </span>
-                </span>
-              </div>
-              <div>
-                <IconBadge icon="target" tone="blue" />
-                <span>
-                  <strong>
-                    {objectiveQuestionsThisWeek > 0
-                      ? `${firstTryCorrectThisWeek} de ${objectiveQuestionsThisWeek}`
-                      : "—"}
-                  </strong>
-                  <span>acertos na 1ª tentativa (7 dias)</span>
-                </span>
-              </div>
-              <div>
-                <IconBadge icon="redo" />
-                <span>
-                  <strong>{dueReviewCount}</strong>
+                </li>
+                <li>
+                  <IconBadge icon="check-c" tone="blue" />
                   <span>
-                    {dueReviewCount === 1 ? "pergunta para revisar" : "perguntas para revisar"}
+                    <strong>{completedThisWeek}</strong>
+                    <span>{completedThisWeek === 1 ? "atividade" : "atividades"}</span>
                   </span>
-                </span>
-              </div>
+                </li>
+              </ul>
             </div>
+            <Link
+              className="yas-practice-week-review"
+              href="/progresso"
+              data-pending={dueReviewCount > 0 ? "" : undefined}
+            >
+              <Icon name={dueReviewCount > 0 ? "redo" : "check-c"} size={18} />
+              <span>
+                {dueReviewCount > 0 ? `${dueReviewCount} para revisar` : "Revisão em dia"}
+              </span>
+              <span className="yas-practice-week-review-more">
+                Ver progresso <Icon name="arrow" size={16} />
+              </span>
+            </Link>
           </Card>
         </div>
 
