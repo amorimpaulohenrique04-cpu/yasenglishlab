@@ -1,7 +1,7 @@
 # Failure — pre-existing rate-window collision blocks billing PR
 
 Classification: architecture
-Status: fix implemented, awaiting official CI (see harness/goals/rate-limit-window-identity.md)
+Status: open
 Repeatable: yes
 Date: 2026-10-17
 PR/commit related: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/83
