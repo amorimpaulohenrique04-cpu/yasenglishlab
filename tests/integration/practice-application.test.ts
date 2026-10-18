@@ -52,6 +52,7 @@ function repository(): PracticeRepository {
     listSubmittedActivityIdsSince: vi.fn(async () => []),
     getRecentLessonId: vi.fn(async () => null),
     listReachedActivityIds: vi.fn(async () => [activity.id]),
+    listAttemptedActivityIds: vi.fn(async () => []),
     getAttempt: vi.fn(async () => attempt),
     startAttempt: vi.fn(async () => attempt),
     submitAttempt: vi.fn(async () => ({
@@ -119,6 +120,28 @@ describe("practice application", () => {
     expect(state).toMatchObject({
       status: "success",
       data: { completedThisWeek: 2, estimatedMinutesThisWeek: 10 },
+    });
+  });
+
+  it("claims 'never tried' only from the complete attempted set, not the capped history", async () => {
+    const repo = repository();
+    const fresh = await getPracticeView(repo, userId, true, {});
+    expect(repo.listAttemptedActivityIds).toHaveBeenCalledWith(userId, [activity.id]);
+    expect(fresh).toMatchObject({ data: { recommendation: { reason: "LESS_PRACTICED" } } });
+
+    // Absent from the (empty) recent history but attempted long ago.
+    repo.listAttemptedActivityIds = vi.fn(async () => [activity.id]);
+    const triedBefore = await getPracticeView(repo, userId, true, {});
+    expect(triedBefore).toMatchObject({
+      data: { recommendation: { reason: "QUICK_DETERMINISTIC_START" } },
+    });
+
+    repo.listAttemptedActivityIds = vi.fn(async () => {
+      throw new Error("unavailable");
+    });
+    const unknown = await getPracticeView(repo, userId, true, {});
+    expect(unknown).toMatchObject({
+      data: { recommendation: { reason: "QUICK_DETERMINISTIC_START" } },
     });
   });
 

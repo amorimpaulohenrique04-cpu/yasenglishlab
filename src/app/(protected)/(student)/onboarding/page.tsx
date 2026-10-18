@@ -1,24 +1,17 @@
 import Link from "next/link";
-import {
-  Alert,
-  Button,
-  Card,
-  EmptyState,
-  Input,
-  PageHeader,
-  SectionHeader,
-  Select,
-} from "@/components/ui";
-import { loadStudentPlacement } from "@/server/placement/placement";
-import { weekdays, minuteLabel } from "@/modules/placement";
+import { Alert, Button, Card, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
+import { loadPlacementJourney } from "@/server/placement/decision-gate";
 import { Journey } from "@/modules/placement/ui/journey";
-import { beginOnboardingAction, savePreferencesAction, openDecisionAction } from "./actions";
+import { beginOnboardingAction, openDecisionAction } from "./actions";
+import { AvailabilityForm } from "./availability-form";
 export default async function OnboardingPage({
   searchParams,
 }: {
   searchParams: Promise<{ result?: string }>;
 }) {
-  const view = await loadStudentPlacement();
+  const { placement: view, open } = await loadPlacementJourney();
+  // An active cohort enrollment (e.g. made by the Admin) closes the journey without rewriting the case.
+  const superseded = view !== null && !open && view.case.state !== "ENROLLED";
   const { result } = await searchParams;
   return (
     <div className="yas-stack">
@@ -58,61 +51,29 @@ export default async function OnboardingPage({
       ) : (
         <>
           <Journey view={view} />
-          {view.case.state === "PAYMENT_CONFIRMED" || view.case.state === "ASSESSMENT_REQUIRED" ? (
+          {superseded ? (
+            <Card className="yas-stack">
+              <SectionHeader title={"Matrícula concluída"} />
+              <p>
+                Sua matrícula em uma turma já está ativa. O histórico da sua entrada foi preservado.
+              </p>
+              <Link className="yas-button yas-button--primary" href="/home">
+                Ir para o início
+              </Link>
+            </Card>
+          ) : view.case.state === "PAYMENT_CONFIRMED" ||
+            view.case.state === "ASSESSMENT_REQUIRED" ? (
             <Card className="yas-stack">
               <SectionHeader title={"Sua disponibilidade"} />
               <p>
                 Informe um intervalo semanal em que você pode participar. Nenhum dado financeiro é
                 necessário aqui.
               </p>
-              <form action={savePreferencesAction} className="yas-stack">
-                <Input
-                  label="Fuso horário"
-                  name="timezone"
-                  defaultValue={view.preferences[0]?.timezone ?? "America/Recife"}
-                  required
-                  tone={result === "invalid" ? "error" : "default"}
-                  message={
-                    result === "invalid"
-                      ? "Confira seu fuso, por exemplo America/Recife."
-                      : "Exemplo: America/Recife. Use o fuso da sua disponibilidade."
-                  }
-                />
-                <Select
-                  name="weekday"
-                  label="Dia disponível"
-                  options={weekdays.map((label, value) => ({ label, value: String(value) }))}
-                  defaultValue={String(view.preferences[0]?.weekday ?? 1)}
-                />
-                <Input
-                  name="start"
-                  label="Disponível a partir de"
-                  tone={result === "invalid" ? "error" : "default"}
-                  message={
-                    result === "invalid"
-                      ? "Confira o intervalo: o início deve vir antes do fim."
-                      : ""
-                  }
-                  type="time"
-                  required
-                  defaultValue={minuteLabel(view.preferences[0]?.startMinute ?? 1080)}
-                />
-                <Input
-                  name="end"
-                  label="Disponível até"
-                  tone={result === "invalid" ? "error" : "default"}
-                  message={result === "invalid" ? "Informe um fim posterior ao início." : ""}
-                  type="time"
-                  required
-                  defaultValue={minuteLabel(view.preferences[0]?.endMinute ?? 1260)}
-                />
-                <Button
-                  type="submit"
-                  variant={view.case.state === "PAYMENT_CONFIRMED" ? "primary" : "secondary"}
-                >
-                  Salvar disponibilidade
-                </Button>
-              </form>
+              <AvailabilityForm
+                preference={view.preferences[0]}
+                invalid={result === "invalid"}
+                primary={view.case.state === "PAYMENT_CONFIRMED"}
+              />
               {view.case.state === "ASSESSMENT_REQUIRED" && (
                 <Link className="yas-button yas-button--primary" href="/onboarding/assessment">
                   Iniciar teste

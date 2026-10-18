@@ -183,6 +183,28 @@ export class SupabasePracticeRepository
     }));
   }
 
+  async listAttemptedActivityIds(
+    userId: string,
+    activityIds: readonly string[],
+  ): Promise<string[]> {
+    if (activityIds.length === 0) return [];
+    // Paged until exhausted: a capped read could not prove that an activity was never attempted.
+    const pageSize = 1000;
+    const attempted = new Set<string>();
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await this.client
+        .from("practice_attempts")
+        .select("practice_activity_id")
+        .eq("user_id", userId)
+        .in("practice_activity_id", [...activityIds])
+        .order("id")
+        .range(from, from + pageSize - 1);
+      if (error) throw new Error("Unable to load attempted Practice activities.");
+      for (const row of (data ?? []) as Row[]) attempted.add(String(row.practice_activity_id));
+      if ((data ?? []).length < pageSize) return [...attempted];
+    }
+  }
+
   async listHistory(userId: string): Promise<PracticeHistoryItem[]> {
     const [{ data: attempts, error: attemptError }, activities] = await Promise.all([
       this.client

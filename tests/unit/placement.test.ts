@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  canEditPreferences,
   canTransition,
+  placementJourneyOpen,
   placementStates,
   filterCandidates,
   preferenceSchema,
@@ -22,6 +24,16 @@ const candidate: PlacementCandidate = {
   startsAt: "2026-10-01T00:00:00Z",
 };
 describe("initial Placement contract", () => {
+  it("keeps availability editable until enrollment, matching save_placement_preferences", () => {
+    for (const state of placementStates)
+      expect(canEditPreferences(state)).toBe(state !== "ENROLLED");
+  });
+  it("closes the journey on ENROLLED or on an active cohort enrollment made outside Placement", () => {
+    for (const state of placementStates) {
+      expect(placementJourneyOpen(state, true)).toBe(false);
+      expect(placementJourneyOpen(state, false)).toBe(state !== "ENROLLED");
+    }
+  });
   it("accepts only adjacent transitions and no transition after enrollment", () => {
     for (const from of placementStates)
       for (const to of placementStates)

@@ -23,6 +23,18 @@ export const placementLabels: Record<PlacementState, string> = {
 export function canTransition(from: PlacementState, to: PlacementState) {
   return placementStates.indexOf(to) === placementStates.indexOf(from) + 1;
 }
+/** Mirrors `save_placement_preferences`: availability stays editable until the Student is enrolled. */
+export function canEditPreferences(state: PlacementState) {
+  return state !== "ENROLLED";
+}
+/**
+ * The onboarding journey is over when the case is ENROLLED or when the Student already holds an
+ * active enrollment with an active cohort membership (e.g. `admin_enroll_in_course`, which by
+ * contract never rewrites the placement case). Either way Home and the pedagogic routes open.
+ */
+export function placementJourneyOpen(state: PlacementState, hasActiveCohortEnrollment: boolean) {
+  return state !== "ENROLLED" && !hasActiveCohortEnrollment;
+}
 export const scheduleWindowSchema = z
   .object({
     weekday: z.number().int().min(0).max(6),

@@ -656,6 +656,18 @@
       "dependencies": ["practice-10-v3"],
       "evidence": ["harness/goals/pr80-gates.md"],
       "updated_at": "2026-10-17T12:00:00Z"
+    },
+    {
+      "id": "placement-practice-dead-ends",
+      "title": "Fechar becos sem saída de placement e prática (auditoria 2026-10-18)",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["pr80-gates"],
+      "evidence": [
+        "harness/goals/placement-practice-dead-ends.md",
+        "harness/evidence/placement-practice-dead-ends/README.md"
+      ],
+      "updated_at": "2026-10-18T12:00:00Z"
     }
   ]
 }

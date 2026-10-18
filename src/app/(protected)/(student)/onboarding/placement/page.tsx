@@ -1,15 +1,45 @@
 import Link from "next/link";
 import { Alert, Button, Card, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { loadStudentCandidates } from "@/server/placement/placement";
+import { loadPlacementJourney } from "@/server/placement/decision-gate";
 import { minuteLabel, weekdays } from "@/modules/placement";
 import { confirmChoiceAction, openDecisionAction } from "../actions";
+import { AvailabilityForm } from "../availability-form";
+
+const availabilityResults = {
+  "availability-saved": {
+    tone: "success",
+    title: "Disponibilidade atualizada",
+    description: "As turmas abaixo foram recalculadas com o novo horário.",
+  },
+  "availability-invalid": {
+    tone: "error",
+    title: "Revise sua disponibilidade",
+    description: "Confira o fuso, o dia e o intervalo. Sua recomendação foi preservada.",
+  },
+  "availability-error": {
+    tone: "error",
+    title: "Não foi possível salvar sua disponibilidade",
+    description:
+      "Tente novamente. Sua recomendação e a disponibilidade anterior foram preservadas.",
+  },
+} as const;
 export default async function PlacementPage({
   searchParams,
 }: {
   searchParams: Promise<{ result?: string }>;
 }) {
-  const { view, candidates } = await loadStudentCandidates();
+  const [{ view, candidates }, journey] = await Promise.all([
+    loadStudentCandidates(),
+    loadPlacementJourney(),
+  ]);
   const { result } = await searchParams;
+  const availability =
+    result && result in availabilityResults
+      ? availabilityResults[result as keyof typeof availabilityResults]
+      : null;
+  // An active cohort enrollment (e.g. made by the Admin) closes the journey without rewriting the case.
+  const enrolled = view?.case.state === "ENROLLED" || (view !== null && !journey.open);
   return (
     <div className="yas-stack">
       <PageHeader
@@ -21,6 +51,13 @@ export default async function PlacementPage({
           tone="error"
           title="Não foi possível confirmar essa turma"
           description="A disponibilidade pode ter mudado. As opções abaixo foram atualizadas; escolha uma turma com vaga."
+        />
+      )}
+      {availability && (
+        <Alert
+          tone={availability.tone}
+          title={availability.title}
+          description={availability.description}
         />
       )}
       {!view?.review ? (
@@ -35,11 +72,11 @@ export default async function PlacementPage({
             <p>{view.review.feedback}</p>
             <p>Recomendação da equipe pedagógica. Não é uma classificação CEFR oficial.</p>
           </Card>
-          {view.case.state === "ENROLLED" ? (
+          {enrolled ? (
             <Card className="yas-stack">
               <SectionHeader title={"Matrícula concluída"} />
-              <p>Escolha inicial: {view.chosenTitle}</p>
-              <p>Turma atual: {view.currentCohort}</p>
+              {view.chosenTitle && <p>Escolha inicial: {view.chosenTitle}</p>}
+              {view.currentCohort && <p>Turma atual: {view.currentCohort}</p>}
               <Link className="yas-button yas-button--primary" href="/home">
                 Ir para o início
               </Link>
@@ -53,15 +90,22 @@ export default async function PlacementPage({
           ) : (
             <>
               {candidates.length === 0 && (
-                <EmptyState
-                  title="Nenhuma turma compatível agora"
-                  description="Sua recomendação está preservada. Fale com o suporte para encontrar outra disponibilidade."
-                />
-              )}
-              {candidates.length === 0 && (
-                <Link className="yas-button yas-button--secondary" href="/support">
-                  Falar com o suporte
-                </Link>
+                <Card className="yas-stack">
+                  <EmptyState
+                    title="Nenhuma turma compatível agora"
+                    description="Sua recomendação está preservada. Atualize sua disponibilidade para buscar outra turma ou fale com o suporte."
+                  />
+                  <SectionHeader title={"Atualizar disponibilidade"} />
+                  <AvailabilityForm
+                    preference={view.preferences[0]}
+                    invalid={result === "availability-invalid"}
+                    primary
+                    returnTo="placement"
+                  />
+                  <Link className="yas-button yas-button--secondary" href="/support">
+                    Falar com o suporte
+                  </Link>
+                </Card>
               )}
               {candidates.map((c) => (
                 <Card className="yas-stack" key={c.id}>

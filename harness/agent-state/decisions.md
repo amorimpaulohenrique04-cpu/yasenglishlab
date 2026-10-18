@@ -1,5 +1,31 @@
 # Harness Decisions
 
+## 2026-10-18 — Admin enrollment supersedes an open placement journey
+
+`docs/PLACEMENT.md` (Etapa 12E) fixes that `admin_enroll_in_course` never alters review, decision or
+`placement_case`, and the case guard only allows STUDENT_DECISION → ENROLLED with a Student decision.
+Closing the case from the Admin command would fabricate a Student choice. Instead the read side treats
+the journey as finished when the Student holds an effective ACTIVE membership in an ACTIVE cohort backed
+by an ACTIVE enrollment (`private.has_active_cohort_enrollment`, same predicate as
+`has_cohort_membership`). Home, the pedagogic decision gate, onboarding pages and the
+STALE_DECISION/PLACEMENT_NO_COHORT alerts use it. Read-side projection only, no new state or table,
+so no ADR. `confirm_placement_choice` is unchanged; a superseded Student is no longer shown the choice CTA.
+
+## 2026-10-18 — Practice "never tried" uses a complete count, not new copy
+
+Softening the sentence changed the approved Home golden (mobile wrapped one more line; CI run
+39096978807). The approved copy is kept and the claim is made reliable instead: the Practice repository
+pages through every attempt of the recommendable activities (`listAttemptedActivityIds`), and
+`recommendPractice` only returns LESS_PRACTICED when that complete set lacks the activity. An activity
+tried long ago, or an unavailable lookup, falls back to the existing neutral reasons.
+
+## 2026-10-18 — Placement reviewer reassignment
+
+`assign_placement_teacher` keeps refusing to stack reviewers. A separate `reassign_placement_teacher`
+(ADMIN+AAL2, REVIEW_PENDING, 1–1000 char reason) ends other direct course-less assignments (never deletes)
+and audits `placement_teacher_reassigned` with the previous teacher ids. Course-scoped assignments and
+cohort teaching scope are not touched.
+
 ## 2026-10-06 — Stage 03E transactional notification boundary
 
 ADR 0014 chooses authorized Resend behind a provider port, without SDK. Applied Billing requires the existing audit witness as well as mirror ordering/status, distinguishing equal-priority stale events without touching 3B. Local notification/channel dedupe, stable generated delivery keys, lease fencing and bounded retries control delivery independently of Billing. A 23-hour retry horizon avoids resend outside the provider's 24-hour dedupe window. Current verified Auth email is resolved server-side; operational rows and RPCs have no browser privileges. Provider acceptance alone establishes SENT. Invocation/hosting, Resend webhooks, UI and 3F remain out of scope.
