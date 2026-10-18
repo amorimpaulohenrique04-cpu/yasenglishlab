@@ -277,6 +277,11 @@ export function recommendPractice(input: {
   policy?: PracticeEvaluationPolicyPort;
   openAttempts?: readonly OpenPracticeAttempt[];
   dueReviews?: readonly DueReview[];
+  /**
+   * Every activity the Student ever attempted (not the bounded `history` window). Without it the
+   * "never tried" reason is not claimed.
+   */
+  attemptedActivityIds?: ReadonlySet<string> | undefined;
   now?: Date;
 }): PracticeRecommendation | null {
   const policy = input.policy ?? CONTRACT_EVALUATION_POLICY;
@@ -385,13 +390,12 @@ export function recommendPractice(input: {
       explanation: "Relacionada à aula acessada mais recentemente e com resposta verificável.",
     };
   }
-  if (count === 0) {
+  // `history` is a bounded recent window: "never tried" needs the complete attempted set.
+  if (count === 0 && input.attemptedActivityIds && !input.attemptedActivityIds.has(activity.id)) {
     return {
       activity,
       reason: "LESS_PRACTICED",
-      // `history` is a bounded recent window, so "never tried" cannot be claimed from it.
-      explanation:
-        "Você não praticou esta atividade recentemente; ela amplia sua rotina de prática.",
+      explanation: "Você ainda não tentou esta atividade; ela amplia sua rotina de prática.",
     };
   }
   if (mode === "DETERMINISTIC") {

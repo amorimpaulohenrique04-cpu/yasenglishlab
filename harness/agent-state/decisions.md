@@ -11,6 +11,14 @@ by an ACTIVE enrollment (`private.has_active_cohort_enrollment`, same predicate 
 STALE_DECISION/PLACEMENT_NO_COHORT alerts use it. Read-side projection only, no new state or table,
 so no ADR. `confirm_placement_choice` is unchanged; a superseded Student is no longer shown the choice CTA.
 
+## 2026-10-18 — Practice "never tried" uses a complete count, not new copy
+
+Softening the sentence changed the approved Home golden (mobile wrapped one more line; CI run
+39096978807). The approved copy is kept and the claim is made reliable instead: the Practice repository
+pages through every attempt of the recommendable activities (`listAttemptedActivityIds`), and
+`recommendPractice` only returns LESS_PRACTICED when that complete set lacks the activity. An activity
+tried long ago, or an unavailable lookup, falls back to the existing neutral reasons.
+
 ## 2026-10-18 — Placement reviewer reassignment
 
 `assign_placement_teacher` keeps refusing to stack reviewers. A separate `reassign_placement_teacher`

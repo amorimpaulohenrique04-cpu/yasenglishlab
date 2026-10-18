@@ -8,7 +8,7 @@
 2. Matrícula administrativa com turma ativa encerra a jornada de entrada (Home, gate pedagógico, onboarding, alertas) sem reescrever o caso (PLACEMENT.md 12E).
 3. `reassign_placement_teacher` (ADMIN+AAL2, REVIEW_PENDING, motivo auditado) e formulário no Admin.
 4. Alerta `PRACTICE_NO_REVIEWER` em `admin_operational_alerts`.
-5. Texto da recomendação de prática sem afirmar "ainda não tentou" a partir de histórico limitado.
+5. "Ainda não tentou" só com o conjunto completo de tentativas (paginado); texto aprovado preservado.
 6. Migração aditiva + teste SQL, testes unit/integration, gates, registros e PR único.
 
 ---

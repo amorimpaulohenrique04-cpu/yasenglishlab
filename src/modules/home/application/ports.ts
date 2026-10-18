@@ -12,6 +12,8 @@ export interface HomePracticeInputs {
   recentLessonId: string | null;
   /** Open attempts, so Home recommends resuming them first, like /pratica. */
   openAttempts?: OpenPracticeAttempt[];
+  /** Every recommendable activity the Student ever attempted; absent means "never tried" is not claimed. */
+  attemptedActivityIds?: ReadonlySet<string> | undefined;
 }
 
 export interface HomeReadRepository {

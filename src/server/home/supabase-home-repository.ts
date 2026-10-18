@@ -32,9 +32,19 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
     ]);
     // Same gate as /pratica: never recommend a practice of a lesson the Student has not reached.
     const reached = new Set(reachedIds);
+    const recommendable = activities.filter((activity) => reached.has(activity.id));
+    // Complete attempted set: `history` is capped, so it cannot prove an activity was never tried.
+    const attempted = await this.practice
+      .listAttemptedActivityIds(
+        userId,
+        recommendable.map((activity) => activity.id),
+      )
+      .then((ids) => new Set(ids))
+      .catch(() => undefined);
 
     return {
-      activities: activities.filter((activity) => reached.has(activity.id)),
+      activities: recommendable,
+      attemptedActivityIds: attempted,
       history,
       recentLessonId,
       openAttempts: fullHistory

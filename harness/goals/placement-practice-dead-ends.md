@@ -19,7 +19,9 @@ prática, sem alterar regras pedagógicas, CEFR, cobrança ou itens de `docs/OPE
    contá-lo. O caso de placement não é reescrito (PLACEMENT.md, Etapa 12E).
 3. Admin+AAL2 troca o professor revisor de um caso REVIEW_PENDING com motivo auditado.
 4. Admin vê alerta operacional para respostas WRITTEN/SPOKEN pendentes sem professor revisor.
-5. A recomendação de prática não afirma "ainda não tentou" com base em histórico truncado.
+5. A recomendação de prática só afirma "ainda não tentou" com o conjunto completo de atividades já
+   tentadas; sem ele (ou se a atividade já foi tentada) cai nos motivos neutros existentes. O texto
+   aprovado não muda (golden visual da Home preservado).
 
 ## Relevant context
 
@@ -38,7 +40,7 @@ prática, sem alterar regras pedagógicas, CEFR, cobrança ou itens de `docs/OPE
       destino comercial e onboarding a respeitam.
 - [ ] `reassign_placement_teacher` (ADMIN+AAL2, REVIEW_PENDING, motivo, auditoria) com teste SQL.
 - [ ] Alerta `PRACTICE_NO_REVIEWER` com teste SQL e contrato TS atualizado.
-- [ ] Texto da recomendação sem a afirmação absoluta, com teste unitário.
+- [ ] "Ainda não tentou" só com contagem completa (paginada), com testes unit/integration.
 - [ ] Migrações apenas aditivas; nenhuma migração aplicada editada.
 
 ## Allowed files / domains
@@ -46,7 +48,9 @@ prática, sem alterar regras pedagógicas, CEFR, cobrança ou itens de `docs/OPE
 - `src/app/(protected)/(student)/onboarding/**`, `src/app/(protected)/(student)/home/page.tsx`
 - `src/app/(protected)/(admin)/admin/enrollments/**`
 - `src/modules/placement/**`, `src/server/placement/**`
-- `src/modules/admin-overview/**`, `src/modules/practice/domain/models.ts`
+- `src/modules/admin-overview/**`, `src/modules/practice/domain/models.ts`,
+  `src/modules/practice/application/**`, `src/server/practice/supabase-practice-repository.ts`,
+  `src/modules/home/application/ports.ts`, `src/server/home/supabase-home-repository.ts`
 - `supabase/migrations/20261018150000_placement_practice_dead_ends.sql`, `supabase/tests/**`,
   `scripts/run-sql-tests.mjs`
 - `tests/unit/**`, `tests/integration/**`, `docs/PLACEMENT.md`, `harness/**`

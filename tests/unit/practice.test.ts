@@ -94,12 +94,31 @@ describe("practice domain", () => {
       activities: [vocabulary, grammar].map(toPracticeRecommendationActivity),
       history: [history(vocabulary.id)],
       recentLessonId: null,
+      attemptedActivityIds: new Set([vocabulary.id]),
     });
     expect(leastPracticed?.activity.id).toBe(grammar.id);
     expect(leastPracticed?.reason).toBe("LESS_PRACTICED");
-    // History is a bounded recent window: never claim the Student has never tried the activity.
-    expect(leastPracticed?.explanation).not.toMatch(/ainda não tentou/i);
-    expect(leastPracticed?.explanation).toMatch(/recentemente/);
+    expect(leastPracticed?.explanation).toMatch(/ainda não tentou/);
+  });
+
+  it("never claims 'never tried' from the bounded recent history alone", () => {
+    const vocabulary = activity("83000000-0000-4000-8000-000000000001", "VOCABULARY");
+    const grammar = {
+      ...activity("83000000-0000-4000-8000-000000000002", "GRAMMAR"),
+      relatedLessonId: null,
+    };
+    const inputs = {
+      activities: [vocabulary, grammar].map(toPracticeRecommendationActivity),
+      // Grammar is absent from the recent window but was attempted long ago.
+      history: [history(vocabulary.id)],
+      recentLessonId: null,
+    };
+    for (const attemptedActivityIds of [new Set([vocabulary.id, grammar.id]), undefined]) {
+      const rec = recommendPractice({ ...inputs, attemptedActivityIds });
+      expect(rec?.activity.id).toBe(grammar.id);
+      expect(rec?.reason).toBe("QUICK_DETERMINISTIC_START");
+      expect(rec?.explanation).not.toMatch(/ainda não tentou/);
+    }
   });
 
   it("prioritizes objective feedback over pending manual evaluation", () => {

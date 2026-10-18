@@ -281,6 +281,7 @@ describe("assignments, submit shapes and recommendation", () => {
       activities: [act("z-1", { evaluationMode: "MANUAL_PENDING" }), act("a-2")],
       history: [],
       recentLessonId: null,
+      attemptedActivityIds: new Set(),
     });
     expect(rec?.activity.id).toBe("a-2");
     expect(rec?.reason).toBe("LESS_PRACTICED");

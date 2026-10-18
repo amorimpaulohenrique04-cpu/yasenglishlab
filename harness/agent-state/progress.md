@@ -8,6 +8,7 @@ Append-only task milestones. Do not rewrite history to hide failed attempts.
 - Additive migration `20261018150000_placement_practice_dead_ends.sql`: `private.has_active_cohort_enrollment`, `student_has_active_cohort_enrollment()`, `reassign_placement_teacher`, `admin_operational_alerts` (superseded cases excluded, new PRACTICE_NO_REVIEWER).
 - SQL test `placement_practice_dead_ends.sql` plus updated `operational_alerts.sql` (7 categories), run against the local stack inside a rolled-back transaction together with the pending 20261018140000 migration (shared local DB left untouched).
 - App: availability form in the no-candidate state, journey gate on active cohort enrollment, admin reassignment form, alert contract, softened practice copy. Unit + integration tests added.
+- PR #86 CI: first run failed on Format (evidence README); second run failed only on the mobile Home golden because the softened copy wrapped one more line. Reverted to the approved copy and made the claim reliable with a complete, paged attempted-activity lookup.
 
 ## 2026-10-06 — Stage 03E implementation and focused verification
 
