@@ -735,3 +735,7 @@ Blocks 2A–2D on `feat/yas-billing-operations-closure` (from main after PR #81)
 ## 2026-10-17 — billing-reconciliation-integrity
 
 Base/main CI verified; regression red 18/29, green 29/29. Implementation complete; local real E2E/full and final CI/merge pending. No completion claim.
+
+## PR 83 — required gates blocked
+
+Implementation/focused checks and verify:agent pass. Official CI 39081037545 fails Database on the pre-existing rate-window counter collision (proved locally in rollback-only SQL); Preview/CI Gate consequently fail. Local verify:ui also failed unchanged canonical lesson progress UI after persistence succeeded. Draft PR, no merge; full clean-stack verification running. Two open failure records preserve evidence; no out-of-scope fix or CI retry.

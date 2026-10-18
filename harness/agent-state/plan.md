@@ -6,7 +6,7 @@
 
 1. Base limpa e CI verde confirmados; registrar regressões vermelhas.
 2. Corrigir quatro arquivos existentes e feedback, sem SQL ou mutações financeiras.
-3. Gates locais, E2E/UI quando aptos, revisão do diff, PR único, CI final e merge condicionado.
+3. PR #83 aberto em draft. CI 39081037545 bloqueado por colisão preexistente de janelas do rate limiter; verify:ui local bloqueado por progresso canônico visível após persistência. Concluir a execução única do verify:full, registrar evidência final e manter sem merge. Correções fora do billing exigem trabalho dedicado; sem bypass ou retry para ocultar o problema.
 
 ---
 

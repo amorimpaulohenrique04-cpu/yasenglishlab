@@ -14,12 +14,16 @@
     {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
-      "status": "in_progress",
+      "status": "blocked",
       "verified": false,
       "dependencies": [],
       "evidence": [
         "harness/goals/billing-reconciliation-integrity.md",
-        "harness/evidence/billing-reconciliation-integrity/README.md"
+        "harness/evidence/billing-reconciliation-integrity/README.md",
+        "harness/failure-log/2026-10-17-billing-ci-rate-window-collision.md",
+        "harness/failure-log/2026-10-17-billing-local-canonical-progress.md",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/83",
+        "https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/39081037545"
       ],
       "updated_at": "2026-10-17T12:00:00Z"
     },

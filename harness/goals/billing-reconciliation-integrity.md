@@ -1,6 +1,6 @@
 # GOAL — billing-reconciliation-integrity: Complete and failure-visible reconciliation
 
-Status: in_progress
+Status: blocked
 Owner: agent
 Created: 2026-10-17
 Updated: 2026-10-17
@@ -27,10 +27,10 @@ ADMIN+AAL2 can start, advance batches and restart partial reconciliation. Unavai
 
 ## Acceptance criteria
 
-- [ ] 0, 50, 51 and 120 subscriptions are processed without silent truncation.
-- [ ] Provider errors produce partial results; persistence failures throw.
-- [ ] Reading/resolution errors are visible; ADMIN+AAL2 remains enforced.
-- [ ] Existing SQL, financial mutations, dependencies and CI workflows remain unchanged.
+- [x] 0, 50, 51 and 120 subscriptions are processed without silent truncation.
+- [x] Provider errors produce partial results; persistence failures throw.
+- [x] Reading/resolution errors are visible; ADMIN+AAL2 remains enforced.
+- [x] Existing SQL, financial mutations, dependencies and CI workflows remain unchanged.
 - [ ] Final SHA CI Gate succeeds before merge; merged main is verified.
 
 ## Allowed files / domains
