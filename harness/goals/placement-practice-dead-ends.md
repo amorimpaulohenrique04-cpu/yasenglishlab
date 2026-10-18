@@ -45,10 +45,10 @@ prática, sem alterar regras pedagógicas, CEFR, cobrança ou itens de `docs/OPE
 
 - `src/app/(protected)/(student)/onboarding/**`, `src/app/(protected)/(student)/home/page.tsx`
 - `src/app/(protected)/(admin)/admin/enrollments/**`
-- `src/modules/placement/**`, `src/server/placement/**``src/modules/commercial/contracts.ts`,
-  `src/server/commercial/checkout.ts`
+- `src/modules/placement/**`, `src/server/placement/**`
 - `src/modules/admin-overview/**`, `src/modules/practice/domain/models.ts`
-- `supabase/migrations/<nova>`, `supabase/tests/**`, `scripts/run-sql-tests.mjs`
+- `supabase/migrations/20261018150000_placement_practice_dead_ends.sql`, `supabase/tests/**`,
+  `scripts/run-sql-tests.mjs`
 - `tests/unit/**`, `tests/integration/**`, `docs/PLACEMENT.md`, `harness/**`
 
 ## Forbidden areas
