@@ -97,6 +97,9 @@ describe("practice domain", () => {
     });
     expect(leastPracticed?.activity.id).toBe(grammar.id);
     expect(leastPracticed?.reason).toBe("LESS_PRACTICED");
+    // History is a bounded recent window: never claim the Student has never tried the activity.
+    expect(leastPracticed?.explanation).not.toMatch(/ainda não tentou/i);
+    expect(leastPracticed?.explanation).toMatch(/recentemente/);
   });
 
   it("prioritizes objective feedback over pending manual evaluation", () => {

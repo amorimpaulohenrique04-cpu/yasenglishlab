@@ -71,3 +71,24 @@ e alias admin-course-enrollment. Formulario Admin e aviso ao aluno permanecem na
 O Admin com AAL2 cria e publica avaliações em /admin/assessments (ADR 0021). Somente a avaliação marcada is_placement é escolhida para novas tentativas de entrada. O índice parcial mantém seleção única; publicar como entrada troca a seleção atomicamente. Não há escolha implícita por data de criação.
 
 Cada tentativa guarda assessment_version_id. Publicações futuras preservam o conteúdo e as respostas das tentativas existentes. O Admin cria nova versão para alterar conteúdo publicado e não pode aposentar a única versão publicada da avaliação de entrada. Questões humanas seguem revisão pedagógica e não atribuem automaticamente CEFR.
+
+## Auditoria 2026-10-18 — becos sem saída
+
+Disponibilidade: `save_placement_preferences` aceita edição até STUDENT_DECISION. Sem turma compatível,
+`/onboarding/placement` mostra o formulário de disponibilidade e a lista é recalculada ao salvar.
+
+Matrícula administrativa: `admin_enroll_in_course` continua sem alterar o caso. Uma membership ACTIVE
+efetiva numa turma ACTIVE com matrícula ACTIVE (`private.has_active_cohort_enrollment`) encerra a jornada
+de entrada na leitura: Home, rotas pedagógicas e onboarding deixam de exigir a escolha de turma, e os alertas
+STALE_DECISION e PLACEMENT_NO_COHORT deixam de contar o aluno. O caso permanece no estado em que estava.
+
+Troca de revisor: `reassign_placement_teacher(p_case_id, p_teacher_id, p_reason)` exige ADMIN+AAL2 e caso
+REVIEW_PENDING. Encerra (sem apagar) as atribuições diretas sem curso de outros professores, cria a nova
+atribuição e audita `placement_teacher_reassigned` com motivo e professores anteriores. Retry idêntico não
+gera nova auditoria. `assign_placement_teacher` continua recusando empilhar revisores.
+
+Prática sem revisor: o alerta `PRACTICE_NO_REVIEWER` lista alunos com resposta SUBMITTED/PENDING_MANUAL sem
+professor ativo atribuído nem professor ativo de turma ativa.
+
+Banco: `20261018150000_placement_practice_dead_ends.sql`. Teste: `supabase/tests/placement_practice_dead_ends.sql`.
+

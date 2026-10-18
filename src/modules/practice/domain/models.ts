@@ -389,7 +389,9 @@ export function recommendPractice(input: {
     return {
       activity,
       reason: "LESS_PRACTICED",
-      explanation: "Você ainda não tentou esta atividade; ela amplia sua rotina de prática.",
+      // `history` is a bounded recent window, so "never tried" cannot be claimed from it.
+      explanation:
+        "Você não praticou esta atividade recentemente; ela amplia sua rotina de prática.",
     };
   }
   if (mode === "DETERMINISTIC") {

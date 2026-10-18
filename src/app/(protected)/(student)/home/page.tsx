@@ -22,7 +22,7 @@ import { YAS_SCHEDULE_TIME_ZONE, scheduleSessionTypeLabel } from "@/modules/sche
 import { SubscriptionSuspendedNotice } from "@/modules/billing/ui/suspension-notice";
 import { loadCurrentSubscriptionAccess } from "@/server/billing/subscription-access";
 import { loadHomePage } from "@/server/home/home";
-import { loadStudentPlacement } from "@/server/placement/placement";
+import { loadPlacementJourney } from "@/server/placement/decision-gate";
 import { PlacementDecisionDialog } from "@/modules/placement/ui/placement-decision-dialog";
 
 const sessionDate = new Intl.DateTimeFormat("pt-BR", {
@@ -49,8 +49,8 @@ const heroIcons: Record<keyof typeof heroPhotos, IconName> = {
 const reveal = (index: number) => ({ "--yas-i": index }) as CSSProperties;
 
 export default async function StudentHomePage() {
-  const placement = await loadStudentPlacement();
-  if (placement && placement.case.state !== "ENROLLED") {
+  const { placement, open: journeyOpen } = await loadPlacementJourney();
+  if (placement && journeyOpen) {
     const reviewing = placement.case.state === "REVIEW_PENDING";
     const decisionPending =
       placement.case.state === "PLACEMENT_READY" || placement.case.state === "STUDENT_DECISION";

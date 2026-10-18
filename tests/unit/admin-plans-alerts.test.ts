@@ -84,8 +84,29 @@ describe("operational alert read model", () => {
     alerts: alertKinds.map((kind) => ({ kind, count: 0, items: [] })),
   };
   it("accepts a complete empty result distinctly from unavailability", () => {
-    expect(operationalAlertsSchema.parse(model).alerts).toHaveLength(6);
+    expect(operationalAlertsSchema.parse(model).alerts).toHaveLength(7);
     expect(operationalAlertsSchema.safeParse(null).success).toBe(false);
+  });
+  it("accepts manual practice waiting without a reviewer and rejects an incomplete category set", () => {
+    const withReviewerGap = {
+      ...model,
+      alerts: model.alerts.map((alert) =>
+        alert.kind === "PRACTICE_NO_REVIEWER"
+          ? {
+              ...alert,
+              count: 1,
+              items: [{ id, label: "Aluno", reason: "NO_REVIEWER", since: model.generatedAt }],
+            }
+          : alert,
+      ),
+    };
+    expect(operationalAlertsSchema.safeParse(withReviewerGap).success).toBe(true);
+    expect(
+      operationalAlertsSchema.safeParse({
+        ...model,
+        alerts: model.alerts.filter((alert) => alert.kind !== "PRACTICE_NO_REVIEWER"),
+      }).success,
+    ).toBe(false);
   });
   it("rejects duplicate categories, unbounded details and unknown operational causes", () => {
     expect(
