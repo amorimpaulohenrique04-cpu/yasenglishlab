@@ -196,3 +196,5 @@ The full gate exposed canonical COURSE practice assignments used by the existing
 CI run 39620533896 blocked every subsequent gate on an unreviewed Vite advisory. A compatible patch of the existing transitive Vite resolution is indispensable to the required CI verification; scope includes only package-lock.json for this dependency fix. The production audit was already clean; no audit allowlist, severity threshold or dependency-patch guard is changed.
 
 The broad npm update candidate was narrowed to Vite 8.3.3 metadata only. Its dependency ranges accept already locked versions; no package is added and package.json stays unchanged.
+
+Path positions control ordering, while displayed module ordinals remain one-based. Progress controls explicitly refresh their server projection after a successful checkpoint; no optimistic success, timeout increase, assertion removal or baseline update is used.

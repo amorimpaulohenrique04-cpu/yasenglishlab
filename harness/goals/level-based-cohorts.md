@@ -73,6 +73,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `harness/failure-log/2026-10-21-level-based-cohorts-transfer.md`
 - `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md`
 - `harness/failure-log/2026-10-21-level-based-cohorts-vite-gate.md`
+- `harness/failure-log/2026-10-21-level-based-cohorts-learning-projection.md`
 
 ## Forbidden areas
 
@@ -112,3 +113,7 @@ The existing live join-reference guard repeats current cohort authorization afte
 ## Required CI dependency patch
 
 The existing mandatory Supply Chain gate rejects Vite 8.3.1 advisories, blocking all feature verification in CI. Allow only the compatible existing Vite resolution update in package-lock.json, with no new dependency, audit exception or product/deploy changes. Inspect the lock diff and rerun the unmodified supply-chain checks.
+
+## Learning projection corrections
+
+The final UI gates exposed zero-based path positions appearing as module labels and a completed final lesson remaining at 0% in the current page despite persisted 100%. Normalize displayed module ordinals after sorting, and refresh the server projection after a successful checkpoint. Retain existing E2E assertions and golden images.

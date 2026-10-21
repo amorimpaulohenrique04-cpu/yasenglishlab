@@ -62,6 +62,7 @@ describe("SupabaseLearningRepository cohort path", () => {
     );
     const [course] = await new SupabaseLearningRepository(client).getActiveCoursesForStudent(USER);
     expect(course!.modules.map((m) => m.id)).toEqual([second, MODULE]);
+    expect(course!.modules.map((m) => m.position)).toEqual([1, 2]);
   });
   it("applies cohort order, hides excluded lessons and exposes lock reasons", async () => {
     const { client, rpc } = fakeClient([

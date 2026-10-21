@@ -241,7 +241,13 @@ export class SupabaseLearningRepository implements LearningRepository {
       slug: String(row.slug),
       title: String(row.title),
       description: row.description ? String(row.description) : null,
-      modules: (modulesByCourse.get(String(row.id)) ?? []).sort((a, b) => a.position - b.position),
+      modules: (modulesByCourse.get(String(row.id)) ?? [])
+        .sort((a, b) => a.position - b.position)
+        .map((courseModule, index) =>
+          pathByModule.has(courseModule.id)
+            ? { ...courseModule, position: index + 1 }
+            : courseModule,
+        ),
       completedAt: completedAtByCourse.get(String(row.id)) ?? null,
     }));
   }
