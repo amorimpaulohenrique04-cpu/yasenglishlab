@@ -171,6 +171,8 @@ select public.confirm_placement_choice('99050000-0000-4000-8000-000000000011');
 reset role;
 insert into public.live_sessions(id,teacher_id,cohort_id,session_type,title,starts_at,ends_at,capacity)
 values('99070000-0000-4000-8000-000000000011','99010000-0000-4000-8000-000000000001','99050000-0000-4000-8000-000000000011','CORE_CLASS','Basic only',now()+interval '2 days',now()+interval '2 days 1 hour',6);
+insert into public.live_sessions(id,teacher_id,cohort_id,session_type,title,starts_at,ends_at,capacity)
+values('99070000-0000-4000-8000-000000000012','99010000-0000-4000-8000-000000000001','99050000-0000-4000-8000-000000000011','CORE_CLASS','Another Basic meeting',now()+interval '3 days',now()+interval '3 days 1 hour',6);
 select pg_temp.assert_true(private.can_book_session('99070000-0000-4000-8000-000000000011',auth.uid()),'Basic member eligible for Basic meeting');
 set local role authenticated;
 select public.book_live_session('99070000-0000-4000-8000-000000000011');
@@ -186,7 +188,7 @@ select pg_temp.assert_true((select count(*)=1 from public.assessment_attempts wh
 select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000002',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000002","aal":"aal1"}',true);
 select pg_temp.assert_true(not private.can_book_session('99070000-0000-4000-8000-000000000011',auth.uid()),'former level meeting no longer eligible');
 set local role authenticated;
-select pg_temp.denied('select public.book_live_session(''99070000-0000-4000-8000-000000000011'')');
+select pg_temp.denied('select public.book_live_session(''99070000-0000-4000-8000-000000000012'')');
 select pg_temp.assert_true(public.get_live_session_join_access('99070000-0000-4000-8000-000000000011')->>'status'='NOT_AUTHORIZED','old booking cannot expose former cohort meeting after transfer');
 select pg_temp.assert_true((select count(*)=1 from public.session_bookings where live_session_id='99070000-0000-4000-8000-000000000011' and user_id=auth.uid()),'transfer keeps booking history');
 reset role;
