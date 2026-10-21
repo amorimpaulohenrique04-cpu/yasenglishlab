@@ -1,9 +1,13 @@
 # Failure — atomic level transfer ordering
 
-Classification: architecture  
-Status: resolved  
-Repeatable: yes  
-Date: 2026-10-21  
+Classification: architecture
+
+Status: resolved
+
+Repeatable: yes
+
+Date: 2026-10-21
+
 PR/commit related: current change codex/level-based-cohorts
 
 ## Symptom

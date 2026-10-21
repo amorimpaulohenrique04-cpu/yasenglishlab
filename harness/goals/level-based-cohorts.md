@@ -67,7 +67,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `harness/agent-state/**`
 - `harness/feature_list.json`
 - `harness/evidence/level-based-cohorts/**`
-- `harness/failure-log/*level-based-cohorts*`
+- `harness/failure-log/2026-10-21-level-based-cohorts-transfer.md`
 
 ## Forbidden areas
 
