@@ -601,12 +601,12 @@ set local role authenticated;
 select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment restores asset authorization');
 reset role;
 -- A released assignment still cannot grant a suspended Student private media.
-update public.complimentary_access_grants set expires_at=now()-interval '1 hour' where user_id=pg_temp.u(5);
+update public.complimentary_access_grants set revoked_at=now(),revoked_by=pg_temp.u(1) where user_id=pg_temp.u(5);
 select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
 select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment does not bypass payment for assets');
 reset role;
-update public.complimentary_access_grants set expires_at=null where user_id=pg_temp.u(5);
+update public.complimentary_access_grants set revoked_at=null,revoked_by=null where user_id=pg_temp.u(5);
 -- One shared practice can be assigned to several authorized cohorts, each with independent dates.
 insert into public.cohort_teachers(cohort_id,teacher_id) values('b2400000-0000-4000-8000-000000000002','b2100000-0000-4000-8000-000000000002');
 select pg_temp.login(pg_temp.u(2),'aal2');

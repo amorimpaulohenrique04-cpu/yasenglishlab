@@ -63,6 +63,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `docs/PLACEMENT.md`
 - `docs/PRACTICE_ENGINE.md`
 - `docs/DATA_MODEL.md`
+- `docs/LIVE_CLASSES.md`
 - `docs/OPEN_QUESTIONS.md`
 - `harness/goals/level-based-cohorts.md`
 - `harness/agent-state/**`
@@ -103,3 +104,5 @@ The user explicitly requires module order per cohort, resolving the prior open q
 The existing Admin enrollment screen and review operation also support a justified level override before student confirmation, preserving the immutable Teacher review.
 
 - Failure record in scope: `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md` (canonical setup exposed a legacy reach-assignment contract).
+
+The existing live join-reference guard repeats current cohort authorization after transfers; booking history and meeting provider behavior remain unchanged.

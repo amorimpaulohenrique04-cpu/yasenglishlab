@@ -615,3 +615,20 @@ returns boolean language sql stable security definer set search_path = '' as $$
                        select 1 from jsonb_array_elements(a.content -> 'items') i where i #>> '{stimulus,assetId}' = s.id::text)))
             and (private.has_role('ADMIN', true) or (private.has_role('STUDENT', false) and private.has_paid_access(auth.uid()) and private.can_view_practice_activity(a.id))))));
 $$;
+
+-- An old booking preserves history but cannot disclose a former cohort meeting reference.
+create or replace function public.get_live_session_join_reference(p_session_id uuid)
+returns jsonb language plpgsql stable security definer set search_path = '' as $$
+declare session public.live_sessions; is_teacher boolean; has_booking boolean;
+begin
+ select * into session from public.live_sessions where id=p_session_id;
+ is_teacher := private.is_teacher_for_session(p_session_id);
+ has_booking := private.has_role('STUDENT',false) and private.can_book_session(p_session_id,auth.uid()) and exists(select 1 from public.session_bookings where live_session_id=p_session_id and user_id=auth.uid() and status='BOOKED');
+ if session.id is null or not (is_teacher or has_booking) then
+  return jsonb_build_object('status','NOT_AUTHORIZED');
+ end if;
+ if not is_teacher and not private.has_paid_access(auth.uid()) then
+  return jsonb_build_object('status','NOT_AUTHORIZED','reason','SUBSCRIPTION_SUSPENDED');
+ end if;
+ return jsonb_build_object('status',session.status,'startsAt',session.starts_at,'endsAt',session.ends_at,'provider',session.meeting_provider,'reference',session.meeting_ref,'teacher',is_teacher);
+end $$;

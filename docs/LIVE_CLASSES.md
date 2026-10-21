@@ -93,3 +93,7 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
   rules and only those Students get the notice "Esta aula foi cancelada. Nossa equipe entrará em contato para
   informar uma nova data." The cancellation is audited (`TEACHER_SESSION_CANCELLED`, with the affected count).
   No new date is proposed automatically.
+
+## Current cohort authorization after transfer (2026-10-21)
+
+Join reference resolution reuses can_book_session alongside the own BOOKED reservation, paid access and existing join-window checks. A retained reservation from a previous cohort remains historical evidence and cannot disclose that cohort meeting link after transfer. Teacher ownership, AAL2, booking quotas, group capacity, cancellation, attendance and Google Meet handling remain unchanged.
