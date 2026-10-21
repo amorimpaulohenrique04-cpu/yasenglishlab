@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { mkdirSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
@@ -33,6 +34,11 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await expect(drawer.getByLabel("Nível pedagógico", { exact: true }).locator("option")).toHaveText(
     ["Sem classificação (legado)", "Básico", "Intermediário", "Avançado"],
   );
+  mkdirSync("harness/evidence/level-based-cohorts/screenshots", { recursive: true });
+  await page.screenshot({
+    path: "harness/evidence/level-based-cohorts/screenshots/cohort-level-desktop.png",
+    fullPage: true,
+  });
   await drawer.getByRole("button", { name: "Salvar horário" }).click();
   await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
   const desktopViolations = await new AxeBuilder({ page })
@@ -57,6 +63,16 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await expect(mobileDrawer.getByRole("button", { name: "Fechar" })).toBeFocused();
   const drawerViolations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   expect(drawerViolations.violations).toEqual([]);
+  await page.screenshot({
+    path: "harness/evidence/level-based-cohorts/screenshots/cohort-level-mobile.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 834, height: 1112 });
+  await page.screenshot({
+    path: "harness/evidence/level-based-cohorts/screenshots/cohort-level-tablet.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.keyboard.press("Escape");
   await expect(mobileDrawer).not.toBeVisible();
   const violations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
