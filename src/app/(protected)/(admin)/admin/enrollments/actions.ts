@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import {
   configureCurrentPlacementCohort,
   transferCurrentPlacement,
+  overrideCurrentPlacementLevel,
 } from "@/server/placement/placement";
 import {
   assignPlacementTeacher,
@@ -93,4 +94,21 @@ export async function resolveReassessmentAction(form: FormData) {
   });
   revalidatePath("/admin/enrollments");
   redirect(`/admin/enrollments?result=${error ? "error" : "resolved"}`);
+}
+
+export async function overridePlacementLevelAction(form: FormData) {
+  await assertRole("ADMIN");
+  try {
+    await overrideCurrentPlacementLevel({
+      caseId: form.get("caseId"),
+      level: form.get("level"),
+      reason: form.get("reason"),
+    });
+  } catch {
+    redirect("/admin/enrollments?result=error");
+  }
+  revalidatePath("/admin/enrollments");
+  revalidatePath("/onboarding/placement");
+  revalidatePath("/home");
+  redirect("/admin/enrollments?result=reviewed");
 }

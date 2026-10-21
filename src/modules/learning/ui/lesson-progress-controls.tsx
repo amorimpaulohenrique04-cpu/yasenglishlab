@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui";
 import { NoCohortNotice } from "./no-cohort-notice";
@@ -30,6 +31,7 @@ export function LessonProgressControls({
   hasVideo?: boolean;
 }) {
   const [noCohort, setNoCohort] = useState(false);
+  const router = useRouter();
   const checkpoints = [25, 50, 75, 100] as const;
   const durationSeconds = Math.max((estimatedMinutes ?? 10) * 60, 1);
 
@@ -42,6 +44,7 @@ export function LessonProgressControls({
           action={async (formData: FormData) => {
             const result = await updateLessonProgressAction(formData);
             if (result?.noCohort) setNoCohort(true);
+            else router.refresh();
           }}
         >
           <input type="hidden" name="lessonId" value={lessonId} />

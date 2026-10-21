@@ -92,3 +92,11 @@ professor ativo atribuído nem professor ativo de turma ativa.
 
 Banco: `20261018150000_placement_practice_dead_ends.sql`. Teste: `supabase/tests/placement_practice_dead_ends.sql`.
 
+
+## Formal pedagogical levels (2026-10-21)
+
+Courses remain the shared curriculum. Cohorts optionally declare pedagogical_level BASIC, INTERMEDIATE or ADVANCED; NULL preserves the legacy contract. New reviews in a course with formal-level cohorts require recommended_level, separate from recommended_course_id and CEFR. Historical reviews remain immutable and NULL-level reviews offer only legacy cohorts. finalize_placement_review extends its single signature with optional p_level; old callers remain valid for legacy courses. Student candidate listing and final confirmation match both course and level under the existing authorization.
+
+Admin promotion reuses transfer_placement_cohort with reason, operation ID, AAL2 and audit. It can select another level while retaining the original recommendation/choice. The deferred membership constraint is checked immediately before the transfer returns; ordinary writes check immediately. Concurrent writers serialize by enrollment. Existing legacy overlapping paths are preserved; a formal level cannot overlap another membership of the same enrollment. Classification becomes immutable after membership history; configure levels before adding students. No production records are classified automatically.
+
+Before Student confirmation, Admin+AAL2 can use the same finalize_placement_review operation with optional p_admin_reason to adjust the level. The immutable Teacher review, feedback, course and confidence are preserved. Current recommended_level_override and its justification live on the placement case; placement_level_overridden audit records previous/new levels, authenticated actor and reason. A matching retry is idempotent. Student candidates and confirmation use the effective recommendedLevel projection. Once ENROLLED, promotion uses the existing audited cohort transfer instead.

@@ -27,6 +27,7 @@ export async function manageCohortAction(form: FormData) {
     operation === "CREATE"
       ? {
           course_id: form.get("course_id"),
+          pedagogical_level: form.get("pedagogical_level") || null,
           name: form.get("name"),
           code: form.get("code"),
           starts_at: form.get("starts_at"),
@@ -34,7 +35,12 @@ export async function manageCohortAction(form: FormData) {
           timezone: form.get("timezone") || "America/Recife",
         }
       : operation === "EDIT"
-        ? { name: form.get("name") }
+        ? {
+            name: form.get("name"),
+            ...(form.has("pedagogical_level")
+              ? { pedagogical_level: form.get("pedagogical_level") || null }
+              : {}),
+          }
         : operation === "STATUS"
           ? { status: form.get("status") }
           : operation.endsWith("STUDENT")

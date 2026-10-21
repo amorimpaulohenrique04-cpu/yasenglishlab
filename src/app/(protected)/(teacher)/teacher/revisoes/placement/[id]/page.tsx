@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { pedagogicalLevelOptions } from "@/modules/cohorts/domain/models";
 import { Alert, Button, Card, PageHeader, SectionHeader, Select, Textarea } from "@/components/ui";
 import { loadTeacherPlacement } from "@/server/placement/placement";
 import { finalizePlacementReviewAction } from "../actions";
@@ -67,6 +68,12 @@ export default async function ReviewPage({
         <Card className="yas-stack">
           <SectionHeader title={"Recomendação preservada"} />
           <p>{view.recommendedTitle}</p>
+          <p>
+            Nível:{" "}
+            {pedagogicalLevelOptions.find(
+              (option) => option.value === view.review?.recommended_level,
+            )?.label ?? "Sem classificação (legado)"}
+          </p>
           <p>{view.review.feedback}</p>
           <p>
             Confiança: {view.review.confidence} ·{" "}
@@ -86,6 +93,12 @@ export default async function ReviewPage({
               name="courseId"
               options={courses.map((c) => ({ value: c.id, label: c.title }))}
               required
+            />
+            <Select
+              label="Nível pedagógico recomendado"
+              name="level"
+              options={pedagogicalLevelOptions}
+              message="Obrigatório para cursos com turmas por nível. Não representa proficiência CEFR."
             />
             <Textarea label="Feedback para o aluno" name="feedback" required maxLength={4000} />
             <Select

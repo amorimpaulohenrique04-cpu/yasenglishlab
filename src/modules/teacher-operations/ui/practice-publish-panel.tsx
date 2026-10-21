@@ -17,7 +17,13 @@ export interface PublishPanelProps {
   dirty: boolean;
   report: PublicationReport;
   cohorts: { id: string; name: string }[];
-  assignments: { cohortId: string; cohortName: string; dueAt: string | null }[];
+  assignments: {
+    cohortId: string;
+    cohortName: string;
+    dueAt: string | null;
+    availableFrom?: string | null | undefined;
+    requireLessonAvailable?: boolean | undefined;
+  }[];
   actions: {
     publish: FormAction;
     unpublish: FormAction;
@@ -168,6 +174,20 @@ export function PracticePublishPanel({
                 </fieldset>
                 <Input
                   type="datetime-local"
+                  name="availableFrom"
+                  label="Disponível a partir de (opcional)"
+                  message="Horário de Recife (UTC-03:00). Sem data, a atribuição fica disponível imediatamente."
+                />
+                <Checkbox
+                  name="requireLessonAvailable"
+                  label="Liberar somente quando a aula relacionada estiver disponível"
+                />
+                <p className={styles.muted}>
+                  A regra da aula respeita publicação, trilha, data e sequência. O prazo de entrega
+                  é independente.
+                </p>
+                <Input
+                  type="datetime-local"
                   name="dueAt"
                   label="Prazo (opcional)"
                   message="Horário de Recife (America/Recife, UTC-03:00). Precisa ser uma data futura."
@@ -191,6 +211,8 @@ export function PracticePublishPanel({
                   <li key={item.cohortId} className={styles.builderRow}>
                     <span>
                       <strong>{item.cohortName}</strong> · Prazo: {formatDue(item.dueAt)}
+                      {item.availableFrom && <> · Liberação: {formatDue(item.availableFrom)}</>}
+                      {item.requireLessonAvailable && " · Após disponibilidade da aula"}
                     </span>
                     <form action={actions.unassign}>
                       <input type="hidden" name="id" value={practiceId} />

@@ -1,3 +1,16 @@
+# Plano — level-based-cohorts
+
+## Active task
+
+**level-based-cohorts** — goal: `harness/goals/level-based-cohorts.md`
+
+1. Inspecionar main 5dde6a5, SQL/RLS e consumidores.
+2. Migração aditiva para níveis, memberships, placement, liberação e conclusão.
+3. Estender formulários/schemas existentes.
+4. Testes, gates, evidências e PR único.
+
+---
+
 # Plano — placement-practice-dead-ends
 
 ## Active task

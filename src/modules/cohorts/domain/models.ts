@@ -1,9 +1,17 @@
 import { z } from "zod";
+export const pedagogicalLevelSchema = z.enum(["BASIC", "INTERMEDIATE", "ADVANCED"]);
+export const pedagogicalLevelOptions = [
+  { value: "", label: "Sem classificação (legado)" },
+  { value: "BASIC", label: "Básico" },
+  { value: "INTERMEDIATE", label: "Intermediário" },
+  { value: "ADVANCED", label: "Avançado" },
+];
 const uuid = z.string().uuid();
 const cohortDate = z.union([z.string().datetime({ offset: true }), z.iso.date()]);
 export const cohortSchema = z.object({
   id: uuid,
   course_id: uuid,
+  pedagogical_level: pedagogicalLevelSchema.nullable().optional(),
   name: z.string(),
   code: z.string(),
   status: z.enum(["PLANNED", "ACTIVE", "ARCHIVED"]),
@@ -43,6 +51,7 @@ export const cohortCommandSchema = z.discriminatedUnion("operation", [
       input: z
         .object({
           course_id: uuid,
+          pedagogical_level: pedagogicalLevelSchema.nullable().optional(),
           name: z.string().trim().min(1).max(120),
           code: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
           starts_at: cohortDate,
@@ -56,7 +65,12 @@ export const cohortCommandSchema = z.discriminatedUnion("operation", [
     .object({
       operation: z.literal("EDIT"),
       cohortId: uuid,
-      input: z.object({ name: z.string().trim().min(1).max(120) }).strict(),
+      input: z
+        .object({
+          name: z.string().trim().min(1).max(120),
+          pedagogical_level: pedagogicalLevelSchema.nullable().optional(),
+        })
+        .strict(),
     })
     .strict(),
   z

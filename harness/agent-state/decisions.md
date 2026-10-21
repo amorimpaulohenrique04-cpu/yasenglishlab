@@ -184,3 +184,17 @@ Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-
 ## 2026-10-17 — billing-reconciliation-integrity
 
 PR 1 isolates UUID cursor batches and explicit failure states in existing billing code. SQL, provider writes, auth/RLS, rate-limit and role helpers stay unchanged. Legacy role helpers have no external callers. Evidence and gates: harness/evidence/billing-reconciliation-integrity/README.md; go-live remains BLOCKED.
+
+## 2026-10-21 — formal levels
+
+Nullable level preserves legacy cohorts and immutable historical reviews; new formal-course reviews require explicit recommendation independent of course/CEFR. Assignment lesson-release rule defaults false, preserving early execution. Formal membership exclusivity uses an immediate-by-default constraint, deferred only during existing atomic transfer and forced immediate before return; cohort relationship guard remains intact.
+
+The user request explicitly resolves cohort module ordering: configured module positions must be reflected in the Student Learning projection. The corresponding historical open question is removed; no proficiency cut scores or other unanswered policies are inferred.
+
+The full gate exposed canonical COURSE practice assignments used by the existing reach override. Preserve those records and their writes using the inferred course relation; reject new scheduling flags on COURSE assignments, since COURSE visibility is curricular. The same review RPC now supports a justified Admin level override before confirmation, storing current routing separately from immutable Teacher review.
+
+CI run 39620533896 blocked every subsequent gate on an unreviewed Vite advisory. A compatible patch of the existing transitive Vite resolution is indispensable to the required CI verification; scope includes only package-lock.json for this dependency fix. The production audit was already clean; no audit allowlist, severity threshold or dependency-patch guard is changed.
+
+The broad npm update candidate was narrowed to Vite 8.3.3 metadata only. Its dependency ranges accept already locked versions; no package is added and package.json stays unchanged.
+
+Path positions control ordering, while displayed module ordinals remain one-based. Progress controls explicitly refresh their server projection after a successful checkpoint; no optimistic success, timeout increase, assertion removal or baseline update is used.

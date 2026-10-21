@@ -270,4 +270,49 @@ select pg_temp.ok(pg_temp.state($q$select public.admin_cohort_path_save(pg_temp.
   'anonymous admin save denied');
 select pg_temp.ok(pg_temp.state('select public.get_student_learning_path(pg_temp.id(100))')='42501','anonymous path denied');
 reset role;
+-- Formal levels share a catalog; order, release and completion stay cohort-specific.
+insert into public.cohorts(id,course_id,name,code,status,starts_at,pedagogical_level) values
+ (pg_temp.id(610),pg_temp.id(100),'Basic level','cp-basic-level','ACTIVE',now()-interval '1 day','BASIC'),
+ (pg_temp.id(611),pg_temp.id(100),'Intermediate level','cp-inter-level','ACTIVE',now()-interval '1 day','INTERMEDIATE'),
+ (pg_temp.id(612),pg_temp.id(100),'Advanced level','cp-advanced-level','ACTIVE',now()-interval '1 day','ADVANCED');
+select pg_temp.login(5,'aal2');
+set local role authenticated;
+select public.admin_cohort_path_save(pg_temp.id(610),'CUSTOM',false,jsonb_build_array(
+ pg_temp.item('modules',200,0),pg_temp.item('lessons',303,3,'2026-10-25T12:00:00Z')));
+select public.admin_cohort_path_save(pg_temp.id(611),'CUSTOM',false,jsonb_build_array(
+ pg_temp.item('modules',200,0),pg_temp.item('lessons',303,1,'2026-10-22T12:00:00Z')));
+select public.admin_cohort_path_save(pg_temp.id(612),'CUSTOM',false,pg_temp.path(302));
+reset role;
+select pg_temp.ok((select count(*)=2 from public.cohort_path_items where content_kind='lessons' and content_id=pg_temp.id(303) and cohort_id in (pg_temp.id(610),pg_temp.id(611),pg_temp.id(612))),'shared lesson no copy, absent from advanced');
+select pg_temp.ok((select position=3 and available_from='2026-10-25T12:00:00Z'::timestamptz from public.cohort_path_items where cohort_id=pg_temp.id(610) and content_id=pg_temp.id(303)),'Basic position 3 release October 25');
+select pg_temp.ok((select position=1 and available_from='2026-10-22T12:00:00Z'::timestamptz from public.cohort_path_items where cohort_id=pg_temp.id(611) and content_id=pg_temp.id(303)),'Intermediate position 1 release October 22');
+insert into public.cohort_memberships(id,cohort_id,user_id,enrollment_id) values(pg_temp.id(710),pg_temp.id(610),pg_temp.id(3),pg_temp.id(503));
+select pg_temp.ok(pg_temp.state($q$insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) values(pg_temp.id(611),pg_temp.id(3),pg_temp.id(503))$q$)='23514','conflicting active levels rejected');
+select pg_temp.ok(pg_temp.state($q$update public.cohorts set pedagogical_level='ADVANCED' where id=pg_temp.id(610)$q$)='23514','level cannot rewrite membership history');
+select pg_temp.login(5,'aal2');
+set local role authenticated;
+select public.admin_cohort_path_save(pg_temp.id(610),'CUSTOM',false,pg_temp.path(303));
+select public.admin_cohort_path_save(pg_temp.id(611),'CUSTOM',false,pg_temp.path(303));
+reset role;
+select pg_temp.login(3);
+set local role authenticated;
+select pg_temp.ok(pg_temp.item_state(301) is null,'other cohort lesson excluded by ID');
+select public.record_lesson_progress(pg_temp.id(303),100,0);
+reset role;
+select pg_temp.ok((select status='ACTIVE' and completed_at is null from public.enrollments where id=pg_temp.id(503)),'Basic completion keeps shared course ACTIVE');
+-- Same-course promotion retains one enrollment and every progress row.
+update public.cohort_memberships set status='LEFT',ends_at=clock_timestamp() where id=pg_temp.id(710);
+insert into public.cohort_memberships(id,cohort_id,user_id,enrollment_id) values(pg_temp.id(711),pg_temp.id(611),pg_temp.id(3),pg_temp.id(503));
+select private.complete_path_enrollment(pg_temp.id(503));
+select pg_temp.ok((select status='ACTIVE' from public.enrollments where id=pg_temp.id(503)),'Intermediate completion keeps shared course ACTIVE');
+update public.cohort_memberships set status='LEFT',ends_at=clock_timestamp() where id=pg_temp.id(711);
+insert into public.cohort_memberships(id,cohort_id,user_id,enrollment_id) values(pg_temp.id(712),pg_temp.id(612),pg_temp.id(3),pg_temp.id(503));
+select pg_temp.ok((select count(*)=1 from public.lesson_progress where user_id=pg_temp.id(3) and lesson_id=pg_temp.id(303) and status='COMPLETED'),'promotion preserves progress');
+select pg_temp.login(3);
+set local role authenticated;
+select pg_temp.ok(pg_temp.item_state(303) is null,'Advanced excludes former level lesson');
+select public.record_lesson_progress(pg_temp.id(302),100,0);
+reset role;
+select pg_temp.ok((select status='COMPLETED' and completed_at is not null from public.enrollments where id=pg_temp.id(503)),'final level completes only after final requirements');
+select pg_temp.ok((select count(*)=1 from public.audit_logs where action='enrollment_course_completed' and entity_id=pg_temp.id(503)),'final completion audited once');
 rollback;
