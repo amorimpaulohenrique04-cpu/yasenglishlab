@@ -26,18 +26,18 @@ function SidebarWave() {
   return (
     <svg
       className="yas-sidebar-wave"
-      viewBox="0 0 260 150"
+      viewBox="0 0 260 230"
       preserveAspectRatio="none"
       aria-hidden="true"
       focusable="false"
     >
       <path
-        d="M0 70 C60 10 110 10 150 55 S230 120 260 60 V150 H0Z"
+        d="M0 70 C60 10 110 10 150 55 S230 120 260 60 V230 H0Z"
         fill="var(--yas-color-sidebar-wave-1)"
         opacity=".55"
       />
       <path
-        d="M0 105 C55 60 120 70 160 100 S235 140 260 105 V150 H0Z"
+        d="M0 105 C55 60 120 70 160 100 S235 140 260 105 V230 H0Z"
         fill="var(--yas-color-sidebar-wave-2)"
         opacity=".35"
       />
@@ -87,8 +87,10 @@ export function Sidebar({
           })}
         </ul>
       </nav>
-      <SidebarWave />
-      {footer && <div className="yas-sidebar-footer">{footer}</div>}
+      <div className="yas-sidebar-footer">
+        <SidebarWave />
+        {footer}
+      </div>
     </aside>
   );
 }

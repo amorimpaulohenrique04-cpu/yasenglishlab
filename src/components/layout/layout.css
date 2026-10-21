@@ -43,7 +43,8 @@
   overflow: hidden auto;
   background: var(--yas-color-sidebar);
   color: var(--yas-color-white);
-  padding: clamp(0.875rem, 2.2dvh, 1.375rem) 1.125rem clamp(0.75rem, 1.8dvh, 1.125rem);
+  --yas-sidebar-pad-end: clamp(0.75rem, 1.8dvh, 1.125rem);
+  padding: clamp(0.875rem, 2.2dvh, 1.375rem) 1.125rem var(--yas-sidebar-pad-end);
 }
 
 .yas-sidebar-brand {
@@ -145,6 +146,23 @@
   outline-color: var(--yas-color-yellow-500);
 }
 
+/* Long menus (Admin: 12+ items) compact further so they still fit at 768px. */
+.yas-sidebar:has(.yas-sidebar-list > li:nth-child(12)) .yas-brand img {
+  width: clamp(7.25rem, 15dvh, 9.375rem);
+}
+
+.yas-sidebar:has(.yas-sidebar-list > li:nth-child(12)) .yas-sidebar-list {
+  gap: clamp(0.0625rem, 0.35dvh, 0.375rem);
+}
+
+.yas-sidebar:has(.yas-sidebar-list > li:nth-child(12)) .yas-sidebar-group {
+  margin-block: clamp(0.25rem, 1dvh, 0.875rem) clamp(0.0625rem, 0.4dvh, 0.375rem);
+}
+
+.yas-sidebar:has(.yas-sidebar-list > li:nth-child(12)) .yas-sidebar-link {
+  min-height: clamp(1.875rem, 4.3dvh, 2.875rem);
+}
+
 .yas-sidebar-icon {
   display: inline-grid;
   place-items: center;
@@ -166,18 +184,27 @@
 
 .yas-sidebar-wave {
   position: absolute;
-  inset-inline: -10px;
-  inset-block-end: 5.25rem;
-  width: calc(100% + 20px);
-  height: 9.375rem;
+  z-index: 0;
+  /* Rides with the footer and reaches the sidebar's bottom edge, so the wave
+     always runs behind the footer card and its flat lower edge stays hidden,
+     even when a long menu makes the sidebar scroll. */
+  inset-inline: -1.75rem;
+  inset-block-end: calc(-1 * var(--yas-sidebar-pad-end));
+  width: calc(100% + 3.5rem);
+  height: 14.375rem;
   pointer-events: none;
 }
 
 .yas-sidebar-footer {
+  /* No z-index: the wave inside must stay below the menu links. */
   position: relative;
-  z-index: 1;
   margin-top: auto;
   padding-top: clamp(0.75rem, 2.4dvh, var(--yas-space-6));
+}
+
+.yas-sidebar-footer > :not(.yas-sidebar-wave) {
+  position: relative;
+  z-index: 1;
 }
 
 /* Sidebar help/identity card */
