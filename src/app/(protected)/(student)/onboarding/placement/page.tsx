@@ -70,12 +70,13 @@ export default async function PlacementPage({
         <>
           <Card className="yas-stack">
             <SectionHeader title={`Trilha recomendada: ${view.recommendedTitle}`} />
-            {view.review.recommended_level && (
+            {(view.recommendedLevel ?? view.review.recommended_level) && (
               <p>
                 Nível recomendado:{" "}
                 {
                   pedagogicalLevelOptions.find(
-                    (option) => option.value === view.review?.recommended_level,
+                    (option) =>
+                      option.value === (view.recommendedLevel ?? view.review?.recommended_level),
                   )?.label
                 }
               </p>

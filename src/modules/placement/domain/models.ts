@@ -157,6 +157,7 @@ export const reviewInputSchema = z
     caseId: z.uuid(),
     courseId: z.uuid(),
     level: pedagogicalLevelSchema.nullable().optional(),
+    adminReason: z.string().trim().min(1).max(1000).optional(),
     feedback: z.string().trim().min(1).max(4000),
     confidence: z.enum(["LOW", "MEDIUM", "HIGH"]),
   })
@@ -201,6 +202,7 @@ export const decisionSchema = z.object({
   created_at: z.string(),
 });
 export interface PlacementView {
+  recommendedLevel?: z.infer<typeof pedagogicalLevelSchema> | null | undefined;
   displayName?: string | null;
   case: z.infer<typeof placementCaseSchema>;
   preferences: SchedulePreference[];

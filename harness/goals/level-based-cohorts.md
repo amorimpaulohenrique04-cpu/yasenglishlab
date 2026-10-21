@@ -52,6 +52,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `src/server/teacher-operations/**`
 - `src/server/learning/**`
 - `src/app/(protected)/(admin)/admin/cohorts/**`
+- `src/app/(protected)/(admin)/admin/enrollments/**`
 - `src/app/(protected)/(teacher)/teacher/praticas/**`
 - `src/app/(protected)/(teacher)/teacher/revisoes/placement/**`
 - `src/app/(protected)/(student)/onboarding/placement/page.tsx`
@@ -68,6 +69,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `harness/feature_list.json`
 - `harness/evidence/level-based-cohorts/**`
 - `harness/failure-log/2026-10-21-level-based-cohorts-transfer.md`
+- `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md`
 
 ## Forbidden areas
 
@@ -97,3 +99,7 @@ The existing Placement concurrency script is extended to protect same-course mem
 The existing Student choice page also displays the explicit recommended level so it stays distinct from the shared course title.
 
 The user explicitly requires module order per cohort, resolving the prior open question about module ordering; only that answered question is removed.
+
+The existing Admin enrollment screen and review operation also support a justified level override before student confirmation, preserving the immutable Teacher review.
+
+- Failure record in scope: `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md` (canonical setup exposed a legacy reach-assignment contract).

@@ -575,6 +575,13 @@ set local role authenticated;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload(pg_temp.simple(),'GRAMMAR','b2200000-0000-4000-8000-000000000002')))='42501','ended cohort assignment removes course scope');
 reset role;
 
+-- Existing COURSE assignments used for reach are preserved without adding scheduling semantics.
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,related_module_id,content)
+select pg_temp.u(90),'pa-legacy-cohort-assignment','Legacy reach assignment',skill,estimated_minutes,
+ 'b2210000-0000-4000-8000-000000000001',content from public.practice_activities where id='83000000-0000-4000-8000-000000000001';
+insert into public.cohort_practice_assignments(cohort_id,practice_activity_id,assigned_by_teacher_id)
+values('b2400000-0000-4000-8000-000000000001',pg_temp.u(90),'b2100000-0000-4000-8000-000000000002');
+select pg_temp.assert_true(pg_temp.state_of($q$update public.cohort_practice_assignments set available_from=now()+interval '1 day' where practice_activity_id=pg_temp.u(90)$q$)='23514','legacy COURSE reach assignment cannot claim ASSIGNED scheduling');
 -- Schedule is independent of deadline and guards assets, direct IDs and RPC start.
 select pg_temp.login(pg_temp.u(2),'aal2');
 set local role authenticated;
@@ -593,6 +600,13 @@ select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
 select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment restores asset authorization');
 reset role;
+-- A released assignment still cannot grant a suspended Student private media.
+update public.complimentary_access_grants set expires_at=now()-interval '1 hour' where user_id=pg_temp.u(5);
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment does not bypass payment for assets');
+reset role;
+update public.complimentary_access_grants set expires_at=null where user_id=pg_temp.u(5);
 -- One shared practice can be assigned to several authorized cohorts, each with independent dates.
 insert into public.cohort_teachers(cohort_id,teacher_id) values('b2400000-0000-4000-8000-000000000002','b2100000-0000-4000-8000-000000000002');
 select pg_temp.login(pg_temp.u(2),'aal2');

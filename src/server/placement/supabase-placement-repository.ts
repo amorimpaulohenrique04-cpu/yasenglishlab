@@ -12,6 +12,7 @@ import {
 } from "@/modules/placement";
 
 const projectionSchema = z.object({
+  recommendedLevel: z.enum(["BASIC", "INTERMEDIATE", "ADVANCED"]).nullable().optional(),
   displayName: z.string().nullable(),
   case: placementCaseSchema,
   preferences: z.array(preferenceSchema),
@@ -71,6 +72,7 @@ export class SupabasePlacementRepository implements PlacementRepository {
         p_feedback: input.feedback,
         p_confidence: input.confidence,
         p_level: input.level ?? null,
+        p_admin_reason: input.adminReason ?? null,
       }),
     );
   }

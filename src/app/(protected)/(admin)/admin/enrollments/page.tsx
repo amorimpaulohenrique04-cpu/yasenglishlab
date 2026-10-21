@@ -35,6 +35,7 @@ import {
   resolveReassessmentAction,
   configurePlacementCohortAction,
   transferPlacementAction,
+  overridePlacementLevelAction,
 } from "./actions";
 export default async function EnrollmentsPage({
   searchParams,
@@ -289,6 +290,37 @@ export default async function EnrollmentsPage({
                   <p>Escolha inicial: {view.chosenTitle ?? "Aguardando aluno"}</p>
                   <p>Turma atual: {view.currentCohort ?? "Ainda sem matrícula"}</p>
                   {teacherPanel}
+                  {view.review &&
+                    ["PLACEMENT_READY", "STUDENT_DECISION"].includes(view.case.state) && (
+                      <form action={overridePlacementLevelAction} className="yas-stack">
+                        <h3>Ajustar nível recomendado</h3>
+                        <input type="hidden" name="caseId" value={view.case.id} />
+                        <Select
+                          name="level"
+                          label="Nível pedagógico"
+                          defaultValue={
+                            view.recommendedLevel ?? view.review.recommended_level ?? ""
+                          }
+                          options={[
+                            { value: "", label: "Escolha o nível" },
+                            { value: "BASIC", label: "Básico" },
+                            { value: "INTERMEDIATE", label: "Intermediário" },
+                            { value: "ADVANCED", label: "Avançado" },
+                          ]}
+                          required
+                        />
+                        <Textarea
+                          name="reason"
+                          label="Justificativa da alteração de nível"
+                          required
+                          maxLength={1000}
+                        />
+                        <p>
+                          A revisão original do professor será preservada. O ajuste será auditado.
+                        </p>
+                        <Button type="submit">Registrar ajuste de nível</Button>
+                      </form>
+                    )}
                   {view.case.state === "ENROLLED" && (
                     <form action={transferPlacementAction} className="yas-stack">
                       <h3>Transferir turma</h3>

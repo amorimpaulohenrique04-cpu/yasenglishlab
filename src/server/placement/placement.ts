@@ -123,6 +123,23 @@ export async function finalizeCurrentPlacementReview(input: unknown) {
   const { repo, analytics } = await context("TEACHER");
   return finalizeReview(repo, analytics, input);
 }
+export async function overrideCurrentPlacementLevel(input: {
+  caseId: unknown;
+  level: unknown;
+  reason: unknown;
+}) {
+  const { repo } = await context("ADMIN");
+  const view = await repo.getCase(z.uuid().parse(input.caseId));
+  if (!view?.review) throw new Error("Finalized review required.");
+  return repo.finalizeReview({
+    caseId: view.case.id,
+    courseId: view.review.recommended_course_id,
+    feedback: view.review.feedback,
+    confidence: view.review.confidence,
+    level: z.enum(["BASIC", "INTERMEDIATE", "ADVANCED"]).parse(input.level),
+    adminReason: z.string().trim().min(1).max(1000).parse(input.reason),
+  });
+}
 export async function transferCurrentPlacement(input: unknown) {
   const { repo } = await context("ADMIN");
   return transferCohort(repo, input);

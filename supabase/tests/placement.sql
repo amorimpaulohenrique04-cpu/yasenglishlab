@@ -151,6 +151,18 @@ select pg_temp.denied('select public.finalize_placement_review(current_setting('
 select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC');
 select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC');
 select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'')','23514');
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''Adjusted level'')');
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000005',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000005","aal":"aal1"}',true);
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''Adjusted level'')');
+select set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000005","aal":"aal2"}',true);
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''  '')','23514');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','ADVANCED','Adjusted level');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','ADVANCED','Adjusted level');
+select pg_temp.assert_true(public.get_placement_projection(current_setting('placement.level.case')::uuid)->>'recommendedLevel'='ADVANCED','Admin override changes routing projection');
+select pg_temp.assert_true((select count(*)=1 from public.audit_logs where action='placement_level_overridden' and entity_id=current_setting('placement.level.case')::uuid and actor_user_id=auth.uid() and data->>'reason'='Adjusted level'),'override reason and authenticated actor audited exactly once');
+select pg_temp.assert_true((select recommended_level='BASIC' from public.placement_reviews where placement_case_id=current_setting('placement.level.case')::uuid),'Admin override preserves immutable Teacher recommendation');
+select pg_temp.assert_true((select count(*)=1 from public.get_placement_candidates(current_setting('placement.level.case')::uuid) c where c->>'pedagogicalLevel'='ADVANCED'),'matching uses justified override');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC','Confirmed initial recommendation');
 select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000002',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000002","aal":"aal1"}',true);
 select public.open_placement_decision();
 select pg_temp.assert_true((select count(*)=1 from public.get_placement_candidates(current_setting('placement.level.case')::uuid)),'only recommended level of same course offered');

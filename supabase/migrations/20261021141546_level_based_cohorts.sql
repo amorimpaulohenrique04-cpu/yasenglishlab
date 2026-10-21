@@ -2,6 +2,9 @@
 -- No production cohorts, enrollments, progress or recommendations are backfilled.
 alter table public.cohorts add column pedagogical_level text
   check (pedagogical_level in ('BASIC','INTERMEDIATE','ADVANCED'));
+alter table public.placement_cases
+  add column recommended_level_override text check (recommended_level_override in ('BASIC','INTERMEDIATE','ADVANCED')),
+  add column level_override_reason text check (char_length(btrim(level_override_reason)) between 1 and 1000);
 alter table public.placement_reviews add column recommended_level text
   check (recommended_level in ('BASIC','INTERMEDIATE','ADVANCED'));
 alter table public.cohort_practice_assignments
@@ -184,9 +187,24 @@ end;
 $$;
 
 drop function public.finalize_placement_review(uuid,uuid,text,text);
-create or replace function public.finalize_placement_review(p_case_id uuid,p_course_id uuid,p_feedback text,p_confidence text,p_level text default null) returns uuid language plpgsql security definer set search_path='' as $$
+create or replace function public.finalize_placement_review(p_case_id uuid,p_course_id uuid,p_feedback text,p_confidence text,p_level text default null,p_admin_reason text default null) returns uuid language plpgsql security definer set search_path='' as $$
 declare c public.placement_cases; r public.placement_reviews;
 begin
+ if p_admin_reason is not null then
+  if auth.uid() is null or not private.has_role('ADMIN',true) then raise exception 'ADMIN aal2 required' using errcode='42501'; end if;
+  if p_level is null or char_length(btrim(p_admin_reason)) not between 1 and 1000 then raise exception 'Level and override reason required' using errcode='23514'; end if;
+  select * into c from public.placement_cases where id=p_case_id for update;
+  select * into r from public.placement_reviews where placement_case_id=c.id;
+  if c.id is null or c.state not in ('PLACEMENT_READY','STUDENT_DECISION') or r.id is null
+    or row(r.recommended_course_id,r.feedback,r.confidence) is distinct from row(p_course_id,btrim(p_feedback),p_confidence) then
+    raise exception 'Finalized review before student choice required' using errcode='23514'; end if;
+  if row(c.recommended_level_override,c.level_override_reason) is not distinct from row(p_level,btrim(p_admin_reason)) then return r.id; end if;
+  update public.placement_cases set recommended_level_override=p_level,level_override_reason=btrim(p_admin_reason) where id=c.id;
+  insert into public.audit_logs(actor_user_id,action,entity_type,entity_id,data)
+    values(auth.uid(),'placement_level_overridden','placement_case',c.id,jsonb_build_object('review_id',r.id,
+      'previous_level',coalesce(c.recommended_level_override,r.recommended_level),'level',p_level,'reason',btrim(p_admin_reason)));
+  return r.id;
+ end if;
  if auth.uid() is null or not private.has_role('TEACHER',true) then raise exception 'Teacher aal2 required' using errcode='42501'; end if;
  select * into c from public.placement_cases where id=p_case_id for update;
  if c.id is null or not private.is_teacher_assigned(c.user_id) then raise exception 'Teacher scope required' using errcode='42501'; end if;
@@ -203,8 +221,8 @@ begin
  insert into public.audit_logs(actor_user_id,action,entity_type,entity_id,data) values(auth.uid(),'placement_review_finalized','placement_case',c.id,jsonb_build_object('review_id',r.id,'course_id',p_course_id,'recommended_level',p_level));
  return r.id;
 end $$;
-revoke all on function public.finalize_placement_review(uuid,uuid,text,text,text) from public,anon,authenticated;
-grant execute on function public.finalize_placement_review(uuid,uuid,text,text,text) to authenticated;
+revoke all on function public.finalize_placement_review(uuid,uuid,text,text,text,text) from public,anon,authenticated;
+grant execute on function public.finalize_placement_review(uuid,uuid,text,text,text,text) to authenticated;
 
 create or replace function private.placement_cohort_compatible(p_case_id uuid, p_cohort_id uuid, p_require_track boolean default true)
 returns boolean language sql stable security definer set search_path = '' as $$
@@ -215,7 +233,7 @@ returns boolean language sql stable security definer set search_path = '' as $$
  where co.id = p_cohort_id and co.status = 'ACTIVE' and (co.ends_at is null or co.ends_at > now())
  and course.active and course.publication_status = 'PUBLISHED'
  and (not p_require_track or co.course_id = r.recommended_course_id)
- and (not p_require_track or co.pedagogical_level is not distinct from r.recommended_level)
+ and (not p_require_track or co.pedagogical_level is not distinct from coalesce((select recommended_level_override from public.placement_cases where id=p_case_id),r.recommended_level))
  and not exists(
   select 1 from jsonb_array_elements(settings.schedule) w
   cross join lateral (
@@ -391,7 +409,7 @@ language plpgsql security definer set search_path = '' as $$
 begin
   perform 1 from public.lessons where id=new.related_lesson_id for share;
   perform 1 from public.modules where id in (new.related_module_id,(select module_id from public.lessons where id=new.related_lesson_id)) for share;
-  if exists(select 1 from public.cohort_practice_assignments pa join public.cohorts c on c.id=pa.cohort_id where pa.practice_activity_id=new.id and c.course_id is distinct from new.course_id) then
+  if exists(select 1 from public.cohort_practice_assignments pa join public.cohorts c on c.id=pa.cohort_id where pa.practice_activity_id=new.id and c.course_id is distinct from coalesce(new.course_id,(select m.course_id from public.modules m where m.id=coalesce(new.related_module_id,(select module_id from public.lessons where id=new.related_lesson_id))))) then
     raise exception 'Assigned practice course is immutable' using errcode='23514';
   end if;
   if new.course_id is not null and new.related_lesson_id is not null and not exists(
@@ -414,8 +432,12 @@ language plpgsql security definer set search_path = '' as $$
 declare a public.practice_activities;
 begin
   select * into a from public.practice_activities where id=new.practice_activity_id for share;
-  if a.audience is distinct from 'ASSIGNED' or not exists(select 1 from public.cohorts c
-    where c.id=new.cohort_id and c.course_id=a.course_id)
+  if (a.audience<>'ASSIGNED' and (new.available_from is not null or new.require_lesson_available)) then
+    raise exception 'Scheduled assignments require an ASSIGNED practice' using errcode='23514';
+  end if;
+  if not exists(select 1 from public.cohorts c
+    join private.path_content_info('practice_activities',a.id) info on info.course_id=c.course_id
+    where c.id=new.cohort_id)
     or (new.require_lesson_available and a.related_lesson_id is null) then
     raise exception 'Assignment requires compatible course and lesson release rule' using errcode='23514';
   end if;
@@ -560,4 +582,36 @@ begin
   if tg_op='DELETE' then return old; end if;
   return new;
 end;
+$$;
+
+create or replace function public.get_placement_projection(p_case_id uuid) returns jsonb language plpgsql stable security definer set search_path='' as $$
+declare c public.placement_cases;
+begin
+ select * into c from public.placement_cases where id=p_case_id;
+ if c.id is null or auth.uid() is null or not private.can_read_placement(c.user_id) then raise exception 'placement scope required' using errcode='42501'; end if;
+ return jsonb_build_object('displayName',(select display_name from public.profiles where user_id=c.user_id),'case',jsonb_build_object('id',c.id,'user_id',c.user_id,'state',c.state,'assessment_attempt_id',c.assessment_attempt_id,'membership_id',c.membership_id,'created_at',c.created_at,'state_changed_at',c.state_changed_at),
+ 'preferences',coalesce((select jsonb_agg(jsonb_build_object('timezone',timezone,'weekday',weekday,'startMinute',start_minute,'endMinute',end_minute)) from public.student_schedule_preferences where placement_case_id=c.id),'[]'::jsonb),
+ 'review',(select to_jsonb(r)-'actor_user_id'-'placement_case_id' from public.placement_reviews r where placement_case_id=c.id),
+ 'decision',(select to_jsonb(d)-'id'-'placement_case_id' from public.placement_decisions d where placement_case_id=c.id),
+ 'recommendedLevel',coalesce(c.recommended_level_override,(select recommended_level from public.placement_reviews where placement_case_id=c.id)),
+ 'recommendedTitle',(select course.title from public.placement_reviews r join public.courses course on course.id=r.recommended_course_id where r.placement_case_id=c.id),
+ 'chosenTitle',(select course.title from public.placement_decisions d join public.courses course on course.id=d.chosen_course_id where d.placement_case_id=c.id),
+ 'currentCohort',(select co.name from public.cohort_memberships m join public.cohorts co on co.id=m.cohort_id where m.id=c.membership_id),
+ 'assessmentSummary',(select jsonb_build_object('status',a.status,'submittedAt',a.submitted_at,'objectiveScore',(a.result_metadata->>'objective_score')::numeric,'pendingCount',(a.result_metadata->>'pending_item_count')::integer) from public.assessment_attempts a where a.id=c.assessment_attempt_id));
+end $$;
+
+-- Private practice media preserves the paid-access gate when a scheduled assignment opens.
+create or replace function public.authorize_practice_asset(p_asset uuid)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (
+    select 1 from public.practice_activity_assets s
+    join public.practice_activities a on a.id = s.practice_activity_id
+    where s.id = p_asset and s.upload_status = 'READY'
+      and (
+        (private.has_role('TEACHER', true) and a.created_by_teacher_id in (select t.id from public.teachers t where t.user_id = auth.uid() and t.active))
+        or (a.publication_status = 'PUBLISHED'
+            and (a.content #>> '{stimulus,assetId}' = s.id::text
+                 or (jsonb_typeof(a.content -> 'items') = 'array' and exists (
+                       select 1 from jsonb_array_elements(a.content -> 'items') i where i #>> '{stimulus,assetId}' = s.id::text)))
+            and (private.has_role('ADMIN', true) or (private.has_role('STUDENT', false) and private.has_paid_access(auth.uid()) and private.can_view_practice_activity(a.id))))));
 $$;
