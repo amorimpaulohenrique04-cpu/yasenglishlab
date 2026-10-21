@@ -58,6 +58,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `src/app/(protected)/(student)/onboarding/placement/page.tsx`
 - `tests/**`
 - `scripts/run-sql-tests.mjs`
+- `package-lock.json`
 - `scripts/test-placement-concurrency.mjs`
 - `docs/COHORT_PATH.md`
 - `docs/PLACEMENT.md`
@@ -71,6 +72,7 @@ Admin configures levels and existing paths; Teacher recommends levels and schedu
 - `harness/evidence/level-based-cohorts/**`
 - `harness/failure-log/2026-10-21-level-based-cohorts-transfer.md`
 - `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md`
+- `harness/failure-log/2026-10-21-level-based-cohorts-vite-gate.md`
 
 ## Forbidden areas
 
@@ -106,3 +108,7 @@ The existing Admin enrollment screen and review operation also support a justifi
 - Failure record in scope: `harness/failure-log/2026-10-21-level-based-cohorts-legacy-assignment.md` (canonical setup exposed a legacy reach-assignment contract).
 
 The existing live join-reference guard repeats current cohort authorization after transfers; booking history and meeting provider behavior remain unchanged.
+
+## Required CI dependency patch
+
+The existing mandatory Supply Chain gate rejects Vite 8.3.1 advisories, blocking all feature verification in CI. Allow only the compatible existing Vite resolution update in package-lock.json, with no new dependency, audit exception or product/deploy changes. Inspect the lock diff and rerun the unmodified supply-chain checks.
