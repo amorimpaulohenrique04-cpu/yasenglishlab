@@ -12,8 +12,8 @@ import {
   type ReactNode,
 } from "react";
 
-import { Button } from "./controls";
-import { Icon } from "./icons";
+import { Button, type ButtonSize, type ButtonVariant } from "./controls";
+import { Icon, type IconName } from "./icons";
 import { cx } from "./utils";
 
 export interface TooltipProps {
@@ -131,12 +131,22 @@ const serverHydrated = () => false;
 function OperationOverlay({
   mode,
   trigger,
+  triggerText,
+  triggerVariant = "outline",
+  triggerSize = "md",
+  triggerIcon,
   title,
   description,
   children,
 }: {
   mode: "dialog" | "drawer";
+  /** Nome acessível do botão; também é o texto visível quando `triggerText` não é informado. */
   trigger: string;
+  /** Texto visível mais curto; o nome acessível continua sendo `trigger`. */
+  triggerText?: string;
+  triggerVariant?: ButtonVariant;
+  triggerSize?: ButtonSize;
+  triggerIcon?: IconName;
   title: string;
   description?: string;
   children: ReactNode;
@@ -147,13 +157,16 @@ function OperationOverlay({
   return (
     <>
       <Button
-        variant="outline"
+        variant={triggerVariant}
+        size={triggerSize}
         aria-disabled={!hydrated}
+        {...(triggerText && triggerText !== trigger ? { "aria-label": trigger } : {})}
+        {...(triggerIcon ? { leadingIcon: <Icon name={triggerIcon} size={16} /> } : {})}
         onClick={() => {
           if (hydrated) setOpen(true);
         }}
       >
-        {trigger}
+        {triggerText ?? trigger}
       </Button>
       <Overlay
         open={open}
