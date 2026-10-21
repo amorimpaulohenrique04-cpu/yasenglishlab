@@ -70,6 +70,7 @@ export class SupabasePlacementRepository implements PlacementRepository {
         p_course_id: input.courseId,
         p_feedback: input.feedback,
         p_confidence: input.confidence,
+        p_level: input.level ?? null,
       }),
     );
   }

@@ -117,7 +117,13 @@ export async function assignPracticeAction(form: FormData) {
   const id = z.uuid().parse(form.get("id"));
   const cohortIds = z.array(z.uuid()).min(1).max(20).parse(form.getAll("cohortIds").map(String));
   try {
-    await assignTeacherPractice({ practiceId: id, cohortIds, dueAt: toDueAt(form.get("dueAt")) });
+    await assignTeacherPractice({
+      practiceId: id,
+      cohortIds,
+      dueAt: toDueAt(form.get("dueAt")),
+      availableFrom: toDueAt(form.get("availableFrom")),
+      requireLessonAvailable: form.get("requireLessonAvailable") === "on",
+    });
   } catch (error) {
     failure(`${LIST}/${id}`, error);
   }

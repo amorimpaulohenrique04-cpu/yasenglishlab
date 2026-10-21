@@ -15,6 +15,20 @@ describe("cohort commands", () => {
       },
     };
     expect(cohortCommandSchema.safeParse(command).success).toBe(true);
+    for (const pedagogical_level of ["BASIC", "INTERMEDIATE", "ADVANCED", null]) {
+      expect(
+        cohortCommandSchema.safeParse({
+          ...command,
+          input: { ...command.input, pedagogical_level },
+        }).success,
+      ).toBe(true);
+    }
+    expect(
+      cohortCommandSchema.safeParse({
+        ...command,
+        input: { ...command.input, pedagogical_level: "A1" },
+      }).success,
+    ).toBe(false);
     expect(
       cohortCommandSchema.safeParse({
         ...command,

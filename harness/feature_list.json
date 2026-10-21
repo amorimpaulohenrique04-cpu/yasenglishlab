@@ -12,6 +12,15 @@
   },
   "features": [
     {
+      "id": "level-based-cohorts",
+      "title": "Shared-course pedagogical levels and practice release",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": ["harness/goals/level-based-cohorts.md"],
+      "updated_at": "2026-10-21T12:00:00Z"
+    },
+    {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
       "status": "done",

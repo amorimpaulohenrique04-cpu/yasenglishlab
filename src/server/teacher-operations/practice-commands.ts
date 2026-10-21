@@ -151,6 +151,8 @@ export const teacherPracticeDetailSchema = z.object({
       cohortId: uuid,
       cohortName: z.string(),
       dueAt: z.string().nullable(),
+      availableFrom: z.string().nullable().optional(),
+      requireLessonAvailable: z.boolean().optional(),
       assignedAt: z.string(),
     }),
   ),
@@ -338,6 +340,8 @@ export async function assignTeacherPractice(input: {
   practiceId: string;
   cohortIds: string[];
   dueAt?: string | null | undefined;
+  availableFrom?: string | null | undefined;
+  requireLessonAvailable?: boolean | undefined;
 }): Promise<number> {
   const id = uuid.parse(input.practiceId);
   const cohortIds = z.array(uuid).min(1).max(20).parse(input.cohortIds);
@@ -345,6 +349,11 @@ export async function assignTeacherPractice(input: {
     .datetime({ offset: true })
     .nullable()
     .parse(input.dueAt ?? null);
+  const availableFrom = z.iso
+    .datetime({ offset: true })
+    .nullable()
+    .parse(input.availableFrom ?? null);
+  const requireLessonAvailable = z.boolean().parse(input.requireLessonAvailable ?? false);
   return run(
     "assign",
     { practice_id: id, cohort_count: cohortIds.length },
@@ -353,6 +362,8 @@ export async function assignTeacherPractice(input: {
         p_id: id,
         p_cohort_ids: cohortIds,
         p_due_at: dueAt,
+        p_available_from: availableFrom,
+        p_require_lesson_available: requireLessonAvailable,
         p_context: context,
       }),
     (data) => z.number().int().parse(data),

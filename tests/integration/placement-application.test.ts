@@ -66,6 +66,14 @@ describe("Placement application boundaries", () => {
     await finalizeReview(repo, analytics, {
       caseId,
       courseId,
+      level: "BASIC",
+      feedback: "Evidence",
+      confidence: "MEDIUM",
+    });
+    expect(repo.finalizeReview).toHaveBeenCalledWith({
+      caseId,
+      courseId,
+      level: "BASIC",
       feedback: "Evidence",
       confidence: "MEDIUM",
     });

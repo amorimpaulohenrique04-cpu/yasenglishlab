@@ -75,12 +75,34 @@ test.describe("Stage 12A teacher practices", () => {
     await page.getByRole("button", { name: "6. Publicar e atribuir", exact: true }).click();
     await page.getByLabel("Cohort Basic", { exact: true }).check();
     await page
+      .getByLabel("Disponível a partir de (opcional)", { exact: true })
+      .fill(new Date(Date.now() - 86400000).toISOString().slice(0, 16));
+    await expect(
+      page.getByLabel("Liberar somente quando a aula relacionada estiver disponível"),
+    ).not.toBeChecked();
+    await page
       .getByLabel("Prazo (opcional)", { exact: true })
       .fill(new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 16));
     await page.getByRole("button", { name: "Atribuir prática", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Remover Cohort Basic", exact: true }),
     ).toBeVisible({ timeout: 30000 });
+    mkdirSync("harness/evidence/level-based-cohorts/screenshots", { recursive: true });
+    for (const [name, width, height] of [
+      ["desktop", 1440, 1000],
+      ["tablet", 834, 1112],
+      ["mobile", 390, 844],
+    ] as const) {
+      await page.setViewportSize({ width, height });
+      expect(
+        (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+      ).toEqual([]);
+      await page.screenshot({
+        path: `harness/evidence/level-based-cohorts/screenshots/practice-release-${name}.png`,
+        fullPage: true,
+      });
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
     const context = await browser.newContext();
     const student = await context.newPage();
     await loginStudent(student, "canonical.cohort-student@example.test");

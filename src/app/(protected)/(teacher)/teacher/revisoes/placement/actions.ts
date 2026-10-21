@@ -12,6 +12,7 @@ export async function finalizePlacementReviewAction(form: FormData) {
     await finalizeCurrentPlacementReview({
       caseId: id,
       courseId: form.get("courseId"),
+      level: form.get("level") || null,
       feedback: form.get("feedback"),
       confidence: form.get("confidence"),
     });

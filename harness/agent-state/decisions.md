@@ -184,3 +184,9 @@ Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-
 ## 2026-10-17 — billing-reconciliation-integrity
 
 PR 1 isolates UUID cursor batches and explicit failure states in existing billing code. SQL, provider writes, auth/RLS, rate-limit and role helpers stay unchanged. Legacy role helpers have no external callers. Evidence and gates: harness/evidence/billing-reconciliation-integrity/README.md; go-live remains BLOCKED.
+
+## 2026-10-21 — formal levels
+
+Nullable level preserves legacy cohorts and immutable historical reviews; new formal-course reviews require explicit recommendation independent of course/CEFR. Assignment lesson-release rule defaults false, preserving early execution. Formal membership exclusivity uses an immediate-by-default constraint, deferred only during existing atomic transfer and forced immediate before return; cohort relationship guard remains intact.
+
+The user request explicitly resolves cohort module ordering: configured module positions must be reflected in the Student Learning projection. The corresponding historical open question is removed; no proficiency cut scores or other unanswered policies are inferred.

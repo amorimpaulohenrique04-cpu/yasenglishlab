@@ -747,3 +747,7 @@ Base/main CI verified; regression red 18/29, green 29/29. Implementation complet
 ## PR 83 — required gates blocked
 
 Implementation/focused checks and verify:agent pass. Official CI 39081037545 fails Database on the pre-existing rate-window counter collision (proved locally in rollback-only SQL); Preview/CI Gate consequently fail. Local verify:ui also failed unchanged canonical lesson progress UI after persistence succeeded. Draft PR, no merge; full clean-stack verification running. Two open failure records preserve evidence; no out-of-scope fix or CI retry.
+
+## 2026-10-21 — level-based-cohorts
+
+Implementation in isolated branch from main 5dde6a5. Targeted cohort-path, practice authoring, placement SQL and two-connection concurrency passed. Core formatting/lint/types/unit/integration/build passed; verify:agent requires correcting failure-log metadata before rerun. Security and DB structural gates passed. Full SQL suites exposed stateful fixture failures after repeated execution; clean full gate remains required. Feature remains in_progress and unverified.

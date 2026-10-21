@@ -202,3 +202,7 @@ assessments.is_placement seleciona explicitamente a avaliação de entrada com u
 - `admin_course_enrollment_operations`: recibo imutável e idempotente de `admin_enroll_in_course` (ADR 0023). Matrícula `COMPLETED` e `ACTIVE` coexistem.
 - `plan_entitlements` ganha versões agendadas por `admin_plan_set_entitlement` (vigência futura); reservas guardam o direito usado e não mudam.
 - `admin_operational_alerts()` é somente leitura e não cria tabelas.
+
+## Pedagogical levels (2026-10-21)
+
+Nullable cohorts.pedagogical_level and placement_reviews.recommended_level use BASIC/INTERMEDIATE/ADVANCED independently of course ID and CEFR. Assignment available_from and require_lesson_available extend existing cohort_practice_assignments. No new course, enrollment, practice engine or production fixture is introduced. See COHORT_PATH.md, PLACEMENT.md and PRACTICE_ENGINE.md for authoritative behavior.

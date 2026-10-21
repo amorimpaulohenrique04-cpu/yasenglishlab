@@ -27,7 +27,7 @@ const tables: Record<string, unknown[]> = {
   lesson_progress: [],
 };
 
-function fakeClient(pathItems: unknown[] | null) {
+function fakeClient(pathItems: unknown[] | null, overrides: Record<string, unknown[]> = {}) {
   const rpc = vi.fn(async () => ({ data: { items: pathItems ?? [] }, error: null }));
   const builder = (rows: unknown[]) => {
     const chain: Record<string, unknown> = {};
@@ -37,7 +37,7 @@ function fakeClient(pathItems: unknown[] | null) {
   };
   return {
     client: {
-      from: (table: string) => builder(tables[table] ?? []),
+      from: (table: string) => builder(overrides[table] ?? tables[table] ?? []),
       rpc,
     } as unknown as SupabaseClient,
     rpc,
@@ -45,6 +45,24 @@ function fakeClient(pathItems: unknown[] | null) {
 }
 
 describe("SupabaseLearningRepository cohort path", () => {
+  it("uses cohort module order in Home, Aulas and Progresso projections", async () => {
+    const second = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbb02";
+    const { client } = fakeClient(
+      [
+        { contentKind: "modules", contentId: MODULE, position: 10, state: "AVAILABLE" },
+        { contentKind: "modules", contentId: second, position: 0, state: "AVAILABLE" },
+        { contentKind: "lessons", contentId: L1, position: 11, state: "AVAILABLE" },
+      ],
+      {
+        modules: [
+          ...(tables.modules ?? []),
+          { id: second, course_id: COURSE, position: 2, title: "M2", description: null },
+        ],
+      },
+    );
+    const [course] = await new SupabaseLearningRepository(client).getActiveCoursesForStudent(USER);
+    expect(course!.modules.map((m) => m.id)).toEqual([second, MODULE]);
+  });
   it("applies cohort order, hides excluded lessons and exposes lock reasons", async () => {
     const { client, rpc } = fakeClient([
       { contentKind: "lessons", contentId: L3, position: 1, state: "AVAILABLE" },

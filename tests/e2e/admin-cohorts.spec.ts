@@ -29,6 +29,10 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await expect(drawer.getByText(/Professor A|Yasmin/).first()).toBeVisible();
 
   await expect(drawer.getByLabel("Capacidade máxima")).toHaveCount(0);
+  await expect(drawer.getByLabel("Nível pedagógico", { exact: true })).toBeDisabled();
+  await expect(drawer.getByLabel("Nível pedagógico", { exact: true }).locator("option")).toHaveText(
+    ["Sem classificação (legado)", "Básico", "Intermediário", "Avançado"],
+  );
   await drawer.getByRole("button", { name: "Salvar horário" }).click();
   await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
   const desktopViolations = await new AxeBuilder({ page })

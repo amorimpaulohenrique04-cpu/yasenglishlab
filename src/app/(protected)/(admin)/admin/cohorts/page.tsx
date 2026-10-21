@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { pedagogicalLevelOptions } from "@/modules/cohorts/domain/models";
 import {
   Alert,
   Button,
@@ -180,6 +181,14 @@ export default async function CohortsPage({
           <input type="hidden" name="operation" value="EDIT" />
           <input type="hidden" name="cohortId" value={cohort.id} />
           <Input name="name" label="Nome" defaultValue={cohort.name} required />
+          <Select
+            name="pedagogical_level"
+            label="Nível pedagógico"
+            defaultValue={cohort.pedagogical_level ?? ""}
+            options={pedagogicalLevelOptions}
+            disabled={cohort.student_count > 0}
+            message="Configure antes de matricular alunos. O nível é preservado após vínculos com alunos."
+          />
           <Button type="submit" variant="secondary">
             Salvar nome
           </Button>
@@ -301,6 +310,11 @@ export default async function CohortsPage({
             <Input name="name" label="Nome da turma" required />
             <Input name="code" label="Código da turma" required />
             <Select name="course_id" label="Curso" options={options.courses} required />
+            <Select
+              name="pedagogical_level"
+              label="Nível pedagógico"
+              options={pedagogicalLevelOptions}
+            />
             <Input name="starts_at" label="Início" type="date" required />
             <Input name="ends_at" label="Fim (opcional)" type="date" />
             <Input name="timezone" label="Fuso horário" defaultValue="America/Recife" required />

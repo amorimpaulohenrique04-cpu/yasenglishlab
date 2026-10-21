@@ -20,12 +20,15 @@ export interface LessonPathEntry {
 }
 
 /** Parses the get_student_learning_path payload into lesson entries keyed by lesson id. */
-export function parseLessonPath(payload: unknown): Map<string, LessonPathEntry> {
+export function parseLessonPath(
+  payload: unknown,
+  contentKind: "lessons" | "modules" = "lessons",
+): Map<string, LessonPathEntry> {
   const parsed = pathSchema.safeParse(payload);
   if (!parsed.success) throw new Error("Unable to read the learning path.");
   const entries = new Map<string, LessonPathEntry>();
   for (const item of parsed.data.items) {
-    if (item.contentKind !== "lessons") continue;
+    if (item.contentKind !== contentKind) continue;
     entries.set(item.contentId, {
       position: item.position,
       access: { state: item.state, availableFrom: item.availableFrom ?? null },

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { pedagogicalLevelOptions } from "@/modules/cohorts/domain/models";
 import { Alert, Button, Card, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
 import { loadStudentCandidates } from "@/server/placement/placement";
 import { loadPlacementJourney } from "@/server/placement/decision-gate";
@@ -69,6 +70,16 @@ export default async function PlacementPage({
         <>
           <Card className="yas-stack">
             <SectionHeader title={`Trilha recomendada: ${view.recommendedTitle}`} />
+            {view.review.recommended_level && (
+              <p>
+                Nível recomendado:{" "}
+                {
+                  pedagogicalLevelOptions.find(
+                    (option) => option.value === view.review?.recommended_level,
+                  )?.label
+                }
+              </p>
+            )}
             <p>{view.review.feedback}</p>
             <p>Recomendação da equipe pedagógica. Não é uma classificação CEFR oficial.</p>
           </Card>

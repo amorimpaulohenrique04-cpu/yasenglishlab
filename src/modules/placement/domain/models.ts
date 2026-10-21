@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pedagogicalLevelSchema } from "@/modules/cohorts/domain/models";
 
 export const placementStates = [
   "PAYMENT_CONFIRMED",
@@ -68,6 +69,7 @@ export const candidateSchema = z.object({
   id: z.uuid(),
   name: z.string(),
   courseId: z.uuid(),
+  pedagogicalLevel: pedagogicalLevelSchema.nullable().optional(),
   timezone: z.string(),
   schedule: z.array(scheduleWindowSchema).min(1),
   occupancy: z.number().int().nonnegative(),
@@ -154,6 +156,7 @@ export const reviewInputSchema = z
   .object({
     caseId: z.uuid(),
     courseId: z.uuid(),
+    level: pedagogicalLevelSchema.nullable().optional(),
     feedback: z.string().trim().min(1).max(4000),
     confidence: z.enum(["LOW", "MEDIUM", "HIGH"]),
   })
@@ -185,6 +188,7 @@ export const placementCaseSchema = z.object({
 export const reviewSchema = z.object({
   id: z.uuid(),
   recommended_course_id: z.uuid(),
+  recommended_level: pedagogicalLevelSchema.nullable().optional(),
   feedback: z.string(),
   confidence: z.enum(["LOW", "MEDIUM", "HIGH"]),
   finalized_at: z.string(),

@@ -75,7 +75,13 @@ export interface PracticeBuilderProps {
           assetType: AssetKind;
           uploadStatus: "PENDING" | "READY" | "FAILED";
         }[];
-        assignments: { cohortId: string; cohortName: string; dueAt: string | null }[];
+        assignments: {
+          cohortId: string;
+          cohortName: string;
+          dueAt: string | null;
+          availableFrom?: string | null | undefined;
+          requireLessonAvailable?: boolean | undefined;
+        }[];
       })
     | null;
   scope: {
