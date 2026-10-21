@@ -596,3 +596,131 @@ a.yas-metric-card:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.yas-metric-strip[data-count="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 47.99rem) {
+  .yas-metric-strip[data-count="2"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Editor: coluna principal + resumo fixo ---------- */
+.yas-editor-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--yas-space-5);
+}
+
+.yas-editor-main {
+  display: grid;
+  min-width: 0;
+  gap: var(--yas-space-5);
+}
+
+.yas-editor-aside {
+  min-width: 0;
+}
+
+.yas-editor-summary {
+  display: grid;
+  gap: var(--yas-space-3);
+}
+
+.yas-editor-summary h2 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+}
+
+.yas-editor-summary-count {
+  margin: 0;
+  color: var(--yas-color-ink-soft);
+  font-size: 0.875rem;
+}
+
+.yas-editor-summary-count strong {
+  margin-inline-end: 0.25rem;
+  color: var(--yas-color-ink);
+  font-family: var(--yas-font-display);
+  font-size: 1.875rem;
+  letter-spacing: -0.03em;
+}
+
+.yas-editor-summary-skills {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-editor-summary-skills li {
+  display: flex;
+  justify-content: space-between;
+  border-top: var(--yas-border-subtle);
+  padding: 0.5rem 0;
+  color: var(--yas-color-ink-soft);
+  font-size: 0.84375rem;
+}
+
+.yas-editor-summary-note {
+  margin: 0;
+  color: var(--yas-color-muted);
+  font-size: 0.78125rem;
+}
+
+.yas-form-section {
+  display: grid;
+  gap: var(--yas-space-4);
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  padding: 1.25rem;
+}
+
+.yas-form-section > header h2 {
+  margin: 0;
+  font-family: var(--yas-font-display);
+  font-size: 1.0625rem;
+}
+
+.yas-form-section > header p {
+  margin: 0.25rem 0 0;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+.yas-form-grid {
+  align-items: start;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: var(--yas-space-3) var(--yas-space-4);
+}
+
+.yas-button.yas-add-card {
+  width: 100%;
+  min-height: 3.5rem;
+  justify-content: center;
+  border: 2px dashed var(--yas-color-purple-200);
+  background: transparent;
+  color: var(--yas-color-purple-700);
+  box-shadow: none;
+}
+
+.yas-button.yas-add-card:hover:not(:disabled) {
+  background: var(--yas-color-purple-50);
+}
+
+@media (min-width: 64rem) {
+  .yas-editor-layout {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+  }
+
+  .yas-editor-aside {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
