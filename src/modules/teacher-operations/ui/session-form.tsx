@@ -4,7 +4,17 @@ import Link from "next/link";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Button, Icon, Input, Select, Stepper, type IconName } from "@/components/ui";
+import {
+  Alert,
+  Button,
+  DateField,
+  Icon,
+  Input,
+  Select,
+  Stepper,
+  TimeField,
+  type IconName,
+} from "@/components/ui";
 import { yasTokens } from "@/styles/tokens";
 import { localAvailabilityToIso } from "../domain/availability-time";
 import {
@@ -25,9 +35,9 @@ type Values = {
   title: string;
   session_type: string;
   session_date: string;
-  end_date: string;
   start_time: string;
-  end_time: string;
+  /** Minutes; the end is always derived from start + duration. */
+  duration: string;
   capacity: string;
   cohort_id: string;
   target_student_user_id: string;
@@ -41,6 +51,17 @@ type Schedule = {
 };
 
 const TITLE_MAX = 200;
+const DURATIONS = [60, 90, 120] as const;
+
+/** End of a session in Recife local time (crosses midnight when needed). */
+function computeEnd(date: string, start: string, minutes: number) {
+  try {
+    const end = Date.parse(localAvailabilityToIso(date, start)) + minutes * 60000;
+    return Number.isFinite(end) && minutes > 0 ? localParts(new Date(end)) : null;
+  } catch {
+    return null;
+  }
+}
 const MEET_PATTERN = /^https:\/\/meet\.google\.com\/[A-Za-z0-9-]+\/?$/;
 const creatableTypes = ["CORE_CLASS", "CONVERSATION_LAB", "PRIVATE_SESSION"] as const;
 const steps = [
@@ -58,13 +79,11 @@ const scheduleIcon: Record<Schedule["state"], IconName> = {
 
 function evaluateSchedule(values: Values, context: SessionWorkspace, sessionId?: string): Schedule {
   try {
+    const minutes = Number(values.duration);
     const start = Date.parse(localAvailabilityToIso(values.session_date, values.start_time)),
-      end = Date.parse(
-        localAvailabilityToIso(values.end_date || values.session_date, values.end_time),
-      );
-    const minutes = Math.round((end - start) / 60000);
-    if (end <= start)
-      return { state: "invalid", text: "O término deve ser após o início.", minutes: null };
+      end = start + minutes * 60000;
+    if (!Number.isFinite(end) || minutes <= 0)
+      return { state: "invalid", text: "Escolha a duração da sessão.", minutes: null };
     if (
       !context.availability.some(
         (a) => Date.parse(a.starts_at) <= start && Date.parse(a.ends_at) >= end,
@@ -93,7 +112,7 @@ function evaluateSchedule(values: Values, context: SessionWorkspace, sessionId?:
   } catch {
     return {
       state: "idle",
-      text: "Escolha data e horários para conferir sua disponibilidade.",
+      text: "Escolha data e horário de início para conferir sua disponibilidade.",
       minutes: null,
     };
   }
@@ -126,13 +145,16 @@ export function SessionForm({
     [pending, startTransition] = useTransition();
   const initialStart = session?.starts_at ?? prefill?.start,
     initialEnd = session?.ends_at ?? prefill?.end;
+  const initialDuration =
+    initialStart && initialEnd
+      ? Math.round((Date.parse(initialEnd) - Date.parse(initialStart)) / 60000)
+      : 60;
   const [values, setValues] = useState<Values>({
     title: session?.title ?? "",
     session_type: session?.session_type ?? "CORE_CLASS",
     session_date: initialStart ? localParts(initialStart).date : "",
-    end_date: initialEnd ? localParts(initialEnd).date : "",
     start_time: initialStart ? localParts(initialStart).time : "",
-    end_time: initialEnd ? localParts(initialEnd).time : "",
+    duration: String(initialDuration > 0 ? initialDuration : 60),
     capacity: String(session?.capacity ?? 6),
     cohort_id: session?.cohort_id ?? "",
     target_student_user_id: session?.target_student_user_id ?? "",
@@ -144,6 +166,11 @@ export function SessionForm({
     privateSession = values.session_type === "PRIVATE_SESSION";
   const back = safeSessionReturn(returnTo);
   const schedule = evaluateSchedule(values, context, session?.id);
+  const end = computeEnd(values.session_date, values.start_time, Number(values.duration));
+  // A session saved with another length keeps it as an option instead of being silently changed.
+  const durations: number[] = DURATIONS.includes(initialDuration as (typeof DURATIONS)[number])
+    ? [...DURATIONS]
+    : [...DURATIONS, initialDuration].filter((n) => n > 0).sort((a, b) => a - b);
   const meetUrl = values.meeting_url.trim();
 
   useEffect(() => {
@@ -172,9 +199,6 @@ export function SessionForm({
     setValues((old) => ({
       ...old,
       ...patch,
-      ...("session_date" in patch && (old.end_date === old.session_date || !old.end_date)
-        ? { end_date: patch.session_date ?? "" }
-        : {}),
       ...("session_type" in patch
         ? {
             cohort_id: "",
@@ -249,8 +273,8 @@ export function SessionForm({
     ? `${relativeDayLabel(values.session_date, localParts(new Date(loadedAt)).date)}, ${formatDay(values.session_date, "long")}`
     : "Data a definir";
   const timeText =
-    values.start_time && values.end_time
-      ? `${values.start_time} – ${values.end_date && values.end_date !== values.session_date ? `${formatDay(values.end_date, "short")} ` : ""}${values.end_time}${schedule.minutes && schedule.minutes > 0 ? ` (${formatDuration(schedule.minutes)})` : ""}`
+    values.start_time && end
+      ? `${values.start_time} – ${end.date !== values.session_date ? `${formatDay(end.date, "short")} ` : ""}${end.time} (${formatDuration(Number(values.duration))})`
       : "Horário a definir";
   const visible = (index: number) => editing || step === index;
 
@@ -338,47 +362,58 @@ export function SessionForm({
         </fieldset>
         {editing && <input type="hidden" name="session_type" value={values.session_type} />}
         <div className={styles.dateGrid}>
-          <Input
+          <DateField
             label="Data"
             name="session_date"
-            type="date"
             required
             value={values.session_date}
             readOnly={locked}
+            today={localParts(new Date(loadedAt)).date}
             message={fieldError("session_date") ?? ""}
-            onChange={(e) => update({ session_date: e.target.value })}
+            onChange={(date) => update({ session_date: date })}
           />
-          <Input
-            label="Início"
+          <TimeField
+            label="Horário de início"
             name="start_time"
-            type="time"
             required
             value={values.start_time}
             readOnly={locked}
-            onChange={(e) => update({ start_time: e.target.value })}
-            message={fieldError("start_time") ?? ""}
+            onChange={(time) => update({ start_time: time })}
+            message={fieldError("start_time") ?? fieldError("end_time") ?? ""}
           />
-          <Input
-            label="Término"
-            name="end_time"
-            type="time"
-            required
-            value={values.end_time}
-            readOnly={locked}
-            message={fieldError("end_time") ?? ""}
-            onChange={(e) => update({ end_time: e.target.value })}
-          />
-          <Input
-            label="Data de término"
-            name="end_date"
-            type="date"
-            required
-            value={values.end_date}
-            readOnly={locked}
-            message="Igual à data, exceto se passar da meia-noite."
-            onChange={(e) => update({ end_date: e.target.value })}
-          />
+          <fieldset className={styles.durationField} disabled={locked}>
+            <legend>
+              Duração <span aria-hidden="true">*</span>
+            </legend>
+            <div className={styles.segmentedOptions}>
+              {durations.map((minutes) => (
+                <label
+                  key={minutes}
+                  data-checked={values.duration === String(minutes) || undefined}
+                >
+                  <input
+                    type="radio"
+                    name="duration"
+                    value={minutes}
+                    required
+                    checked={values.duration === String(minutes)}
+                    onChange={() => update({ duration: String(minutes) })}
+                  />
+                  {formatDuration(minutes)}
+                  {!DURATIONS.includes(minutes as (typeof DURATIONS)[number]) && " (atual)"}
+                </label>
+              ))}
+            </div>
+          </fieldset>
         </div>
+        <input type="hidden" name="end_date" value={end?.date ?? ""} />
+        <input type="hidden" name="end_time" value={end?.time ?? ""} />
+        {end && (
+          <p className={styles.endHint} aria-live="polite">
+            <Icon name="clock" size={16} /> Termina às <strong>{end.time}</strong>
+            {end.date !== values.session_date && ` de ${formatDay(end.date, "short")}`}
+          </p>
+        )}
         <p className={styles.timezone}>
           <Icon name="globe" size={16} /> Fuso horário <strong>America/Recife</strong> (UTC−3)
         </p>
@@ -422,12 +457,7 @@ export function SessionForm({
                           type="button"
                           className={styles.slotChip}
                           onClick={() =>
-                            update({
-                              session_date: start.date,
-                              end_date: end.date,
-                              start_time: start.time,
-                              end_time: end.time,
-                            })
+                            update({ session_date: start.date, start_time: start.time })
                           }
                         >
                           {formatDay(start.date, "short")} · {start.time}–{end.time}

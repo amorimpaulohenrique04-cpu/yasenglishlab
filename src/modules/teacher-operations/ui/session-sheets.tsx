@@ -15,7 +15,12 @@ import {
   type SessionWorkspace,
   type WorkspaceSession,
 } from "../domain/session-workspace";
-import { formatDay, formatWeekRange, relativeDayLabel } from "../domain/session-calendar";
+import {
+  formatDay,
+  formatDuration,
+  formatWeekRange,
+  relativeDayLabel,
+} from "../domain/session-calendar";
 import type { SessionRowLinks } from "./session-row";
 import { WeekGrid } from "./week-grid";
 import styles from "./sessions.module.css";
@@ -226,7 +231,7 @@ export function MeetingSheet({
   );
 }
 
-const DURATIONS = [30, 45, 60, 90, 120];
+const DURATIONS = [60, 90, 120];
 
 /** Week of registered availability and booked sessions, with ready-to-use free slots. */
 export function AvailabilitySheet({
@@ -318,7 +323,7 @@ export function AvailabilitySheet({
                 setMinutes(Number(event.target.value));
                 setVisible(4);
               }}
-              options={DURATIONS.map((n) => ({ value: String(n), label: `${n} minutos` }))}
+              options={DURATIONS.map((n) => ({ value: String(n), label: formatDuration(n) }))}
             />
           </div>
           <AnimatePresence mode="popLayout" initial={false}>

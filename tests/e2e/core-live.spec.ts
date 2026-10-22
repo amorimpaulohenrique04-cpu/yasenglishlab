@@ -125,9 +125,8 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
     await page.getByLabel("Título").fill(title);
     await page.getByRole("radio", { name: /^Core Class/ }).check();
     await page.getByLabel(/^Data(?: \*)?$/).fill(localDateTime(sessionStart).date);
-    await page.getByLabel(/^Início(?: \*)?$/).fill(localDateTime(sessionStart).time);
-    await page.getByLabel("Data de término").fill(localDateTime(sessionEnd).date);
-    await page.getByLabel(/^Término(?: \*)?$/).fill(localDateTime(sessionEnd).time);
+    await page.getByLabel(/^Horário de início(?: \*)?$/).fill(localDateTime(sessionStart).time);
+    await page.getByRole("radio", { name: "1h", exact: true }).check();
     await page.getByRole("button", { name: "Continuar" }).click();
     await page.getByLabel("Capacidade").fill("6");
     await page.getByLabel(/^Turma(?: \*)?$/).selectOption({ label: "Cohort Basic" });

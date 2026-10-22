@@ -8,3 +8,6 @@ export * from "./overlays";
 export * from "./stepper";
 export * from "./toast";
 export * from "./command-palette";
+export * from "./popover";
+export * from "./calendar";
+export * from "./time-field";

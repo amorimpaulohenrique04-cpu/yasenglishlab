@@ -34,12 +34,11 @@ function useMinuteClock(initial: number) {
   return now;
 }
 
-export function newSessionHref(day: string, startMin: number, endMin: number, returnTo: string) {
-  const end =
-    endMin >= 1440 ? { day: addDays(day, 1), time: "00:00" } : { day, time: clock(endMin) };
+export function newSessionHref(day: string, startMin: number, minutes: number, returnTo: string) {
+  const start = localAvailabilityToIso(day, clock(startMin));
   return `/teacher/sessoes/nova?${new URLSearchParams({
-    start: localAvailabilityToIso(day, clock(startMin)),
-    end: localAvailabilityToIso(end.day, end.time),
+    start,
+    end: new Date(Date.parse(start) + minutes * 60000).toISOString(),
     returnTo,
   })}`;
 }
@@ -103,7 +102,7 @@ export function WeekGrid({
     let slot = Math.floor(clicked / SLOT_MINUTES) * SLOT_MINUTES;
     if (day === today) slot = Math.max(slot, Math.ceil(nowMinutes / SLOT_MINUTES) * SLOT_MINUTES);
     slot = Math.max(block.startMin, Math.min(slot, block.endMin - SLOT_MINUTES));
-    router.push(newSessionHref(day, slot, Math.min(slot + duration, block.endMin), returnTo));
+    router.push(newSessionHref(day, slot, duration, returnTo));
   };
 
   return (

@@ -6,6 +6,9 @@ Reusable primitives derived from the approved visual contract.
 
 Controls:
 
+- DateField / DatePicker / DateRangePicker / Calendar — custom date entry (typed + calendar)
+- TimeField — typed time + suggested list
+
 - Button
 - IconButton
 - Input
@@ -41,6 +44,7 @@ Overlays:
 - Dialog (`icon`, `footer`)
 - Drawer (`size` md/lg/xl, `icon`, `footer`; full-screen sheet on phones)
 - CommandPalette — Ctrl/⌘ K combobox search
+- Popover — anchored top-layer surface (native Popover API); used by Dropdown and pickers
 
 Feedback:
 

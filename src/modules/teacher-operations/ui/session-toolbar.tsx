@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition, type ChangeEvent } from "react";
-import { Icon, SegmentedNav } from "@/components/ui";
+import { DatePicker, Icon, SegmentedNav } from "@/components/ui";
 import { teacherSessionTypeLabel } from "../domain/models";
 import {
   addDays,
@@ -38,7 +38,6 @@ export function SessionToolbar({
   const [pending, startTransition] = useTransition();
   const [query, setQuery] = useState(filters.q);
   const debounce = useRef<number | undefined>(undefined);
-  const dateInput = useRef<HTMLInputElement>(null);
 
   const go = (patch: Partial<SessionFilters>) =>
     startTransition(() => router.replace(sessionListUrl(filters, patch), { scroll: false }));
@@ -94,27 +93,15 @@ export function SessionToolbar({
           >
             <Icon name="left" size={18} />
           </Link>
-          <label className={styles.dateChip}>
-            <Icon name="cal" size={17} />
-            <span aria-hidden="true">{dateLabel}</span>
-            <input
-              ref={dateInput}
-              type="date"
-              name="date"
-              aria-label="Data de referência"
-              value={filters.date}
-              onClick={() => {
-                try {
-                  dateInput.current?.showPicker();
-                } catch {
-                  /* Older browsers open the picker on their own. */
-                }
-              }}
-              onChange={(event) => {
-                if (event.target.value) go({ date: event.target.value });
-              }}
-            />
-          </label>
+          <DatePicker
+            label="Data de referência"
+            value={filters.date}
+            today={today}
+            display={dateLabel}
+            className={styles.dateChip}
+            onChange={(date) => go({ date })}
+          />
+          <input type="hidden" name="date" value={filters.date} />
           <Link
             className={styles.iconLink}
             href={sessionListUrl(filters, { date: step(1) })}

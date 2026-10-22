@@ -57,3 +57,30 @@ Estados: default, hover, focus-visible, active, disabled, loading, error, succes
   - `ToastProvider` e `useToast`: fila de confirmações transitórias.
   - `CommandPalette`: busca global via Ctrl/⌘ K, como combobox ARIA.
   - `AnimatedNumber`: contagem de KPIs.
+
+## Atualização 2026-10-22 — campos de data, hora e listas
+
+- **`Popover`**: superfície ancorada na Popover API nativa. Fica na camada superior, então `overflow` não a corta (era o caso do menu "⋯" das sessões). Fecha com Esc ou clique fora e devolve o foco ao gatilho. O `Dropdown` passou a usá-lo.
+- **Calendário próprio**:
+  - `Calendar`: grade no padrão ARIA de date picker, com setas, PageUp/PageDown e Home/End.
+  - `DatePicker`: um botão que abre o calendário.
+  - `DateField`: campo digitável em dd/mm/aaaa (também aceita ISO) com botão de calendário; o formulário recebe ISO por um input oculto.
+  - `DateRangePicker`: atalhos de período mais seleção de início e término.
+- **`TimeField`**: campo digitável em hh:mm com uma lista de 15 em 15 minutos. Com `anchor`, a lista abre uma hora depois do início e mostra a duração de cada opção.
+- **Selects**: todos os `<select>` do Yas usam `appearance: base-select`. A lista e o ✓ seguem o visual do Yas, e o elemento continua nativo: formulários, teclado, leitores de tela, picker do celular e o `selectOption` dos testes funcionam como antes. Navegadores sem suporte mostram a lista nativa.
+- **Rolagem**: com um modal aberto, a página para de rolar e mantém o espaço da barra, então só aparece uma barra de rolagem. As barras internas são finas, em `--yas-color-purple-200`.
+
+## Atualização 2026-10-22 — responsividade por container queries
+
+- A aba Sessões se adapta pela largura de cada região (`@container`), não pela da tela. Os containers nomeados são:
+  - `page`: grade principal, coluna lateral, assistente, detalhes e gráficos;
+  - `toolbar`: barra de filtros e navegação;
+  - `rows`: linhas da agenda e card da próxima sessão;
+  - `board`: grade semanal e mensal;
+  - `hero`: cabeçalho dos detalhes;
+  - `card` e `panel`: cards laterais e painéis;
+  - `form`: assistente e painel de edição;
+  - `filters`: filtros dos relatórios.
+- Assim o mesmo componente funciona com a sidebar aberta ou fechada, dentro de um sheet (a grade semanal da disponibilidade) e de 320 a 1920 px sem rolagem horizontal.
+- Grids fluidos usam `repeat(auto-fit, minmax(min(100%, X), 1fr))`, títulos usam `clamp()` com `cqi`, e textos longos quebram com segurança (`overflow-wrap: anywhere`, `min-width: 0`).
+- `@media` fica reservado ao que de fato depende da tela: o sheet em tela cheia no celular e `prefers-reduced-motion`.

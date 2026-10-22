@@ -382,11 +382,19 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_pract
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Nice work'')', pg_temp.id('a_wr_open'), '{"task_completion":"SOLID","comprehensibility":"STRONG","language_accuracy":"DEVELOPING","vocabulary_use":"SOLID"}'))='OK','WRITTEN reviewed with the written dimensions');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Fine'')', pg_temp.id('a_sp'), '{"task_completion":"SOLID","comprehensibility":"SOLID","fluency":"SOLID","language_accuracy":"SOLID","vocabulary_use":"SOLID","pronunciation_intelligibility":"SOLID"}'))='OK','SPOKEN reviewed with the speaking dimensions');
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews()),'queue is empty after both reviews');
+-- Read-only review insights: today's count, saved reviews and context stay inside the Teacher scope.
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'reviewedToday')::int=2,'overview counts the reviews sent today');
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'avgResponseMinutes7d') is not null,'overview has an average response time');
+select pg_temp.assert_true(jsonb_array_length(public.get_teacher_review_context(pg_temp.id('a_wr_open'))->'reviews')=1,'context returns the saved review');
+select pg_temp.assert_true((public.get_teacher_review_context(pg_temp.id('a_wr_open'))->'reviews'->0->>'feedback')='Nice work','saved feedback is readable by its Teacher');
+select pg_temp.assert_true(public.get_teacher_review_context(pg_temp.id('a_wr_open'))::text !~ 'storage_path|score','context exposes no storage path or score');
 reset role;
 select pg_temp.assert_true((select evaluation_status='MANUAL_REVIEWED' and score is null and max_score is null from public.practice_results where practice_attempt_id=pg_temp.id('a_wr_open')),'review keeps score null (no aggregate, no CEFR)');
 select pg_temp.login(pg_temp.u(3), 'aal2');
 set local role authenticated;
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews(pg_temp.id('a_wr_open'))),'unrelated Teacher cannot read the attempt');
+select pg_temp.assert_true(public.get_teacher_review_context(pg_temp.id('a_wr_open')) is null,'unrelated Teacher gets no review context');
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'reviewedToday')::int=0,'overview only counts the Teacher own reviews');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''x'')', pg_temp.id('a_sp'), '{}'))='42501','unrelated Teacher cannot finalize');
 reset role;
 
@@ -548,7 +556,8 @@ begin
     'public.teacher_practice_assign(uuid,uuid[],timestamptz,jsonb)','public.teacher_practice_unassign(uuid,uuid,jsonb)',
     'public.teacher_practice_reserve_asset(uuid,text,text,jsonb)','public.teacher_practice_complete_asset(uuid,jsonb)',
     'public.authorize_practice_asset(uuid)','public.student_assigned_practices()','public.submit_practice_attempt(uuid,jsonb)',
-    'public.get_teacher_reviews(uuid)','public.finalize_practice_review(uuid,jsonb,text,text)','public.reserve_practice_audio(uuid,text)'] loop
+    'public.get_teacher_reviews(uuid)','public.finalize_practice_review(uuid,jsonb,text,text)','public.reserve_practice_audio(uuid,text)',
+    'public.get_teacher_review_overview()','public.get_teacher_review_context(uuid)'] loop
     if has_function_privilege('anon', f, 'EXECUTE') then raise exception 'practice_authoring: anon can execute %', f; end if;
     if not has_function_privilege('authenticated', f, 'EXECUTE') then raise exception 'practice_authoring: authenticated cannot execute %', f; end if;
   end loop;

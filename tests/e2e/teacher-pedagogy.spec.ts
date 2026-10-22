@@ -157,7 +157,6 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
       await reviewRow.getByRole("link", { name: "Revisar resposta" }).click();
       await expect(teacher).toHaveURL(new RegExp(`/teacher/revisoes/${attemptId}$`));
 
-      await teacher.getByRole("button", { name: "Carregar áudio" }).click();
       await expect(teacher.getByLabel("Resposta de áudio")).toBeVisible();
 
       for (const label of [
@@ -168,7 +167,10 @@ test.describe("P21.5 Teacher Pedagogy V1", () => {
         "Uso de vocabulário",
         "Inteligibilidade da pronúncia",
       ]) {
-        await teacher.getByLabel(label).selectOption("SOLID");
+        await teacher
+          .getByRole("radiogroup", { name: label, exact: true })
+          .getByRole("radio", { name: "Consistente", exact: true })
+          .check();
       }
       const feedback =
         "Boa clareza e ritmo. Continue repetindo a resposta com atenção às pausas naturais.";

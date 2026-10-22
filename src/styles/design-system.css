@@ -924,14 +924,14 @@ textarea.yas-field-control {
   cursor: pointer;
 }
 
-.yas-dropdown-menu {
-  position: absolute;
-  z-index: var(--yas-z-dropdown);
-  inset-block-start: calc(100% + var(--yas-space-2));
-  inset-inline-end: 0;
-  min-width: 13rem;
+/* Native popover: the UA hides it while closed, so layout applies only when open. */
+.yas-dropdown-menu:popover-open {
   display: grid;
   gap: var(--yas-space-1);
+}
+
+.yas-dropdown-menu {
+  min-width: 13rem;
   border: 0;
   border-radius: var(--yas-radius-lg);
   background: var(--yas-color-white);
@@ -1568,6 +1568,9 @@ a:hover > .yas-go {
 }
 
 .yas-drawer {
+  /* Body gutters, shared with content that must bleed to the panel edges (sticky bars). */
+  --yas-drawer-pad-x: 1.5rem;
+  --yas-drawer-pad-end: 1.75rem;
   overflow: hidden;
 }
 
@@ -1586,7 +1589,7 @@ a:hover > .yas-go {
 .yas-drawer .yas-dialog-body {
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 1.375rem 1.5rem 1.75rem;
+  padding: 1.375rem var(--yas-drawer-pad-x) var(--yas-drawer-pad-end);
 }
 
 .yas-drawer .yas-dialog-inner > .yas-cluster {
@@ -1654,8 +1657,9 @@ a:hover > .yas-go {
     padding: 1rem 1rem 0.875rem;
   }
 
-  .yas-drawer .yas-dialog-body {
-    padding: 1rem 1rem 1.5rem;
+  .yas-drawer {
+    --yas-drawer-pad-x: 1rem;
+    --yas-drawer-pad-end: 1.5rem;
   }
 
   .yas-drawer .yas-dialog-footer {
@@ -1798,9 +1802,13 @@ a:hover > .yas-go {
 }
 
 /* ---------- Breadcrumbs ---------- */
+.yas-breadcrumbs {
+  min-width: 0;
+}
+
 .yas-breadcrumbs ol {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--yas-space-2);
   margin: 0;
@@ -1817,6 +1825,10 @@ a:hover > .yas-go {
   min-width: 0;
 }
 
+.yas-breadcrumbs li:not(:last-child) {
+  flex: none;
+}
+
 .yas-breadcrumbs a {
   display: inline-flex;
   align-items: center;
@@ -1831,6 +1843,7 @@ a:hover > .yas-go {
 
 .yas-breadcrumbs [aria-current="page"] {
   overflow: hidden;
+  min-width: 0;
   max-width: 22rem;
   color: var(--yas-color-ink-soft);
   font-weight: var(--yas-weight-medium);
@@ -1860,14 +1873,52 @@ a:hover > .yas-go {
   color: var(--yas-color-purple-600);
 }
 
-.yas-dropdown-menu {
-  transform-origin: top right;
+/* ---------- Popover (native top layer, anchored by JS) ---------- */
+.yas-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  color: var(--yas-color-ink);
+}
+
+.yas-popover:not([data-placed]) {
+  visibility: hidden;
+}
+
+.yas-popover:popover-open[data-placed] {
+  transform-origin: top left;
   animation: yas-pop-in 180ms var(--yas-ease-out);
 }
 
-.yas-dropdown-menu[data-align="start"] {
-  inset-inline: 0 auto;
-  transform-origin: top left;
+.yas-popover[data-align="end"] {
+  transform-origin: top right;
+}
+
+.yas-popover[data-side="top"] {
+  transform-origin: bottom left;
+}
+
+.yas-popover[data-side="top"][data-align="end"] {
+  transform-origin: bottom right;
+}
+
+.yas-dropdown-menu.yas-popover {
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-white);
+  padding: var(--yas-space-2);
+  box-shadow: var(--yas-shadow-floating);
+}
+
+.yas-dropdown-trigger[aria-expanded="true"] .yas-dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+.yas-dropdown-chevron {
+  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
 }
 
 .yas-dropdown-item {
@@ -2252,7 +2303,7 @@ button.yas-stepper-button:hover strong {
   .yas-dialog[data-closing],
   .yas-dialog[data-closing]::backdrop,
   .yas-tab-panel,
-  .yas-dropdown-menu,
+  .yas-popover:popover-open[data-placed],
   .yas-command[open] {
     animation: none;
   }
@@ -2279,4 +2330,554 @@ button.yas-stepper-button:hover strong {
 .yas-dropdown-trigger:disabled {
   cursor: progress;
   opacity: 0.7;
+}
+
+/* =====================================================================
+   Date pickers (Calendar, DatePicker, DateField, DateRangePicker)
+   ===================================================================== */
+.yas-date-trigger {
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--yas-space-2);
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-sm);
+  background: var(--yas-color-white);
+  color: var(--yas-color-ink);
+  padding: 0 0.75rem 0 0.875rem;
+  font: inherit;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color var(--yas-motion-fast) var(--yas-ease-standard),
+    box-shadow var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.yas-date-trigger > .yas-icon:first-child {
+  color: var(--yas-color-purple-600);
+}
+
+.yas-date-trigger:hover {
+  border-color: var(--yas-color-purple-200);
+}
+
+.yas-date-trigger:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 2px;
+}
+
+.yas-date-trigger[aria-expanded="true"] {
+  border-color: var(--yas-color-purple-600);
+  box-shadow: var(--yas-shadow-focus);
+}
+
+.yas-date-chevron {
+  color: var(--yas-color-muted);
+  transition: transform var(--yas-motion-standard) var(--yas-ease-standard);
+}
+
+.yas-date-trigger[aria-expanded="true"] .yas-date-chevron {
+  transform: rotate(180deg);
+}
+
+.yas-date-preset {
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+  padding: 0.125rem 0.5rem;
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-date-field {
+  position: relative;
+}
+
+.yas-date-field .yas-field-control {
+  padding-inline-end: 2.75rem;
+}
+
+.yas-date-field-button {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0.375rem;
+  width: 2.125rem;
+  height: 2.125rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--yas-radius-sm);
+  background: transparent;
+  color: var(--yas-color-purple-600);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.yas-date-field-button:hover:not(:disabled),
+.yas-date-field-button[aria-expanded="true"] {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-date-field-button:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 1px;
+}
+
+.yas-date-field-button:disabled {
+  color: var(--yas-color-muted);
+  cursor: not-allowed;
+}
+
+.yas-calendar-popover.yas-popover {
+  width: 19.75rem;
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-white);
+  padding: var(--yas-space-4);
+  box-shadow: var(--yas-shadow-floating);
+}
+
+.yas-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--yas-space-2);
+  margin-bottom: var(--yas-space-2);
+}
+
+.yas-calendar-title {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-size: var(--yas-font-size-md);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-calendar-title::first-letter {
+  text-transform: uppercase;
+}
+
+.yas-calendar-nav {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--yas-color-ink-soft);
+  cursor: pointer;
+  transition: background var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.yas-calendar-nav:hover {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-600);
+}
+
+.yas-calendar-nav:focus-visible,
+.yas-calendar-link:focus-visible,
+.yas-range-preset:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 1px;
+}
+
+.yas-calendar-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.125rem;
+  animation: yas-cal-next var(--yas-motion-slow) var(--yas-ease-out);
+}
+
+.yas-calendar-grid[data-direction="prev"] {
+  animation-name: yas-cal-prev;
+}
+
+@keyframes yas-cal-next {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+}
+
+@keyframes yas-cal-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+.yas-calendar-grid th {
+  color: var(--yas-color-muted);
+  padding: 0.25rem 0 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: var(--yas-weight-bold);
+  text-align: center;
+}
+
+.yas-calendar-grid td {
+  padding: 0;
+  text-align: center;
+}
+
+.yas-calendar-day {
+  width: 2.375rem;
+  height: 2.375rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--yas-color-ink);
+  font: inherit;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-medium);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background var(--yas-motion-fast) var(--yas-ease-standard),
+    color var(--yas-motion-fast) var(--yas-ease-standard),
+    transform var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.yas-calendar-day:hover:not(:disabled) {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-600);
+}
+
+.yas-calendar-day:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.yas-calendar-day:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 1px;
+}
+
+.yas-calendar-day[data-outside] {
+  color: var(--yas-color-muted);
+  font-weight: var(--yas-weight-regular);
+}
+
+.yas-calendar-day[data-today] {
+  color: var(--yas-color-purple-600);
+  font-weight: var(--yas-weight-bold);
+  box-shadow: inset 0 0 0 1.5px var(--yas-color-purple-200);
+}
+
+.yas-calendar-day[data-in-range] {
+  border-radius: var(--yas-radius-sm);
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-700);
+}
+
+.yas-calendar-day[data-selected] {
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+  box-shadow: var(--yas-shadow-violet);
+}
+
+.yas-calendar-day:disabled {
+  color: var(--yas-color-muted);
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.yas-calendar-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--yas-space-2);
+  border-top: var(--yas-border-subtle);
+  padding-top: var(--yas-space-3);
+}
+
+.yas-calendar-link {
+  border: 0;
+  border-radius: var(--yas-radius-sm);
+  background: transparent;
+  color: var(--yas-color-purple-600);
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-semibold);
+  cursor: pointer;
+}
+
+.yas-calendar-link:hover {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-range-popover.yas-popover {
+  width: auto;
+}
+
+.yas-range-popover:popover-open {
+  display: flex;
+  gap: var(--yas-space-4);
+}
+
+.yas-range-presets {
+  min-width: 10rem;
+  display: grid;
+  align-content: start;
+  gap: var(--yas-space-1);
+  border-inline-end: var(--yas-border-subtle);
+  padding-inline-end: var(--yas-space-4);
+}
+
+.yas-range-preset {
+  min-height: 2.375rem;
+  border: 0;
+  border-radius: var(--yas-radius-sm);
+  background: transparent;
+  color: var(--yas-color-ink-soft);
+  padding: 0 0.75rem;
+  font: inherit;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-medium);
+  text-align: start;
+  cursor: pointer;
+}
+
+.yas-range-preset:hover {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-600);
+}
+
+.yas-range-preset[aria-pressed="true"] {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-range-body {
+  width: 17.75rem;
+}
+
+.yas-range-hint {
+  margin: var(--yas-space-2) 0 0;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+}
+
+@media (max-width: 39.99rem) {
+  .yas-range-popover:popover-open {
+    flex-direction: column;
+  }
+
+  .yas-range-presets {
+    display: flex;
+    flex-wrap: wrap;
+    border-inline-end: 0;
+    border-block-end: var(--yas-border-subtle);
+    padding: 0 0 var(--yas-space-3);
+  }
+}
+
+/* =====================================================================
+   Customizable select (all of Yas). Keeps the native element — forms,
+   keyboard, screen readers and phone pickers behave as before; browsers
+   without `appearance: base-select` keep the native list.
+   ===================================================================== */
+@supports (appearance: base-select) {
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+
+  select {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--yas-space-2);
+    cursor: pointer;
+  }
+
+  select.yas-field-control {
+    appearance: base-select;
+    display: flex;
+    background-image: none;
+    padding-inline-end: 0.75rem;
+  }
+
+  select::picker-icon {
+    content: "";
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    background: var(--yas-color-muted);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    transition: rotate var(--yas-motion-standard) var(--yas-ease-standard);
+  }
+
+  select:open {
+    border-color: var(--yas-color-purple-600);
+    box-shadow: var(--yas-shadow-focus);
+  }
+
+  select:open::picker-icon {
+    rotate: 180deg;
+    background: var(--yas-color-purple-600);
+  }
+
+  ::picker(select) {
+    max-height: min(22rem, 60dvh);
+    overflow-y: auto;
+    margin-block: 0.375rem;
+    border: 0;
+    border-radius: var(--yas-radius-lg);
+    background: var(--yas-color-white);
+    padding: 0.375rem;
+    box-shadow: var(--yas-shadow-floating);
+    animation: yas-pop-in 170ms var(--yas-ease-out);
+  }
+
+  select option {
+    min-height: 2.375rem;
+    display: flex;
+    align-items: center;
+    gap: var(--yas-space-2);
+    border-radius: var(--yas-radius-sm);
+    color: var(--yas-color-ink);
+    padding: 0 0.75rem;
+    font-size: var(--yas-font-size-sm);
+    font-weight: var(--yas-weight-medium);
+    cursor: pointer;
+  }
+
+  select option:hover,
+  select option:focus-visible {
+    background: var(--yas-color-purple-50);
+    color: var(--yas-color-purple-700);
+    outline: none;
+  }
+
+  select option:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--yas-color-focus);
+  }
+
+  select option:checked {
+    background: var(--yas-color-purple-50);
+    color: var(--yas-color-purple-700);
+    font-weight: var(--yas-weight-bold);
+  }
+
+  select option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    color: var(--yas-color-purple-600);
+    content: "✓";
+  }
+
+  select option:disabled {
+    color: var(--yas-color-muted);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yas-calendar-grid {
+    animation: none;
+  }
+
+  .yas-calendar-day,
+  .yas-date-chevron,
+  .yas-date-trigger,
+  .yas-calendar-nav {
+    transition-duration: 1ms;
+  }
+
+  @supports (appearance: base-select) {
+    ::picker(select) {
+      animation: none;
+    }
+
+    select::picker-icon {
+      transition-duration: 1ms;
+    }
+  }
+}
+
+/* ---------- Time field list ---------- */
+.yas-time-popover.yas-popover {
+  min-width: 10rem;
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-white);
+  padding: 0.375rem;
+  box-shadow: var(--yas-shadow-floating);
+}
+
+.yas-time-list {
+  max-height: 16rem;
+  display: grid;
+  gap: 0.125rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.yas-time-option {
+  min-height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-ink);
+  padding: 0 0.75rem;
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-medium);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.yas-time-option:hover,
+.yas-time-option:focus-visible {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+  outline: none;
+}
+
+.yas-time-option:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--yas-color-focus);
+}
+
+.yas-time-option[aria-selected="true"] {
+  background: var(--yas-color-purple-50);
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-time-option[aria-selected="true"]::after {
+  color: var(--yas-color-purple-600);
+  content: "✓";
+}
+
+.yas-time-duration {
+  margin-inline-start: auto;
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-medium);
+}
+
+.yas-time-option[aria-selected="true"] .yas-time-duration {
+  margin-inline-end: var(--yas-space-2);
+}
+
+/* ---------- Scrolling ---------- */
+/* One scrollbar at a time: the page stops scrolling under a modal (dialog, sheet, palette)
+   and keeps its gutter, so nothing behind the backdrop shifts. */
+html:has(dialog:modal) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+:root {
+  scrollbar-color: var(--yas-color-purple-200) transparent;
+}
+
+.yas-dialog-body,
+.yas-command-list,
+.yas-time-list,
+.yas-tab-list {
+  scrollbar-width: thin;
 }

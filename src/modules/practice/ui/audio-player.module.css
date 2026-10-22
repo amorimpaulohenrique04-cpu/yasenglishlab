@@ -1,0 +1,191 @@
+.player {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-3) var(--yas-space-4);
+  border: var(--yas-border-width) solid var(--yas-color-purple-100);
+  border-radius: var(--yas-radius-lg);
+  background: linear-gradient(135deg, var(--yas-color-purple-50), var(--yas-color-surface) 70%);
+  padding: var(--yas-space-4);
+  container: player / inline-size;
+}
+
+.player:focus-within {
+  border-color: var(--yas-color-purple-200);
+}
+
+.play {
+  width: 3.25rem;
+  height: 3.25rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yas-color-purple-600);
+  color: var(--yas-color-white);
+  box-shadow: var(--yas-shadow-violet);
+  cursor: pointer;
+  transition:
+    transform var(--yas-motion-fast) var(--yas-ease-standard),
+    background var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.play:hover:not(:disabled) {
+  background: var(--yas-color-purple-700);
+  transform: scale(1.05);
+}
+
+.play:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.play:disabled {
+  background: var(--yas-color-purple-200);
+  box-shadow: none;
+  cursor: default;
+}
+
+.play:focus-visible,
+.speed:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+}
+
+.player[data-state="loading"] .play {
+  animation: pulse 1.2s var(--yas-ease-standard) infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.track {
+  position: relative;
+  display: grid;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.wave {
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.wave span {
+  flex: 1;
+  min-width: 2px;
+  height: calc(var(--h) * 100%);
+  border-radius: 2px;
+  background: var(--yas-color-purple-200);
+  transform-origin: center;
+  transition: background var(--yas-motion-fast) var(--yas-ease-standard);
+}
+
+.wave span[data-played] {
+  background: var(--yas-color-purple-600);
+}
+
+.player[data-playing] .wave span[data-played]:last-of-type,
+.player[data-playing] .wave span[data-played] {
+  animation: bounce 900ms var(--yas-ease-standard) infinite alternate;
+  animation-delay: calc(var(--h) * -900ms);
+}
+
+@keyframes bounce {
+  to {
+    transform: scaleY(0.82);
+  }
+}
+
+/* The range input sits over the waveform: native keyboard and pointer seeking. */
+.scrubber {
+  position: absolute;
+  inset: 0 0 1.25rem;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.scrubber:disabled {
+  cursor: default;
+}
+
+.scrubber:focus-visible + .meta,
+.track:has(.scrubber:focus-visible) .wave {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--yas-space-2);
+  color: var(--yas-color-muted);
+  font-size: var(--yas-font-size-xs);
+  font-weight: var(--yas-weight-semibold);
+}
+
+.speed {
+  min-width: 3.25rem;
+  height: 2.25rem;
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-white);
+  color: var(--yas-color-ink);
+  padding: 0 0.75rem;
+  font: var(--yas-weight-bold) var(--yas-font-size-xs) / 1 var(--yas-font-sans);
+  cursor: pointer;
+}
+
+.speed:hover:not(:disabled) {
+  border-color: var(--yas-color-purple-200);
+  color: var(--yas-color-purple-600);
+}
+
+.speed:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--yas-color-error);
+  font-size: var(--yas-font-size-sm);
+}
+
+.error button {
+  border: 0;
+  background: none;
+  color: var(--yas-color-purple-600);
+  padding: 0;
+  font: inherit;
+  font-weight: var(--yas-weight-bold);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@container player (max-width: 22rem) {
+  .player {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .speed {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave span,
+  .player[data-state="loading"] .play {
+    animation: none !important;
+  }
+}

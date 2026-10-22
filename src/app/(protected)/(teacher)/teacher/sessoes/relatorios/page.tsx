@@ -53,10 +53,12 @@ export default async function SessionReportsPage({
         title="Relatórios de sessões"
         description="Acompanhe suas sessões e a presença registrada, com definições transparentes."
       />
-      <div className={styles.reportBar}>
-        <ReportFilterBar filters={filters} today={today} cohorts={cohorts} />
-        <SessionReportExport filters={report.filters} />
-      </div>
+      <ReportFilterBar
+        filters={filters}
+        today={today}
+        cohorts={cohorts}
+        actions={<SessionReportExport filters={report.filters} />}
+      />
       <SessionReportView report={report} />
     </div>
   );

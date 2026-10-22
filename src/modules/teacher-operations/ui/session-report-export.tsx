@@ -1,7 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useTransition, type ChangeEvent } from "react";
-import { Alert, Dropdown, Icon, useToast } from "@/components/ui";
+import { useState, useTransition, type ChangeEvent, type ReactNode } from "react";
+import {
+  Alert,
+  DateRangePicker,
+  Dropdown,
+  Icon,
+  useToast,
+  type DateRangePreset,
+} from "@/components/ui";
 import type { ReportFilters } from "../domain/session-report";
 import { addDays, monthBounds, sessionTypes } from "../domain/session-workspace";
 import { teacherSessionTypeLabel } from "../domain/models";
@@ -44,7 +51,7 @@ export function SessionReportExport({ filters }: { filters: ReportFilters }) {
       }
     });
   return (
-    <div className={styles.exportBox}>
+    <div className={styles.reportActionsInner}>
       <Dropdown
         label={pending ? "Preparando arquivo…" : "Exportar relatório"}
         icon="download"
@@ -63,52 +70,33 @@ export function SessionReportExport({ filters }: { filters: ReportFilters }) {
   );
 }
 
-const presets = [
-  ["month", "Este mês"],
-  ["last-month", "Mês passado"],
-  ["30", "Últimos 30 dias"],
-  ["custom", "Personalizado"],
-] as const;
-
-function presetRange(id: string, today: string) {
-  if (id === "month") {
-    const m = monthBounds(today);
-    return { from: m.start, to: addDays(m.end, -1) };
-  }
-  if (id === "last-month") {
-    const m = monthBounds(addDays(monthBounds(today).start, -1));
-    return { from: m.start, to: addDays(m.end, -1) };
-  }
-  if (id === "30") return { from: addDays(today, -29), to: today };
-  return null;
+function presetRanges(today: string): DateRangePreset[] {
+  const month = monthBounds(today);
+  const previous = monthBounds(addDays(month.start, -1));
+  return [
+    { id: "month", label: "Este mês", from: month.start, to: addDays(month.end, -1) },
+    { id: "last-month", label: "Mês passado", from: previous.start, to: addDays(previous.end, -1) },
+    { id: "30", label: "Últimos 30 dias", from: addDays(today, -29), to: today },
+    { id: "90", label: "Últimos 90 dias", from: addDays(today, -89), to: today },
+  ];
 }
 
-/** Period, cohort and type filters; each change applies at once and stays in the URL. */
+/** Period, cohort and type filters plus export; each change applies at once and stays in the URL. */
 export function ReportFilterBar({
   filters,
   today,
   cohorts,
+  actions,
 }: {
   filters: ReportFilters;
   today: string;
   cohorts: readonly { id: string; name: string }[];
+  actions?: ReactNode;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [range, setRange] = useState({ from: filters.from, to: filters.to });
-  const [message, setMessage] = useState("");
-  const current =
-    presets.find(([id]) => {
-      const r = presetRange(id, today);
-      return r && r.from === filters.from && r.to === filters.to;
-    })?.[0] ?? "custom";
   const apply = (patch: Partial<ReportFilters>) => {
     const next = { ...filters, ...patch };
-    if (next.from > next.to) {
-      setMessage("O início do período deve ser anterior ou igual ao término.");
-      return;
-    }
-    setMessage("");
     const query = new URLSearchParams(
       Object.entries(next).filter(([, value]) => value) as [string, string][],
     );
@@ -123,67 +111,22 @@ export function ReportFilterBar({
       className={styles.reportFilters}
       data-pending={pending || undefined}
       action="/teacher/sessoes/relatorios"
-      onSubmit={(event) => {
-        event.preventDefault();
-        apply(range);
-      }}
+      onSubmit={(event) => event.preventDefault()}
     >
       <div className={styles.filterField}>
-        <span className={styles.filterLabel} id="period-label">
+        <span className={styles.filterLabel} aria-hidden="true">
           Período
         </span>
-        <div className={styles.periodControl} role="group" aria-labelledby="period-label">
-          <label className={styles.selectChip}>
-            <span className="sr-only">Atalho de período</span>
-            <select
-              value={current}
-              onChange={(event) => {
-                const r = presetRange(event.target.value, today);
-                if (r) {
-                  setRange(r);
-                  apply(r);
-                }
-              }}
-            >
-              {presets.map(([id, label]) => (
-                <option key={id} value={id} disabled={id === "custom"}>
-                  {label}
-                </option>
-              ))}
-            </select>
-            <Icon name="down" size={16} />
-          </label>
-          <label className={styles.dateField}>
-            <span className="sr-only">Início do período</span>
-            <Icon name="cal" size={16} />
-            <input
-              type="date"
-              name="from"
-              required
-              value={range.from}
-              onChange={(event) => {
-                setRange((r) => ({ ...r, from: event.target.value }));
-                if (event.target.value) apply({ from: event.target.value, to: range.to });
-              }}
-            />
-          </label>
-          <span aria-hidden="true" className={styles.muted}>
-            –
-          </span>
-          <label className={styles.dateField}>
-            <span className="sr-only">Fim do período</span>
-            <input
-              type="date"
-              name="to"
-              required
-              value={range.to}
-              onChange={(event) => {
-                setRange((r) => ({ ...r, to: event.target.value }));
-                if (event.target.value) apply({ from: range.from, to: event.target.value });
-              }}
-            />
-          </label>
-        </div>
+        <DateRangePicker
+          label="Período"
+          from={filters.from}
+          to={filters.to}
+          today={today}
+          presets={presetRanges(today)}
+          onChange={(range) => apply(range)}
+        />
+        <input type="hidden" name="from" value={filters.from} />
+        <input type="hidden" name="to" value={filters.to} />
       </div>
       <label className={styles.filterField}>
         <span className={styles.filterLabel}>Turma</span>
@@ -213,14 +156,12 @@ export function ReportFilterBar({
           <Icon name="down" size={16} />
         </span>
       </label>
-      <button type="submit" className="sr-only">
-        Aplicar filtros
-      </button>
-      {message && (
-        <p className={styles.filterError} role="alert">
-          {message}
-        </p>
-      )}
+      <noscript>
+        <button type="submit" className="yas-button yas-button--outline yas-button--sm">
+          Aplicar filtros
+        </button>
+      </noscript>
+      {actions && <div className={styles.reportActions}>{actions}</div>}
       <span className={styles.toolbarProgress} aria-hidden="true" />
     </form>
   );

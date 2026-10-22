@@ -1,7 +1,16 @@
 "use client";
 import { useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Icon, Input, Select, Textarea, type IconName } from "@/components/ui";
+import {
+  Alert,
+  DateField,
+  Icon,
+  Input,
+  Select,
+  Textarea,
+  TimeField,
+  type IconName,
+} from "@/components/ui";
 import { createResourceResultAction } from "@/app/(protected)/(teacher)/teacher/sessoes/resource-actions";
 import styles from "./sessions.module.css";
 
@@ -35,6 +44,8 @@ export function SessionResourceForm({
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null),
     [kind, setKind] = useState<"RESOURCE" | "HOMEWORK">("RESOURCE"),
     [reference, setReference] = useState<Reference>("none"),
+    [dueDate, setDueDate] = useState(""),
+    [dueTime, setDueTime] = useState(""),
     [pending, startTransition] = useTransition();
   return (
     <form
@@ -52,6 +63,8 @@ export function SessionResourceForm({
             if (response.ok) {
               ref.current?.reset();
               setReference("none");
+              setDueDate("");
+              setDueTime("");
               setKind("RESOURCE");
               router.refresh();
               onSaved?.();
@@ -99,8 +112,18 @@ export function SessionResourceForm({
       <Input label="Título do recurso" name="title" required maxLength={200} />
       <Textarea label="Instruções" name="instructions" maxLength={4000} rows={3} />
       <div className={styles.fieldRow}>
-        <Input label="Data do prazo (opcional)" type="date" name="due_date" />
-        <Input label="Horário do prazo (opcional)" type="time" name="due_time" />
+        <DateField
+          label="Data do prazo (opcional)"
+          name="due_date"
+          value={dueDate}
+          onChange={setDueDate}
+        />
+        <TimeField
+          label="Horário do prazo (opcional)"
+          name="due_time"
+          value={dueTime}
+          onChange={setDueTime}
+        />
       </div>
       <p className={styles.fieldHint}>Prazo em America/Recife. Informe data e horário juntos.</p>
       <fieldset className={styles.segmentedField}>

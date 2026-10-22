@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { m } from "motion/react";
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import { yasTokens } from "@/styles/tokens";
 import { Icon, type IconName } from "./icons";
+import { Popover } from "./popover";
 import { cx } from "./utils";
 
 export interface TabItem {
@@ -253,18 +254,9 @@ export function Dropdown({
   className,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const menuId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef<Array<HTMLElement | null>>([]);
-
-  useEffect(() => {
-    if (!open) return;
-    const closeOnOutside = (event: MouseEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", closeOnOutside);
-    return () => document.removeEventListener("mousedown", closeOnOutside);
-  }, [open]);
 
   const close = (restoreFocus: boolean) => {
     setOpen(false);
@@ -291,16 +283,17 @@ export function Dropdown({
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       moveFocus(index, -1);
-    } else if (event.key === "Escape") {
+    } else if (event.key === "Home" || event.key === "End") {
       event.preventDefault();
-      close(true);
+      const enabled = itemRefs.current.filter((node, i) => node && !items[i]?.disabled);
+      (event.key === "Home" ? enabled[0] : enabled[enabled.length - 1])?.focus();
     } else if (event.key === "Tab") {
       setOpen(false);
     }
   };
 
   return (
-    <div className={cx("yas-dropdown", className)} ref={rootRef}>
+    <div className={cx("yas-dropdown", className)}>
       <button
         ref={triggerRef}
         type="button"
@@ -310,13 +303,11 @@ export function Dropdown({
           triggerVariant === "primary" && "yas-dropdown-trigger--primary",
         )}
         disabled={disabled}
+        popoverTarget={menuId}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-controls={menuId}
         aria-label={iconOnly ? label : undefined}
-        onClick={() => {
-          setOpen((current) => !current);
-          queueMicrotask(() => itemRefs.current.find(Boolean)?.focus());
-        }}
       >
         {iconOnly ? (
           <Icon name={icon ?? "more"} size={18} />
@@ -324,56 +315,64 @@ export function Dropdown({
           <>
             {icon && <Icon name={icon} size={16} />}
             {label}
-            <Icon name="down" size={16} />
+            <Icon name="down" size={16} className="yas-dropdown-chevron" />
           </>
         )}
       </button>
-      {open && (
-        <div className="yas-dropdown-menu" data-align={align} role="menu" aria-label={label}>
-          {items.map((item, index) => {
-            const content = (
-              <>
-                {item.icon && <Icon name={item.icon} size={16} />}
-                <span>{item.label}</span>
-              </>
-            );
-            const setRef = (node: HTMLElement | null) => {
-              itemRefs.current[index] = node;
-            };
-            return item.href && !item.disabled ? (
-              <Link
-                key={item.id}
-                ref={setRef}
-                href={item.href}
-                role="menuitem"
-                className="yas-dropdown-item"
-                data-destructive={item.destructive || undefined}
-                onKeyDown={(event) => onItemKeyDown(event, index)}
-                onClick={() => close(false)}
-              >
-                {content}
-              </Link>
-            ) : (
-              <button
-                key={item.id}
-                ref={setRef}
-                type="button"
-                role="menuitem"
-                className="yas-dropdown-item"
-                data-destructive={item.destructive || undefined}
-                disabled={item.disabled}
-                onKeyDown={(event) => onItemKeyDown(event, index)}
-                onClick={() => {
-                  item.onSelect?.();
-                  close(false);
-                }}
-              >
-                {content}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <Popover
+        id={menuId}
+        anchorRef={triggerRef}
+        open={open}
+        onOpenChange={setOpen}
+        placement={align === "end" ? "bottom-end" : "bottom-start"}
+        role="menu"
+        aria-label={label}
+        className="yas-dropdown-menu"
+        onOpened={() => itemRefs.current.find(Boolean)?.focus()}
+      >
+        {items.map((item, index) => {
+          const content = (
+            <>
+              {item.icon && <Icon name={item.icon} size={16} />}
+              <span>{item.label}</span>
+            </>
+          );
+          const setRef = (node: HTMLElement | null) => {
+            itemRefs.current[index] = node;
+          };
+          return item.href && !item.disabled ? (
+            <Link
+              key={item.id}
+              ref={setRef}
+              href={item.href}
+              role="menuitem"
+              className="yas-dropdown-item"
+              data-destructive={item.destructive || undefined}
+              onKeyDown={(event) => onItemKeyDown(event, index)}
+              onClick={() => close(false)}
+            >
+              {content}
+            </Link>
+          ) : (
+            <button
+              key={item.id}
+              ref={setRef}
+              type="button"
+              role="menuitem"
+              className="yas-dropdown-item"
+              data-destructive={item.destructive || undefined}
+              disabled={item.disabled}
+              onKeyDown={(event) => onItemKeyDown(event, index)}
+              onClick={() => {
+                close(true);
+                item.onSelect?.();
+              }}
+            >
+              {content}
+            </button>
+          );
+        })}
+      </Popover>
     </div>
   );
 }

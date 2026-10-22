@@ -1,3 +1,26 @@
+## teacher-sessions-redesign — Fase 2b (correções do usuário) — 2026-10-22
+
+Corrigido, a partir do feedback com capturas:
+
+- **Menu "⋯" cortado:** agora usa um Popover na camada superior (Popover API).
+- **Relatórios:** filtros e exportação numa linha; blocos alinhados (esticados) e legenda do donut corrigida.
+- **Calendário próprio:** DateField, DatePicker e DateRangePicker com atalhos.
+- **Horário próprio:** TimeField com lista de 15 min e duração a partir do início.
+- **Selects:** o Yas inteiro usa `appearance: base-select` (elemento nativo preservado).
+- **Painel de edição:** barra de ações encostada na borda.
+- **Uma só barra de rolagem:** a página trava sob modais e as barras internas ficam finas.
+- **Responsividade:** container queries por região, em vez de `@media`.
+
+Verificação:
+
+- **Rolagem horizontal:** varredura em 320, 390, 768, 1024, 1280, 1440 e 1920 px, sem rolagem horizontal em nenhuma tela.
+- **Passaram:** tsc; eslint src tests; vitest focado (18).
+- **E2E passaram:** teacher-sessions-redesign (4), teacher-operations (2), p21-responsive (1), core-live (1, após recarregar a fixture canônica, que tem uma sessão "agora" que vence com o tempo).
+- **A11y:** os 6 cenários de professor passaram.
+- **Não executados:** verify:*.
+
+---
+
 ## teacher-sessions-redesign — Fase 2 (polimento visual) — 2026-10-22
 
 Escopo aprovado: visual + UX sem regra nova, CTA violeta, motion@13.5.1. Entregue:
@@ -20,7 +43,6 @@ Verificação local (fixture canônica via scripts/setup-canonical-e2e.mjs; Supa
 - **Não executados:** verify:agent, verify:ui, verify:security, verify:db e verify:full. A feature continua in_progress / verified:false.
 
 ---
-
 
 ## teacher-sessions-redesign — 2026-10-22
 
@@ -769,3 +791,10 @@ Base/main CI verified; regression red 18/29, green 29/29. Implementation complet
 ## PR 83 — required gates blocked
 
 Implementation/focused checks and verify:agent pass. Official CI 39081037545 fails Database on the pre-existing rate-window counter collision (proved locally in rollback-only SQL); Preview/CI Gate consequently fail. Local verify:ui also failed unchanged canonical lesson progress UI after persistence succeeded. Draft PR, no merge; full clean-stack verification running. Two open failure records preserve evidence; no out-of-scope fix or CI retry.
+## 2026-10-22 — teacher-reviews-redesign
+
+Fila e revisão de práticas redesenhadas (goal `harness/goals/teacher-reviews-redesign.md`). Migration aditiva só de leitura `20261022180000_teacher_review_insights.sql` aplicada localmente; asserts em `supabase/tests/practice_authoring.sql`. Inspeção visual no Chrome em 1440/834/390 sem overflow nem erros de console. Typecheck e lint PASS; unit review-queue corrigido após 1 falha do próprio teste. Disco C: chegou a 0 MB (ENOSPC) — `.next/dev` limpo com o servidor parado. verify:db, e2e e a11y pendentes; nada declarado verde.
+Gates (agente haiku): typecheck, lint, prettier --write, unit 9/9, verify:db PASS. SQL practice-authoring FAIL em `practice_authoring.sql:252` (assert preexistente "Admin aal2 reads assignments", depende de banco limpo; rodou contra o banco de dev com fixtures) — asserts novos não chegaram a executar. E2E/a11y inválidos: disco C: zerou (ENOSPC) durante a execução e o dev server passou a responder 500; `.next/dev` removido de novo com o servidor parado. Pendente: liberar disco, banco limpo para o SQL, rerun e2e/a11y.
+Rerun 2026-10-22 (agente haiku, disco 9 GB, sem ENOSPC): e2e 2 PASS / 7 FAIL; a11y Teacher 0/6. 12 das 13 falhas param no pré-requisito "Verified canonical Teacher/Admin MFA exists ... temporary test secret is absent": os segredos TOTP ficam em `%TEMP%/yas-canonical-*-totp.secret` (`tests/helpers/teacher-mfa.ts:20`, `admin-mfa.ts:14`) e sumiram na limpeza do Temp; `setup-canonical-e2e.mjs` não recria fatores MFA. Única falha fora disso: `teacher-pedagogy.spec.ts:123` (Aluno clica "Praticar →", URL fica em `/pratica?skill=SPEAKING`, sem `?bloqueada`/`?suspended`) — fluxo do Aluno fora do diff; provável compilação a frio, não confirmado. Nenhuma asserção de feature/axe chegou a rodar. Pendente: remover os fatores MFA verificados dos usuários canônicos no banco local (autorização) e rodar de novo.
+Rerun 2 (após remover os fatores MFA de canonical.admin/teacher no banco local, autorizado): a11y Teacher 6/6 PASS (desktop+mobile, sem violações axe). E2E 7 PASS / 2 FAIL. (1) `core-live.spec.ts:208` — Aluno home-now não vê "Entrar no encontro": a sessão de fixture `88400000-…-0002` ia de 15:13 a 16:13 UTC e o teste rodou depois; janela do `setup-canonical-e2e.mjs` expirou (ambiental). (2) `teacher-pedagogy.spec.ts:135` — envio do áudio do Aluno fica em "Enviando sua resposta…" e não chega a `?completed=1` em 5s; sem erro no log do servidor; fluxo do Aluno fora do diff; não confirmado se é ambiental. Pendente: rodar `setup-canonical-e2e.mjs` (grava no banco local) e repetir só esses dois specs.
+Rerun 3–5 (agente haiku): `setup-canonical-e2e.mjs` OK (autorizado) → `core-live` PASS. `teacher-pedagogy` falhou no dev em 123/135 por timeout de 5s: as ações (`startPracticeAction` 476ms, `submitPracticeAction` 224ms) terminam rápido, mas o render da página do Aluno após o redirect leva 3.7–13s em `next dev` (log do servidor). Contra build de produção (`npm run build` PASS; `PLAYWRIGHT_PORT=3200 YAS_E2E_PRODUCTION=1`, como no CI) `teacher-pedagogy` 1/1 PASS, incluindo a revisão do Professor (áudio, rubrica "Consistente", feedback). Status local: e2e 5 specs PASS (pedagogy só em prod), a11y Teacher 6/6 PASS. Ainda NOT RUN: SQL `practice_authoring` em banco limpo, `verify:ui`, `verify:full`.

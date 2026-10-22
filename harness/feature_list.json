@@ -24,6 +24,15 @@
       "updated_at": "2026-10-22T04:10:00.148Z"
     },
     {
+      "id": "teacher-reviews-redesign",
+      "title": "Redesign de Revisões de prática do professor",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["teacher-sessions-redesign"],
+      "evidence": ["harness/goals/teacher-reviews-redesign.md"],
+      "updated_at": "2026-10-22T15:18:14.322Z"
+    },
+    {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
       "status": "done",
