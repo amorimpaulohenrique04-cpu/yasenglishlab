@@ -9,6 +9,7 @@ import {
   Button,
   EmptyState,
   Input,
+  MetricCard,
   PageHeader,
   ProgressBar,
   Tabs,
@@ -192,30 +193,41 @@ export default async function AdminStudent360Page({
 
   return (
     <div className="yas-operational-surface">
-      <Link href="/admin/students">Voltar para alunos</Link>
+      <Link className="yas-back-link" href="/admin/students">
+        ← Voltar para alunos
+      </Link>
       <PageHeader
         title={name}
         description={`Perfil de aluno · cadastro em ${date(student.profile.created_at)}`}
       />
-      <section className="yas-row-summary" aria-label="Identidade e estado atual do aluno">
-        <div className="yas-cluster">
-          <Avatar fallback={name.slice(0, 2).toUpperCase()} label={name} size="lg" />
-          <div>
-            <p>{activeCohort?.name ?? "Sem turma atual"}</p>
-            <p>{activeCourse ?? "Sem curso atual"}</p>
-            <p>
-              Professor principal:{" "}
-              {student.primaryTeacher?.teacher?.[0]?.profile?.[0]?.display_name ?? "Não atribuído"}
-            </p>
+      <section className="yas-profile-card" aria-label="Identidade e estado atual do aluno">
+        <Avatar fallback={name.slice(0, 2).toUpperCase()} label={name} size="lg" />
+        <div className="yas-profile-card-main">
+          <div className="yas-cluster" aria-label="Estados operacionais">
+            <Badge tone={activeEnrollment ? "success" : "neutral"}>
+              {activeEnrollment ? "Matrícula ativa" : "Sem matrícula ativa"}
+            </Badge>
+            {student.placement && (
+              <Badge tone="info">{placementLabel(student.placement.state)}</Badge>
+            )}
           </div>
-        </div>
-        <div className="yas-cluster" aria-label="Estados operacionais">
-          <Badge tone={activeEnrollment ? "success" : "neutral"}>
-            {activeEnrollment ? "Matrícula ativa" : "Sem matrícula ativa"}
-          </Badge>
-          {student.placement && (
-            <Badge tone="info">{placementLabel(student.placement.state)}</Badge>
-          )}
+          <dl className="yas-profile-facts">
+            <div>
+              <dt>Turma</dt>
+              <dd>{activeCohort?.name ?? "Sem turma atual"}</dd>
+            </div>
+            <div>
+              <dt>Curso</dt>
+              <dd>{activeCourse ?? "Sem curso atual"}</dd>
+            </div>
+            <div>
+              <dt>Professor principal</dt>
+              <dd>
+                {student.primaryTeacher?.teacher?.[0]?.profile?.[0]?.display_name ??
+                  "Não atribuído"}
+              </dd>
+            </div>
+          </dl>
         </div>
       </section>
 
@@ -230,44 +242,42 @@ export default async function AdminStudent360Page({
               <div className="yas-operational-surface">
                 <Section title="Resumo operacional">
                   <div className="yas-metric-strip">
-                    <div className="yas-metric-card">
-                      <span className="yas-metric-label">Frequência registrada</span>
-                      <strong className="yas-metric-value">{attendedCount}</strong>
-                      <span className="yas-metric-detail">
-                        presenças em {markedAttendance.length} registros marcados
-                      </span>
-                    </div>
-                    <div className="yas-metric-card">
-                      <span className="yas-metric-label">Progresso curricular</span>
-                      <strong className="yas-metric-value">
-                        {student.curriculum[0]
-                          ? `${student.curriculum[0].completion_percent}%`
-                          : "—"}
-                      </strong>
-                      <span className="yas-metric-detail">
-                        {student.curriculum[0]?.course_title ?? "Sem curso publicado"}
-                      </span>
-                    </div>
-                    <div className="yas-metric-card">
-                      <span className="yas-metric-label">Próxima sessão</span>
-                      <strong className="yas-metric-value">
-                        {student.upcomingSession ? date(student.upcomingSession.starts_at) : "—"}
-                      </strong>
-                      <span className="yas-metric-detail">
-                        {student.upcomingSession?.title ?? "Nenhuma sessão marcada"}
-                      </span>
-                    </div>
-                    <div className="yas-metric-card">
-                      <span className="yas-metric-label">Placement</span>
-                      <strong className="yas-metric-value">
-                        {student.placement ? placementLabel(student.placement.state) : "—"}
-                      </strong>
-                      <span className="yas-metric-detail">
-                        {student.placement
+                    <MetricCard
+                      icon="check-c"
+                      tone="green"
+                      label="Frequência registrada"
+                      value={attendedCount}
+                      detail={`presenças em ${markedAttendance.length} registros marcados`}
+                    />
+                    <MetricCard
+                      icon="grad"
+                      tone="lilac"
+                      label="Progresso curricular"
+                      value={
+                        student.curriculum[0] ? `${student.curriculum[0].completion_percent}%` : "—"
+                      }
+                      detail={student.curriculum[0]?.course_title ?? "Sem curso publicado"}
+                    />
+                    <MetricCard
+                      icon="cal"
+                      tone="blue"
+                      label="Próxima sessão"
+                      value={
+                        student.upcomingSession ? date(student.upcomingSession.starts_at) : "—"
+                      }
+                      detail={student.upcomingSession?.title ?? "Nenhuma sessão marcada"}
+                    />
+                    <MetricCard
+                      icon="target"
+                      tone="pink"
+                      label="Placement"
+                      value={student.placement ? placementLabel(student.placement.state) : "—"}
+                      detail={
+                        student.placement
                           ? `Atualizado em ${date(student.placement.state_changed_at)}`
-                          : "Sem caso de entrada"}
-                      </span>
-                    </div>
+                          : "Sem caso de entrada"
+                      }
+                    />
                   </div>
                 </Section>
                 <Section title="Direcionamento atual">

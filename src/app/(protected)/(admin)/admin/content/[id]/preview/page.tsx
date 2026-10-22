@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Badge, Card, PageHeader } from "@/components/ui";
+import { Alert, Badge, Button, PageHeader } from "@/components/ui";
 import {
   adminContentLabel,
+  adminContentTitle,
   isAdminContentKind,
   type AdminContentKind,
   type AdminContentRecord,
@@ -132,47 +133,45 @@ export default async function AdminContentPreviewPage({ params, searchParams }: 
   if (!isAdminContentKind(kind)) notFound();
   const record = await loadAdminContentItem(kind, id);
   if (!record) notFound();
+  const draft = record.publication_status !== "PUBLISHED";
+  const editHref = `/admin/content/${id}?kind=${kind}`;
   return (
     <div className={styles.page}>
-      <Link className={styles.backLink} href={`/admin/content?kind=${kind}`}>
-        ← Voltar para {kind}
-      </Link>
+      <div className="yas-preview-bar">
+        <Link className={styles.backLink} href={`/admin/content?kind=${kind}`}>
+          ← Voltar para {adminContentTitle(kind).toLowerCase()}
+        </Link>
+        <div className={styles.badgeRow}>
+          <Badge tone="info">Pré-visualização</Badge>
+          <Badge tone={draft ? "neutral" : "success"}>{draft ? "Rascunho" : "Publicado"}</Badge>
+        </div>
+      </div>
       <PageHeader
         title={`Pré-visualização do ${adminContentLabel(kind)}`}
         description={String(record.title ?? record.slug ?? "Conteúdo")}
         actions={
-          <Badge tone={record.publication_status === "PUBLISHED" ? "success" : "neutral"}>
-            {record.publication_status === "PUBLISHED" ? "Publicado" : "Rascunho"}
-          </Badge>
+          draft ? (
+            <Link href={editHref}>
+              <Button variant="outline">Editar rascunho</Button>
+            </Link>
+          ) : undefined
         }
       />
-      <div className={styles.split}>
-        <Card className={styles.itemCard}>
-          <h2 className={styles.itemTitle}>{String(record.title ?? record.slug ?? "Conteúdo")}</h2>
-          <PreviewBody kind={kind} record={record} />
-        </Card>
-        <Card className={styles.itemCard}>
-          <h2 className={styles.itemTitle}>Visibilidade</h2>
-          <p className={styles.itemMeta}>
-            Este preview é privado e não altera a publicação. A área do aluno depende do estado
-            publicado e dos requisitos de disponibilidade e acesso.
-          </p>
-          {record.has_storage_reference && (
-            <p className={styles.notice}>
-              Há um arquivo privado vinculado. Nenhum caminho de armazenamento é mostrado.
-            </p>
-          )}
-          <Link
-            href={
-              record.publication_status === "DRAFT"
-                ? `/admin/content/${id}?kind=${kind}`
-                : `/admin/content?kind=${kind}`
-            }
-          >
-            {record.publication_status === "DRAFT" ? "Editar rascunho" : "Voltar à lista"}
-          </Link>
-        </Card>
-      </div>
+      <article className="yas-preview-frame" aria-label="Como o aluno verá este conteúdo">
+        <Badge tone="muted">{adminContentLabel(kind)}</Badge>
+        <h2 className={styles.itemTitle}>{String(record.title ?? record.slug ?? "Conteúdo")}</h2>
+        <PreviewBody kind={kind} record={record} />
+      </article>
+      <Alert
+        tone="info"
+        title="Visibilidade"
+        description="Este preview é privado e não altera a publicação. A área do aluno depende do estado publicado e dos requisitos de disponibilidade e acesso."
+      />
+      {record.has_storage_reference && (
+        <p className={styles.notice}>
+          Há um arquivo privado vinculado. Nenhum caminho de armazenamento é mostrado.
+        </p>
+      )}
     </div>
   );
 }

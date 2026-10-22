@@ -379,6 +379,23 @@ a.yas-metric-card:hover {
   font-family: var(--yas-font-display);
 }
 
+.yas-back-link {
+  width: fit-content;
+  border-radius: var(--yas-radius-sm);
+  color: var(--yas-color-purple-700);
+  font-weight: var(--yas-weight-semibold);
+  text-decoration: none;
+}
+
+.yas-back-link:hover {
+  text-decoration: underline;
+}
+
+.yas-back-link:focus-visible {
+  outline: 2px solid var(--yas-color-focus);
+  outline-offset: 3px;
+}
+
 /* ---------- Queue / inbox (ocorrências, suporte, filas de revisão) ---------- */
 .yas-queue-panel {
   display: grid;
@@ -723,4 +740,151 @@ a.yas-metric-card:hover {
     position: sticky;
     top: 5.5rem;
   }
+}
+
+/* ---------- Ficha do aluno ---------- */
+.yas-profile-card {
+  display: flex;
+  align-items: center;
+  gap: var(--yas-space-5);
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  padding: 1.25rem 1.5rem;
+}
+
+.yas-profile-card-main {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: var(--yas-space-3);
+}
+
+.yas-profile-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: var(--yas-space-3) var(--yas-space-5);
+  margin: 0;
+}
+
+.yas-profile-facts dt {
+  color: var(--yas-color-muted);
+  font-size: 0.75rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-profile-facts dd {
+  margin: 0.125rem 0 0;
+  color: var(--yas-color-ink);
+  font-weight: var(--yas-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 47.99rem) {
+  .yas-profile-card {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 1rem;
+  }
+}
+
+/* ---------- Trilha: outline modulo -> aulas ---------- */
+.yas-outline {
+  display: grid;
+  gap: var(--yas-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-outline-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--yas-space-2) var(--yas-space-3);
+  border: var(--yas-border-subtle);
+  border-radius: var(--yas-radius-lg);
+  background: var(--yas-color-surface);
+  padding: 0.625rem 0.75rem;
+}
+
+.yas-outline-item[data-kind="modules"] {
+  background: var(--yas-color-purple-50);
+}
+
+.yas-outline-item:not([data-kind="modules"]) {
+  margin-inline-start: 1.5rem;
+}
+
+.yas-outline-number {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-color-purple-100);
+  color: var(--yas-color-purple-700);
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-bold);
+}
+
+.yas-outline-main {
+  display: grid;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.yas-outline-title {
+  margin: 0;
+  color: var(--yas-color-ink);
+  font-size: 0.9375rem;
+  font-weight: var(--yas-weight-semibold);
+  overflow-wrap: anywhere;
+}
+
+.yas-outline-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.yas-outline-actions {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.yas-outline-wide {
+  grid-column: 2 / -1;
+}
+
+.yas-outline-flip {
+  display: inline-flex;
+  transform: rotate(180deg);
+}
+
+@media (max-width: 47.99rem) {
+  .yas-outline-item:not([data-kind="modules"]) {
+    margin-inline-start: 0.5rem;
+  }
+}
+
+/* ---------- Pre-visualizacao ---------- */
+.yas-preview-frame {
+  display: grid;
+  gap: var(--yas-space-5);
+  max-width: 48rem;
+  margin-inline: auto;
+  width: 100%;
+  border-radius: var(--yas-radius-xl);
+  background: var(--yas-color-surface);
+  box-shadow: var(--yas-shadow-card);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+}
+
+.yas-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--yas-space-3);
 }

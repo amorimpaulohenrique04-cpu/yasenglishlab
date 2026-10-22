@@ -14,7 +14,9 @@ export default async function CohortPathPage({ params }: { params: Promise<{ id:
   if (!detail) notFound();
   return (
     <div className="yas-operational-surface">
-      <Link href="/admin/cohorts">Voltar para turmas</Link>
+      <Link className="yas-back-link" href="/admin/cohorts">
+        ← Voltar para turmas
+      </Link>
       <PageHeader
         title={`Trilha de ${detail.cohortName}`}
         description="Defina o que a turma enxerga do curso, a ordem e quando cada item é liberado."

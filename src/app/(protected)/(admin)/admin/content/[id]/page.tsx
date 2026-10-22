@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Alert, Badge, Button, Card, PageHeader } from "@/components/ui";
 import {
   adminContentLabel,
+  adminContentTitle,
   isAdminContentKind,
   type AdminContentKind,
 } from "@/modules/admin-content";
@@ -70,7 +71,7 @@ export default async function ContentItemPage({ params, searchParams }: ContentI
     return (
       <div className={styles.page}>
         <Link className={styles.backLink} href={`/admin/content?kind=${kind}`}>
-          ← Voltar para {kind}
+          ← Voltar para {adminContentTitle(kind).toLowerCase()}
         </Link>
         {adminContentErrorCopy(first(query.error)) && (
           <Alert
