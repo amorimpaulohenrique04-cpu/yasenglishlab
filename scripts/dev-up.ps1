@@ -42,20 +42,39 @@ function Invoke-Checked([string]$label, [scriptblock]$command, [switch]$Quiet) {
 }
 
 # ------------------------------------------------------------------ Docker
+# `docker info` pode travar para sempre quando o Docker Desktop está preso: limita a espera.
+function Test-Docker([int]$Seconds = 20) {
+  $process = Start-Process docker -ArgumentList 'info', '--format', '{{.ServerVersion}}' `
+    -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\yas-docker-out.txt" `
+    -RedirectStandardError "$env:TEMP\yas-docker-err.txt"
+  if (-not $process.WaitForExit($Seconds * 1000)) {
+    try { $process.Kill() } catch {}
+    return 'hung'
+  }
+  if ($process.ExitCode -eq 0) { return 'ok' } else { return 'down' }
+}
+
 Step 'Docker'
-docker info *> $null
-if ($LASTEXITCODE -ne 0) {
+$docker = Test-Docker
+if ($docker -eq 'down') {
   $desktop = 'C:\Program Files\Docker\Docker\Docker Desktop.exe'
   if (-not (Test-Path $desktop)) { Fail 'Docker não está rodando e o Docker Desktop não foi encontrado.' }
-  Write-Host 'Iniciando o Docker Desktop...'
+  Write-Host 'Iniciando o Docker Desktop (até 3 minutos)...'
   Start-Process $desktop
   $deadline = (Get-Date).AddMinutes(3)
   do {
     Start-Sleep -Seconds 5
-    docker info *> $null
-  } while ($LASTEXITCODE -ne 0 -and (Get-Date) -lt $deadline)
-  if ($LASTEXITCODE -ne 0) { Fail 'O Docker não ficou pronto em 3 minutos.' }
+    $docker = Test-Docker
+  } while ($docker -ne 'ok' -and (Get-Date) -lt $deadline)
 }
+if ($docker -eq 'hung') {
+  Fail @'
+O Docker Desktop está aberto, mas o motor não responde (docker info travou).
+Reinicie o Docker: clique com o botão direito no ícone da baleia > "Restart"
+(ou feche o Docker Desktop, rode "wsl --shutdown" e abra de novo). Depois rode este comando outra vez.
+'@
+}
+if ($docker -ne 'ok') { Fail 'O Docker não ficou pronto em 3 minutos.' }
 Write-Host 'Docker OK.'
 
 # ------------------------------------------------------------------ Supabase
