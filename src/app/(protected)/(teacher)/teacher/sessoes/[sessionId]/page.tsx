@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { z } from "zod";
-import { Alert, Badge, Card, EmptyState, ErrorState, PageHeader, Tabs } from "@/components/ui";
+import { Alert, Badge, Card, EmptyState, ErrorState, PageHeader } from "@/components/ui";
 import {
   teacherAttendanceLabel,
   teacherSessionStatusLabel,
@@ -9,14 +9,19 @@ import {
 import {
   localParts,
   safeSessionReturn,
+  sessionCanEdit,
 } from "@/modules/teacher-operations/domain/session-workspace";
+import { SessionDetailTabs } from "@/modules/teacher-operations/ui/session-detail-tabs";
 import { SessionActions, MeetingDrawer } from "@/modules/teacher-operations/ui/session-actions";
 import { SessionAttendance } from "@/modules/teacher-operations/ui/session-attendance";
 import { SessionResources } from "@/modules/teacher-operations/ui/session-resources";
 import { SessionResourceForm } from "@/modules/teacher-operations/ui/session-resource-form";
 import { ResourceFileUpload } from "@/modules/teacher-operations/ui/resource-file-upload";
 import { JoinMeeting } from "@/modules/schedule/ui/join-meeting";
-import { loadSessionWorkspace } from "@/server/teacher-operations/session-workspace";
+import {
+  loadSessionWorkspace,
+  sessionWorkspaceNow,
+} from "@/server/teacher-operations/session-workspace";
 import {
   loadSessionResources,
   loadTeacherResourceChoices,
@@ -65,7 +70,7 @@ export default async function TeacherSessionPage({
     loadTeacherResourceChoices(),
     loadSessionWorkspace(),
   ]);
-  const now = Date.now(),
+  const now = sessionWorkspaceNow(),
     started = Date.parse(session.starts_at) <= now;
   const participants = (
     <section className={styles.stack}>
@@ -123,7 +128,8 @@ export default async function TeacherSessionPage({
         <h2>Sobre a sessão</h2>
         <p>
           {teacherSessionTypeLabel(session.session_type)} ·{" "}
-          {session.cohort_name ?? "Sessão individual"}
+          {session.cohort_name ??
+            (session.session_type === "PRIVATE_SESSION" ? "Sessão individual" : "Sem turma")}
         </p>
         <p>
           Capacidade: {session.capacity} · Reservas ativas: {session.participant_count}
@@ -172,8 +178,7 @@ export default async function TeacherSessionPage({
         />
       )}
       <div className={styles.layout}>
-        <Tabs
-          ariaLabel="Detalhes da sessão"
+        <SessionDetailTabs
           items={[
             { id: "overview", label: "Visão geral", content: overview },
             { id: "participants", label: "Participantes", content: participants },
@@ -192,9 +197,17 @@ export default async function TeacherSessionPage({
                 context={context}
                 now={now}
                 initialEdit={query.edit === "1"}
+                initialCancel={query.cancel === "1"}
                 returnTo={back}
               />
-              <MeetingDrawer sessions={[session]} now={now} selected={sessionId} />
+              {sessionCanEdit(session, now) && (
+                <MeetingDrawer
+                  sessions={[session]}
+                  now={now}
+                  selected={sessionId}
+                  initialOpen={query.meeting === "1"}
+                />
+              )}
             </div>
           </Card>
           <Card>

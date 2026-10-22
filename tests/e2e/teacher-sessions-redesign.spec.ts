@@ -10,9 +10,17 @@ if (process.env.CANONICAL_E2E !== "1" || !password)
 
 async function evidence(page: Page, name: string) {
   await mkdir("harness/evidence/teacher-sessions-redesign/screenshots", { recursive: true });
+  const dialog = page.getByRole("dialog").first();
+  const modalVisible = await dialog.isVisible();
+  if (modalVisible) {
+    const box = await dialog.boundingBox();
+    expect(box?.y).toBeLessThanOrEqual(1);
+    if (page.viewportSize()!.width >= 850)
+      expect(box?.width).toBeLessThanOrEqual(name.startsWith("availability") ? 1024 : 480);
+  }
   await page.screenshot({
     path: `harness/evidence/teacher-sessions-redesign/screenshots/${name}.png`,
-    fullPage: true,
+    fullPage: !modalVisible,
   });
   expect(
     await page.evaluate(
@@ -60,6 +68,11 @@ test("Sessions filters, calendar, drawers, details and real report exports", asy
     await page.goto("/teacher/sessoes?status=all");
     await expect(page.getByRole("heading", { name: "Suas sessões", exact: true })).toBeVisible();
     await evidence(page, `list-${label}`);
+    if (label === "mobile") {
+      await page.getByRole("button", { name: "Consultar disponibilidade", exact: true }).click();
+      await evidence(page, "availability-mobile");
+      await page.keyboard.press("Escape");
+    }
     await page.getByRole("link", { name: "Semana", exact: true }).click();
     await expect(page).toHaveURL(/view=week/);
     await evidence(page, `week-${label}`);
@@ -95,9 +108,7 @@ test("Resource form keeps failed input and persists instructions without a fake 
   await loginCanonicalTeacher(page, password!);
   await page.goto(`/teacher/sessoes/${canonicalTeacherSessionId}`);
   await page.getByRole("tab", { name: "Recursos e tarefas", exact: true }).click();
-  await page
-    .getByLabel("Título do recurso", { exact: true })
-    .fill("Redesign · instruções da sessão");
+  await page.getByLabel(/^Título do recurso/).fill("Redesign · instruções da sessão");
   await page
     .getByLabel("Instruções", { exact: true })
     .fill("Revisar os exemplos antes da próxima sessão.");
@@ -106,7 +117,7 @@ test("Resource form keeps failed input and persists instructions without a fake 
   await expect(
     page.getByText("Informe data e horário do prazo, ou deixe ambos vazios."),
   ).toBeVisible();
-  await expect(page.getByLabel("Título do recurso", { exact: true })).toHaveValue(
+  await expect(page.getByLabel(/^Título do recurso/)).toHaveValue(
     "Redesign · instruções da sessão",
   );
   await page.getByLabel("Horário do prazo (opcional)").fill("18:00");

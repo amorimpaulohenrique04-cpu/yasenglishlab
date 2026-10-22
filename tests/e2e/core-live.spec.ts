@@ -124,13 +124,13 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
     await page.goto("/teacher/sessoes/nova");
     await page.getByLabel("Título").fill(title);
     await page.getByLabel("Tipo").selectOption("CORE_CLASS");
-    await page.getByLabel("Data", { exact: true }).fill(localDateTime(sessionStart).date);
-    await page.getByLabel("Início", { exact: true }).fill(localDateTime(sessionStart).time);
+    await page.getByLabel(/^Data(?: \*)?$/).fill(localDateTime(sessionStart).date);
+    await page.getByLabel(/^Início(?: \*)?$/).fill(localDateTime(sessionStart).time);
     await page.getByLabel("Data de término").fill(localDateTime(sessionEnd).date);
-    await page.getByLabel("Término", { exact: true }).fill(localDateTime(sessionEnd).time);
+    await page.getByLabel(/^Término(?: \*)?$/).fill(localDateTime(sessionEnd).time);
     await page.getByRole("button", { name: "Continuar" }).click();
     await page.getByLabel("Capacidade").fill("6");
-    await page.getByLabel("Turma", { exact: true }).selectOption({ label: "Cohort Basic" });
+    await page.getByLabel(/^Turma(?: \*)?$/).selectOption({ label: "Cohort Basic" });
     await page.getByLabel("Link do Google Meet").fill("https://meet.google.com/p21-core-live");
     await page.getByRole("button", { name: "Continuar" }).click();
     await page.getByRole("button", { name: "Criar sessão", exact: true }).click();

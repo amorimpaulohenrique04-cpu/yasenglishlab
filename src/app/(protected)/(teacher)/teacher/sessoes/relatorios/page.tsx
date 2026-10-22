@@ -1,3 +1,4 @@
+import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
 import Link from "next/link";
 import { Alert, Card, PageHeader } from "@/components/ui";
 import { localParts, sessionTypes } from "@/modules/teacher-operations/domain/session-workspace";
@@ -13,7 +14,7 @@ export default async function SessionReportsPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const query = await searchParams,
-    now = Date.now();
+    now = sessionWorkspaceNow();
   let filters;
   try {
     filters = parseReportFilters(query, localParts(new Date(now)).date);

@@ -27,22 +27,28 @@ export function SessionActions({
   context,
   now,
   initialEdit = false,
+  initialCancel = false,
   returnTo = "/teacher/sessoes",
 }: {
   session: WorkspaceSession;
   context: SessionWorkspace;
   now: number;
   initialEdit?: boolean;
+  initialCancel?: boolean;
   returnTo?: string;
 }) {
   const router = useRouter();
   const [edit, setEdit] = useState(initialEdit && sessionCanEdit(session, now)),
-    [cancel, setCancel] = useState(false),
+    [cancel, setCancel] = useState(initialCancel && sessionCanCancel(session)),
     [dirty, setDirty] = useState(false),
     [error, setError] = useState(""),
+    [success, setSuccess] = useState(""),
     [pending, startTransition] = useTransition();
   return (
     <div className={styles.actions}>
+      {success && (
+        <Alert tone="success" title={success} description="Os dados foram salvos com sucesso." />
+      )}
       {sessionCanEdit(session, now) && (
         <Button variant="outline" size="sm" onClick={() => setEdit(true)}>
           Editar sessão
@@ -79,6 +85,7 @@ export function SessionActions({
             onSaved={() => {
               setDirty(false);
               setEdit(false);
+              setSuccess("Sessão atualizada");
             }}
           />
         )}
@@ -110,6 +117,7 @@ export function SessionActions({
                     const result = await cancelSessionResultAction(session.id);
                     if (result.ok) {
                       setCancel(false);
+                      setSuccess("Sessão cancelada");
                       router.refresh();
                     } else setError(result.message);
                   } catch {
@@ -131,13 +139,15 @@ export function MeetingDrawer({
   sessions,
   now,
   selected,
+  initialOpen = false,
 }: {
   sessions: WorkspaceSession[];
   now: number;
   selected?: string;
+  initialOpen?: boolean;
 }) {
   const eligible = sessions.filter((s) => sessionCanEdit(s, now));
-  const [open, setOpen] = useState(false),
+  const [open, setOpen] = useState(initialOpen && eligible.length > 0),
     [id, setId] = useState(selected ?? ""),
     [url, setUrl] = useState(""),
     [message, setMessage] = useState(""),
@@ -262,7 +272,7 @@ export function AvailabilityDrawer({
       now,
     );
   return (
-    <>
+    <div className={styles.availability}>
       <Button variant="soft" onClick={() => setOpen(true)}>
         Consultar disponibilidade
       </Button>
@@ -311,44 +321,46 @@ export function AvailabilityDrawer({
           <p className={styles.muted}>
             America/Recife · Intervalos cadastrados e sessões agendadas.
           </p>
-          {Array.from({ length: 7 }, (_, i) => addDays(week, i)).map((day) => {
-            const slots = context.availability.filter(
-              (a) => localParts(a.starts_at).date <= day && localParts(a.ends_at).date >= day,
-            );
-            const busy = context.sessions.filter(
-              (s) =>
-                s.status === "SCHEDULED" &&
-                localParts(s.starts_at).date <= day &&
-                localParts(s.ends_at).date >= day,
-            );
-            return (
-              <section key={day}>
-                <h3>
-                  {new Intl.DateTimeFormat("pt-BR", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                    timeZone: "America/Recife",
-                  }).format(new Date(`${day}T12:00:00Z`))}
-                </h3>
-                {slots.length === 0 ? (
-                  <p>Sem disponibilidade cadastrada.</p>
-                ) : (
-                  slots.map((a) => (
-                    <p key={a.id}>
-                      Intervalo: {localParts(a.starts_at).time} – {localParts(a.ends_at).time}
+          <div className={styles.availabilityWeek}>
+            {Array.from({ length: 7 }, (_, i) => addDays(week, i)).map((day) => {
+              const slots = context.availability.filter(
+                (a) => localParts(a.starts_at).date <= day && localParts(a.ends_at).date >= day,
+              );
+              const busy = context.sessions.filter(
+                (s) =>
+                  s.status === "SCHEDULED" &&
+                  localParts(s.starts_at).date <= day &&
+                  localParts(s.ends_at).date >= day,
+              );
+              return (
+                <section key={day}>
+                  <h3>
+                    {new Intl.DateTimeFormat("pt-BR", {
+                      weekday: "long",
+                      day: "2-digit",
+                      month: "2-digit",
+                      timeZone: "America/Recife",
+                    }).format(new Date(`${day}T12:00:00Z`))}
+                  </h3>
+                  {slots.length === 0 ? (
+                    <p>Sem disponibilidade cadastrada.</p>
+                  ) : (
+                    slots.map((a) => (
+                      <p key={a.id}>
+                        Intervalo: {localParts(a.starts_at).time} – {localParts(a.ends_at).time}
+                      </p>
+                    ))
+                  )}
+                  {busy.map((s) => (
+                    <p className={styles.notice} key={s.id}>
+                      Ocupado: {localParts(s.starts_at).time} – {localParts(s.ends_at).time} ·{" "}
+                      {s.title}
                     </p>
-                  ))
-                )}
-                {busy.map((s) => (
-                  <p className={styles.notice} key={s.id}>
-                    Ocupado: {localParts(s.starts_at).time} – {localParts(s.ends_at).time} ·{" "}
-                    {s.title}
-                  </p>
-                ))}
-              </section>
-            );
-          })}
+                  ))}
+                </section>
+              );
+            })}
+          </div>
           <h3>Sugestões disponíveis</h3>
           {suggestions.length === 0 ? (
             <EmptyState
@@ -379,6 +391,6 @@ export function AvailabilityDrawer({
           </Link>
         </div>
       </Drawer>
-    </>
+    </div>
   );
 }

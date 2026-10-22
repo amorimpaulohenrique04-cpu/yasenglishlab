@@ -4,6 +4,9 @@ import { requirePageRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 import { sessionWorkspaceSchema } from "@/modules/teacher-operations/domain/session-workspace";
 
+// One clock snapshot per server request, shared by all projections in that render.
+export const sessionWorkspaceNow = cache(() => Date.now());
+
 export const loadSessionWorkspace = cache(async (from?: string, to?: string, id?: string) => {
   await requirePageRole("TEACHER");
   const client = await createSupabaseServerClient();

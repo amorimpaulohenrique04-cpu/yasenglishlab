@@ -350,6 +350,7 @@ export function SessionForm({
           <p>{teacherSessionTypeLabel(values.session_type as WorkspaceSession["session_type"])}</p>
           <p>
             {values.session_date || "Data a definir"} · {values.start_time || "--:--"} –{" "}
+            {values.end_date !== values.session_date ? `${values.end_date} ` : ""}
             {values.end_time || "--:--"}
           </p>
           <p>America/Recife · Online</p>

@@ -70,7 +70,20 @@ export function SessionReportView({ report }: { report: SessionReport }) {
           <h2>Sessões ao longo do tempo</h2>
           <div className={styles.legend}>
             {lines.map((l) => (
-              <span key={l.key}>{l.label}</span>
+              <span key={l.key}>
+                <svg width="28" height="10" aria-hidden="true">
+                  <line
+                    x1="0"
+                    y1="5"
+                    x2="28"
+                    y2="5"
+                    stroke={l.color}
+                    strokeWidth="3"
+                    strokeDasharray={l.dash}
+                  />
+                </svg>{" "}
+                {l.label}
+              </span>
             ))}
           </div>
           <svg
@@ -83,6 +96,12 @@ export function SessionReportView({ report }: { report: SessionReport }) {
               {max}
             </text>
             <path d="M30 20V195H585" fill="none" stroke="#b8adc9" />
+            <text x="30" y="215" fontSize="12">
+              {report.filters.from.slice(8)}/{report.filters.from.slice(5, 7)}
+            </text>
+            <text x="580" y="215" fontSize="12" textAnchor="end">
+              {report.filters.to.slice(8)}/{report.filters.to.slice(5, 7)}
+            </text>
             {lines.map((l) => (
               <polyline
                 key={l.key}

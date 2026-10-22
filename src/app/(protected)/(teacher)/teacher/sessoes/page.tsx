@@ -7,13 +7,18 @@ import {
   localParts,
   monthBounds,
   parseSessionFilters,
+  sessionCanEdit,
+  sessionCanCancel,
   weekStart,
   type WorkspaceSession,
 } from "@/modules/teacher-operations/domain/session-workspace";
 import { AvailabilityDrawer, MeetingDrawer } from "@/modules/teacher-operations/ui/session-actions";
 import { SessionCalendar, sessionListUrl } from "@/modules/teacher-operations/ui/session-calendar";
 import styles from "@/modules/teacher-operations/ui/sessions.module.css";
-import { loadSessionWorkspace } from "@/server/teacher-operations/session-workspace";
+import {
+  loadSessionWorkspace,
+  sessionWorkspaceNow,
+} from "@/server/teacher-operations/session-workspace";
 
 export default async function TeacherSessionsPage({
   searchParams,
@@ -21,7 +26,7 @@ export default async function TeacherSessionsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const [context, query] = await Promise.all([loadSessionWorkspace(), searchParams]);
-  const now = Date.now();
+  const now = sessionWorkspaceNow();
   const filters = parseSessionFilters(query, localParts(new Date(now)).date);
   const sessions = filterSessions(context.sessions, filters, now);
   const returnTo = sessionListUrl(filters);
@@ -56,11 +61,15 @@ export default async function TeacherSessionsPage({
         <small>até {localParts(s.ends_at).time}</small>
       </div>
       <div>
-        <span className={styles.type}>{teacherSessionTypeLabel(s.session_type)}</span>
+        <span className={styles.type} data-type={s.session_type}>
+          {teacherSessionTypeLabel(s.session_type)}
+        </span>
         <h3>{s.title}</h3>
         <span className={styles.muted}>
-          {s.cohort_name ?? "Sessão particular"} · {s.participant_count} participantes ·{" "}
-          {s.attended_count + s.no_show_count} presenças marcadas
+          {s.cohort_name ??
+            (s.session_type === "PRIVATE_SESSION" ? "Sessão particular" : "Sem turma")}{" "}
+          · {s.participant_count} participantes · {s.attended_count + s.no_show_count} presenças
+          marcadas
         </span>
       </div>
       <div className={styles.actions}>
@@ -74,12 +83,11 @@ export default async function TeacherSessionsPage({
           <summary aria-label={`Ações de ${s.title}`}>•••</summary>
           <div>
             <Link href={detail(s)}>Ver detalhes e ações</Link>
-            {s.status === "SCHEDULED" &&
-              Date.parse(s.starts_at) > now &&
-              s.session_type !== "WORKSHOP" && (
-                <Link href={`${detail(s)}&edit=1`}>Editar sessão</Link>
-              )}
-            <Link href={`${detail(s)}#session-actions`}>Sala e cancelamento</Link>
+            {sessionCanEdit(s, now) && <Link href={`${detail(s)}&edit=1`}>Editar sessão</Link>}
+            {sessionCanEdit(s, now) && (
+              <Link href={`${detail(s)}&meeting=1`}>Cadastrar link do Meet</Link>
+            )}
+            {sessionCanCancel(s) && <Link href={`${detail(s)}&cancel=1`}>Cancelar sessão</Link>}
           </div>
         </details>
       </div>
