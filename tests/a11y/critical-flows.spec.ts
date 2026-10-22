@@ -202,6 +202,7 @@ test("Teacher Operations keeps real MFA, keyboard attendance controls and WCAG A
 }) => {
   await loginCanonicalTeacher(page, password!);
   await page.goto("/teacher/sessoes/" + canonicalTeacherSessionId);
+  await page.getByRole("tab", { name: "Participantes", exact: true }).click();
 
   await expect(
     page.getByRole("heading", { level: 1, name: "Teacher Ops · Conversation Practice" }),

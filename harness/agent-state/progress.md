@@ -1,3 +1,9 @@
+## teacher-sessions-redesign — 2026-10-22
+
+In progress. Approved redesign implemented in task branch; focused domain and PDF tests pass, security/db structural checks pass. First full gate stopped on preexisting historical evidence formatting (whitespace-only correction recorded). Isolated full run and browser QA pending. No done claim.
+
+---
+
 # Progress Log
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.

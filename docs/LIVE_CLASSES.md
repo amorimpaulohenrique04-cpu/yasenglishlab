@@ -1,16 +1,20 @@
 # Live Classes, Schedule & Booking
 
 ## Propósito
+
 Modelar encontros ao vivo, reservas, capacidade e presença como domínio próprio. A Agenda é uma projeção desse domínio.
 
 ## Decisões
+
 Tipos:
+
 - `CORE_CLASS`
 - `CONVERSATION_LAB`
 - `PRIVATE_SESSION`
 - `WORKSHOP`
 
 Status:
+
 - `BOOKED`
 - `ATTENDED`
 - `NO_SHOW`
@@ -23,6 +27,7 @@ Core = continuidade pedagógica; Lab = uso/speaking temático; Private = acompan
 Provider definitivo de videoconferência permanece aberto; V1 não deve construir WebRTC próprio.
 
 ## Invariantes
+
 - Capacidade é aplicada server/database.
 - Reserva concorrente não gera overbooking.
 - Agenda não é sistema de registro.
@@ -34,6 +39,7 @@ Provider definitivo de videoconferência permanece aberto; V1 não deve construi
 Teacher Operations V1 é uma superfície operacional restrita, não um Admin CMS. Uma conta precisa possuir a role durável `TEACHER` e atingir AAL2. Dentro de `/teacher`, a identidade do professor sempre deriva de `auth.uid()` → `teachers.user_id`; roles adicionais não ampliam o escopo.
 
 O professor pode:
+
 - listar somente as próprias `live_sessions`;
 - ler o roster operacional mínimo somente dessas sessões;
 - marcar `ATTENDED` / `NO_SHOW` apenas para `session_bookings.status = 'BOOKED'`.
@@ -61,15 +67,18 @@ P21.4 extends V1 without turning Teacher into Admin. See [ADR 0012](./adr/0012-p
 - Domain notifications are transactional/idempotent state records; no external delivery channel is implied.
 
 ## O que não fazer
+
 - `students.length < 6` apenas no navegador.
 - Credencial privilegiada de reunião pública.
 - Tratar Core e Lab como sinônimos.
 - Manter estado do calendário separado da sessão/booking.
 
 ## Interfaces
+
 [BILLING.md](./BILLING.md) · [DATA_MODEL.md](./DATA_MODEL.md) · [SECURITY.md](./SECURITY.md) · [OBSERVABILITY.md](./OBSERVABILITY.md)
 
 ## Critérios de aceitação
+
 - Concorrência não ultrapassa capacidade.
 - Usuário sem entitlement não cria booking indevido.
 - Cancelamento/presença/no-show deixam estado durável.
@@ -78,7 +87,6 @@ P21.4 extends V1 without turning Teacher into Admin. See [ADR 0012](./adr/0012-p
 ## P21 foundation closure
 
 The additive P21.1–P21.3 contracts and verification are documented in [P21 foundation](P21_FOUNDATION.md) and ADRs 0007–0009. The prior domain contracts remain applicable.
-
 
 ## Google Meet links (manual mode)
 
@@ -93,3 +101,14 @@ The additive P21.1–P21.3 contracts and verification are documented in [P21 fou
   rules and only those Students get the notice "Esta aula foi cancelada. Nossa equipe entrará em contato para
   informar uma nova data." The cancellation is audited (`TEACHER_SESSION_CANCELLED`, with the affected count).
   No new date is proposed automatically.
+
+## Teacher Sessions workspace redesign
+
+- `/teacher/sessoes` combines Agenda/Week/Month with upcoming/history/cancelled/all filters. History means the scheduled end passed; it never writes `COMPLETED`.
+- `get_teacher_session_workspace(from,to,session_id)` is an additive, own-teacher+AAL2 projection. It returns complete interval data without meeting references; existing command RPCs remain authoritative. The JSON envelope avoids row-cap truncation of reports and availability.
+- Session creation uses three steps and explicit America/Recife date/time conversion. Booking does not happen implicitly. Existing bookings freeze structural fields; type remains immutable.
+- Attendance is available from start, and corrections require the existing reason. Cancellation requires confirmation and the existing transactional command.
+- The Meet drawer saves a manually created Google Meet URL, without reading the stored reference. Actual Join authorization remains unchanged.
+- Availability suggestions subtract scheduled sessions from durable own intervals. They do not hold a time slot; save revalidates in PostgreSQL.
+- Reports count completed sessions only by `COMPLETED`, hours by their planned duration, and attendance by explicit `ATTENDED/(ATTENDED+NO_SHOW)`. Unmarked active bookings in started non-cancelled sessions are pending, never inferred absences.
+- Report dates include session starts in America/Recife; cancelled sessions use their scheduled start. Comparisons use the preceding equal-length interval. CSV and private PDF downloads use the same projection and filters, without meeting URLs or student identifiers.

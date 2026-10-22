@@ -1,9 +1,11 @@
 # UI Contract
 
 ## Propósito
+
 Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou coding agents alterem o produto.
 
 ## Decisões
+
 - As imagens em [reference-ui](./reference-ui/README.md) são **fonte de verdade visual**.
 - Se texto e screenshot divergirem apenas em estética, prevalece o screenshot aprovado.
 - Roxo = identidade, navegação e estado principal.
@@ -15,6 +17,7 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Mobile é recomposição, não desktop espremido.
 
 ## Invariantes
+
 - Sidebar, headers, spacing, radius, tipografia e CTA não mudam por página sem razão explícita.
 - Reutilizar componentes antes de criar novos.
 - Loading, empty, error, disabled, success e focus fazem parte do contrato.
@@ -22,6 +25,7 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Alteração visual relevante declara a diferença e produz evidência.
 
 ## O que não fazer
+
 - Nova paleta por feature.
 - Novo padrão de card sem diferença semântica.
 - Valores arbitrários se há token equivalente.
@@ -30,9 +34,11 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Redesenhar referências por conveniência de implementação.
 
 ## Interfaces
+
 [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) · [ACCESSIBILITY.md](./ACCESSIBILITY.md) · [TESTING.md](./TESTING.md) · [reference-ui/README.md](./reference-ui/README.md)
 
 ## Critérios de aceitação
+
 - Mudança visual reutiliza design system.
 - Desktop/tablet/mobile revisados.
 - Evidência visual existe quando necessário.
@@ -52,3 +58,7 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 - Perfil e Suporte usam o shell do papel principal do usuário (grupo de rotas `(account)`).
 - Blocos do protótipo sem fonte de dados não aparecem (ver `harness/agent-state/decisions.md`).
 - Logo, frase manuscrita e fotos em `public/brand/` são placeholders recortados das referências; trocar pelos arquivos oficiais.
+
+## Sessões do professor — referências do usuário (2026-10-21)
+
+As seis imagens aprovadas no plano do chat orientam agenda, assistente, detalhes, drawers e relatórios. Preservar o shell e os tokens existentes. Adaptações intencionais: Conversation Lab permanece disponível; Workshop é somente leitura; turma obrigatória em grupo; Recife explícito; presença desde o início; sala Meet manual; abas sem anotações/checklist fictícios; relatórios sem inferir conclusão pelo relógio. Mobile usa lista diária e conteúdo empilhado. Evidência em `harness/evidence/teacher-sessions-redesign/`.

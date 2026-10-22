@@ -16,7 +16,25 @@ export async function loadSessionResources(sessionId: string) {
     .order("created_at")
     .order("id");
   if (error) throw new Error("Recursos indisponíveis.");
-  return data ?? [];
+  // Prove read access through authenticated RLS before checking the server-only file path.
+  // This is the same boundary used by getSessionResourceAccess below; no path is returned.
+  const rows = data ?? [];
+  const files = new Set<string>();
+  const candidates = rows
+    .filter((r) => !r.material_id && !r.practice_activity_id && !r.external_url)
+    .map((r) => r.id);
+  if (candidates.length) {
+    const admin = createSupabaseAdminClient();
+    for (let offset = 0; offset < candidates.length; offset += 200) {
+      const { data: privateRows, error: privateError } = await admin
+        .from("live_session_resources")
+        .select("id,storage_path")
+        .in("id", candidates.slice(offset, offset + 200));
+      if (privateError) throw new Error("Recursos indisponíveis.");
+      for (const resource of privateRows ?? []) if (resource.storage_path) files.add(resource.id);
+    }
+  }
+  return rows.map((resource) => ({ ...resource, has_file: files.has(resource.id) }));
 }
 export async function loadTeacherResourceChoices() {
   await assertRole("TEACHER");

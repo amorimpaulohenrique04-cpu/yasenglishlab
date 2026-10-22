@@ -9,6 +9,7 @@ type Resource = {
   material_id: string | null;
   practice_activity_id: string | null;
   external_url: string | null;
+  has_file?: boolean;
 };
 export function SessionResources({
   resources,
@@ -31,7 +32,10 @@ export function SessionResources({
               Prazo: {new Date(item.due_at).toLocaleString("pt-BR", { timeZone: "America/Recife" })}
             </time>
           )}
-          <ResourceAccess id={item.id} action={action} />
+          {(item.material_id ||
+            item.practice_activity_id ||
+            item.external_url ||
+            item.has_file) && <ResourceAccess id={item.id} action={action} />}
         </Card>
       ))}
     </section>

@@ -1,0 +1,21 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 841 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+

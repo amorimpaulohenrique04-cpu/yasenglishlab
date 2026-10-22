@@ -50,6 +50,7 @@ test.describe("Teacher Operations V1", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Teacher Ops · Conversation Practice" }),
     ).toBeVisible();
+    await page.getByRole("tab", { name: "Participantes", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Teacher Ops Student" })).toBeVisible();
 
     const participant = page.getByRole("listitem").filter({

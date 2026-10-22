@@ -12,6 +12,15 @@
   },
   "features": [
     {
+      "id": "teacher-sessions-redesign",
+      "title": "Redesign completo de Sessões do professor",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": ["harness/goals/teacher-sessions-redesign.md"],
+      "updated_at": "2026-10-22T00:00:00Z"
+    },
+    {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
       "status": "done",

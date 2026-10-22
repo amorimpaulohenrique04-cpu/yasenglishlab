@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui";
 export function ResourceFileUpload({
   sessionId,
@@ -13,6 +14,7 @@ export function ResourceFileUpload({
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const router = useRouter();
   return (
     <div>
       <label>
@@ -40,7 +42,8 @@ export function ResourceFileUpload({
             });
             if (!response.ok) throw new Error();
             await complete(result.resourceId);
-            setMessage("Arquivo enviado. Atualize a página para vê-lo.");
+            setMessage("Arquivo enviado com sucesso.");
+            router.refresh();
           } catch {
             setMessage("Falha no envio. Tente novamente.");
           } finally {

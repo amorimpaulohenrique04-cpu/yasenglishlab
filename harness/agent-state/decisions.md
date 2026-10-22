@@ -158,3 +158,7 @@ Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-
 ## 2026-10-17 — billing-reconciliation-integrity
 
 PR 1 isolates UUID cursor batches and explicit failure states in existing billing code. SQL, provider writes, auth/RLS, rate-limit and role helpers stay unchanged. Legacy role helpers have no external callers. Evidence and gates: harness/evidence/billing-reconciliation-integrity/README.md; go-live remains BLOCKED.
+
+## teacher-sessions-redesign — 2026-10-21
+
+Plano do chat aprovado. Recife, attendance desde início, Meet manual, COMPLETED explícito (pode ser zero); CSV e download PDF. Sem novas capacidades de domínio. Drawer consulta disponibilidade; edição permanece na página existente. Um PR dependente da base atual style/sidebar-fit.

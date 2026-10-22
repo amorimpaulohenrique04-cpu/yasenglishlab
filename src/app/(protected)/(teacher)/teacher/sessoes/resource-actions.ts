@@ -9,6 +9,57 @@ import {
   getSessionResourceAccess,
   requestSessionResourceUpload,
 } from "@/server/teacher-operations/resources";
+import { localAvailabilityToIso } from "@/modules/teacher-operations/domain/availability-time";
+
+export async function createResourceResultAction(
+  form: FormData,
+): Promise<{ ok: boolean; message: string }> {
+  await assertRole("TEACHER");
+  try {
+    const id = z.uuid().parse(form.get("sessionId"));
+    const reference = (name: string) => (form.get(name) ? z.uuid().parse(form.get(name)) : null);
+    const date = String(form.get("due_date") || ""),
+      time = String(form.get("due_time") || "");
+    if (Boolean(date) !== Boolean(time))
+      return { ok: false, message: "Informe data e horário do prazo, ou deixe ambos vazios." };
+    const input = {
+      resource_type: z.enum(["RESOURCE", "HOMEWORK"]).parse(form.get("resource_type")),
+      title: z.string().trim().min(1).max(200).parse(form.get("title")),
+      instructions: z
+        .string()
+        .max(4000)
+        .parse(form.get("instructions") || ""),
+      due_at: date ? localAvailabilityToIso(date, time) : null,
+      material_id: reference("material_id"),
+      practice_activity_id: reference("practice_activity_id"),
+      external_url: form.get("external_url")
+        ? manualMeetingUrlSchema.parse(form.get("external_url"))
+        : null,
+    };
+    if (
+      [input.material_id, input.practice_activity_id, input.external_url].filter(Boolean).length > 1
+    )
+      return { ok: false, message: "Selecione apenas uma referência por recurso." };
+    const client = await createSupabaseServerClient();
+    const { error } = await client.rpc("create_session_resource", {
+      p_session: id,
+      p_input: input,
+    });
+    if (error)
+      return {
+        ok: false,
+        message: "Não foi possível atribuir. Confira o vínculo da referência e tente novamente.",
+      };
+    revalidatePath(`/teacher/sessoes/${id}`);
+    revalidatePath("/agenda");
+    return { ok: true, message: "Recurso atribuído com sucesso." };
+  } catch {
+    return {
+      ok: false,
+      message: "Confira o título, a referência e o prazo. Os dados foram mantidos.",
+    };
+  }
+}
 export async function sessionResourceAccessAction(id: string) {
   return getSessionResourceAccess(id);
 }
