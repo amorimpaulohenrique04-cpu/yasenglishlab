@@ -62,3 +62,21 @@ Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou
 ## Sessões do professor — referências do usuário (2026-10-21)
 
 As seis imagens aprovadas no plano do chat orientam agenda, assistente, detalhes, drawers e relatórios. Preservar o shell e os tokens existentes. Adaptações intencionais: Conversation Lab permanece disponível; Workshop não pode ser criado/editado pelo assistente; turma obrigatória em grupo; Recife explícito; presença desde o início; sala Meet manual; abas sem anotações/checklist fictícios; relatórios sem inferir conclusão pelo relógio. Mobile usa lista diária e conteúdo empilhado. Evidência em `harness/evidence/teacher-sessions-redesign/`.
+
+### Polimento visual (2026-10-22)
+
+Decisões do usuário: visual + UX sem regra nova; **CTA primário violeta** (variante `secondary`) em toda a área de Sessões, ficando o amarelo para destaques pontuais; animações com `motion` (ver DESIGN_SYSTEM).
+
+| Função | Superfície |
+| --- | --- |
+| Agenda, Semana e Mês | Página, com filtros aplicados na hora e refletidos na URL |
+| Criar | Página com assistente de 3 etapas |
+| Editar, link do Meet, disponibilidade e recursos | Sheets |
+| Cancelar | Dialog |
+| Busca | Ctrl/⌘ K |
+| Relatórios | Página analítica |
+
+- **Semana:** grade de horários real. A disponibilidade é clicável e cria uma sessão já preenchida no horário clicado.
+- **Mês:** até 3 chips por dia.
+- **Celular:** a Semana vira uma faixa de dias com a lista do dia escolhido; o Mês mostra pontos.
+- **Relatórios:** área e donut desenhados em SVG com tokens, sempre com uma tabela alternativa. Os destaques são fatos derivados do relatório e só aparecem quando há base de comparação.

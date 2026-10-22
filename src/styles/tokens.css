@@ -141,6 +141,10 @@
   --yas-motion-reveal: 550ms;
   --yas-ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --yas-ease-emphasized: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Sheets and panels: fast start, long settle (iOS-like). */
+  --yas-ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  /* Data reveals and exits: expo-out. */
+  --yas-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout */
   --yas-sidebar-width: 16rem;

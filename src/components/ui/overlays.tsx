@@ -46,7 +46,14 @@ interface ModalProps {
   actions?: ReactNode;
   className?: string;
   closeLabel?: string;
+  /** Icon tile shown before the title. */
+  icon?: IconName;
+  /** Sticky action bar at the bottom of the panel. */
+  footer?: ReactNode;
 }
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function Modal({
   open,
@@ -57,6 +64,8 @@ function Modal({
   actions,
   className,
   closeLabel = "Fechar",
+  icon,
+  footer,
 }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -65,8 +74,30 @@ function Modal({
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
+    if (open) {
+      dialog.removeAttribute("data-closing");
+      if (!dialog.open) dialog.showModal();
+      return;
+    }
+    if (!dialog.open) return;
+    // Plays the exit keyframes before the native close, which also restores focus to the opener.
+    if (prefersReducedMotion()) {
+      dialog.close();
+      return;
+    }
+    dialog.setAttribute("data-closing", "");
+    const finish = () => {
+      if (dialog.hasAttribute("data-closing")) {
+        dialog.removeAttribute("data-closing");
+        dialog.close();
+      }
+    };
+    const timer = window.setTimeout(finish, 320);
+    dialog.addEventListener("animationend", finish, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      dialog.removeEventListener("animationend", finish);
+    };
   }, [open]);
 
   return (
@@ -79,14 +110,21 @@ function Modal({
         event.preventDefault();
         onOpenChange(false);
       }}
-      onClose={() => onOpenChange(false)}
+      onClose={() => {
+        if (open) onOpenChange(false);
+      }}
       onClick={(event) => {
         if (event.target === ref.current) onOpenChange(false);
       }}
     >
       <div className="yas-dialog-inner">
         <div className="yas-dialog-header">
-          <div>
+          {icon && (
+            <span className="yas-dialog-icon" aria-hidden="true">
+              <Icon name={icon} size={22} />
+            </span>
+          )}
+          <div className="yas-dialog-heading">
             <h2 className="yas-dialog-title" id={titleId}>
               {title}
             </h2>
@@ -105,8 +143,9 @@ function Modal({
             <Icon name="x" size={18} />
           </button>
         </div>
-        <div>{children}</div>
+        <div className="yas-dialog-body">{children}</div>
         {actions && <div className="yas-cluster">{actions}</div>}
+        {footer && <div className="yas-dialog-footer">{footer}</div>}
       </div>
     </dialog>
   );
@@ -118,10 +157,13 @@ export function Dialog(props: DialogProps) {
   return <Modal {...props} />;
 }
 
-export type DrawerProps = Omit<ModalProps, "className">;
+export interface DrawerProps extends Omit<ModalProps, "className"> {
+  /** md ≈ 30rem (forms), lg ≈ 40rem, xl ≈ 64rem (schedules). Full screen below 40rem. */
+  size?: "md" | "lg" | "xl";
+}
 
-export function Drawer(props: DrawerProps) {
-  return <Modal {...props} className="yas-drawer" />;
+export function Drawer({ size = "md", ...props }: DrawerProps) {
+  return <Modal {...props} className={cx("yas-drawer", size !== "md" && `yas-drawer--${size}`)} />;
 }
 
 const subscribeHydration = () => () => {};

@@ -5,3 +5,6 @@ export * from "./headers";
 export * from "./icons";
 export * from "./navigation";
 export * from "./overlays";
+export * from "./stepper";
+export * from "./toast";
+export * from "./command-palette";

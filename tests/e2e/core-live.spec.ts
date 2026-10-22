@@ -123,7 +123,7 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
 
     await page.goto("/teacher/sessoes/nova");
     await page.getByLabel("Título").fill(title);
-    await page.getByLabel("Tipo").selectOption("CORE_CLASS");
+    await page.getByRole("radio", { name: /^Core Class/ }).check();
     await page.getByLabel(/^Data(?: \*)?$/).fill(localDateTime(sessionStart).date);
     await page.getByLabel(/^Início(?: \*)?$/).fill(localDateTime(sessionStart).time);
     await page.getByLabel("Data de término").fill(localDateTime(sessionEnd).date);

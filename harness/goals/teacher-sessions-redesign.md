@@ -50,6 +50,17 @@ Fluxos operacionais responsivos, acessíveis e persistidos, inspirados nas seis 
 - `docs/LIVE_CLASSES.md`, `docs/UI_CONTRACT.md`
 - `harness/**`
 
+### Fase 2 — polimento visual (2026-10-22, aprovado no chat)
+
+Escopo: visual + UX em todas as telas da aba Sessões, sem regra nova nem migration. CTA primário violeta na área. Animações com `motion@13.5.1` (fixada; release com mais de duas semanas). Arquivos adicionais permitidos:
+
+- `src/components/ui/**` (variantes de Tabs/Drawer/Toast e primitivos novos com justificativa no README e story)
+- `src/components/motion/**`, `src/styles/tokens.css`, `src/styles/tokens.ts`, `src/styles/design-system.css`
+- `src/modules/schedule/ui/join-meeting.tsx` (apenas variante visual; contrato do aluno preservado)
+- `docs/DESIGN_SYSTEM.md`, `tests/unit/**` para helpers novos, `tests/e2e/p21-responsive.spec.ts`, `tests/e2e/teacher-surfaces.spec.ts`
+
+Continua proibido: shell global, regras de booking/presença, recorrência, criação de Workshop, notas/checklist, provedores novos, exibir URL de reunião.
+
 O workspace contém alterações anteriores em arquivos do harness; preservar e registrar separadamente. Base local `style/sidebar-fit`, sem incluir mudanças preexistentes no commit da tarefa. Em 2026-10-22 o usuário decidiu entregar localmente, sem abrir PR nem publicar branches.
 
 Gate inicial encontrou formatação preexistente em `harness/evidence/admin-teacher-redesign/README.md`. Correção permitida estritamente de whitespace para liberar o gate global; conteúdo e evidência histórica preservados.

@@ -16,9 +16,12 @@ const suspendedLabel =
 export function JoinMeeting({
   sessionId,
   action,
+  block = false,
 }: {
   sessionId: string;
   action: (id: string) => Promise<JoinAccess>;
+  /** Full-width, large primary action (teacher session page). */
+  block?: boolean;
 }) {
   const [result, setResult] = useState<JoinAccess | null>(null);
   const [error, setError] = useState(false);
@@ -26,8 +29,9 @@ export function JoinMeeting({
   return (
     <div className={styles.join}>
       <Button
-        size="sm"
+        size={block ? "lg" : "sm"}
         variant="secondary"
+        className={block ? "yas-button--block" : undefined}
         disabled={pending}
         leadingIcon={<Icon name="video" size={16} />}
         onClick={() =>

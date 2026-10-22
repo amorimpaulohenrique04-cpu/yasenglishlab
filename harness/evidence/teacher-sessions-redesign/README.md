@@ -33,3 +33,16 @@ Em 2026-10-22 o usuário pediu explicitamente não rodar os gates completos. Nã
 - Aplicada a migration pendente 20261022023701_teacher_sessions_redesign.sql via supabase migration up --local.
 - Executado node scripts/dev-seed.mjs: logins de aluno/professor/admin OK. Uma presença fictícia não criada por booking quota exceeded; regra preservada.
 - Next.js iniciado na porta 3000 (PID 21560). http://localhost:3000/login respondeu HTTP 200 com o formulário de login.
+
+## Fase 2 — polimento visual (2026-10-22)
+
+As capturas em `screenshots/` foram regeradas pela spec `teacher-sessions-redesign` com o novo visual. São 22 telas, desktop/tablet/mobile, com axe WCAG A/AA sem violações. Comparação com as seis referências:
+
+- **Agenda:** grupos por dia e card da próxima sessão com contagem regressiva.
+- **Semana:** grade de horários; no celular, faixa de dias.
+- **Mês:** chips por dia.
+- **Assistente:** Stepper, cards de tipo, verificação animada e resumo ao vivo.
+- **Detalhes:** cabeçalho com faixa de metadados, abas com contador e coluna de ações.
+- **Sheets:** Meet (só Google Meet, link nunca exibido) e Disponibilidade (grade + sugestões).
+- **Relatórios:** KPIs com variação, área + donut e ranking de turmas.
+- **Fora de propósito** (sem regra/dado): recorrência, Workshop, Zoom/link interno, checklist, anotações e envio automático.

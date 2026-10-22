@@ -88,6 +88,94 @@ export function buildSessionReport(
   };
 }
 export type SessionReport = ReturnType<typeof buildSessionReport>;
+
+export interface ReportDelta {
+  label: string;
+  direction: "up" | "down" | "flat";
+  /** Whether the change is good news for the teacher (fewer cancellations is positive). */
+  tone: "positive" | "negative" | "neutral";
+}
+
+/** Comparison with the previous interval; `null` when there is no base to compare with. */
+export function reportDelta(
+  current: number | null,
+  previous: number | null,
+  { points = false, lowerIsBetter = false } = {},
+): ReportDelta | null {
+  if (current === null || previous === null || (!points && previous === 0)) return null;
+  const diff = points ? current - previous : (100 * (current - previous)) / previous;
+  const rounded = Math.round(diff * 10) / 10;
+  const direction = rounded > 0 ? "up" : rounded < 0 ? "down" : "flat";
+  const good = lowerIsBetter ? direction === "down" : direction === "up";
+  return {
+    label: `${rounded > 0 ? "+" : ""}${rounded.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}${points ? " p.p." : "%"}`,
+    direction,
+    tone: direction === "flat" ? "neutral" : good ? "positive" : "negative",
+  };
+}
+
+export interface ReportInsight {
+  id: string;
+  tone: "positive" | "negative" | "neutral";
+  title: string;
+  description: string;
+}
+
+/**
+ * Statements derived only from the report facts (no clock inference, no estimates). Each one
+ * appears only when its comparison base exists.
+ */
+export function reportInsights(report: SessionReport): ReportInsight[] {
+  const s = report.summary,
+    p = report.previous,
+    insights: ReportInsight[] = [];
+  const fmt = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+  if (s.rate !== null && p.rate !== null && Math.abs(s.rate - p.rate) >= 1) {
+    const up = s.rate > p.rate;
+    insights.push({
+      id: "attendance",
+      tone: up ? "positive" : "negative",
+      title: up ? "Presença em alta" : "Presença em queda",
+      description: `A presença registrada ${up ? "subiu" : "caiu"} ${fmt(Math.abs(s.rate - p.rate))} p.p. em relação ao período anterior.`,
+    });
+  }
+  if (p.completed > 0 && s.completed !== p.completed) {
+    const up = s.completed > p.completed;
+    insights.push({
+      id: "completed",
+      tone: up ? "positive" : "negative",
+      title: up ? "Mais sessões concluídas" : "Menos sessões concluídas",
+      description: `Foram ${s.completed} sessões concluídas, contra ${p.completed} no período anterior.`,
+    });
+  }
+  if (p.cancelled > 0 && s.cancelled !== p.cancelled) {
+    const fewer = s.cancelled < p.cancelled;
+    insights.push({
+      id: "cancelled",
+      tone: fewer ? "positive" : "negative",
+      title: fewer ? "Menos cancelamentos" : "Mais cancelamentos",
+      description: `${s.cancelled} ${s.cancelled === 1 ? "cancelamento" : "cancelamentos"} no período, contra ${p.cancelled} no anterior.`,
+    });
+  }
+  const weeks = new Map<string, number>();
+  for (const day of report.days) {
+    const weekday = (new Date(`${day.date}T12:00:00Z`).getUTCDay() + 6) % 7;
+    const start = addDays(day.date, -weekday);
+    weeks.set(start, (weeks.get(start) ?? 0) + day.scheduled + day.completed);
+  }
+  const ranked = [...weeks.entries()].filter(([, count]) => count > 0);
+  const peak = ranked.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+  if (peak && ranked.length > 1) {
+    const end = addDays(peak[0], 6);
+    insights.push({
+      id: "peak",
+      tone: "neutral",
+      title: "Semana de pico",
+      description: `A semana de ${peak[0].slice(8)}/${peak[0].slice(5, 7)} a ${end.slice(8)}/${end.slice(5, 7)} teve ${peak[1]} ${peak[1] === 1 ? "sessão" : "sessões"} não canceladas.`,
+    });
+  }
+  return insights;
+}
 export const reportDefinitions =
   "Concluídas: status COMPLETED. Horas: duração prevista das concluídas, não tempo efetivamente ministrado. Presença: ATTENDED / (ATTENDED + NO_SHOW), com pendências separadas. Período pelo início da sessão em America/Recife. Cancelamentos pelo início previsto. Sem encerramento automático por horário.";
 export function sessionReportCsv(report: SessionReport) {

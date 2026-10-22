@@ -11,6 +11,16 @@ Goal: harness/goals/teacher-sessions-redesign.md. Plano aprovado pelo usuário.
 3. Relatórios CSV/PDF, regressões, acessibilidade e evidência visual.
 4. Entrega local, migrations, dev-seed e localhost. Gates completos suspensos por instrução expressa de 2026-10-22; certificação permanece pendente. Sem PR ou push.
 
+Fase 2 — polimento visual (aprovado 2026-10-22; visual+UX, sem regra nova; CTA violeta; motion):
+
+1. Fundação: motion provider, tokens de mola, primitivos (SegmentedNav, Tabs underline, Breadcrumbs, Drawer sizes/footer, Dropdown estendido, ToastProvider, Stepper, CommandPalette). Popover, DatePicker, Combobox e Switch não foram necessários: inputs nativos estilizados mantêm a semântica e os testes.
+2. Espaço de sessões (Hoje/Semana grade/Mês, toolbar instantânea, ⌘K, coluna lateral).
+3. Sheets Meet e Disponibilidade (grade semanal).
+4. Assistente de criação + edição em sheet.
+5. Detalhes (cabeçalho com faixa de metadados, abas, presença otimista, recursos). Morph via ViewTransition descartado: nomes duplicados durante a animação de troca de visão.
+6. Relatórios (KPIs, gráficos SVG animados, insights determinísticos).
+7. Responsivo/a11y/reduced-motion, testes focados, evidência.
+
 ---
 
 # Plano — billing-reconciliation-integrity

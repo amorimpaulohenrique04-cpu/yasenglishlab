@@ -26,18 +26,25 @@ Display:
 
 Navigation:
 
-- Tabs
-- Dropdown
+- Tabs (`pill` | `underline`, optional decorative `badge`)
+- Dropdown (link items, `iconOnly`, `triggerVariant="primary"`)
+- SegmentedNav — view switch made of links (each option is a URL)
+- Breadcrumbs — navigation landmark
+
+Progress:
+
+- Stepper — ordered steps of one task; completed steps can be revisited
 
 Overlays:
 
 - Tooltip
-- Dialog
-- Drawer
+- Dialog (`icon`, `footer`)
+- Drawer (`size` md/lg/xl, `icon`, `footer`; full-screen sheet on phones)
+- CommandPalette — Ctrl/⌘ K combobox search
 
 Feedback:
 
-- Toast
+- Toast / ToastProvider + useToast (transient confirmation queue)
 - Alert
 - EmptyState
 - ErrorState

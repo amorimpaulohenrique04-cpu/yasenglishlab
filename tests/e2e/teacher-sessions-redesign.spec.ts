@@ -42,12 +42,15 @@ test("Sessions filters, calendar, drawers, details and real report exports", asy
   ).toBeVisible();
   await expect(page.getByLabel("Buscar")).toHaveValue("Teacher Ops Student");
   await evidence(page, "agenda-desktop");
-  await page.getByRole("link", { name: "Abrir sessão →", exact: true }).first().click();
+  await page.getByRole("link", { name: "Abrir sessão", exact: true }).first().click();
   await page.getByRole("tab", { name: "Participantes", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Teacher Ops Student", exact: true }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "← Suas sessões" }).click();
+  await page
+    .getByRole("navigation", { name: "Trilha de navegação" })
+    .getByRole("link", { name: "Sessões", exact: true })
+    .click();
   await expect(page.getByLabel("Buscar")).toHaveValue("Teacher Ops Student");
   await page.getByRole("button", { name: "Consultar disponibilidade", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "Disponibilidade do professor" })).toBeVisible();
@@ -108,6 +111,8 @@ test("Resource form keeps failed input and persists instructions without a fake 
   await loginCanonicalTeacher(page, password!);
   await page.goto(`/teacher/sessoes/${canonicalTeacherSessionId}`);
   await page.getByRole("tab", { name: "Recursos e tarefas", exact: true }).click();
+  await page.getByRole("button", { name: "Adicionar recurso", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Adicionar recurso" })).toBeVisible();
   await page.getByLabel(/^Título do recurso/).fill("Redesign · instruções da sessão");
   await page
     .getByLabel("Instruções", { exact: true })
@@ -130,6 +135,30 @@ test("Resource form keeps failed input and persists instructions without a fake 
   await expect(
     page.getByRole("heading", { name: "Redesign · instruções da sessão", exact: true }).first(),
   ).toBeVisible();
+});
+
+test("Workspace filters apply without a submit and Ctrl+K opens a session", async ({ page }) => {
+  await loginCanonicalTeacher(page, password!);
+  await page.goto("/teacher/sessoes?status=all");
+  await page.getByLabel("Tipo", { exact: true }).selectOption("CONVERSATION_LAB");
+  await expect(page).toHaveURL(/type=CONVERSATION_LAB/);
+  await page.getByLabel("Buscar").fill("Teacher Ops Student");
+  await expect(page).toHaveURL(/q=Teacher\+Ops\+Student/);
+  await expect(
+    page.getByRole("heading", { name: "Teacher Ops · Conversation Practice", exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press("Control+k");
+  const palette = page.getByRole("dialog", { name: "Busca rápida" });
+  await expect(palette).toBeVisible();
+  await palette.getByRole("combobox", { name: "Busca rápida" }).fill("Teacher Ops Conversation");
+  await expect(
+    palette.getByRole("option", { name: /Teacher Ops · Conversation Practice/ }),
+  ).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`/teacher/sessoes/${canonicalTeacherSessionId}`));
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Teacher Ops · Conversation Practice",
+  );
 });
 
 test("Report download is unavailable to an unauthenticated request", async ({ request }) => {

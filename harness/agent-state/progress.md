@@ -1,3 +1,27 @@
+## teacher-sessions-redesign — Fase 2 (polimento visual) — 2026-10-22
+
+Escopo aprovado: visual + UX sem regra nova, CTA violeta, motion@13.5.1. Entregue:
+
+- espaço de sessões com Agenda, grade semanal real e Mês; filtros que se aplicam na hora; Ctrl/⌘ K;
+- sheets de Meet e Disponibilidade;
+- assistente com Stepper e verificação animada de horário, edição em sheet;
+- detalhes com abas underline e presença otimista;
+- relatórios com KPIs, área e donut em SVG/CSS e destaques determinísticos.
+
+Primitivos estendidos/novos estão documentados em docs/DESIGN_SYSTEM.md e src/components/ui/README.md.
+
+Verificação local (fixture canônica via scripts/setup-canonical-e2e.mjs; Supabase local 127.0.0.1):
+
+- **Passaram:** tsc; eslint src tests; vitest tests/unit (5 testes novos em session-calendar.test.ts); next build.
+- **E2E passaram:** teacher-sessions-redesign (4, com axe desktop/tablet/mobile e 22 capturas), teacher-operations (2), core-live (1), p21-responsive (1).
+- **A11y:** os cenários de professor passaram. Falharam cenários de aluno fora do escopo (Aulas, Prática, Progresso e Agenda), por dados da fixture: nível CEFR, "Começar" e um card de agenda extra.
+- **Instável sob carga:** isolated-next-config.test.ts falhou na suíte completa enquanto o Playwright rodava em paralelo e passou isolado.
+- **format:check:** falha só em harness/feature_list.json, que já estava modificado antes desta fase.
+- **Não executados:** verify:agent, verify:ui, verify:security, verify:db e verify:full. A feature continua in_progress / verified:false.
+
+---
+
+
 ## teacher-sessions-redesign — 2026-10-22
 
 Implementação entregue localmente na branch codex/teacher-sessions-redesign. Build de produção, 15 testes focados de domínio/PDF/recursos, três testes de isolamento e seis cenários de navegador passaram; rodada final dos três cenários do redesign passou com 22 capturas responsivas e axe. SQL focado, verify:security e verify:db passaram. Gates completos não concluídos e não reexecutados após a instrução expressa do usuário; verified:false preservado. Migration local aplicada sem reset; dev-seed executado (três logins OK, um aviso de cota na presença fictícia); localhost responde HTTP 200. Sem PR ou push. Evidências e limites em harness/evidence/teacher-sessions-redesign/README.md.
