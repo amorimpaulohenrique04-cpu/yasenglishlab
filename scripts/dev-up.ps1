@@ -47,11 +47,14 @@ function Test-Docker([int]$Seconds = 20) {
   $process = Start-Process docker -ArgumentList 'info', '--format', '{{.ServerVersion}}' `
     -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\yas-docker-out.txt" `
     -RedirectStandardError "$env:TEMP\yas-docker-err.txt"
+  # Sem ler o Handle logo após iniciar, o PowerShell 5.1 devolve ExitCode vazio.
+  $null = $process.Handle
   if (-not $process.WaitForExit($Seconds * 1000)) {
     try { $process.Kill() } catch {}
     return 'hung'
   }
-  if ($process.ExitCode -eq 0) { return 'ok' } else { return 'down' }
+  $version = (Get-Content "$env:TEMP\yas-docker-out.txt" -ErrorAction SilentlyContinue) -join ''
+  if ($process.ExitCode -eq 0 -or $version.Trim()) { return 'ok' } else { return 'down' }
 }
 
 Step 'Docker'
