@@ -133,7 +133,14 @@ Write-Host 'OK.'
 
 # ------------------------------------------------------------------ Dados fictícios + validação dos logins
 Step 'Dados fictícios e validação dos logins'
-Invoke-Checked 'dev-seed' { node scripts/dev-seed.mjs }
+# Logo após o Supabase subir, o primeiro seed pode estourar o statement timeout do Postgres.
+# O seed é idempotente: uma segunda tentativa resolve; se falhar de novo, é erro de verdade.
+node scripts/dev-seed.mjs 2>&1 | ForEach-Object { Write-Host $_ }
+if ($LASTEXITCODE -ne 0) {
+  Write-Host "`ndev-seed falhou (código $LASTEXITCODE). Tentando de novo em 5 segundos..." -ForegroundColor Yellow
+  Start-Sleep -Seconds 5
+  Invoke-Checked 'dev-seed' { node scripts/dev-seed.mjs }
+}
 
 if ($NoServer) { exit 0 }
 
