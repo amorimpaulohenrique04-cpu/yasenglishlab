@@ -1,6 +1,16 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { Alert, Badge, Button, Card, Textarea, PageHeader, SectionHeader } from "@/components/ui";
+import {
+  Alert,
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Textarea,
+  PageHeader,
+  SectionHeader,
+} from "@/components/ui";
 import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
 import { loadTeacherStudentProjection } from "@/server/teacher-operations/student-projection";
 import { createSupabaseServerClient } from "@/server/supabase/server";
@@ -37,10 +47,41 @@ export default async function TeacherStudentPage({
   const openReassessment = reassessments?.find((item) => item.status === "OPEN");
   return (
     <>
+      <Link className="yas-back-link" href="/teacher/alunos">
+        Voltar para alunos
+      </Link>
       <PageHeader
         title={student.name ?? "Aluno"}
         description="Acompanhamento pedagógico e notas internas."
       />
+      <section className="yas-profile-card" aria-label="Resumo do aluno">
+        <Avatar
+          fallback={(student.name ?? "Aluno")
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part[0]?.toUpperCase())
+            .join("")}
+          label={student.name ?? "Aluno"}
+          size="lg"
+        />
+        <div className="yas-profile-card-main">
+          <div className="yas-cluster">
+            <Badge
+              tone={
+                projection.enrollments.some((item) => item.status === "ACTIVE")
+                  ? "success"
+                  : "neutral"
+              }
+            >
+              {projection.enrollments.some((item) => item.status === "ACTIVE")
+                ? "Matrícula ativa"
+                : "Sem matrícula ativa"}
+            </Badge>
+            {openReassessment && <Badge tone="warning">Novo teste solicitado</Badge>}
+          </div>
+        </div>
+      </section>
       {(await searchParams).save === "error" && (
         <Alert
           tone="error"

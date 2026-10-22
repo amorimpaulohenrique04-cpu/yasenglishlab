@@ -369,6 +369,20 @@ a.yas-metric-card:hover {
   color: var(--yas-color-ink);
 }
 
+/* Narrow containers (side column, drawer): date on its own row, times side by side. */
+.yas-split-aside .yas-availability-form,
+.yas-drawer .yas-availability-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--yas-space-4) var(--yas-space-3);
+}
+
+.yas-split-aside .yas-availability-form label:first-of-type,
+.yas-drawer .yas-availability-form label:first-of-type,
+.yas-split-aside .yas-availability-form > button,
+.yas-drawer .yas-availability-form > button {
+  grid-column: 1 / -1;
+}
+
 .yas-admin-topbar-context {
   color: var(--yas-color-purple-700);
   font-weight: var(--yas-weight-semibold);
@@ -505,7 +519,7 @@ a.yas-metric-card:hover {
   gap: 0.5rem;
 }
 
-.yas-queue-actions form {
+.yas-queue-actions > form {
   display: contents;
 }
 
@@ -887,4 +901,135 @@ a.yas-metric-card:hover {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: var(--yas-space-3);
+}
+
+/* ---------- Professor: disponibilidade e revisao em duas colunas ---------- */
+.yas-split-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--yas-space-5);
+}
+
+.yas-split-main,
+.yas-split-aside {
+  display: grid;
+  min-width: 0;
+  gap: var(--yas-space-5);
+}
+
+@media (min-width: 64rem) {
+  .yas-split-layout {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+
+  .yas-split-layout[data-aside="review"] {
+    grid-template-columns: minmax(0, 1fr) 24rem;
+  }
+
+  .yas-split-aside[data-sticky] {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+.yas-week {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.yas-week-day {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  border-top: var(--yas-border-subtle);
+  padding: 0.75rem 0;
+}
+
+.yas-week-day:first-child {
+  border-top: 0;
+}
+
+.yas-week-day > strong {
+  font-size: 0.875rem;
+}
+
+.yas-week-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  color: var(--yas-color-muted);
+  font-size: 0.8125rem;
+}
+
+.yas-week-chip {
+  border-radius: var(--yas-radius-pill);
+  background: var(--yas-tint-green);
+  color: var(--yas-tint-green-ink);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-slot-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  border-top: var(--yas-border-subtle);
+  padding: 0.75rem 0;
+}
+
+.yas-slot-row-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  min-width: 0;
+}
+
+.yas-slot-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.yas-slot-row-actions > form {
+  display: contents;
+}
+
+.yas-review-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.yas-review-head h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.yas-review-answer {
+  display: grid;
+  gap: var(--yas-space-3);
+}
+
+.yas-review-form {
+  display: grid;
+  gap: var(--yas-space-4);
+}
+
+.yas-review-form label {
+  display: grid;
+  gap: 0.375rem;
+  font-weight: var(--yas-weight-semibold);
+}
+
+.yas-review-form textarea,
+.yas-review-form select {
+  width: 100%;
 }

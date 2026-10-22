@@ -29,82 +29,94 @@ export default async function ReviewPage({
           }
         />
       )}
-      <Card className="yas-stack">
-        <SectionHeader title={"Evidência objetiva por habilidade"} />
-        {evidence.scores.length === 0 ? (
-          <p>Sem score objetivo disponível.</p>
-        ) : (
-          <ul>
-            {evidence.scores.map((s) => (
-              <li key={s.skill}>
-                {s.skill}: {s.score}/{s.maxScore ?? "—"} ·{" "}
-                {String(s.provenance.engine ?? "Assessment")}
-              </li>
-            ))}
-          </ul>
-        )}
-        <p>Score objetivo não representa nível CEFR.</p>
-      </Card>
-      {evidence.responses.map((r, i) => (
-        <Card className="yas-stack" key={i}>
-          <SectionHeader
-            title={`
+      <div className="yas-split-layout" data-aside="review">
+        <div className="yas-split-main">
+          <Card className="yas-stack">
+            <SectionHeader title={"Evidência objetiva por habilidade"} />
+            {evidence.scores.length === 0 ? (
+              <p>Sem score objetivo disponível.</p>
+            ) : (
+              <ul>
+                {evidence.scores.map((s) => (
+                  <li key={s.skill}>
+                    {s.skill}: {s.score}/{s.maxScore ?? "—"} ·{" "}
+                    {String(s.provenance.engine ?? "Assessment")}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p>Score objetivo não representa nível CEFR.</p>
+          </Card>
+          {evidence.responses.map((r, i) => (
+            <Card className="yas-stack" key={i}>
+              <SectionHeader
+                title={`
             Resposta ${i + 1} · ${r.skill}
           `}
-          />
-          <p>{String(r.prompt.prompt ?? "")}</p>
-          <p>{String(r.response.text ?? r.response.optionId ?? "")}</p>
-          <p>{r.score === null ? "Revisão humana necessária" : "Evidência objetiva registrada"}</p>
-          {r.score === null && r.rubric && Object.keys(r.rubric).length > 0 && (
-            <details>
-              <summary>Rubric da versão</summary>
-              <p>{JSON.stringify(r.rubric)}</p>
-            </details>
+              />
+              <p>{String(r.prompt.prompt ?? "")}</p>
+              <blockquote className="yas-quote">
+                {String(r.response.text ?? r.response.optionId ?? "")}
+              </blockquote>
+              <p>
+                {r.score === null ? "Revisão humana necessária" : "Evidência objetiva registrada"}
+              </p>
+              {r.score === null && r.rubric && Object.keys(r.rubric).length > 0 && (
+                <details>
+                  <summary>Rubric da versão</summary>
+                  <p>{JSON.stringify(r.rubric)}</p>
+                </details>
+              )}
+            </Card>
+          ))}
+        </div>
+        <div className="yas-split-aside" data-sticky="">
+          {view?.review ? (
+            <Card className="yas-stack">
+              <SectionHeader title={"Recomendação preservada"} />
+              <p>{view.recommendedTitle}</p>
+              <p>{view.review.feedback}</p>
+              <p>
+                Confiança: {view.review.confidence} ·{" "}
+                {new Date(view.review.finalized_at).toLocaleString("pt-BR", {
+                  timeZone: "America/Recife",
+                })}
+              </p>
+              <p>Origem: Teacher Placement V1, com a versão da avaliação preservada.</p>
+            </Card>
+          ) : (
+            <Card>
+              <form action={finalizePlacementReviewAction} className="yas-stack">
+                <SectionHeader title={"Recomendação pedagógica"} />
+                <input name="caseId" type="hidden" value={id} />
+                <Select
+                  label="Trilha de aprendizagem recomendada"
+                  name="courseId"
+                  options={courses.map((c) => ({ value: c.id, label: c.title }))}
+                  required
+                />
+                <Textarea label="Feedback para o aluno" name="feedback" required maxLength={4000} />
+                <Select
+                  label="Confiança na recomendação"
+                  name="confidence"
+                  options={[
+                    { value: "LOW", label: "Baixa" },
+                    { value: "MEDIUM", label: "Média" },
+                    { value: "HIGH", label: "Alta" },
+                  ]}
+                  required
+                />
+                <Button type="submit" variant="primary">
+                  Finalizar recomendação
+                </Button>
+              </form>
+            </Card>
           )}
-        </Card>
-      ))}
-      {view?.review ? (
-        <Card className="yas-stack">
-          <SectionHeader title={"Recomendação preservada"} />
-          <p>{view.recommendedTitle}</p>
-          <p>{view.review.feedback}</p>
-          <p>
-            Confiança: {view.review.confidence} ·{" "}
-            {new Date(view.review.finalized_at).toLocaleString("pt-BR", {
-              timeZone: "America/Recife",
-            })}
-          </p>
-          <p>Origem: Teacher Placement V1, com a versão da avaliação preservada.</p>
-        </Card>
-      ) : (
-        <Card>
-          <form action={finalizePlacementReviewAction} className="yas-stack">
-            <SectionHeader title={"Recomendação pedagógica"} />
-            <input name="caseId" type="hidden" value={id} />
-            <Select
-              label="Trilha de aprendizagem recomendada"
-              name="courseId"
-              options={courses.map((c) => ({ value: c.id, label: c.title }))}
-              required
-            />
-            <Textarea label="Feedback para o aluno" name="feedback" required maxLength={4000} />
-            <Select
-              label="Confiança na recomendação"
-              name="confidence"
-              options={[
-                { value: "LOW", label: "Baixa" },
-                { value: "MEDIUM", label: "Média" },
-                { value: "HIGH", label: "Alta" },
-              ]}
-              required
-            />
-            <Button type="submit" variant="primary">
-              Finalizar recomendação
-            </Button>
-          </form>
-        </Card>
-      )}
-      <Link href="/teacher/revisoes/placement">Voltar à fila de entrada</Link>
+        </div>
+      </div>
+      <Link className="yas-back-link" href="/teacher/revisoes/placement">
+        Voltar à fila de entrada
+      </Link>
     </div>
   );
 }

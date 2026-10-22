@@ -1,7 +1,15 @@
 import Link from "next/link";
-import { DataTable, EmptyState, PageHeader } from "@/components/ui";
+import { Avatar, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
+function initials(name?: string | null) {
+  return (name ?? "Aluno")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 export default async function ReviewsPage() {
   const items = await loadTeacherReviews();
   return (
@@ -9,13 +17,15 @@ export default async function ReviewsPage() {
       <PageHeader
         title="Revisões"
         description="Responda primeiro às práticas enviadas há mais tempo."
+        actions={
+          <Link
+            className="yas-button yas-button--ghost yas-button--sm"
+            href="/teacher/revisoes/placement"
+          >
+            Ver revisões de entrada →
+          </Link>
+        }
       />
-      <Link
-        className="yas-button yas-button--soft yas-button--sm"
-        href="/teacher/revisoes/placement"
-      >
-        Ver revisões de entrada →
-      </Link>
       {items.length === 0 && (
         <EmptyState
           title="Nenhuma revisão pendente"
@@ -40,7 +50,16 @@ export default async function ReviewsPage() {
             return {
               id: item.id,
               cells: [
-                item.studentName ?? "Aluno",
+                <span key="student" className="yas-queue-meta">
+                  <span aria-hidden="true">
+                    <Avatar
+                      fallback={initials(item.studentName)}
+                      label={item.studentName ?? "Aluno"}
+                      size="sm"
+                    />
+                  </span>
+                  {item.studentName ?? "Aluno"}
+                </span>,
                 item.title,
                 item.skill,
                 <time key="submitted" dateTime={item.submittedAt}>

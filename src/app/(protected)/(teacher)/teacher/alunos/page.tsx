@@ -1,6 +1,14 @@
 import Link from "next/link";
-import { DataTable, EmptyState, PageHeader } from "@/components/ui";
+import { Avatar, DataTable, EmptyState, PageHeader } from "@/components/ui";
 import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
+function initials(name?: string | null) {
+  return (name ?? "Aluno")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 export default async function TeacherStudentsPage() {
   const context = await loadTeacherOperationContext();
   return (
@@ -24,9 +32,12 @@ export default async function TeacherStudentsPage() {
             return {
               id: item.id,
               cells: [
-                <Link key="student" href={href}>
-                  {item.name ?? "Aluno"}
-                </Link>,
+                <span key="student" className="yas-queue-meta">
+                  <span aria-hidden="true">
+                    <Avatar fallback={initials(item.name)} label={item.name ?? "Aluno"} size="sm" />
+                  </span>
+                  <Link href={href}>{item.name ?? "Aluno"}</Link>
+                </span>,
                 <Link key="action" href={href}>
                   Abrir perfil pedagógico
                 </Link>,
