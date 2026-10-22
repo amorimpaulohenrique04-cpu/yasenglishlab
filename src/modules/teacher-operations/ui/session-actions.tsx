@@ -13,6 +13,7 @@ import {
   availableSuggestions,
   addDays,
   localParts,
+  intervalOnLocalDay,
   sessionCanCancel,
   sessionCanEdit,
   weekStart,
@@ -323,14 +324,11 @@ export function AvailabilityDrawer({
           </p>
           <div className={styles.availabilityWeek}>
             {Array.from({ length: 7 }, (_, i) => addDays(week, i)).map((day) => {
-              const slots = context.availability.filter(
-                (a) => localParts(a.starts_at).date <= day && localParts(a.ends_at).date >= day,
+              const slots = context.availability.filter((a) =>
+                intervalOnLocalDay(a.starts_at, a.ends_at, day),
               );
               const busy = context.sessions.filter(
-                (s) =>
-                  s.status === "SCHEDULED" &&
-                  localParts(s.starts_at).date <= day &&
-                  localParts(s.ends_at).date >= day,
+                (s) => s.status === "SCHEDULED" && intervalOnLocalDay(s.starts_at, s.ends_at, day),
               );
               return (
                 <section key={day}>
@@ -347,14 +345,15 @@ export function AvailabilityDrawer({
                   ) : (
                     slots.map((a) => (
                       <p key={a.id}>
-                        Intervalo: {localParts(a.starts_at).time} – {localParts(a.ends_at).time}
+                        Intervalo: {intervalOnLocalDay(a.starts_at, a.ends_at, day)!.start} –{" "}
+                        {intervalOnLocalDay(a.starts_at, a.ends_at, day)!.end}
                       </p>
                     ))
                   )}
                   {busy.map((s) => (
                     <p className={styles.notice} key={s.id}>
-                      Ocupado: {localParts(s.starts_at).time} – {localParts(s.ends_at).time} ·{" "}
-                      {s.title}
+                      Ocupado: {intervalOnLocalDay(s.starts_at, s.ends_at, day)!.start} –{" "}
+                      {intervalOnLocalDay(s.starts_at, s.ends_at, day)!.end} · {s.title}
                     </p>
                   ))}
                 </section>

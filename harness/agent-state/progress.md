@@ -1,6 +1,6 @@
 ## teacher-sessions-redesign — 2026-10-22
 
-In progress. Approved redesign implemented in task branch; focused domain and PDF tests pass, security/db structural checks pass. First full gate stopped on preexisting historical evidence formatting (whitespace-only correction recorded). Isolated full run and browser QA pending. No done claim.
+Implementação entregue localmente na branch codex/teacher-sessions-redesign. Build de produção, 15 testes focados de domínio/PDF/recursos, três testes de isolamento e seis cenários de navegador passaram; rodada final dos três cenários do redesign passou com 22 capturas responsivas e axe. SQL focado, verify:security e verify:db passaram. Gates completos não concluídos e não reexecutados após a instrução expressa do usuário; verified:false preservado. Migration local aplicada sem reset; dev-seed executado (três logins OK, um aviso de cota na presença fictícia); localhost responde HTTP 200. Sem PR ou push. Evidências e limites em harness/evidence/teacher-sessions-redesign/README.md.
 
 ---
 

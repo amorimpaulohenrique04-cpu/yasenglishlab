@@ -4,6 +4,7 @@ import {
   comparison,
   filterSessions,
   localParts,
+  intervalOnLocalDay,
   parseSessionFilters,
   reportSummary,
   safeSessionReturn,
@@ -85,6 +86,17 @@ describe("Sessões: projeções e contratos de UX", () => {
       rate: null,
       pending: 0,
     });
+  });
+  it("clips overnight occupancy to each Recife day and excludes a midnight endpoint", () => {
+    expect(
+      intervalOnLocalDay("2026-10-22T02:00:00Z", "2026-10-22T03:30:00Z", "2026-10-21"),
+    ).toEqual({ start: "23:00", end: "24:00" });
+    expect(
+      intervalOnLocalDay("2026-10-22T02:00:00Z", "2026-10-22T03:30:00Z", "2026-10-22"),
+    ).toEqual({ start: "00:00", end: "00:30" });
+    expect(
+      intervalOnLocalDay("2026-10-22T02:00:00Z", "2026-10-22T03:00:00Z", "2026-10-22"),
+    ).toBeNull();
   });
   it("uses inclusive local dates and equal preceding comparison intervals", () => {
     const filters = parseReportFilters({ from: "2026-10-01", to: "2026-10-31" }, "2026-10-22");

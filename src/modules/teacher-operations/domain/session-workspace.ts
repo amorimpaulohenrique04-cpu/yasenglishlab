@@ -195,6 +195,17 @@ export function availableSuggestions(
   }
   return suggestions;
 }
+export function intervalOnLocalDay(startsAt: string, endsAt: string, day: string) {
+  const lower = Date.parse(localAvailabilityToIso(day, "00:00"));
+  const upper = Date.parse(localAvailabilityToIso(addDays(day, 1), "00:00"));
+  const start = Math.max(lower, Date.parse(startsAt));
+  const end = Math.min(upper, Date.parse(endsAt));
+  if (start >= end) return null;
+  return {
+    start: localParts(new Date(start)).time,
+    end: end === upper ? "24:00" : localParts(new Date(end)).time,
+  };
+}
 export function reportSummary(sessions: WorkspaceSession[], now: number) {
   const completed = sessions.filter((s) => s.status === "COMPLETED");
   const eligible = sessions.filter(

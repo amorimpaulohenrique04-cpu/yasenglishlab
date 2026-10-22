@@ -161,4 +161,6 @@ PR 1 isolates UUID cursor batches and explicit failure states in existing billin
 
 ## teacher-sessions-redesign — 2026-10-21
 
-Plano do chat aprovado. Recife, attendance desde início, Meet manual, COMPLETED explícito (pode ser zero); CSV e download PDF. Sem novas capacidades de domínio. Drawer consulta disponibilidade; edição permanece na página existente. Um PR dependente da base atual style/sidebar-fit.
+Plano do chat aprovado. Recife, attendance desde início, Meet manual, COMPLETED explícito (pode ser zero); CSV e download PDF. Sem novas capacidades de domínio. Drawer consulta disponibilidade; edição permanece na página existente. Em 2026-10-22 o usuário decidiu receber a entrega localmente, sem PR nem publicação de branches. Base local style/sidebar-fit preservada.
+
+Em seguida, o usuário pediu explicitamente não executar os gates completos e solicitou migrations locais, dev-seed e localhost. Manter a certificação completa pendente, registrar verificações focadas e preservar os bloqueios reais de cota também no seed.

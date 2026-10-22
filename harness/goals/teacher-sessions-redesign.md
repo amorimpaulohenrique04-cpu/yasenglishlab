@@ -3,7 +3,7 @@
 Status: in_progress
 Owner: agent/human
 Created: 2026-10-21
-Updated: 2026-10-21
+Updated: 2026-10-22
 
 ## Objective
 
@@ -65,6 +65,8 @@ O lint global também percorreu o checkout local preexistente `.level-based-coho
 - Alterações preexistentes não relacionadas
 
 ## Mandatory tests
+
+Atualização expressa do usuário em 2026-10-22: não executar os gates completos. Encerrar a entrega local com verificações focadas, aplicar migrations locais, executar `node scripts/dev-seed.mjs` e iniciar localhost. A certificação pelos gates abaixo permanece pendente; não declarar todos os checks verdes.
 
 - npm run verify:agent
 - npm run verify:ui

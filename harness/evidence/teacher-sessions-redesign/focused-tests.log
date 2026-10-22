@@ -5,8 +5,7 @@ Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
  RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
 
 
- Test Files  2 passed (2)
-      Tests  7 passed (7)
-   Start at  00:08:06
-   Duration  4.69s (import 52%, tests 34%, transform 13%, worker 1%)
-
+ Test Files  4 passed (4)
+      Tests  15 passed (15)
+   Start at  01:05:38
+   Duration  6.09s (import 56%, tests 30%, transform 13%, worker 1%)

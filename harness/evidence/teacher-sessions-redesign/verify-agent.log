@@ -1,21 +1,5 @@
-
-> yasenglishlab@0.1.0 verify:agent
-> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
-
-
-> yasenglishlab@0.1.0 verify:core
-> node scripts/verify-core.mjs
-
-
-▶ npm run format:check
-
-> yasenglishlab@0.1.0 format:check
-> node scripts/check-format.mjs
-
-Formatting passed: 841 tracked source files.
-
-▶ npm run lint
-
-> yasenglishlab@0.1.0 lint
-> eslint .
-
+verify:agent: NOT PASSED
+Initial attempt failed during global ESLint: generated bundles in preexisting .level-based-cohorts checkout (1852 errors, 25029 warnings).
+Narrow nested-worktree exclusion added and covered by real ESLint isolation test. Corrected global lint passed with one unrelated local warning.
+Complete verify:agent not rerun: user explicitly requested no complete gates on 2026-10-22.
+Raw failed output retained locally at artifacts/teacher-sessions-staging/verify-agent-failed-raw.log.

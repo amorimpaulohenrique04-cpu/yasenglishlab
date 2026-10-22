@@ -17,8 +17,11 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": [],
-      "evidence": ["harness/goals/teacher-sessions-redesign.md"],
-      "updated_at": "2026-10-22T00:00:00Z"
+      "evidence": [
+        "harness/goals/teacher-sessions-redesign.md",
+        "harness/evidence/teacher-sessions-redesign/README.md"
+      ],
+      "updated_at": "2026-10-22T04:10:00.148Z"
     },
     {
       "id": "billing-reconciliation-integrity",
@@ -55,7 +58,10 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": [],
-      "evidence": ["harness/goals/pr74-gates.md", "harness/evidence/pr74-gates/README.md"],
+      "evidence": [
+        "harness/goals/pr74-gates.md",
+        "harness/evidence/pr74-gates/README.md"
+      ],
       "updated_at": "2026-10-15T23:01:32.846Z"
     },
     {

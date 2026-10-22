@@ -9,7 +9,7 @@ Goal: harness/goals/teacher-sessions-redesign.md. Plano aprovado pelo usuário.
 1. Projeções autenticadas completas e domínio/testes de filtros, disponibilidade e relatórios.
 2. Agenda/calendário, assistente, drawers e detalhes preservando operações.
 3. Relatórios CSV/PDF, regressões, acessibilidade e evidência visual.
-4. Gates oficiais, revisão, registro e PR único sobre style/sidebar-fit.
+4. Entrega local, migrations, dev-seed e localhost. Gates completos suspensos por instrução expressa de 2026-10-22; certificação permanece pendente. Sem PR ou push.
 
 ---
 
