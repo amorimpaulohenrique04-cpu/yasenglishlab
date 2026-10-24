@@ -52,3 +52,5 @@ A pasta `docs/` é a fonte de verdade modular do produto e da engenharia. Use pr
 See [P21 foundation](P21_FOUNDATION.md) for role routing, transactional quota and cohorts V1, with ADRs 0007–0009 and operational upgrade checks.
 
 See [P21 core experience](P21_CORE_EXPERIENCE.md) for live operations, human review, private response audio and recorded course video.
+
+- [TEACHER_STUDENTS.md](./TEACHER_STUDENTS.md) — carteira e perfil pedagógico do professor, métricas e regra de atenção.
