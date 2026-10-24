@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useId, useState, useTransition, type ReactNode } from "react";
 
-import { Avatar, Drawer, Icon, IconButton, type IconName } from "@/components/ui";
+import { Avatar, Drawer, Dropdown, Icon, IconButton, type IconName } from "@/components/ui";
+import { nameInitials } from "@/lib/initials";
+
+import { logoutAction } from "@/app/(protected)/(account)/profile/actions";
 
 import { AppShell } from "./app-shell";
 import { ContentContainer } from "./content-container";
@@ -39,19 +42,9 @@ export interface RoleShellProps {
   /** Selo de sessão verificada (2FA) na topbar. */
   verifiedSession?: boolean;
   sidebarFooter?: ReactNode;
+  /** Extra topbar controls placed before the account menu (e.g. search trigger). */
+  topbarActions?: ReactNode;
   children: ReactNode;
-}
-
-function initialsOf(name: string) {
-  return (
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase() || "YA"
-  );
 }
 
 function isActive(item: RoleNavItem, pathname: string, homeHref: string) {
@@ -83,11 +76,14 @@ export function RoleShell({
   drawerNavLabel,
   verifiedSession = false,
   sidebarFooter,
+  topbarActions,
   children,
 }: RoleShellProps) {
   const pathname = usePathname();
+  const drawerId = useId();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const initials = initialsOf(displayName);
+  const [, startSignOut] = useTransition();
+  const initials = nameInitials(displayName, "YA");
   const shortcuts = items.filter((item) => item.shortcut).slice(0, 5);
 
   const profileActive = pathname === "/profile" || pathname.startsWith("/profile/");
@@ -110,6 +106,33 @@ export function RoleShell({
       active: profileActive,
     },
   ];
+
+  const drawerSections: {
+    group: string | undefined;
+    items: { id: string; label: string; href: string; icon: IconName; active: boolean }[];
+  }[] = [];
+  for (const item of [
+    ...items.map((entry) => ({
+      id: entry.id,
+      label: entry.label,
+      href: entry.href,
+      icon: entry.icon,
+      group: entry.group,
+      active: isActive(entry, pathname, homeHref),
+    })),
+    {
+      id: "profile",
+      label: "Perfil",
+      href: "/profile",
+      icon: "user" as IconName,
+      group: "Conta",
+      active: profileActive,
+    },
+  ]) {
+    const last = drawerSections[drawerSections.length - 1];
+    if (last && last.group === item.group) last.items.push(item);
+    else drawerSections.push({ group: item.group, items: [item] });
+  }
 
   return (
     <AppShell
@@ -156,14 +179,28 @@ export function RoleShell({
                   <span>Sessão verificada</span>
                 </span>
               )}
-              <Link
-                className="yas-topbar-profile"
-                href="/profile"
-                aria-current={profileActive ? "page" : undefined}
-              >
-                <Avatar fallback={initials} label={displayName} size="md" />
-                <span className="yas-topbar-profile-name">{displayName}</span>
-              </Link>
+              {topbarActions}
+              <Dropdown
+                label={`Menu da conta de ${displayName}`}
+                className="yas-topbar-account-menu"
+                triggerClassName="yas-topbar-account"
+                triggerContent={
+                  <>
+                    <Avatar fallback={initials} label={displayName} size="md" />
+                    <span className="yas-topbar-profile-name">{displayName}</span>
+                    <Icon name="down" size={16} className="yas-dropdown-chevron" />
+                  </>
+                }
+                items={[
+                  { id: "profile", label: "Perfil", href: "/profile", icon: "user" },
+                  {
+                    id: "logout",
+                    label: "Sair",
+                    icon: "logout",
+                    onSelect: () => startSignOut(() => logoutAction()),
+                  },
+                ]}
+              />
             </>
           }
         />
@@ -193,36 +230,34 @@ export function RoleShell({
         description={drawerDescription}
       >
         <nav className="yas-drawer-nav" aria-label={drawerNavLabel}>
-          {items.map((item, index) => {
-            const startsGroup = item.group && item.group !== items[index - 1]?.group;
+          {drawerSections.map((section, sectionIndex) => {
+            const headingId = `${drawerId}-group-${sectionIndex}`;
             return (
-              <div key={item.id} className="yas-drawer-nav-item">
-                {startsGroup && (
-                  <span className="yas-drawer-nav-group" aria-hidden="true">
-                    {item.group}
+              <div
+                key={`${section.group ?? "ungrouped"}-${sectionIndex}`}
+                role="group"
+                aria-labelledby={section.group ? headingId : undefined}
+              >
+                {section.group && (
+                  <span className="yas-drawer-nav-group" id={headingId}>
+                    {section.group}
                   </span>
                 )}
-                <Link
-                  href={item.href}
-                  aria-current={isActive(item, pathname, homeHref) ? "page" : undefined}
-                  onClick={() => setDrawerOpen(false)}
-                >
-                  <Icon name={item.icon} size={20} />
-                  {item.label}
-                </Link>
+                {section.items.map((item) => (
+                  <div key={item.id} className="yas-drawer-nav-item">
+                    <Link
+                      href={item.href}
+                      aria-current={item.active ? "page" : undefined}
+                      onClick={() => setDrawerOpen(false)}
+                    >
+                      <Icon name={item.icon} size={20} />
+                      {item.label}
+                    </Link>
+                  </div>
+                ))}
               </div>
             );
           })}
-          <div className="yas-drawer-nav-item">
-            <Link
-              href="/profile"
-              aria-current={profileActive ? "page" : undefined}
-              onClick={() => setDrawerOpen(false)}
-            >
-              <Icon name="user" size={20} />
-              Perfil
-            </Link>
-          </div>
         </nav>
       </Drawer>
     </AppShell>

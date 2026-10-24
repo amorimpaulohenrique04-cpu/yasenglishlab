@@ -4,6 +4,8 @@ import { TeacherShell } from "@/modules/teacher-operations/ui/teacher-shell";
 import { requirePageRole } from "@/server/auth/guards";
 import { createSupabaseServerClient } from "@/server/supabase/server";
 
+import { loadTeacherSearchIndexAction } from "./search-actions";
+
 export default async function TeacherLayout({ children }: { children: ReactNode }) {
   const auth = await requirePageRole("TEACHER");
   const supabase = await createSupabaseServerClient();
@@ -19,7 +21,11 @@ export default async function TeacherLayout({ children }: { children: ReactNode 
       : auth.email?.split("@")[0] || "Professor Yas";
 
   return (
-    <TeacherShell displayName={displayName} verifiedSession={auth.aal === "aal2"}>
+    <TeacherShell
+      displayName={displayName}
+      verifiedSession={auth.aal === "aal2"}
+      loadSearchIndex={loadTeacherSearchIndexAction}
+    >
       {children}
     </TeacherShell>
   );

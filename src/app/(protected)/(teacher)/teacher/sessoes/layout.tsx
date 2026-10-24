@@ -3,7 +3,7 @@ import { unstable_rethrow } from "next/navigation";
 import { MotionProvider } from "@/components/motion";
 import { ToastProvider } from "@/components/ui";
 import {
-  SessionCommandPalette,
+  TeacherSearchSessions,
   type PaletteSession,
 } from "@/modules/teacher-operations/ui/session-command-palette";
 import { loadSessionWorkspace } from "@/server/teacher-operations/session-workspace";
@@ -32,7 +32,7 @@ export default async function TeacherSessionsLayout({ children }: { children: Re
     <MotionProvider>
       <ToastProvider>
         {children}
-        <SessionCommandPalette sessions={sessions} />
+        <TeacherSearchSessions sessions={sessions} />
       </ToastProvider>
     </MotionProvider>
   );
