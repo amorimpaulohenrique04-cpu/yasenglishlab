@@ -421,6 +421,22 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
       .insert({ cohort_id: cohortIds[index], teacher_id: linkedTeacher, is_primary: true });
     if (error) throw error;
   }
+  // /teacher/alunos lists only current teacher_student_assignments (docs/TEACHER_STUDENTS.md),
+  // so each cohort student also gets the pedagogical link to its cohort's Teacher.
+  const { data: studentLink, error: studentLinkError } = await admin
+    .from("teacher_student_assignments")
+    .select("id")
+    .eq("teacher_id", linkedTeacher)
+    .eq("student_user_id", cohortUser.id)
+    .is("ends_at", null)
+    .maybeSingle();
+  if (studentLinkError) throw studentLinkError;
+  if (!studentLink) {
+    const { error } = await admin
+      .from("teacher_student_assignments")
+      .insert({ teacher_id: linkedTeacher, student_user_id: cohortUser.id });
+    if (error) throw error;
+  }
 }
 // Decision A: an explicit teacher assignment legitimately opens future-lesson
 // practice for this cohort, without changing lesson progress or access for cohort B.
@@ -854,6 +870,7 @@ runAdmin(`begin;
  delete from public.placement_decisions where placement_case_id in(select id from public.placement_cases where user_id in(${fixtureUsers}));
  delete from public.placement_reviews where placement_case_id in(select id from public.placement_cases where user_id in(${fixtureUsers}));
  delete from public.student_schedule_preferences where placement_case_id in(select id from public.placement_cases where user_id in(${fixtureUsers}));
+ delete from public.placement_review_drafts where placement_case_id in(select id from public.placement_cases where user_id in(${fixtureUsers}));
  delete from public.placement_cases where user_id in(${fixtureUsers});
  delete from public.cohort_memberships where user_id in(${fixtureUsers});
  delete from public.enrollments where user_id in(${fixtureUsers});

@@ -70,9 +70,17 @@ test("Teacher scoped review preserves keyboard and WCAG AA", async ({ browser })
   await check(page);
   await page.goto(`/teacher/revisoes/placement/${c!.id}`);
   await expect(page.getByLabel("Feedback para o aluno")).toBeVisible();
-  await page.getByLabel("Feedback para o aluno").focus();
+  await page.getByLabel("Trilha recomendada").focus();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Confiança na recomendação")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("tab", { name: "Escrever manualmente" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("tabpanel", { name: "Escrever manualmente" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Feedback para o aluno")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel(/^Notas internas/)).toBeFocused();
   await check(page);
   await teacher.close();
 });

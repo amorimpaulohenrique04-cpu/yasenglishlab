@@ -26,19 +26,23 @@ test("Teacher operational surfaces stay scoped and usable on mobile", async ({
   await expect(page.getByRole("heading", { name: "Turmas", exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: "Cohort Basic" })).toBeVisible();
   await page.goto("/teacher/alunos");
-  await expect(page.getByRole("link", { name: "Cohort Student A" })).toBeVisible();
+  await expect(
+    page.getByRole("table").getByRole("link", { name: "Cohort Student A" }),
+  ).toBeVisible();
   await page.goto(`/teacher/alunos/${student.id}`);
   await expect(page.getByRole("heading", { name: "Cohort Student A" })).toBeVisible();
-  for (const title of [
-    "Progresso curricular",
-    "Practice",
-    "Presença",
-    "Avaliações",
-    "Placement",
-    "Nota interna",
-  ]) {
-    await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+  for (const [tab, titles] of [
+    [/^Resumo/, ["Matrículas e progresso curricular", "Próxima sessão"]],
+    [/^Atividades/, ["Histórico de atividades", "Sessões, presença e tarefas"]],
+    [/^Avaliações/, ["Avaliações e pedidos de novo teste", "Teste de entrada"]],
+    [/^Notas internas/, ["Suas notas internas"]],
+  ] as const) {
+    await page.getByRole("tab", { name: tab }).click();
+    for (const title of titles) {
+      await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    }
   }
+  await page.getByRole("tab", { name: /^Resumo/ }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   expect(
     await page.evaluate(
@@ -56,9 +60,12 @@ test("Teacher operational surfaces stay scoped and usable on mobile", async ({
 
   await page.goto("/teacher/disponibilidade");
   await expect(page.getByRole("heading", { name: "Disponibilidade", exact: true })).toBeVisible();
-  await expect(page.getByLabel("Data").first()).toHaveAttribute("type", "date");
-  await expect(page.getByLabel("Início").first()).toHaveAttribute("type", "time");
-  await expect(page.getByLabel("Término").first()).toHaveAttribute("type", "time");
+  // On mobile the composer lives in a drawer opened from the page action.
+  await page.getByRole("button", { name: "Adicionar horário", exact: true }).first().click();
+  const composer = page.getByRole("dialog", { name: "Adicionar horário" });
+  await expect(composer.getByLabel("Data do horário")).toBeVisible();
+  await expect(composer.getByLabel("Horário de início")).toBeVisible();
+  await expect(composer.getByLabel("Horário de término")).toBeVisible();
   expect(
     (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
   ).toEqual([]);

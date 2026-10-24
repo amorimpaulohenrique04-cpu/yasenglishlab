@@ -81,20 +81,22 @@ test("confirmed Student → persisted Assessment → scoped Teacher AAL2 → rea
   await loginCanonicalTeacher(teacherPage, password!);
   await teacherPage.goto("/teacher/revisoes/placement");
   await teacherPage
-    .locator(".yas-card")
-    .filter({ hasText: "Placement New" })
-    .getByRole("link", { name: "Revisar teste de entrada" })
+    .getByRole("listitem")
+    .filter({ has: teacherPage.getByRole("heading", { name: "Placement New" }) })
+    .getByRole("link", { name: /^(Abrir revisão|Continuar)$/ })
     .click();
   await teacherPage
-    .getByLabel("Trilha de aprendizagem recomendada")
+    .getByLabel("Trilha recomendada")
     .selectOption("40000000-0000-4000-8000-000000000001");
+  await teacherPage.getByLabel("Confiança na recomendação").selectOption("HIGH");
   await teacherPage
     .getByLabel("Feedback para o aluno")
     .fill("Follow Foundations and keep practicing regularly.");
-  await teacherPage.getByLabel("Confiança na recomendação").selectOption("HIGH");
   await axe(teacherPage);
-  await teacherPage.getByRole("button", { name: "Finalizar recomendação" }).click();
-  await expect(teacherPage.getByText("Recomendação finalizada", { exact: true })).toBeVisible();
+  await teacherPage.getByRole("button", { name: "Finalizar revisão" }).click();
+  await expect(
+    teacherPage.getByRole("dialog", { name: "Revisão finalizada com sucesso!" }),
+  ).toBeVisible();
   await teacherContext.close();
   await page.goto("/onboarding");
   await page.getByRole("button", { name: "Ver recomendação e turmas" }).click();

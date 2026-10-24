@@ -115,11 +115,12 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
     await page.goto("/teacher/disponibilidade");
     const localStart = localDateTime(availabilityStart);
     const localEnd = localDateTime(availabilityEnd);
-    await page.getByLabel("Data").first().fill(localStart.date);
-    await page.getByLabel("Início").first().fill(localStart.time);
-    await page.getByLabel("Término").first().fill(localEnd.time);
-    await page.getByRole("button", { name: "Adicionar horário" }).click();
-    await expect(page).toHaveURL(/\/teacher\/disponibilidade\?save=success$/);
+    await page.getByLabel("Data do horário").first().fill(localStart.date);
+    await page.getByLabel("Horário de início").first().fill(localStart.time);
+    await page.getByLabel("Horário de término").first().fill(localEnd.time);
+    await page.getByRole("button", { name: "Adicionar horário", exact: true }).first().click();
+    await page.getByRole("button", { name: /^Confirmar 1 horário$/ }).click();
+    await expect(page.getByText("Disponibilidade salva", { exact: true }).first()).toBeVisible();
 
     await page.goto("/teacher/sessoes/nova");
     await page.getByLabel("Título").fill(title);
