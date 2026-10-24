@@ -1,6 +1,11 @@
 import "server-only";
 import { z } from "zod";
 import {
+  entryCourseOptionsSchema,
+  entryEvidenceSchema,
+  type EntryDetailContext,
+} from "@/modules/placement/domain/entry-workspace";
+import {
   beginPlacement,
   savePreferences,
   startPlacementAssessment,
@@ -82,32 +87,12 @@ export async function loadTeacherPlacement(id: string) {
     .eq("publication_status", "PUBLISHED")
     .order("title");
   if (courseError) throw new Error("Placement tracks unavailable.");
-  return {
+  const result: EntryDetailContext = {
     view,
-    evidence: z
-      .object({
-        attemptId: z.uuid(),
-        scores: z.array(
-          z.object({
-            skill: z.string(),
-            score: z.number(),
-            maxScore: z.number().nullable(),
-            provenance: z.record(z.string(), z.unknown()),
-          }),
-        ),
-        responses: z.array(
-          z.object({
-            skill: z.string(),
-            prompt: z.record(z.string(), z.unknown()),
-            response: z.record(z.string(), z.unknown()),
-            rubric: z.record(z.string(), z.unknown()).nullable(),
-            score: z.number().nullable(),
-          }),
-        ),
-      })
-      .parse(data),
-    courses: z.array(z.object({ id: z.uuid(), title: z.string() })).parse(courses),
+    evidence: entryEvidenceSchema.parse(data),
+    courses: entryCourseOptionsSchema.parse(courses),
   };
+  return result;
 }
 export async function finalizeCurrentPlacementReview(input: unknown) {
   const { repo, analytics } = await context("TEACHER");

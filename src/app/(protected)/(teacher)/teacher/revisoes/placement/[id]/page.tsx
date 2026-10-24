@@ -1,122 +1,44 @@
-import Link from "next/link";
-import { Alert, Button, Card, PageHeader, SectionHeader, Select, Textarea } from "@/components/ui";
+import { notFound } from "next/navigation";
+import {
+  entryDetailUrl,
+  entryFiltersSchema,
+  entryUrl,
+} from "@/modules/placement/domain/entry-workspace";
+import { EntryDetail } from "@/modules/placement/ui/entry-detail";
 import { loadTeacherPlacement } from "@/server/placement/placement";
-import { finalizePlacementReviewAction } from "../actions";
+import { loadEntryDraft, loadEntryNeighbors } from "@/server/placement/entry-workspace";
+import { saveEntryWorkspace } from "../workspace-actions";
+import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
 export default async function ReviewPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ result?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
-  const { view, evidence, courses } = await loadTeacherPlacement(id);
-  const { result } = await searchParams;
+  const query = await searchParams;
+  const filters = entryFiltersSchema.parse(query);
+  const [context, personal, nav] = await Promise.all([
+    loadTeacherPlacement(id),
+    loadEntryDraft(id),
+    loadEntryNeighbors(id, filters),
+  ]);
+  if (!context.view) notFound();
   return (
-    <div className="yas-stack">
-      <PageHeader
-        title="Revisar teste de entrada"
-        description="Use as evidências para recomendar uma trilha de aprendizagem. Não atribua CEFR oficial."
-      />
-      {result && (
-        <Alert
-          tone={result === "success" ? "success" : "error"}
-          title={result === "success" ? "Recomendação finalizada" : "Não foi possível finalizar"}
-          description={
-            result === "success"
-              ? "A recomendação foi registrada e está disponível para o aluno."
-              : "Confira trilha, feedback e confiança. Uma revisão finalizada não pode ser sobrescrita."
-          }
-        />
-      )}
-      <div className="yas-split-layout" data-aside="review">
-        <div className="yas-split-main">
-          <Card className="yas-stack">
-            <SectionHeader title={"Evidência objetiva por habilidade"} />
-            {evidence.scores.length === 0 ? (
-              <p>Sem score objetivo disponível.</p>
-            ) : (
-              <ul>
-                {evidence.scores.map((s) => (
-                  <li key={s.skill}>
-                    {s.skill}: {s.score}/{s.maxScore ?? "—"} ·{" "}
-                    {String(s.provenance.engine ?? "Assessment")}
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p>Score objetivo não representa nível CEFR.</p>
-          </Card>
-          {evidence.responses.map((r, i) => (
-            <Card className="yas-stack" key={i}>
-              <SectionHeader
-                title={`
-            Resposta ${i + 1} · ${r.skill}
-          `}
-              />
-              <p>{String(r.prompt.prompt ?? "")}</p>
-              <blockquote className="yas-quote">
-                {String(r.response.text ?? r.response.optionId ?? "")}
-              </blockquote>
-              <p>
-                {r.score === null ? "Revisão humana necessária" : "Evidência objetiva registrada"}
-              </p>
-              {r.score === null && r.rubric && Object.keys(r.rubric).length > 0 && (
-                <details>
-                  <summary>Rubric da versão</summary>
-                  <p>{JSON.stringify(r.rubric)}</p>
-                </details>
-              )}
-            </Card>
-          ))}
-        </div>
-        <div className="yas-split-aside" data-sticky="">
-          {view?.review ? (
-            <Card className="yas-stack">
-              <SectionHeader title={"Recomendação preservada"} />
-              <p>{view.recommendedTitle}</p>
-              <p>{view.review.feedback}</p>
-              <p>
-                Confiança: {view.review.confidence} ·{" "}
-                {new Date(view.review.finalized_at).toLocaleString("pt-BR", {
-                  timeZone: "America/Recife",
-                })}
-              </p>
-              <p>Origem: Teacher Placement V1, com a versão da avaliação preservada.</p>
-            </Card>
-          ) : (
-            <Card>
-              <form action={finalizePlacementReviewAction} className="yas-stack">
-                <SectionHeader title={"Recomendação pedagógica"} />
-                <input name="caseId" type="hidden" value={id} />
-                <Select
-                  label="Trilha de aprendizagem recomendada"
-                  name="courseId"
-                  options={courses.map((c) => ({ value: c.id, label: c.title }))}
-                  required
-                />
-                <Textarea label="Feedback para o aluno" name="feedback" required maxLength={4000} />
-                <Select
-                  label="Confiança na recomendação"
-                  name="confidence"
-                  options={[
-                    { value: "LOW", label: "Baixa" },
-                    { value: "MEDIUM", label: "Média" },
-                    { value: "HIGH", label: "Alta" },
-                  ]}
-                  required
-                />
-                <Button type="submit" variant="primary">
-                  Finalizar recomendação
-                </Button>
-              </form>
-            </Card>
-          )}
-        </div>
-      </div>
-      <Link className="yas-back-link" href="/teacher/revisoes/placement">
-        Voltar à fila de entrada
-      </Link>
-    </div>
+    <EntryDetail
+      key={id}
+      context={context}
+      initialDraft={personal.draft}
+      initialHistory={personal.savedAt}
+      caseId={id}
+      listHref={entryUrl(filters)}
+      previousHref={nav.prev ? entryDetailUrl(nav.prev, { ...filters, page: nav.prevPage }) : null}
+      nextHref={nav.next ? entryDetailUrl(nav.next, { ...filters, page: nav.nextPage }) : null}
+      position={nav.position}
+      total={nav.total}
+      now={sessionWorkspaceNow()}
+      action={saveEntryWorkspace.bind(null, filters)}
+    />
   );
 }
