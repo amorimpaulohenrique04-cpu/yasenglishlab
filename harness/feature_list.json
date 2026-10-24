@@ -12,6 +12,54 @@
   },
   "features": [
     {
+      "id": "teacher-students-redesign",
+      "title": "Alunos do professor: carteira e perfil pedagógico",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-students-redesign.md",
+        "harness/evidence/teacher-students-redesign/README.md"
+      ],
+      "updated_at": "2026-10-23T23:00:00-03:00"
+    },
+    {
+      "id": "teacher-availability-redesign",
+      "title": "Disponibilidade do professor: redesign, recorrência e pausa",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-availability-redesign.md",
+        "harness/evidence/teacher-availability-redesign/"
+      ],
+      "updated_at": "2026-10-23T20:23:49.443Z"
+    },
+    {
+      "id": "teacher-entry-redesign",
+      "title": "Redesign da Entrada do professor",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-entry-redesign.md",
+        "harness/evidence/teacher-entry-redesign/"
+      ],
+      "updated_at": "2026-10-23T19:41:20.305Z"
+    },
+    {
+      "id": "teacher-entry-demo",
+      "title": "Dados fictícios na Entrada do Teacher",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-entry-demo.md",
+        "harness/evidence/teacher-entry-demo/"
+      ],
+      "updated_at": "2026-10-23T18:36:56.054Z"
+    },
+    {
       "id": "teacher-sessions-redesign",
       "title": "Redesign completo de Sessões do professor",
       "status": "in_progress",
@@ -680,6 +728,23 @@
       "dependencies": ["practice-10-v3"],
       "evidence": ["harness/goals/pr80-gates.md"],
       "updated_at": "2026-10-17T12:00:00Z"
+    },
+    {
+      "id": "teacher-screens-polish",
+      "title": "Telas do professor: correções de Entrada, Disponibilidade, Alunos e shell",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [
+        "teacher-entry-redesign",
+        "teacher-availability-redesign",
+        "teacher-students-redesign"
+      ],
+      "evidence": [
+        "harness/goals/teacher-screens-polish.md",
+        "harness/failure-log/2026-10-24-teacher-screens-polish.md",
+        "harness/evidence/teacher-screens-polish/"
+      ],
+      "updated_at": "2026-10-24T18:00:00-03:00"
     }
   ]
 }

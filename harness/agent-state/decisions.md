@@ -164,3 +164,15 @@ PR 1 isolates UUID cursor batches and explicit failure states in existing billin
 Plano do chat aprovado. Recife, attendance desde início, Meet manual, COMPLETED explícito (pode ser zero); CSV e download PDF. Sem novas capacidades de domínio. Drawer consulta disponibilidade; edição permanece na página existente. Em 2026-10-22 o usuário decidiu receber a entrega localmente, sem PR nem publicação de branches. Base local style/sidebar-fit preservada.
 
 Em seguida, o usuário pediu explicitamente não executar os gates completos e solicitou migrations locais, dev-seed e localhost. Manter a certificação completa pendente, registrar verificações focadas e preservar os bloqueios reais de cota também no seed.
+
+## teacher-entry-redesign — 2026-10-23
+
+Referência do chat + implementação de Revisões; CTA violeta, SLA 24h, rascunho/nota pessoal e explícito, sem confiança do aluno inventada e sem notificações externas prometidas. IA só contrato, escolha do provedor posterior. Usuário dispensa gates iniciais; certificação adiada. Feedback visual ampliou o escopo ao Dialog compartilhado para corrigir centralização causada por reset CSS e criar apresentação confirmation, preservando drawers.
+
+## teacher-availability-redesign — 2026-10-23
+
+Decisões aprovadas: referência visual + implementação Revisões; recorrência com término definido; ocorrência ou futuras; bloqueio se retirar cobertura de sessão. Sem duração/buffer/antecedência novos ou troca de fuso. Série materializa intervalos datados, sem cron; intervalo legado ativo por default. Contrato legado de SELECT de horários ativos mantido; novo estado pausado visível só ao próprio Teacher+AAL2/Admin+AAL2. Usuário dispensa gates na validação inicial; certificação permanece pendente. Nenhum commit/push.
+
+## 2026-10-23 — Alunos: regras aprovadas e adaptação visual
+
+Usuário aprovou listagem + perfil e atenção após sete dias apenas para matrícula ACTIVE, com tolerância desde o vínculo. Adicionar aluno e seleção em lote não cabem ao Teacher; referência adaptada para revisões, distribuição por curso e dados curriculares reais, sem e-mail de auth.users ou CEFR inferido. Indicadores globais independem de filtros/página. Notas são pessoais; pedidos preservam o contrato existente. Projeções não usam os limites do contexto legado e contam aulas sem progresso no denominador. Tablet estreito usa cartões para preservar legibilidade. Validação econômica autorizada sem gates/build; verified:false.

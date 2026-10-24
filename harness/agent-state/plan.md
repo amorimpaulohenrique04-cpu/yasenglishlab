@@ -196,3 +196,43 @@ Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adi
 Corrigir o bloqueio de chunks minificados no teste de hidratação e executar apenas o checkout FAKE em servidor dev isolado, preservando a proibição de FAKE em produção. Validar os dois casos, controles e CI completo.
 
 Ajuste final de integração: mover a prova de persistência/audit de publicação do pós-run para o próprio cenário, antes de afterEach limpar o módulo. Manter as mesmas asserções e deixar os demais checks de persistência/analytics intactos.
+
+---
+
+## teacher-entry-demo — 2026-10-23
+
+Goal: `harness/goals/teacher-entry-demo.md`.
+
+1. Seed focado em quatro alunos Demo exclusivos, teste publicado e teacher.dev existente.
+2. Criar assinatura sintética local e atribuições; executar comandos de placement/avaliação sem finalizar revisão.
+3. Repetir para provar idempotência, consultar fila como teacher e inspecionar no navegador; executar checks e registrar pendências.
+
+## teacher-entry-redesign — 2026-10-23
+
+1. Projeções, rascunhos privados com versão e evidências autorizadas.
+2. Fila e workspace de revisão conforme referência, motion e responsivo.
+3. Smoke simples e registros; gates adiados por instrução do usuário; IA sem provedor.
+
+## teacher-availability-redesign — 2026-10-23
+
+1. Migration aditiva: ocorrências datadas, séries, pausa, lotes atômicos/idempotentes e cobertura de sessões.
+2. Workspace responsivo conforme referência; calendário com seleção, formulário, sheets e lista.
+3. Checks focados, smoke com rollback e browser; sem gates/build/commit/push.
+
+## 2026-10-23 — teacher-students-redesign
+
+1. Projeções autorizadas completas/paginadas para carteira, trilhas, feed e perfil, sem limites do contexto antigo.
+2. Listagem no padrão visual da referência; perfil com quatro abas, sheets de nota/pedido e URL preservada.
+3. Checks pequenos e smoke SQL transacional; conferir responsividade e registrar evidências. Sem gates/build/commit/push; verified:false.
+
+## Teacher screens polish (2026-10-23)
+
+0. Preparação mecânica: goal em harness/goals/teacher-screens-polish.md, código morto confirmado, runner SQL e helper de iniciais.
+1. Cabeçalho e barra lateral: sidebar sem corte do cartão do usuário, menu do usuário e Ctrl K global.
+2. Revisões de entrada: migration aditiva, fluxo de finalização com próxima revisão, UI conforme mock e modal de erro.
+3. Disponibilidade: erros mapeados, KPIs corretos, agenda sem sobreposição, card de regras somente leitura e toggle estável.
+4. Alunos: KPIs, ordenação, busca com debounce, ações por linha e paginação do perfil.
+5. Testes: seletores atualizados sem enfraquecer asserções, e2e/a11y/componente novos, sem goldens automáticos.
+6. Verificação: testes focados, verify:agent, verify:ui, verify:db, verify:security e verify:full, com evidências.
+7. Proposta fora do ciclo: tendências/sparklines (snapshots) e sino de notificações.
+   Detalhes e critérios: harness/goals/teacher-screens-polish.md.

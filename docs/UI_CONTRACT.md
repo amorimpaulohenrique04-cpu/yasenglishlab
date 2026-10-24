@@ -80,3 +80,21 @@ Decisões do usuário: visual + UX sem regra nova; **CTA primário violeta** (va
 - **Mês:** até 3 chips por dia.
 - **Celular:** a Semana vira uma faixa de dias com a lista do dia escolhido; o Mês mostra pontos.
 - **Relatórios:** área e donut desenhados em SVG com tokens, sempre com uma tabela alternativa. Os destaques são fatos derivados do relatório e só aparecem quando há base de comparação.
+
+## Entrada do professor — 2026-10-23
+
+Referência: imagem anexada pelo usuário no chat teacher-entry-redesign. Composição de fila com quatro indicadores e cartões horizontais; detalhe com faixa do aluno, abas Respostas e análise/Resumo/Histórico, accordions por habilidade e formulário lateral. CTA violeta, tokens e motion iguais a Revisões; no celular o formulário segue as evidências.
+
+Diferenças intencionais: SLA de 24h, sem confiança por questão não coletada, sem turma inferida, feedback limitado a 4.000 caracteres, notas pessoais e IA explicitamente não configurada. Finalização não promete notificação externa. Validação ampla adiada por pedido do usuário; capturas em harness/evidence/teacher-entry-redesign/.
+
+## Disponibilidade do professor — referência do chat (2026-10-23)
+
+A referência está em harness/evidence/teacher-availability-redesign/reference.png. Composição: KPIs superiores, grade semanal domingo–sábado à esquerda, formulário/presets e lista alinhada à direita. CTA violeta, container queries e motion/primitives existentes em Revisões. No celular: faixa de dias, agenda diária e criação em sheet. Datas/horários com DateField e TimeField.
+
+Diferenças intencionais aprovadas: fuso fixo America/Recife; disponibilidade configurada não promete publicação direta para alunos; recorrência com data final; cartão Como funciona no lugar de regras de reserva fictícias. Horários ativos/pausados e sessões agendadas têm identificação textual, sem depender só da cor. Criação em lote e alterações de série têm resumo de impacto; horários avulsos usam switch direto com reversão ao rejeitar. Sem gates completos na entrega inicial, por solicitação explícita.
+
+## Alunos do professor — referência do chat (2026-10-23)
+
+Referência em harness/evidence/teacher-students-redesign/reference.png. Listagem com quatro indicadores, tabela alinhada e lateral com distribuição/feed. Perfil com Resumo, Atividades, Avaliações e Notas internas. Mesmo shell, tokens, CSS Modules, container queries e motion de Revisões. Mobile recompõe tabela em cartões e filtros/formulários em sheets.
+
+Adaptações aprovadas: distribuição por curso, sem e-mails, sem percentuais de crescimento inventados, sem cadastro/seleção em lote; revisões substituem o CTA administrativo. Progresso usa a trilha completa e não representa CEFR. Inatividade só com matrícula ativa, após sete dias, respeitando o início do vínculo. Contrato em docs/TEACHER_STUDENTS.md. Validação ampla adiada pelo usuário; verified:false.

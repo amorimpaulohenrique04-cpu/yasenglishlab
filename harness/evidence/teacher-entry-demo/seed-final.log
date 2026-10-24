@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "name": "Ana Martins · Demo",
+      "id": "262e6745-e104-45d8-b9bb-f6fa858f7ffb",
+      "state": "REVIEW_PENDING",
+      "responses": 2
+    },
+    {
+      "name": "Bruno Oliveira · Demo",
+      "id": "14f58cbb-6be2-48dd-a571-e407329d71ff",
+      "state": "REVIEW_PENDING",
+      "responses": 2
+    },
+    {
+      "name": "Carolina Santos · Demo",
+      "id": "bbafc450-9832-4645-a812-71748289f704",
+      "state": "REVIEW_PENDING",
+      "responses": 2
+    },
+    {
+      "name": "Diego Pereira · Demo",
+      "id": "c68acefa-645f-4500-b222-c10e3718de99",
+      "state": "REVIEW_PENDING",
+      "responses": 2
+    }
+  ],
+  "pendingVisibleToTeacher": 4
+}

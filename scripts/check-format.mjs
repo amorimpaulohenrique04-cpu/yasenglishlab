@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import * as prettier from "prettier";
 
@@ -6,7 +6,8 @@ import * as prettier from "prettier";
 // must neither slow it down nor require rewriting files outside the change.
 const listed = spawnSync("git", ["ls-files", "-z"], { encoding: "utf8" });
 if (listed.status !== 0) throw new Error("Cannot establish tracked formatting scope.");
-const files = listed.stdout.split("\0").filter(Boolean);
+// Tracked files deleted in the working tree have nothing left to format.
+const files = listed.stdout.split("\0").filter((filepath) => filepath && existsSync(filepath));
 const failed = [];
 let checked = 0;
 for (let offset = 0; offset < files.length; offset += 16) {

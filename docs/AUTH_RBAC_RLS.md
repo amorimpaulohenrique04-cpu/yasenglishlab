@@ -145,3 +145,17 @@ teacher_practice_* exige TEACHER+AAL2, autoria e escopo de curso/turma; atribui�
 ## Etapa 12C–F — trilha, matrícula, direitos e alertas
 
 `admin_cohort_path_get/save`, `admin_enroll_in_course`, `admin_plan_list`, `admin_plan_set_entitlement` e `admin_operational_alerts` exigem ADMIN com AAL2 (`private.assert_content_admin` ou equivalente), são `security definer` com `search_path = ''`, revogadas de `public`, `anon` e `authenticated` e liberadas explicitamente. `get_student_learning_path(course)` é do aluno com matrícula e devolve só a trilha dele. O fechamento da leitura aberta de títulos substitui as policies de `courses/modules/lessons`: aluno só lê o curso em que está matriculado e o que a trilha inclui; TEACHER e ADMIN não mudam. Nenhuma regra de RLS ou AAL2 foi afrouxada.
+
+## Rascunhos de Entrada (2026-10-23)
+
+`placement_review_drafts` possui RLS e SELECT condicionado a autor, TEACHER+AAL2 e atribuição atual do aluno. Authenticated não recebe INSERT/UPDATE/DELETE diretos. RPCs de salvamento/finalização verificam os mesmos predicados; gravação bloqueia o caso e usa revisão esperada. Aluno, outro professor, Support e Admin não recebem as notas pessoais. A revisão final mantém o comando canônico e sua imutabilidade.
+
+## Disponibilidade: séries e pausa (2026-10-23)
+
+Workspace e comandos novos derivam professor de auth.uid(), exigem Teacher ativo+AAL2 e só operam registros próprios. Séries usam RLS de autoria; o ledger de idempotência não tem grants para anon/authenticated. Disponibilidade não recebe INSERT/UPDATE/DELETE diretos.
+
+Compatibilidade: o contrato legado permite SELECT autenticado de intervalos ativos de professores ativos. Esse acesso a intervalos ativos foi mantido; os novos intervalos pausados só são legíveis pelo próprio Teacher+AAL2 ou ADMIN+AAL2. As RPCs de workspace não retornam horários de outro professor. Mutação fora da autoria, com AAL1 ou DML direto continua rejeitada. Auditoria contém IDs, ação, alcance e quantidade; não contém dados de reserva ou credenciais.
+
+## Workspace Alunos — 2026-10-23
+
+As projeções teacher_students_workspace, teacher_students_events e teacher_student_workspace exigem private.current_teacher_id (professor ativo + TEACHER/AAL2), derivam identidade da sessão e delimitam vínculo vigente. Helpers privados sem EXECUTE autenticado. Dados pedagógicos respeitam is_teacher_assigned; sessões apenas próprias; notas apenas do autor. Sem acesso a e-mail de auth.users e sem ampliar RLS. Notas/pedidos continuam nos comandos canônicos com autorização no banco. Contrato e checks focados em docs/TEACHER_STUDENTS.md.

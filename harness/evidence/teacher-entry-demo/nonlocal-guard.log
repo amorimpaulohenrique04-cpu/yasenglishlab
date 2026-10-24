@@ -1,0 +1,11 @@
+file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/dev-seed-teacher-entry.mjs:13
+    throw new Error("Este seed exige API e banco em localhost.");
+          ^
+
+Error: Este seed exige API e banco em localhost.
+    at file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/dev-seed-teacher-entry.mjs:13:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
