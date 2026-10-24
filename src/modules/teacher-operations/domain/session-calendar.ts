@@ -42,6 +42,7 @@ const formatters = {
   weekday: { weekday: "long" },
   weekdayShort: { weekday: "short" },
   short: { day: "numeric", month: "short" },
+  dayMonthLong: { day: "numeric", month: "long" },
   shortYear: { day: "numeric", month: "short", year: "numeric" },
   month: { month: "long", year: "numeric" },
   full: { weekday: "long", day: "numeric", month: "long", year: "numeric" },
@@ -65,9 +66,13 @@ export function relativeDayLabel(day: string, today: string) {
   return capitalize(formatDay(day, "weekday"));
 }
 
-export function formatWeekRange(start: string) {
+export function formatWeekRange(start: string, options: { longMonth?: boolean } = {}) {
   const end = addDays(start, 6);
   const sameMonth = start.slice(0, 7) === end.slice(0, 7);
+  if (options.longMonth)
+    return sameMonth
+      ? `${Number(start.slice(8))} – ${formatDay(end, "long")}`
+      : `${formatDay(start, "dayMonthLong")} – ${formatDay(end, "long")}`;
   return sameMonth
     ? `${Number(start.slice(8))} – ${formatDay(end, "shortYear")}`
     : `${formatDay(start, "short")} – ${formatDay(end, "shortYear")}`;
