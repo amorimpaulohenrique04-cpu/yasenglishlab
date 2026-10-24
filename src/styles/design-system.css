@@ -968,6 +968,7 @@ textarea.yas-field-control {
 
 /* ---------- Dialog / Drawer ---------- */
 .yas-dialog {
+  margin: auto;
   width: min(40rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2.5rem);
   border: 0;
@@ -1037,6 +1038,68 @@ textarea.yas-field-control {
 
 .yas-dialog-close:hover {
   color: var(--yas-color-purple-600);
+}
+
+/* Outcome dialogs share modal semantics/focus, with a compact visual hierarchy. */
+.yas-dialog[data-presentation="confirmation"] {
+  width: min(28rem, calc(100vw - 2rem));
+  text-align: center;
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-inner {
+  position: relative;
+  padding: var(--yas-space-8) var(--yas-space-6) var(--yas-space-6);
+  gap: var(--yas-space-5);
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-header {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--yas-space-4);
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-close {
+  position: absolute;
+  inset-block-start: var(--yas-space-3);
+  inset-inline-end: var(--yas-space-3);
+  box-shadow: none;
+  background: transparent;
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-icon {
+  width: 4rem;
+  height: 4rem;
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-icon svg {
+  width: 2rem;
+  height: 2rem;
+}
+.yas-dialog[data-presentation="confirmation"][data-tone="success"] .yas-dialog-icon {
+  background: var(--yas-tint-green);
+  color: var(--yas-tint-green-ink);
+}
+.yas-dialog[data-presentation="confirmation"][data-tone="error"] .yas-dialog-icon {
+  background: var(--yas-tint-red);
+  color: var(--yas-tint-red-ink);
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-title {
+  font-size: var(--yas-font-size-lg);
+  line-height: 1.35;
+  margin-bottom: var(--yas-space-2);
+}
+.yas-dialog[data-presentation="confirmation"] .yas-dialog-description {
+  font-size: var(--yas-font-size-sm);
+  line-height: 1.6;
+  max-width: 34ch;
+  margin-inline: auto;
+}
+.yas-dialog-body:empty {
+  display: none;
+}
+.yas-dialog[data-presentation="confirmation"] .yas-cluster {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--yas-space-3);
+}
+.yas-dialog[data-presentation="confirmation"] .yas-button {
+  white-space: nowrap;
+  font-size: var(--yas-font-size-sm);
 }
 
 .yas-drawer {

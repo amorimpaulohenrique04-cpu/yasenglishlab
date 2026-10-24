@@ -34,6 +34,33 @@ async function openStory(page: Page, id: string) {
   await page.waitForLoadState("networkidle");
 }
 
+test("confirmation is centered, fits mobile, and restores focus", async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openStory(page, "design-system-foundations--confirmation-dialog");
+    const trigger = page.getByRole("button", { name: "Mostrar confirmação" });
+    await trigger.click();
+    const dialog = page.getByRole("dialog", { name: "Revisão finalizada com sucesso!" });
+    await expect(dialog).toBeVisible();
+    const contentWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    await expect
+      .poll(async () => {
+        const box = await dialog.boundingBox();
+        return box ? Math.abs(box.x + box.width / 2 - contentWidth / 2) : 999;
+      })
+      .toBeLessThan(2);
+    const box = await dialog.boundingBox();
+    expect(box!.width).toBeLessThan(viewport.width);
+    expect(Math.abs(box!.y + box!.height / 2 - viewport.height / 2)).toBeLessThan(2);
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  }
+});
+
 async function assertA11y(page: Page) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])

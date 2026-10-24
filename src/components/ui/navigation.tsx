@@ -14,7 +14,7 @@ export interface TabItem {
   label: string;
   content: ReactNode;
   disabled?: boolean;
-  /** Short decorative counter next to the label; the label stays the accessible name. */
+  /** Short counter next to the label; exposed to screen readers as the tab's description, so the accessible name stays the label. */
   badge?: ReactNode;
   icon?: IconName;
 }
@@ -28,6 +28,8 @@ export interface TabsProps {
   className?: string;
   /** `pill` (default) or `underline`, with an indicator that slides between tabs. */
   variant?: "pill" | "underline";
+  /** Renders every panel and hides the inactive ones, so state inside panels survives tab changes. */
+  keepMounted?: boolean;
 }
 
 export function Tabs({
@@ -38,6 +40,7 @@ export function Tabs({
   onValueChange,
   className,
   variant = "pill",
+  keepMounted = false,
 }: TabsProps) {
   const firstEnabled = items.find((item) => !item.disabled)?.id ?? "";
   const [internalValue, setInternalValue] = useState(defaultValue ?? firstEnabled);
@@ -86,8 +89,9 @@ export function Tabs({
             role="tab"
             className="yas-tab"
             aria-selected={item.id === activeValue}
-            aria-controls={`${item.id}-panel`}
+            aria-controls={keepMounted || item.id === activeValue ? `${item.id}-panel` : undefined}
             id={`${item.id}-tab`}
+            aria-describedby={item.badge !== undefined ? `${item.id}-tab-count` : undefined}
             tabIndex={item.id === activeValue ? 0 : -1}
             disabled={item.disabled}
             onClick={() => select(item.id)}
@@ -95,9 +99,12 @@ export function Tabs({
             {item.icon && <Icon name={item.icon} size={17} />}
             {item.label}
             {item.badge !== undefined && (
-              <span className="yas-tab-badge" aria-hidden="true">
-                {item.badge}
-              </span>
+              <>
+                <span className="yas-tab-badge" aria-hidden="true">
+                  {item.badge}
+                </span>
+                <span id={`${item.id}-tab-count`} hidden>{`(${item.badge})`}</span>
+              </>
             )}
             {variant === "underline" && item.id === activeValue && (
               <m.span
@@ -110,18 +117,32 @@ export function Tabs({
           </button>
         ))}
       </div>
-      {active && (
-        <div
-          key={active.id}
-          id={`${active.id}-panel`}
-          role="tabpanel"
-          className="yas-tab-panel"
-          aria-labelledby={`${active.id}-tab`}
-          tabIndex={0}
-        >
-          {active.content}
-        </div>
-      )}
+      {keepMounted
+        ? items.map((item) => (
+            <div
+              key={item.id}
+              id={`${item.id}-panel`}
+              role="tabpanel"
+              className="yas-tab-panel"
+              aria-labelledby={`${item.id}-tab`}
+              tabIndex={0}
+              hidden={item.id !== activeValue}
+            >
+              {item.content}
+            </div>
+          ))
+        : active && (
+            <div
+              key={active.id}
+              id={`${active.id}-panel`}
+              role="tabpanel"
+              className="yas-tab-panel"
+              aria-labelledby={`${active.id}-tab`}
+              tabIndex={0}
+            >
+              {active.content}
+            </div>
+          )}
     </div>
   );
 }
@@ -241,6 +262,9 @@ export interface DropdownProps {
   triggerVariant?: "default" | "primary";
   disabled?: boolean;
   className?: string;
+  /** Custom trigger body (e.g. avatar + name); `label` becomes its accessible name. */
+  triggerContent?: ReactNode;
+  triggerClassName?: string;
 }
 
 export function Dropdown({
@@ -252,6 +276,8 @@ export function Dropdown({
   triggerVariant = "default",
   disabled = false,
   className,
+  triggerContent,
+  triggerClassName,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
@@ -301,15 +327,18 @@ export function Dropdown({
           "yas-dropdown-trigger",
           iconOnly && "yas-dropdown-trigger--icon",
           triggerVariant === "primary" && "yas-dropdown-trigger--primary",
+          triggerClassName,
         )}
         disabled={disabled}
         popoverTarget={menuId}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        aria-label={iconOnly ? label : undefined}
+        aria-label={iconOnly || triggerContent ? label : undefined}
       >
-        {iconOnly ? (
+        {triggerContent ? (
+          triggerContent
+        ) : iconOnly ? (
           <Icon name={icon ?? "more"} size={18} />
         ) : (
           <>

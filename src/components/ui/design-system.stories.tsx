@@ -49,6 +49,38 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const ConfirmationDialog: Story = {
+  render: function ConfirmationDialogStory() {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Mostrar confirmação</Button>
+        <Dialog
+          open={open}
+          onOpenChange={setOpen}
+          presentation="confirmation"
+          tone="success"
+          icon="check-c"
+          title="Revisão finalizada com sucesso!"
+          description="A recomendação foi registrada e está disponível para o aluno."
+          actions={
+            <>
+              <Button variant="soft" onClick={() => setOpen(false)}>
+                Voltar para a lista
+              </Button>
+              <Button onClick={() => setOpen(false)} trailingIcon={<ArrowIcon />}>
+                Próxima revisão
+              </Button>
+            </>
+          }
+        >
+          {null}
+        </Dialog>
+      </>
+    );
+  },
+};
+
 function ArrowIcon() {
   return (
     <svg

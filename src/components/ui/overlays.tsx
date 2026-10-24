@@ -50,6 +50,9 @@ interface ModalProps {
   icon?: IconName;
   /** Sticky action bar at the bottom of the panel. */
   footer?: ReactNode;
+  /** Compact, centered confirmation for completed operations. */
+  presentation?: "default" | "confirmation";
+  tone?: "neutral" | "success" | "error";
 }
 
 const prefersReducedMotion = () =>
@@ -66,6 +69,8 @@ function Modal({
   closeLabel = "Fechar",
   icon,
   footer,
+  presentation = "default",
+  tone = "neutral",
 }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -104,6 +109,8 @@ function Modal({
     <dialog
       ref={ref}
       className={cx("yas-dialog", className)}
+      data-presentation={presentation}
+      data-tone={tone}
       aria-labelledby={titleId}
       aria-describedby={description ? descriptionId : undefined}
       onCancel={(event) => {

@@ -36,6 +36,8 @@ export type IconName =
   | "logout"
   | "mail"
   | "menu"
+  | "sun"
+  | "moon"
   | "mic"
   | "more"
   | "pen"
@@ -70,6 +72,13 @@ export type IconName =
   | "x";
 
 const paths: Record<IconName, ReactNode> = {
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5" />
+    </>
+  ),
+  moon: <path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   logout: (
     <>
