@@ -1,0 +1,75 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 908 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.stage12-df.config.ts
+  1:41  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+✖ 1 problem (0 errors, 1 warning)
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit
+
+
+▶ npm run test:unit
+
+> yasenglishlab@0.1.0 test:unit
+> vitest run tests/unit
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+ ❯ tests/unit/isolated-next-config.test.ts (3 tests | 1 failed) 28905ms
+   ❯ isolated verification cache (3)
+     × excludes nested local checkouts from lint while retaining product source checks 28895ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/isolated-next-config.test.ts > isolated verification cache > excludes nested local checkouts from lint while retaining product source checks
+Error: Test timed out in 20000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/unit/isolated-next-config.test.ts:7:3
+      5| afterEach(() => vi.unstubAllEnvs());
+      6| describe("isolated verification cache", () => {
+      7|   it("excludes nested local checkouts from lint while retaining produc…
+       |   ^
+      8|     const { ESLint } = await import("eslint");
+      9|     const eslint = new ESLint();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 56 passed (57)
+      Tests  1 failed | 367 passed (368)
+   Start at  18:53:46
+   Duration  44.11s (import 41%, tests 40%, transform 18%, worker 1%)
+
+    Isolate  57 workers spawned · ~2.01s startup each (spawn + environment, per file)
+             at least ~14.33s faster with isolate: false — reuses workers across files instead of one per file
+
+
+Verification failed at: test:unit

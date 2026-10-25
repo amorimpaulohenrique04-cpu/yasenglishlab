@@ -1,0 +1,5 @@
+Checking formatting...
+[warn] src/modules/practice/application/queries.ts
+[error] No files matching the pattern were found: "src/app/(protected)/(teacher)/teacher/praticas/**/*.{ts,tsx}".
+[error] No parser could be inferred for file "C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\supabase\tests\cohort_path.sql".
+Error occurred when checking code style in the above file.

@@ -23,6 +23,16 @@ Fase 2 — polimento visual (aprovado 2026-10-22; visual+UX, sem regra nova; CTA
 
 ---
 
+# Plano — public-site-design-refinement
+
+## Active task
+
+**public-site-design-refinement**
+
+Goal: `harness/goals/public-site-design-refinement.md`. V4 aplicada; revisão visual e verify:ui pendentes. Core, harness e segurança passaram. Eval inclui commits preexistentes da branch fora do escopo desta tarefa.
+
+---
+
 # Plano — billing-reconciliation-integrity
 
 ## Active task
@@ -199,6 +209,40 @@ Ajuste final de integração: mover a prova de persistência/audit de publicaç�
 
 ---
 
+# Plano — public-site-design-refinement
+
+Goal: `harness/goals/public-site-design-refinement.md`.
+
+1. Refinar apenas o protótipo público: hero editorial, benefícios discretos, método e professora mais cedo, planos e mobile.
+2. Preservar preços/fluxo confirmado; substituir urgência simulada e depoimentos fictícios por conteúdo demonstrativo explícito.
+3. Executar verify:agent e verify:ui, validar estrutura local e registrar limitações de revisão visual sem contornar bloqueio do navegador.
+
+## teacher-practices-redesign — 2026-10-22
+
+Approved stages: 0 preparation; 1 contracts; 2 SQL access/final submission; 3 list; 4 authoring/autosave; 5 player; 6 publication/polish; 7 verification. See harness/goals/teacher-practices-redesign.md and docs/TEACHER_PRACTICES_REDESIGN.md. Preserve preexisting work. Main owns shared contracts and migration; workers have disjoint files.
+
+## 2026-10-22 — teacher-practices-redesign: lapidação visual/funcional (Claude)
+
+Escopo: só UI do Teacher em `src/modules/teacher-operations/ui/practice-*` + `practices.module.css`/`practice-list.module.css` (e o player compartilhado só se o defeito for dele). Sem migration, sem regra de produto nova.
+Gap matrix (inspeção Chrome 1440px vs referência):
+
+1. Listagem: título grande demais vs Sessões; coluna de status no centro; ação "Continuar" para rascunho; menu ⋮ com Editar/Duplicar; chips de habilidade/nível.
+2. Informações: breadcrumb quebrado em 2 linhas; ícone de "Visualizar como aluno"/"Nova questão" empilhado sobre o texto; contadores 0/100 e 0/200 à direita; confiança como switch com descrição; "Configurações adicionais" como link com chevron; Dica com ícone de alvo, não esticada.
+3. Questões: lista com tile de ícone do tipo + "1. Tipo" + trecho; ações Duplicar/Excluir/↑↓ no cabeçalho do editor; mídia como 4 tiles ao lado do enunciado; toolbar com ícones; prévia em cartão limpo (sem caixa alta indevida, sem sobreposição do rodapé).
+4. Tipos: "Nova questão" abre seletor antes de criar item; grade 4 colunas + Dica; sem rádio nativo visível; título com estilo de heading.
+5. Feedback/configurações: dois cartões lado a lado quando abertos (abas "Por alternativa"/"Feedback geral"; pontuação, dificuldade, tempo, switches).
+6. Revisão: checklist com resumos (contagem, mídias, configurações) e rodapé Voltar/Salvar rascunho/Publicar.
+   Funcional: status "Salvo automaticamente há X min"; confirmação ao excluir questão; stepper mantém etapas futuras inertes (padrão Sessões).
+   Delegação: Sonnet (yas-frontend) sequencial — A: Questões/tipos/feedback (3–5); B: cabeçalho/Informações/Revisão/Listagem (1,2,6). Gates e registros: Haiku. Revisão visual: principal no Chrome.
+
+## teacher-practice-header — 2026-10-23
+
+Goal: `harness/goals/teacher-practice-header.md`.
+
+1. Reorganizar somente cabeçalho: breadcrumb independente, título/badge e status, ações com hierarquia.
+2. Ajustar container queries para tablet/mobile usando os tokens e botões existentes.
+3. Inspecionar no navegador, executar verify:agent/verify:ui e registrar evidência/bloqueios sem alterar trabalhos preexistentes.
+
 ## teacher-entry-demo — 2026-10-23
 
 Goal: `harness/goals/teacher-entry-demo.md`.
@@ -236,3 +280,20 @@ Goal: `harness/goals/teacher-entry-demo.md`.
 6. Verificação: testes focados, verify:agent, verify:ui, verify:db, verify:security e verify:full, com evidências.
 7. Proposta fora do ciclo: tendências/sparklines (snapshots) e sino de notificações.
    Detalhes e critérios: harness/goals/teacher-screens-polish.md.
+
+## teacher-students-refinement — 2026-10-24
+
+0. Preparação: goal em harness/goals/teacher-students-refinement.md, seção no plan.md e entrada no feature_list (in_progress, verified:false).
+1. Dados: migration aditiva com `actions` priorizadas, aba `pending`, `placement_state`, filtro do feed com "Teste de entrada", `engagement` do perfil, testes SQL e docs.
+2. Lista: painel "Próximas ações", tabela em largura total, três dimensões separadas, KPIs com base explícita, abas, "Visão da carteira" recolhível e acessibilidade.
+3. Perfil: CTA contextual, menu "Mais ações", resumo de acompanhamento e progresso explicado.
+4. Sidebar (item 13): reproduzir a 1440x900 e 768; corrigir só se não for artefato de captura.
+5. Testes: unitários, e2e e a11y (axe e contraste) sem enfraquecer asserções nem atualizar goldens automaticamente.
+6. Verificação: SQL suite, unitários, specs de Alunos, verify:db, verify:security, verify:ui e verify:agent, com evidências em harness/evidence/teacher-students-refinement/.
+   Detalhes e critérios: harness/goals/teacher-students-refinement.md.
+
+## teacher-cohorts-redesign — 2026-10-24
+
+1. Preservar alterações preexistentes; referência HTML, contratos e contexto autorizado inspecionados.
+2. Implementar cartões, indicadores, busca/ordenação e Drawer com primitivos existentes; sem comandos administrativos fictícios.
+3. Verificar lógica, lint/types, responsividade/a11y e gates; registrar evidências e bloqueios.

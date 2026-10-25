@@ -12,6 +12,19 @@
   },
   "features": [
     {
+      "id": "teacher-cohorts-redesign",
+      "title": "Turmas do professor conforme referência HTML interativa",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["ui-redesign-approved-proposal"],
+      "evidence": [
+        "harness/goals/teacher-cohorts-redesign.md",
+        "harness/evidence/teacher-cohorts-redesign/README.md",
+        "harness/failure-log/2026-10-24-teacher-cohorts-redesign.md"
+      ],
+      "updated_at": "2026-10-24T16:30:00-03:00"
+    },
+    {
       "id": "teacher-students-redesign",
       "title": "Alunos do professor: carteira e perfil pedagógico",
       "status": "in_progress",
@@ -53,11 +66,32 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": [],
-      "evidence": [
-        "harness/goals/teacher-entry-demo.md",
-        "harness/evidence/teacher-entry-demo/"
-      ],
+      "evidence": ["harness/goals/teacher-entry-demo.md", "harness/evidence/teacher-entry-demo/"],
       "updated_at": "2026-10-23T18:36:56.054Z"
+    },
+    {
+      "id": "teacher-practice-header",
+      "title": "Hierarquia do cabeçalho de Práticas do Teacher",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-practice-header.md",
+        "harness/evidence/teacher-practice-header/"
+      ],
+      "updated_at": "2026-10-23T18:27:39.138Z"
+    },
+    {
+      "id": "teacher-practices-redesign",
+      "title": "Redesign de Práticas do professor",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/teacher-practices-redesign.md",
+        "2026-10-22 lapidação visual/funcional (Claude): ver progress.md; e2e bloqueado por login canônico"
+      ],
+      "updated_at": "2026-10-22T21:21:25.630Z"
     },
     {
       "id": "teacher-sessions-redesign",
@@ -79,6 +113,18 @@
       "dependencies": ["teacher-sessions-redesign"],
       "evidence": ["harness/goals/teacher-reviews-redesign.md"],
       "updated_at": "2026-10-22T15:18:14.322Z"
+    },
+    {
+      "id": "public-site-design-refinement",
+      "title": "Refinamento editorial do protótipo público v4",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": [
+        "harness/goals/public-site-design-refinement.md",
+        "harness/evidence/public-site-design-refinement/README.md"
+      ],
+      "updated_at": "2026-10-19T00:00:00Z"
     },
     {
       "id": "billing-reconciliation-integrity",
@@ -115,10 +161,7 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": [],
-      "evidence": [
-        "harness/goals/pr74-gates.md",
-        "harness/evidence/pr74-gates/README.md"
-      ],
+      "evidence": ["harness/goals/pr74-gates.md", "harness/evidence/pr74-gates/README.md"],
       "updated_at": "2026-10-15T23:01:32.846Z"
     },
     {
@@ -691,7 +734,7 @@
       "verified": false,
       "dependencies": ["stage-11-flow-gap-closure"],
       "evidence": ["harness/evidence/stage-12-lacunas-operacionais/README.md"],
-      "updated_at": "2026-10-15T21:30:00.000Z"
+      "updated_at": "2026-10-15T21:30:00Z"
     },
     {
       "id": "ui-redesign-approved-proposal",
@@ -700,7 +743,7 @@
       "verified": false,
       "dependencies": ["stage-12-lacunas-operacionais"],
       "evidence": ["harness/goals/ui-redesign-approved-proposal.md"],
-      "updated_at": "2026-10-16T12:00:00.000Z"
+      "updated_at": "2026-10-16T12:00:00Z"
     },
     {
       "id": "practice-10-phase-0",
@@ -709,7 +752,7 @@
       "verified": false,
       "dependencies": ["ui-redesign-approved-proposal"],
       "evidence": ["harness/goals/practice-10-phase-0.md"],
-      "updated_at": "2026-10-16T18:00:00.000Z"
+      "updated_at": "2026-10-16T18:00:00Z"
     },
     {
       "id": "practice-10-v3",
@@ -718,7 +761,7 @@
       "verified": false,
       "dependencies": ["practice-10-phase-0"],
       "evidence": ["harness/goals/practice-10-v3.md"],
-      "updated_at": "2026-10-16T22:00:00.000Z"
+      "updated_at": "2026-10-16T22:00:00Z"
     },
     {
       "id": "pr80-gates",
@@ -745,6 +788,15 @@
         "harness/evidence/teacher-screens-polish/"
       ],
       "updated_at": "2026-10-24T18:00:00-03:00"
+    },
+    {
+      "id": "teacher-students-refinement",
+      "title": "Alunos do professor: prioridades, tabela e perfil",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["teacher-students-redesign"],
+      "evidence": ["harness/goals/teacher-students-refinement.md"],
+      "updated_at": "2026-10-24T20:00:00-03:00"
     }
   ]
 }

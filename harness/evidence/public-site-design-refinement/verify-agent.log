@@ -1,0 +1,220 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 837 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.stage12-df.config.ts
+  1:41  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+✖ 1 problem (0 errors, 1 warning)
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit
+
+
+▶ npm run test:unit
+
+> yasenglishlab@0.1.0 test:unit
+> vitest run tests/unit
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  51 passed (51)
+      Tests  339 passed (339)
+   Start at  23:38:23
+   Duration  18.31s (import 47%, tests 35%, transform 16%, worker 2%)
+
+    Isolate  51 workers spawned · ~1.15s startup each (spawn + environment, per file)
+             at least ~7.23s faster with isolate: false — reuses workers across files instead of one per file
+
+
+▶ npm run test:integration
+
+> yasenglishlab@0.1.0 test:integration
+> vitest run tests/integration
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  37 passed | 1 skipped (38)
+      Tests  352 passed | 1 skipped (353)
+   Start at  23:38:45
+   Duration  13.93s (import 58%, transform 29%, tests 11%, worker 2%)
+
+  Transform  transforming modules took 15.43s · 29% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+▶ npm run verify:db
+
+> yasenglishlab@0.1.0 verify:db
+> node scripts/verify-db.mjs
+
+✓ DB contracts valid: 63 migration(s), canonical seed, 49 SQL invariant test(s).
+
+▶ npm run build
+
+> yasenglishlab@0.1.0 build
+> next build
+
+▲ Next.js 16.3.8 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 331ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 48s
+  Running TypeScript ...
+  Finished TypeScript in 50s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/52) ...
+  Generating static pages using 7 workers (13/52) 
+  Generating static pages using 7 workers (26/52) 
+  Generating static pages using 7 workers (39/52) 
+✓ Generating static pages using 7 workers (52/52) in 2.1s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /admin
+├ ƒ /admin/assessments
+├ ƒ /admin/assessments/[id]
+├ ƒ /admin/assessments/new
+├ ƒ /admin/billing
+├ ƒ /admin/cohorts
+├ ƒ /admin/cohorts/[id]/trilha
+├ ƒ /admin/content
+├ ƒ /admin/content/[id]
+├ ƒ /admin/content/[id]/preview
+├ ƒ /admin/content/new
+├ ƒ /admin/enrollments
+├ ƒ /admin/leads
+├ ƒ /admin/ocorrencias
+├ ƒ /admin/students
+├ ƒ /admin/students/[id]
+├ ƒ /admin/suporte
+├ ƒ /admin/teachers
+├ ƒ /agenda
+├ ƒ /agenda/[sessionId]
+├ ƒ /api/cron/notifications
+├ ƒ /api/webhooks/asaas
+├ ƒ /api/webhooks/mux
+├ ƒ /aulas
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]
+├ ƒ /aulas/[courseSlug]/modulos/[moduleId]/aulas/[lessonSlug]
+├ ƒ /auth/callback
+├ ƒ /auth/continue
+├ ƒ /avisos
+├ ƒ /billing/return
+├ ƒ /checkout
+├ ƒ /feedbacks
+├ ƒ /forgot-password
+├ ƒ /home
+├ ƒ /login
+├ ƒ /materiais
+├ ƒ /materiais/[materialId]/abrir
+├ ƒ /mfa
+├ ƒ /onboarding
+├ ƒ /onboarding/assessment
+├ ƒ /onboarding/placement
+├ ƒ /pratica
+├ ƒ /pratica/[attemptId]
+├ ƒ /profile
+├ ƒ /progresso
+├ ƒ /reset-password
+├ ƒ /signup
+├ ƒ /support
+├ ƒ /teacher
+├ ƒ /teacher/alunos
+├ ƒ /teacher/alunos/[studentId]
+├ ƒ /teacher/disponibilidade
+├ ƒ /teacher/praticas
+├ ƒ /teacher/praticas/[id]
+├ ƒ /teacher/praticas/nova
+├ ƒ /teacher/revisoes
+├ ƒ /teacher/revisoes/[attemptId]
+├ ƒ /teacher/revisoes/placement
+├ ƒ /teacher/revisoes/placement/[id]
+├ ƒ /teacher/sessoes
+├ ƒ /teacher/sessoes/[sessionId]
+├ ƒ /teacher/sessoes/nova
+├ ƒ /teacher/turmas
+├ ○ /test-billing/checkout
+└ ƒ /workspace
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+✓ Core verification passed.
+
+> yasenglishlab@0.1.0 verify:harness
+> node scripts/verify-harness.mjs
+
+file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:11
+    throw new Error(message);
+          ^
+
+Error: harness/failure-log/2026-10-18-public-site-design-refinement.md: invalid classification "<missing>"
+harness/failure-log/2026-10-18-public-site-design-refinement.md: Repeatable must be yes or no, got "<missing>"
+harness/failure-log/2026-10-18-public-site-design-refinement.md: Date must be YYYY-MM-DD
+harness/failure-log/2026-10-18-public-site-design-refinement.md: PR/commit related is required
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Symptom
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Evidence
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Root cause
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Responsible layer
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Immediate fix
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Permanent protection
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Test/eval created
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Reproduction
+harness/failure-log/2026-10-18-public-site-design-refinement.md: missing or empty section: Before/after proof
+    at assert (file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:11:11)
+    at file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/verify-ratchet.mjs:215:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
+file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:51
+    throw new Error(`Command failed: ${command} ${args.join(" ")}`);
+          ^
+
+Error: Command failed: C:\Program Files\nodejs\node.exe scripts/verify-ratchet.mjs
+    at run (file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/_verify-utils.mjs:51:11)
+    at file:///C:/Users/PAULO%20HENRIQUE/Documents/Projetos/yasenglishlab/scripts/verify-harness.mjs:118:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

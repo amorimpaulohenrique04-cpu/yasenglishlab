@@ -1,7 +1,7 @@
 # Failure — Teacher screens polish: shell regressions, fixture drift and gate false negatives
 
 Classification: test gap
-Status: resolved (items 1–5); open (item 6)
+Status: open
 Repeatable: yes
 Date: 2026-10-24
 PR/commit related: current change on `codex/teacher-sessions-redesign` (uncommitted)

@@ -159,11 +159,23 @@ Plano aprovado em 5 fases (`C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-
 
 PR 1 isolates UUID cursor batches and explicit failure states in existing billing code. SQL, provider writes, auth/RLS, rate-limit and role helpers stay unchanged. Legacy role helpers have no external callers. Evidence and gates: harness/evidence/billing-reconciliation-integrity/README.md; go-live remains BLOCKED.
 
+## 2026-10-18 — public-site-design-refinement
+
+Refinamento autorizado somente no protótipo público. Manter tokens roxo/amarelo e login aprovado. Hero em moldura, decoração pontual, demonstração antes de recursos e tour manual. Remover vagas simuladas e depoimentos inventados; não inventar credenciais ou horários. Preservar cartão no início e preços; explicitar renovação automática. Abertura file:// bloqueada pela política do navegador: sem contorno por localhost ou outro mecanismo de captura; revisão visual permanece pendente.
+
 ## teacher-sessions-redesign — 2026-10-21
 
 Plano do chat aprovado. Recife, attendance desde início, Meet manual, COMPLETED explícito (pode ser zero); CSV e download PDF. Sem novas capacidades de domínio. Drawer consulta disponibilidade; edição permanece na página existente. Em 2026-10-22 o usuário decidiu receber a entrega localmente, sem PR nem publicação de branches. Base local style/sidebar-fit preservada.
 
 Em seguida, o usuário pediu explicitamente não executar os gates completos e solicitou migrations locais, dev-seed e localhost. Manter a certificação completa pendente, registrar verificações focadas e preservar os bloqueios reais de cota também no seed.
+
+## 2026-10-22 — orientação final de execução
+
+O usuário confirmou explicitamente as alterações locais de RPC/RLS/permissões. Depois solicitou encerrar gates gigantes e apresentar o realizado/pendente. verify:full e build em andamento foram interrompidos; não há conclusão dos gates agregados nem aprovação visual final. Nenhuma operação remota foi realizada.
+
+## 2026-10-23 — Cabeçalho de Práticas
+
+Pedido visual explícito do usuário autoriza separar breadcrumb e salvamento do título/ações. Usar ghost na prévia reduz competição; salvar continua outline e revisão continua secondary violeta. Responsividade mantém todos os rótulos e ícones; abaixo de 440 px as ações ocupam linhas inteiras. Sem alterar baselines aprovados, handlers ou domínio.
 
 ## teacher-entry-redesign — 2026-10-23
 
@@ -176,3 +188,7 @@ Decisões aprovadas: referência visual + implementação Revisões; recorrênci
 ## 2026-10-23 — Alunos: regras aprovadas e adaptação visual
 
 Usuário aprovou listagem + perfil e atenção após sete dias apenas para matrícula ACTIVE, com tolerância desde o vínculo. Adicionar aluno e seleção em lote não cabem ao Teacher; referência adaptada para revisões, distribuição por curso e dados curriculares reais, sem e-mail de auth.users ou CEFR inferido. Indicadores globais independem de filtros/página. Notas são pessoais; pedidos preservam o contrato existente. Projeções não usam os limites do contexto legado e contam aulas sem progresso no denominador. Tablet estreito usa cartões para preservar legibilidade. Validação econômica autorizada sem gates/build; verified:false.
+
+## teacher-cohorts-redesign — 2026-10-24
+
+HTML fornecido é referência visual, não fonte de permissões nem dados. Contexto atual é limitado a 50 turmas, prévia de 20 alunos e 3 encontros; UI explicita limites e oferece carteira/agenda filtradas. Contar matrículas por turma, turmas com encontro e vagas apenas em capacidades conhecidas. Badge Vinculada representa vínculo vigente sem inferir status administrativo ausente no DTO. Criar/editar/arquivar turma, matricular e convidar permanecem Admin; Teacher acompanha alunos e gerencia sessões existentes. Sem migration nem mudança de auth.

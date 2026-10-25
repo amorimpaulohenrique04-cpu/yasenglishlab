@@ -84,3 +84,9 @@ Estados: default, hover, focus-visible, active, disabled, loading, error, succes
 - Assim o mesmo componente funciona com a sidebar aberta ou fechada, dentro de um sheet (a grade semanal da disponibilidade) e de 320 a 1920 px sem rolagem horizontal.
 - Grids fluidos usam `repeat(auto-fit, minmax(min(100%, X), 1fr))`, títulos usam `clamp()` com `cqi`, e textos longos quebram com segurança (`overflow-wrap: anywhere`, `min-width: 0`).
 - `@media` fica reservado ao que de fato depende da tela: o sheet em tela cheia no celular e `prefers-reduced-motion`.
+
+## Atualização 2026-10-24 — `Avatar` com tom neutro
+
+- `Avatar` aceita `tone?: "brand" | "neutral"`. O padrão é `brand`, o tint lilás de antes, então quem já usa o primitivo não muda.
+- `neutral` usa `--yas-tint-grey` com `--yas-tint-grey-ink` (cerca de 5:1). Vale para listas densas de pessoas, como os alunos do professor e as próximas ações, onde o roxo fica reservado a botões, links, seleção, foco e progresso.
+- A regra fica em `.yas-avatar[data-tone="neutral"]`, em `src/styles/design-system.css`.

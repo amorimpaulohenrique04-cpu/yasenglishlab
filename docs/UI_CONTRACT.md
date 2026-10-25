@@ -1,5 +1,11 @@
 # UI Contract
 
+## Turmas do professor — referência HTML (2026-10-24)
+
+`yas_english_lab_turmas_interativo.html`, fornecido pelo usuário, orienta a composição de `/teacher/turmas`: quatro indicadores, grade de cartões, prévia de alunos e próximo encontro, busca/ordenação e detalhe em Drawer. Shell, tokens e primitivos permanecem compartilhados. Desktop usa três colunas, tablet duas quando houver largura e celular uma.
+
+Adaptações intencionais: a projeção existente informa vínculos vigentes, não o status completo da turma. Exibir “Vinculada”, sem inferir “Ativa” ou “Em breve”. Indicadores contam matrículas por turma e turmas com próximo encontro; vagas consideram apenas capacidades definidas. Explicitar os limites da prévia e oferecer a lista de alunos e agenda filtradas. Criação, alteração de cadastro, convites, matrícula e arquivamento são responsabilidade do Admin; Teacher abre detalhes e gerencia sessões pelas rotas existentes, sem persistência fictícia local.
+
 ## Propósito
 
 Impedir que o Yas perca consistência visual conforme novas páginas, pessoas ou coding agents alterem o produto.
@@ -80,6 +86,15 @@ Decisões do usuário: visual + UX sem regra nova; **CTA primário violeta** (va
 - **Mês:** até 3 chips por dia.
 - **Celular:** a Semana vira uma faixa de dias com a lista do dia escolhido; o Mês mostra pontos.
 - **Relatórios:** área e donut desenhados em SVG com tokens, sempre com uma tabela alternativa. Os destaques são fatos derivados do relatório e só aparecem quando há base de comparação.
+
+## Práticas do professor — referência aprovada (2026-10-22)
+
+A composição aprovada está em [reference.png](../harness/evidence/teacher-practices-redesign/reference.png); capturas por viewport ficam em [evidence/teacher-practices-redesign](../harness/evidence/teacher-practices-redesign/). Preservar o shell, os tokens e os componentes existentes.
+
+- O editor tem três etapas: informações, questões e revisão/publicação. A etapa de questões usa uma lista lateral, formatos de resposta por questão e prévia no mesmo player do aluno. No celular, ferramentas e lista de questões recompõem-se em drawers e o conteúdo fica empilhado.
+- CTA primário usa a variante violeta `secondary`. Amarelo fica para destaques pontuais.
+- Transições usam `motion` e os tokens existentes. O `MotionProvider` aplica `MotionConfig reducedMotion="user"`; novas animações devem respeitar a preferência de movimento reduzido.
+- A responsividade usa composição por container queries; revisar desktop, tablet e celular sem overflow horizontal.
 
 ## Entrada do professor — 2026-10-23
 

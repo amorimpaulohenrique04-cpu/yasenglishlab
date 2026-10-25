@@ -3,6 +3,7 @@
 Referência do usuário preservada em reference.png. Captura desktop final em desktop.png. Entrega local; sem commit/push, build, verify:* ou suítes amplas, conforme instrução expressa.
 
 ## Implementado
+
 - Grade domingo–sábado com URL, seleção por clique/teclado/arrasto (15 min), horários ativos/pausados e sessões identificadas; agenda diária no celular e criação em sheet.
 - KPIs reais por semana, tempo livre descontando sessões e próximo trecho livre futuro; fuso fixo Recife.
 - Presets, DateField/TimeField, múltiplos dias, data final obrigatória, até um ano e confirmação do lote.
@@ -11,6 +12,7 @@ Referência do usuário preservada em reference.png. Captura desktop final em de
 - Primitivos e motion existentes, molas do design system, container queries, estados de loading/empty/error e retorno de falhas sem apagar o formulário.
 
 ## Verificado
+
 - Migration 20261023200125 e migration aditiva 20261023202030 aplicadas somente ao localhost configurado, sem reset ou outras migrations.
 - Smoke SQL real com rollback: 4 ocorrências, retry sem duplicação, conflito sem gravação parcial, pausa/reativação, edição futura, exclusão, bloqueio por sessão agendada, rejeição de criação de sessão em disponibilidade pausada, projeção de semana, isolamento de workspace/pausados, DML direto negado e AAL1 negado. Passou.
 - Vitest somente availability-workspace.test.ts: 5/5 passaram. Caso de campo de hora apagado demonstrado vermelho antes da correção e verde depois.
@@ -21,4 +23,5 @@ Referência do usuário preservada em reference.png. Captura desktop final em de
 - Mobile 390x844: agenda recomposta e formulário em sheet revisados. Medida observada: innerWidth=390, scrollWidth=375, sem overflow horizontal.
 
 ## Limitações
+
 Certificação completa adiada, verified:false. Não rodar gates nesta entrega. Verificação manual não substitui cobertura E2E/a11y ampla. A prévia no browser não gravou novos horários permanentes; fixtures do smoke foram revertidas. Sem regras novas de duração, buffer, antecedência ou visibilidade direta para alunos. A captura persistida é a de desktop; inspeção mobile e do sheet ocorreu no browser, mas a conexão CDP perdeu-se antes de persistir a imagem mobile. Override temporário de viewport restaurado com sucesso.

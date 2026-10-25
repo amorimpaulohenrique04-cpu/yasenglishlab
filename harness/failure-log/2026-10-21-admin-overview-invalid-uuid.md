@@ -2,7 +2,7 @@
 
 Classification: state  
 Status: open  
-Repeatable: yes (no banco local atual)  
+Repeatable: yes  
 Date: 2026-10-21  
 PR/commit related: branch style/sidebar-fit (admin-teacher-redesign). A tela `/admin` não foi alterada nesta tarefa.
 
@@ -38,4 +38,11 @@ Pendente: `admin-plans-alerts.spec.ts:157` já detecta o problema.
 
 ## Reproduction
 
-Com o Supabase local deste projeto, faça login como canonical.admin e abra `/admin`.
+Com o Supabase local deste projeto, faça login como canonical.admin e abra `/admin`. Reproduz apenas no banco local atual, que contém as linhas não-RFC.
+
+## Before/after proof
+
+Before: `/admin` cai no error boundary; `admin-plans-alerts.spec.ts:157` falha (evidência acima).
+After: pendente — o status continua `open` até a correção ser feita em tarefa própria.
+
+Observação (2026-10-24): a fonte confirmada de `83300000-…-000000000001` é `supabase/tests/vertical_slice_persistence.sql`, que só remove a turma no fim do arquivo; uma execução interrompida deixa a linha no banco.

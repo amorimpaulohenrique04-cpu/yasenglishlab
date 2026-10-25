@@ -1,0 +1,10 @@
+supabase/tests/vertical_slice_persistence.sql psql:supabase/tests/vertical_slice_persistence.sql:47: ERROR:  active compatible enrollment and STUDENT role required
+supabase/tests/schedule_booking.sql psql:supabase/tests/schedule_booking.sql:107: ERROR:  reserved session identity and usage schedule are immutable
+supabase/tests/admin_content.sql psql:supabase/tests/admin_content.sql:149: ERROR:  A valid lesson is required to publish a practice
+supabase/tests/p21_core_experience.sql psql:supabase/tests/p21_core_experience.sql:111: ERROR:  A valid lesson is required to publish a practice
+supabase/tests/student_feedbacks.sql psql:supabase/tests/student_feedbacks.sql:21: ERROR:  Practice already submitted
+supabase/tests/record_immutability.sql psql:supabase/tests/record_immutability.sql:21: ERROR:  Practice already submitted
+supabase/tests/access_closure.sql psql:supabase/tests/access_closure.sql:64: ERROR:  A valid lesson is required to publish a practice
+supabase/tests/practice_authoring.sql psql:supabase/tests/practice_authoring.sql:140: ERROR:  practice_authoring: Teacher has no direct select of its draft (RPC only)
+supabase/tests/practice_lifecycle.sql psql:supabase/tests/practice_lifecycle.sql:153: ERROR:  practice_lifecycle: practice without lesson cannot start
+supabase/tests/cohort_path.sql psql:supabase/tests/cohort_path.sql:95: ERROR:  cohort_path: future practice cannot start

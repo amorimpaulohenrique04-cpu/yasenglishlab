@@ -1,0 +1,6 @@
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\src\modules\teacher-operations\ui\practice-builder.tsx
+  33:3  warning  'SKILL_LABELS' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (0 errors, 1 warning)
+
