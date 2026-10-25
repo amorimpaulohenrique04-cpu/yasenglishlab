@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const password = process.env.CANONICAL_E2E_PASSWORD;
@@ -30,7 +31,11 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   await expect(card.getByRole("button", { name: "Entrar no encontro" })).toBeVisible();
   await expect(card.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
   expect(
-    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+    (
+      await new AxeBuilder({ page: await settledPage(page) })
+        .withTags(["wcag2a", "wcag2aa"])
+        .analyze()
+    ).violations,
   ).toEqual([]);
   for (const [name, width, height] of [
     ["desktop", 1440, 1000],
@@ -39,7 +44,11 @@ test("Student cohort booking, quota, cancellation and rebooking persist", async 
   ] as const) {
     await page.setViewportSize({ width, height });
     expect(
-      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+      (
+        await new AxeBuilder({ page: await settledPage(page) })
+          .withTags(["wcag2a", "wcag2aa"])
+          .analyze()
+      ).violations,
     ).toEqual([]);
     const screenshot = await page.screenshot({
       path: testInfo.outputPath(`cohort-agenda-${name}.png`),
@@ -95,7 +104,11 @@ test("Admin after MFA administers cohort metadata", async ({ page }, testInfo) =
   expect((await saved).status()).toBeLessThan(400);
   await expect(page.getByText("Turma atualizada", { exact: true })).toBeVisible();
   expect(
-    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+    (
+      await new AxeBuilder({ page: await settledPage(page) })
+        .withTags(["wcag2a", "wcag2aa"])
+        .analyze()
+    ).violations,
   ).toEqual([]);
   await page.screenshot({
     path: testInfo.outputPath("cohort-admin-desktop.png"),

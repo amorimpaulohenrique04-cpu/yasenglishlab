@@ -32,6 +32,15 @@ export async function startPlacementAssessment(
   });
   return a.id;
 }
+/** Single emission point for the finalize analytics (idempotent keys), shared by all finalize paths. */
+export async function trackReviewFinalized(analytics: ProductAnalyticsPort, caseId: string) {
+  for (const event of ["placement_review_finalized", "placement_ready"] as const)
+    await analytics.track({
+      event,
+      properties: { placement_case_id: caseId },
+      idempotencyKey: `${event}:${caseId}`,
+    });
+}
 export async function finalizeReview(
   repo: PlacementRepository,
   analytics: ProductAnalyticsPort,
@@ -39,16 +48,7 @@ export async function finalizeReview(
 ) {
   const parsed = reviewInputSchema.parse(input);
   const id = await repo.finalizeReview(parsed);
-  await analytics.track({
-    event: "placement_review_finalized",
-    properties: { placement_case_id: parsed.caseId },
-    idempotencyKey: `placement_review_finalized:${parsed.caseId}`,
-  });
-  await analytics.track({
-    event: "placement_ready",
-    properties: { placement_case_id: parsed.caseId },
-    idempotencyKey: `placement_ready:${parsed.caseId}`,
-  });
+  await trackReviewFinalized(analytics, parsed.caseId);
   return id;
 }
 export async function openDecision(repo: PlacementRepository) {

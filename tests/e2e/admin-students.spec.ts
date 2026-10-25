@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
@@ -35,7 +36,11 @@ test("Admin can open bounded Students directory and Student 360 after MFA", asyn
   await expect(page.getByRole("heading", { name: "Vínculos de turma" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Atividade recente" })).toBeVisible();
   expect(
-    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+    (
+      await new AxeBuilder({ page: await settledPage(page) })
+        .withTags(["wcag2a", "wcag2aa"])
+        .analyze()
+    ).violations,
   ).toEqual([]);
   await page.getByRole("tab", { name: "Visão geral" }).click();
   const desktop = await page.screenshot({

@@ -1,0 +1,149 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 958 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.stage12-df.config.ts
+  1:41  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+✖ 1 problem (0 errors, 1 warning)
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit
+
+
+▶ npm run test:unit
+
+> yasenglishlab@0.1.0 test:unit
+> vitest run tests/unit
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+
+ Test Files  61 passed (61)
+      Tests  403 passed (403)
+   Start at  16:24:31
+   Duration  31.12s (import 45%, tests 42%, transform 11%, worker 2%)
+
+    Isolate  61 workers spawned · ~1.44s startup each (spawn + environment, per file)
+             at least ~11.09s faster with isolate: false — reuses workers across files instead of one per file
+
+
+▶ npm run test:integration
+
+> yasenglishlab@0.1.0 test:integration
+> vitest run tests/integration
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab
+
+ ❯ tests/integration/progress-application.test.ts (0 test)
+ ❯ tests/integration/commercial.test.ts (0 test)
+ ❯ tests/integration/practice-application.test.ts (0 test)
+ ❯ tests/integration/placement-application.test.ts (0 test)
+ ❯ tests/integration/admin-content-application.test.ts (0 test)
+ ❯ tests/integration/assessment-application.test.ts (0 test)
+ ❯ tests/integration/subscription-gate.test.ts (0 test)
+ ❯ tests/integration/home-application.test.ts (0 test)
+ ❯ tests/integration/admin-assessment-commands.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/admin-assessment-commands.test.ts [ tests/integration/admin-assessment-commands.test.ts ]
+ FAIL  tests/integration/assessment-application.test.ts [ tests/integration/assessment-application.test.ts ]
+ FAIL  tests/integration/placement-application.test.ts [ tests/integration/placement-application.test.ts ]
+Error: ENOENT: no such file or directory, open 'C:\Users\PAULO HENRIQUE\AppData\Local\Temp\FkvmyWRbB9_mrcmHboaxn\ssr\85dbdddaa7a39a32ba578c6ffd3c0416be660a1e'
+ ❯ src/modules/domain/index.ts:2:1
+      1| export * from "./contracts";
+      2| export * from "./entitlements";
+       | ^
+      3|
+ ❯ src/modules/assessments/domain/models.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/integration/admin-content-application.test.ts [ tests/integration/admin-content-application.test.ts ]
+Error: ENOENT: no such file or directory, open 'C:\Users\PAULO HENRIQUE\AppData\Local\Temp\FkvmyWRbB9_mrcmHboaxn\ssr\85dbdddaa7a39a32ba578c6ffd3c0416be660a1e'
+ ❯ src/modules/domain/index.ts:2:1
+      1| export * from "./contracts";
+      2| export * from "./entitlements";
+       | ^
+      3|
+ ❯ src/modules/admin-content/domain/models.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/integration/commercial.test.ts [ tests/integration/commercial.test.ts ]
+Error: ENOENT: no such file or directory, open 'C:\Users\PAULO HENRIQUE\AppData\Local\Temp\FkvmyWRbB9_mrcmHboaxn\ssr\85dbdddaa7a39a32ba578c6ffd3c0416be660a1e'
+ ❯ src/modules/domain/index.ts:2:1
+      1| export * from "./contracts";
+      2| export * from "./entitlements";
+       | ^
+      3|
+ ❯ src/server/auth/context.ts:5:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/integration/home-application.test.ts [ tests/integration/home-application.test.ts ]
+ FAIL  tests/integration/practice-application.test.ts [ tests/integration/practice-application.test.ts ]
+ FAIL  tests/integration/subscription-gate.test.ts [ tests/integration/subscription-gate.test.ts ]
+Error: ENOENT: no such file or directory, open 'C:\Users\PAULO HENRIQUE\AppData\Local\Temp\FkvmyWRbB9_mrcmHboaxn\ssr\85dbdddaa7a39a32ba578c6ffd3c0416be660a1e'
+ ❯ src/modules/domain/index.ts:2:1
+      1| export * from "./contracts";
+      2| export * from "./entitlements";
+       | ^
+      3|
+ ❯ src/modules/practice/domain/content-v2.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/integration/progress-application.test.ts [ tests/integration/progress-application.test.ts ]
+Error: ENOENT: no such file or directory, open 'C:\Users\PAULO HENRIQUE\AppData\Local\Temp\FkvmyWRbB9_mrcmHboaxn\ssr\85dbdddaa7a39a32ba578c6ffd3c0416be660a1e'
+ ❯ src/modules/domain/index.ts:2:1
+      1| export * from "./contracts";
+      2| export * from "./entitlements";
+       | ^
+      3|
+ ❯ src/modules/progress/domain/projection.ts:1:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+
+ Test Files  9 failed | 30 passed | 1 skipped (40)
+      Tests  274 passed | 1 skipped (275)
+   Start at  16:25:07
+   Duration  27.33s (import 54%, transform 29%, tests 15%, worker 2%)
+
+  Transform  transforming modules took 23.09s · 29% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+
+Verification failed at: test:integration

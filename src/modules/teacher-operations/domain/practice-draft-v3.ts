@@ -5,6 +5,7 @@ import {
   practiceContentV2DraftSchema,
 } from "@/modules/practice/domain/content-v2";
 import {
+  practiceItemSettingsShape,
   PRACTICE_ITEM_ID_PATTERN,
   PRACTICE_V3_MAX_ITEMS,
   practiceItemFeedbackSchema,
@@ -18,6 +19,7 @@ export const practiceItemV3DraftSchema = practiceContentV2DraftSchema
   .pick({ stimulus: true, prompt: true, response: true })
   .extend({
     id: z.string().regex(PRACTICE_ITEM_ID_PATTERN),
+    ...practiceItemSettingsShape,
     planningSeconds: z.union([z.literal(0), z.literal(30), z.literal(60)]).optional(),
   })
   .strict();

@@ -1,11 +1,29 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { mkdirSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
 const password = process.env.CANONICAL_E2E_PASSWORD;
 if (process.env.CANONICAL_E2E !== "1" || !password) {
   throw new Error("Admin Cohorts E2E requires the canonical local fixture.");
+}
+
+async function saveSchedule(page: Page, drawer: Locator) {
+  // The old row remains visible while the Server Action is redirecting. Seeing its count
+  // again does not prove that navigation (or the destination metadata) has completed.
+  const response = page.waitForResponse(
+    (item) =>
+      item.request().method() === "POST" && new URL(item.url()).pathname === "/admin/cohorts",
+  );
+  await drawer.getByRole("button", { name: "Salvar horário" }).click();
+  const saved = await response;
+  expect(saved.status()).toBeLessThan(400);
+  await saved.finished();
+  await expect(page).toHaveURL(/\/admin\/cohorts\?result=success(?:&|$)/);
+  await expect(page.getByText("Turma atualizada", { exact: true })).toBeVisible();
+  await expect(drawer).not.toBeVisible();
+  await expect(page).toHaveTitle("Yas English Lab");
 }
 
 test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, testInfo) => {
@@ -39,9 +57,9 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
     path: "harness/evidence/level-based-cohorts/screenshots/cohort-level-desktop.png",
     fullPage: true,
   });
-  await drawer.getByRole("button", { name: "Salvar horário" }).click();
+  await saveSchedule(page, drawer);
   await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
-  const desktopViolations = await new AxeBuilder({ page })
+  const desktopViolations = await new AxeBuilder({ page: await settledPage(page) })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
   expect(desktopViolations.violations).toEqual([]);
@@ -51,7 +69,7 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
     .getByRole("button", { name: "Gerenciar" })
     .click();
   const restoreDrawer = page.getByRole("dialog");
-  await restoreDrawer.getByRole("button", { name: "Salvar horário" }).click();
+  await saveSchedule(page, restoreDrawer);
   await expect(page.getByRole("row", { name: /Cohort Basic/ })).toContainText("1");
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -61,7 +79,9 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   const mobileDrawer = page.getByRole("dialog");
   await expect(mobileDrawer.getByRole("heading", { name: "Cohort Basic" })).toBeVisible();
   await expect(mobileDrawer.getByRole("button", { name: "Fechar" })).toBeFocused();
-  const drawerViolations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const drawerViolations = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(drawerViolations.violations).toEqual([]);
   await page.screenshot({
     path: "harness/evidence/level-based-cohorts/screenshots/cohort-level-mobile.png",
@@ -75,7 +95,9 @@ test("Admin manages bounded Cohorts V2 settings after MFA", async ({ page }, tes
   await page.setViewportSize({ width: 390, height: 844 });
   await page.keyboard.press("Escape");
   await expect(mobileDrawer).not.toBeVisible();
-  const violations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const violations = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(violations.violations).toEqual([]);
   const mobile = await page.screenshot({
     path: testInfo.outputPath("admin-cohorts-mobile.png"),

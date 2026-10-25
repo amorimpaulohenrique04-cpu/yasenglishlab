@@ -16,6 +16,15 @@ import {
   type PracticeItemRound,
 } from "@/modules/practice";
 import type { PracticePlayerOutcome } from "@/modules/practice/ui/practice-player";
+import type {
+  PracticeFinalAnswers,
+  PracticeFinalDraft,
+  PracticeFinalOutcome,
+} from "@/modules/practice/ui/practice-session-player.types";
+import {
+  saveCurrentStudentFinalDraft,
+  submitCurrentStudentFinalAttempt,
+} from "@/server/practice/final-attempt";
 import {
   finalizeCurrentStudentPractice,
   startCurrentStudentReview,
@@ -104,6 +113,20 @@ export async function finalizePracticeAction(attemptId: string): Promise<Practic
   }
   revalidatePath("/pratica");
   return result;
+}
+
+export async function savePracticeFinalDraftAction(
+  attemptId: string,
+  answers: PracticeFinalAnswers,
+): Promise<PracticeFinalDraft> {
+  return saveCurrentStudentFinalDraft(attemptId, answers);
+}
+
+export async function submitPracticeFinalAction(attemptId: string): Promise<PracticeFinalOutcome> {
+  const outcome = await submitCurrentStudentFinalAttempt(attemptId);
+  revalidatePath("/pratica");
+  revalidatePath(`/pratica/${attemptId}`);
+  return outcome;
 }
 
 export async function uploadPracticeItemAudioAction(

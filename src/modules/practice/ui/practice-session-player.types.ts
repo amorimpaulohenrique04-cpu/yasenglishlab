@@ -32,6 +32,33 @@ export interface PracticeSessionLiveFlow {
   initialResults?: PracticeItemResult[];
   /** REVIEW attempts run only these item ids. */
   itemIds?: string[] | null;
+  /** Lesson-bound v3 attempts save provisional answers, then grade once. */
+  finalFlow?: PracticeFinalFlow;
+}
+
+export type PracticeFinalAnswers = Record<
+  string,
+  {
+    response: PracticeItemInput;
+    confidence: PracticeConfidence | null;
+  }
+>;
+
+export interface PracticeFinalDraft {
+  answers: PracticeFinalAnswers;
+  optionOrders: Record<string, string[]>;
+}
+
+export type PracticeFinalOutcome = Omit<PracticeFinalizeResult, "evaluationStatus"> & {
+  evaluationStatus: PracticeFinalizeResult["evaluationStatus"] | "MANUAL_REVIEWED";
+  results: PracticeItemResult[];
+};
+
+export interface PracticeFinalFlow {
+  initialDraft: PracticeFinalDraft;
+  initialOutcome?: PracticeFinalOutcome | undefined;
+  saveAnswers: (answers: PracticeFinalAnswers) => Promise<PracticeFinalDraft>;
+  submitFinal: () => Promise<PracticeFinalOutcome>;
 }
 
 /** Teacher review of one manual (WRITTEN/SPOKEN) item, keyed by item id in `manualReviews`. */
@@ -45,6 +72,8 @@ export interface PracticeItemReview {
 export interface PracticeSessionPlayerProps {
   content: PracticeContentV3Student | PracticeContentV3;
   mode: "live" | "preview";
+  /** Teacher editor selection; live attempts always resume their own navigation. */
+  previewItemId?: string | undefined;
   /** Short-lived signed URLs for IMAGE/AUDIO/VIDEO stimuli, keyed by item id. */
   stimulusUrls?: Record<string, string | null>;
   /** Required in `live` mode. */

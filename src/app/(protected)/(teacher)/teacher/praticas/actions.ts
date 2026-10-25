@@ -15,6 +15,8 @@ import {
   unpublishTeacherPractice,
 } from "@/server/teacher-operations/practice-commands";
 
+import { autosaveTeacherPractice } from "@/server/teacher-operations/practice-autosave";
+
 const LIST = "/teacher/praticas";
 
 function failure(target: string, error: unknown): never {
@@ -156,4 +158,40 @@ export async function completePracticeAssetAction(assetId: string, practiceId: s
   const result = await completePracticeAssetUpload(assetId);
   revalidatePath(`${LIST}/${z.uuid().parse(practiceId)}`);
   return result;
+}
+
+/** Nonredirecting autosave. The database owns revision checks and creation idempotency. */
+export async function autosavePracticeAction(
+  form: FormData,
+  creationKey: string,
+  expected: string | null,
+) {
+  await assertRole("TEACHER");
+  try {
+    const result = await autosaveTeacherPractice(
+      {
+        id: optionalUuid.parse(form.get("id")),
+        title: form.get("title"),
+        skill: form.get("skill"),
+        cefrTarget: form.get("cefrTarget") || null,
+        difficulty: form.get("difficulty") || null,
+        estimatedMinutes: Number(form.get("estimatedMinutes")),
+        courseId: form.get("courseId"),
+        relatedModuleId: form.get("relatedModuleId") || null,
+        relatedLessonId: form.get("relatedLessonId") || null,
+        content: jsonField(form, "content"),
+        answerKey: jsonField(form, "answerKey"),
+        feedback: jsonField(form, "feedback"),
+        itemKeys: jsonField(form, "itemKeys"),
+      },
+      creationKey,
+      expected,
+    );
+    return result;
+  } catch {
+    return {
+      status: "unavailable" as const,
+      message: "Não foi possível salvar. Confira sua conexão e tente novamente.",
+    };
+  }
 }

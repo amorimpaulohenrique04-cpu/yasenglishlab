@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui";
 export function ResourceAccess({
   id,
@@ -10,18 +10,22 @@ export function ResourceAccess({
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [pending, startTransition] = useTransition();
   return (
     <div>
       <Button
         variant="outline"
-        onClick={async () => {
-          try {
-            setUrl(await action(id));
-            setError(false);
-          } catch {
-            setError(true);
-          }
-        }}
+        loading={pending}
+        onClick={() =>
+          startTransition(async () => {
+            try {
+              setUrl(await action(id));
+              setError(false);
+            } catch {
+              setError(true);
+            }
+          })
+        }
       >
         Acessar recurso
       </Button>

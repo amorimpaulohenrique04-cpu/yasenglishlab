@@ -173,16 +173,19 @@ export interface AvatarProps {
   label: string;
   fallback: string;
   size?: "sm" | "md" | "lg";
+  /** `brand` (default) keeps the lilac tint; `neutral` uses grey for dense people lists. */
+  tone?: "brand" | "neutral";
 }
 
 const avatarSizes = { sm: 32, md: 40, lg: 56 } as const;
 
-export function Avatar({ image, label, fallback, size = "md" }: AvatarProps) {
+export function Avatar({ image, label, fallback, size = "md", tone = "brand" }: AvatarProps) {
   const pixels = avatarSizes[size];
 
   return (
     <span
       className="yas-avatar"
+      data-tone={tone === "neutral" ? "neutral" : undefined}
       style={{ width: pixels, height: pixels }}
       role="img"
       aria-label={label}

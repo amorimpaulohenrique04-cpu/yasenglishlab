@@ -1,0 +1,160 @@
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ teacher_practice_publish 
+--------------------------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ teacher_practice_publish 
+--------------------------
+ 
+(1 row)
+
+ teacher_practice_assign 
+-------------------------
+                       1
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+                                             practice_answers_save                                              
+----------------------------------------------------------------------------------------------------------------
+ {"answers": {"q1": {"response": {"optionId": "b"}, "confidence": "HIGH"}}, "optionOrders": {"q1": ["b", "a"]}}
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+                                                                          practice_answers_save                                                                           
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"answers": {"q1": {"response": {"optionId": "a"}, "confidence": "HIGH"}, "q2": {"response": {"value": false}, "confidence": null}}, "optionOrders": {"q1": ["b", "a"]}}
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ login 
+-------
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+
+ ok 
+----
+ 
+(1 row)
+

@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { useState } from "react";
 
+import { MotionProvider } from "@/components/motion";
+
 import {
   Alert,
   Avatar,
+  Breadcrumbs,
   Badge,
   Button,
   Card,
@@ -24,9 +27,11 @@ import {
   ProgressRing,
   Radio,
   SectionHeader,
+  SegmentedNav,
   Select,
   SelectableTag,
   Skeleton,
+  Stepper,
   Tabs,
   Tag,
   Textarea,
@@ -43,6 +48,38 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+
+export const ConfirmationDialog: Story = {
+  render: function ConfirmationDialogStory() {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Mostrar confirmação</Button>
+        <Dialog
+          open={open}
+          onOpenChange={setOpen}
+          presentation="confirmation"
+          tone="success"
+          icon="check-c"
+          title="Revisão finalizada com sucesso!"
+          description="A recomendação foi registrada e está disponível para o aluno."
+          actions={
+            <>
+              <Button variant="soft" onClick={() => setOpen(false)}>
+                Voltar para a lista
+              </Button>
+              <Button onClick={() => setOpen(false)} trailingIcon={<ArrowIcon />}>
+                Próxima revisão
+              </Button>
+            </>
+          }
+        >
+          {null}
+        </Dialog>
+      </>
+    );
+  },
+};
 
 function ArrowIcon() {
   return (
@@ -238,6 +275,75 @@ export const NavigationAndOverlays: Story = {
           </div>
         </Drawer>
       </div>
+    );
+  },
+};
+
+export const SessionPrimitives: Story = {
+  render: function SessionPrimitivesStory() {
+    const [step, setStep] = useState(1);
+    return (
+      <MotionProvider>
+        <div className="yas-stack" style={{ maxWidth: 820 }}>
+          <Breadcrumbs
+            homeHref="#inicio"
+            items={[{ label: "Sessões", href: "#sessoes" }, { label: "Pronúncia do TH" }]}
+          />
+          <SegmentedNav
+            ariaLabel="Visualização"
+            value="week"
+            items={[
+              { id: "agenda", label: "Agenda", href: "#agenda" },
+              { id: "week", label: "Semana", href: "#semana" },
+              { id: "month", label: "Mês", href: "#mes" },
+            ]}
+          />
+          <Tabs
+            ariaLabel="Detalhes"
+            variant="underline"
+            items={[
+              { id: "o", label: "Visão geral", icon: "grid", content: <p>Visão geral.</p> },
+              { id: "p", label: "Participantes", icon: "users", badge: 2, content: <p>Lista.</p> },
+              { id: "r", label: "Recursos", icon: "file", badge: 3, content: <p>Recursos.</p> },
+            ]}
+          />
+          <Stepper
+            ariaLabel="Etapas"
+            current={step}
+            onStepSelect={setStep}
+            steps={[
+              { label: "Informações", description: "Título, tipo e horário." },
+              { label: "Turma e sala", description: "Participantes e link." },
+              { label: "Revisão", description: "Confira antes de criar." },
+            ]}
+          />
+          <div className="yas-cluster">
+            <Button variant="outline" onClick={() => setStep((n) => Math.max(0, n - 1))}>
+              Voltar
+            </Button>
+            <Button variant="secondary" onClick={() => setStep((n) => Math.min(2, n + 1))}>
+              Continuar
+            </Button>
+            <Dropdown
+              iconOnly
+              label="Ações da sessão"
+              items={[
+                { id: "open", label: "Ver detalhes", icon: "eye" },
+                { id: "cancel", label: "Cancelar sessão", icon: "x-c", destructive: true },
+              ]}
+            />
+            <Dropdown
+              label="Exportar relatório"
+              icon="download"
+              triggerVariant="primary"
+              items={[
+                { id: "csv", label: "Exportar CSV", icon: "file" },
+                { id: "pdf", label: "Baixar PDF", icon: "download" },
+              ]}
+            />
+          </div>
+        </div>
+      </MotionProvider>
     );
   },
 };

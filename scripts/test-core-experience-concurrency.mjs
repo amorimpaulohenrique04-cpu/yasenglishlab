@@ -188,8 +188,10 @@ const ratings = JSON.stringify({
 });
 function pendingAttempt() {
   const id = randomUUID();
+  // Final submission is one per Student and activity (ADR 0025): each pending attempt needs its own activity.
+  const own = randomUUID();
   runAdmin(
-    `insert into public.practice_attempts(id,user_id,practice_activity_id,status,submitted_at) values('${id}','${student}','${activity}','SUBMITTED',now()); insert into public.practice_results(practice_attempt_id,evaluation_status) values('${id}','PENDING_MANUAL');`,
+    `insert into public.practice_activities(id,slug,title,skill,estimated_minutes,content) select '${own}','${own}','Review race',skill,estimated_minutes,content from public.practice_activities where id='${activity}'; insert into public.practice_attempts(id,user_id,practice_activity_id,status,submitted_at) values('${id}','${student}','${own}','SUBMITTED',now()); insert into public.practice_results(practice_attempt_id,evaluation_status) values('${id}','PENDING_MANUAL');`,
   );
   return id;
 }

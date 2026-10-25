@@ -1,0 +1,21 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting failed:
+harness/agent-state/decisions.md
+harness/agent-state/plan.md
+harness/agent-state/progress.md
+harness/feature_list.json
+
+Verification failed at: format:check

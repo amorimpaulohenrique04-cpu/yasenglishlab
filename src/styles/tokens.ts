@@ -68,6 +68,14 @@ export const yasTokens = {
     slow: "350ms",
     easing: "cubic-bezier(0.2, 0, 0, 1)",
     spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+    sheet: "cubic-bezier(0.32, 0.72, 0, 1)",
+    out: "cubic-bezier(0.16, 1, 0.3, 1)",
+    /** Physical springs for `motion/react`; the CSS durations above stay the default. */
+    springs: {
+      snappy: { type: "spring", stiffness: 520, damping: 38, mass: 0.9 },
+      gentle: { type: "spring", stiffness: 260, damping: 30 },
+      sheet: { type: "spring", stiffness: 380, damping: 36 },
+    },
   },
 } as const;
 

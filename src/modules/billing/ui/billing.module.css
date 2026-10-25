@@ -102,3 +102,31 @@
   display: grid;
   gap: var(--yas-space-3);
 }
+.reconcileActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--yas-space-3);
+}
+.reconcileActions form {
+  display: contents;
+}
+.reconcileEmpty {
+  margin: 0;
+  border: 1px dashed var(--yas-color-border);
+  border-radius: var(--yas-radius-lg);
+  padding: var(--yas-space-5);
+  color: var(--yas-color-muted);
+  text-align: center;
+}
+.resolveForm {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--yas-space-3);
+}
+@media (max-width: 47.99rem) {
+  .resolveForm {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

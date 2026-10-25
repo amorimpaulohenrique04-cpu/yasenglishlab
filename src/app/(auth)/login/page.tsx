@@ -13,6 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const error = typeof params.error === "string" ? params.error : null;
   const reset = params.reset === "1";
+  const expired = params.expired === "1";
   const next = sanitizeNextPath(typeof params.next === "string" ? params.next : null, "");
 
   return (
@@ -30,6 +31,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               tone="error"
               title="Não foi possível entrar"
               description="Confira seus dados e tente novamente."
+            />
+          )}
+          {expired && (
+            <Alert
+              tone="warning"
+              title="Sua sessão expirou"
+              description="Entre novamente para continuar a verificação."
             />
           )}
           {reset && (

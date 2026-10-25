@@ -4,6 +4,7 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
@@ -73,7 +74,7 @@ async function fixture(status: "ACTIVE" | "PAST_DUE", name: string) {
 async function evidence(page: Page, name: string) {
   expect(
     (
-      await new AxeBuilder({ page })
+      await new AxeBuilder({ page: await settledPage(page) })
         .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
         .analyze()
     ).violations,

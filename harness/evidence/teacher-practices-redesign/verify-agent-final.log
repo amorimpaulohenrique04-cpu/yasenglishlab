@@ -1,0 +1,50 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 908 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.stage12-df.config.ts
+  1:41  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\src\modules\teacher-operations\ui\practice-builder.tsx
+  33:3  warning  'SKILL_LABELS' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\src\modules\teacher-operations\ui\practice-list.tsx
+  92:19  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\src\modules\teacher-operations\ui\practice-list.tsx:92:19
+  90 |   const [pending, startTransition] = useTransition();
+  91 |
+> 92 |   useEffect(() => setQuery(search), [search]);
+     |                   ^^^^^^^^ Avoid calling setState() directly within an effect
+  93 |
+  94 |   useEffect(() => {
+  95 |     const timeout = window.setTimeout(() => {  react-hooks/set-state-in-effect
+
+✖ 3 problems (1 error, 2 warnings)
+
+
+Verification failed at: lint

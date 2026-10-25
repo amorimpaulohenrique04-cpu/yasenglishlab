@@ -1,5 +1,6 @@
 "use client";
 
+import { isAuthSessionMissingError } from "@supabase/supabase-js";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Alert, Button, Input } from "@/components/ui";
@@ -7,6 +8,21 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 interface MfaPanelProps {
   nextPath: string;
+}
+
+/**
+ * Auth revoked the session (sign-out elsewhere, password reset): no code can succeed here.
+ * auth-js turns the server's `session_not_found` into AuthSessionMissingError.
+ */
+function isSessionGone(error: unknown): boolean {
+  return isAuthSessionMissingError(error);
+}
+
+/** Drops the stale cookie locally (the server already forgot it) and sends the user to sign in again. */
+async function restartLogin(nextPath: string): Promise<void> {
+  await getSupabaseBrowserClient().auth.signOut({ scope: "local" });
+  const params = new URLSearchParams({ expired: "1", next: nextPath });
+  window.location.replace(`/login?${params.toString()}`);
 }
 
 export function MfaPanel({ nextPath }: MfaPanelProps) {
@@ -65,7 +81,11 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
       setStatus("ready");
     }
 
-    prepareMfa().catch(() => {
+    prepareMfa().catch((error: unknown) => {
+      if (active && isSessionGone(error)) {
+        void restartLogin(nextPath);
+        return;
+      }
       if (active) {
         setErrorMessage("Não foi possível preparar a verificação em duas etapas.");
         setStatus("error");
@@ -86,6 +106,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
 
     const challenge = await supabase.auth.mfa.challenge({ factorId });
     if (challenge.error) {
+      if (isSessionGone(challenge.error)) return restartLogin(nextPath);
       setErrorMessage("Não foi possível validar este código.");
       return;
     }
@@ -97,6 +118,7 @@ export function MfaPanel({ nextPath }: MfaPanelProps) {
     });
 
     if (verification.error) {
+      if (isSessionGone(verification.error)) return restartLogin(nextPath);
       setErrorMessage("Código inválido ou expirado.");
       return;
     }

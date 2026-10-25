@@ -1,0 +1,16 @@
+[
+  {
+    "state": "before",
+    "enabled": true,
+    "opacity": "0.640016",
+    "color": "rgb(31, 17, 70)",
+    "background": "rgb(255, 255, 255)"
+  },
+  {
+    "state": "after",
+    "enabled": true,
+    "opacity": "1",
+    "color": "rgb(107, 99, 123)",
+    "background": "rgb(250, 248, 255)"
+  }
+]

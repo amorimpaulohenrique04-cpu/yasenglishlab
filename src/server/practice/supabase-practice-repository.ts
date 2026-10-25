@@ -206,28 +206,33 @@ export class SupabasePracticeRepository
   }
 
   async listHistory(userId: string): Promise<PracticeHistoryItem[]> {
-    const [{ data: attempts, error: attemptError }, activities] = await Promise.all([
-      this.client
-        .from("practice_attempts")
-        // `*` keeps the page working while the v3 columns (attempt_kind, last_activity_at) roll out.
-        .select("*")
-        .eq("user_id", userId)
-        .order("started_at", { ascending: false })
-        .limit(30),
-      this.listActivities(),
-    ]);
-
+    const { data: attempts, error: attemptError } = await this.client
+      .from("practice_attempts")
+      // `*` keeps the page working while the v3 columns (attempt_kind, last_activity_at) roll out.
+      .select("*")
+      .eq("user_id", userId)
+      .order("started_at", { ascending: false })
+      .limit(30);
     if (attemptError) throw new Error("Unable to load practice history.");
     const attemptRows = attempts ?? [];
     const attemptIds = attemptRows.map((row) => String(row.id));
-    const resultQuery =
-      attemptIds.length === 0
-        ? { data: [], error: null }
-        : await this.client
-            .from("practice_results")
-            .select("*")
-            .in("practice_attempt_id", attemptIds);
-    if (resultQuery.error) throw new Error("Unable to load practice results.");
+    const activityIds = [...new Set(attemptRows.map((row) => String(row.practice_activity_id)))];
+    const [activityQuery, resultQuery] = await Promise.all([
+      activityIds.length
+        ? this.client
+            .from("practice_activities")
+            .select(
+              "id,slug,title,skill,cefr_target,difficulty,estimated_minutes,related_module_id,related_lesson_id,content",
+            )
+            .in("id", activityIds)
+        : { data: [], error: null },
+      attemptIds.length
+        ? this.client.from("practice_results").select("*").in("practice_attempt_id", attemptIds)
+        : { data: [], error: null },
+    ]);
+    if (activityQuery.error || resultQuery.error)
+      throw new Error("Unable to load practice history.");
+    const activities = (activityQuery.data ?? []).map((row) => activityFromRow(row as Row));
 
     const activitiesById = new Map(activities.map((activity) => [activity.id, activity]));
     const resultsByAttempt = new Map(
@@ -313,8 +318,6 @@ export class SupabasePracticeRepository
             "id, slug, title, skill, cefr_target, difficulty, estimated_minutes, related_module_id, related_lesson_id, content",
           )
           .eq("id", attempt.practice_activity_id)
-          .eq("active", true)
-          .eq("publication_status", "PUBLISHED")
           .maybeSingle(),
         this.client
           .from("practice_results")

@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { runSqlSuite } from "./_sql-test-runner.mjs";
 
 const suite = process.argv[2];
 const suites = {
@@ -12,9 +12,13 @@ const suites = {
     "supabase/tests/booking_quota.sql",
     "supabase/tests/cohorts.sql",
     "supabase/tests/teacher_operations.sql",
+    "supabase/tests/teacher_session_workspace.sql",
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
     "supabase/tests/students_directory.sql",
+    "supabase/tests/teacher_students_workspace.sql",
+    "supabase/tests/teacher_entry_workspace.sql",
+    "supabase/tests/teacher_availability_workspace.sql",
     "supabase/tests/p21_core_experience.sql",
     "supabase/tests/placement.sql",
     "supabase/tests/placement_teacher_assignment.sql",
@@ -38,6 +42,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
@@ -46,6 +51,8 @@ const suites = {
     "supabase/tests/admin_course_enrollment.sql",
     "supabase/tests/plan_entitlement_admin.sql",
     "supabase/tests/operational_alerts.sql",
+    "supabase/tests/billing_core.sql",
+    "supabase/tests/observability_contracts.sql",
     "supabase/tests/placement_practice_dead_ends.sql",
   ],
   rls: [
@@ -54,9 +61,13 @@ const suites = {
     "supabase/tests/cohorts.sql",
     "supabase/tests/rls_permissions.sql",
     "supabase/tests/teacher_operations.sql",
+    "supabase/tests/teacher_session_workspace.sql",
     "supabase/tests/admin_content.sql",
     "supabase/tests/assessment_engine.sql",
     "supabase/tests/students_directory.sql",
+    "supabase/tests/teacher_students_workspace.sql",
+    "supabase/tests/teacher_entry_workspace.sql",
+    "supabase/tests/teacher_availability_workspace.sql",
     "supabase/tests/p21_core_experience.sql",
     "supabase/tests/placement.sql",
     "supabase/tests/placement_teacher_assignment.sql",
@@ -76,6 +87,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
@@ -88,8 +100,13 @@ const suites = {
   ],
   "plan-entitlement-admin": ["supabase/tests/plan_entitlement_admin.sql"],
   "operational-alerts": ["supabase/tests/operational_alerts.sql"],
+  "billing-core": ["supabase/tests/billing_core.sql"],
+  "observability-contracts": ["supabase/tests/observability_contracts.sql"],
   "placement-practice-dead-ends": ["supabase/tests/placement_practice_dead_ends.sql"],
   "students-directory": ["supabase/tests/students_directory.sql"],
+  "teacher-students-workspace": ["supabase/tests/teacher_students_workspace.sql"],
+  "teacher-entry-workspace": ["supabase/tests/teacher_entry_workspace.sql"],
+  "teacher-availability-workspace": ["supabase/tests/teacher_availability_workspace.sql"],
   "admin-teachers": ["supabase/tests/admin_teachers.sql"],
   "admin-cohorts": ["supabase/tests/admin_cohorts.sql"],
   "admin-crm": ["supabase/tests/admin_crm.sql"],
@@ -119,73 +136,9 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment|placement-practice-dead-ends>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment|placement-practice-dead-ends>",
   );
   process.exit(2);
 }
 
-const databaseUrl = process.env.DATABASE_URL;
-const psqlArgs = databaseUrl ? [`--dbname=${databaseUrl}`] : [];
-psqlArgs.push("-v", "ON_ERROR_STOP=1");
-
-for (const file of files) {
-  console.log(`\n▶ psql ${file}`);
-  const result = spawnSync("psql", [...psqlArgs, "-f", file], {
-    stdio: "inherit",
-  });
-  if (result.error?.code === "ENOENT") {
-    console.error("psql is required for executable database/RLS tests.");
-    process.exit(2);
-  }
-  if (result.status !== 0) process.exit(result.status ?? 1);
-}
-
-if (suite === "integration") {
-  console.log("\n▶ real Agenda concurrency");
-  const concurrency = spawnSync(process.execPath, ["scripts/test-schedule-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (concurrency.status !== 0) process.exit(concurrency.status ?? 1);
-}
-
-if (suite === "integration") {
-  const core = spawnSync(process.execPath, ["scripts/test-core-experience-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (core.status !== 0) process.exit(core.status ?? 1);
-  const placement = spawnSync(process.execPath, ["scripts/test-placement-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (placement.status !== 0) process.exit(placement.status ?? 1);
-  const notifications = spawnSync(
-    process.execPath,
-    ["scripts/test-notification-delivery-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (notifications.status !== 0) process.exit(notifications.status ?? 1);
-  const billingWebhook = spawnSync(
-    process.execPath,
-    ["scripts/test-billing-webhook-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (billingWebhook.status !== 0) process.exit(billingWebhook.status ?? 1);
-  const courseCompletion = spawnSync(
-    process.execPath,
-    ["scripts/test-course-completion-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (courseCompletion.status !== 0) process.exit(courseCompletion.status ?? 1);
-}
-console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);
+process.exitCode = runSqlSuite(suite, files).exitCode;

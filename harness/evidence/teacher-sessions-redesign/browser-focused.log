@@ -1,0 +1,13 @@
+  ok 1 [chromium] › tests\e2e\core-live.spec.ts:102:7 › P21.4 Teacher Operations V2 + Student Agenda V2 › Teacher creates availability/session; scoped Student books, cancels, rebooks and joins safely (31.5s)
+  ok 2 [chromium] › tests\e2e\teacher-operations.spec.ts:22:7 › Teacher Operations V1 › Student cannot enter the Teacher area (3.1s)
+  ok 3 [chromium] › tests\e2e\teacher-operations.spec.ts:36:7 › Teacher Operations V1 › AAL1 → MFA → own session → attendance persists; foreign session stays unavailable (7.9s)
+  ok 4 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:35:5 › Sessions filters, calendar, drawers, details and real report exports (1.9m)
+  ok 5 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:99:5 › Resource form keeps failed input and persists instructions without a fake file (9.1s)
+  ok 6 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:129:5 › Report download is unavailable to an unauthenticated request (42ms)
+  6 passed (4.4m)
+
+Final redesign-only run:
+  ok 1 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:36:5 › Sessions filters, calendar, drawers, details and real report exports (1.7m)
+  ok 2 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:105:5 › Resource form keeps failed input and persists instructions without a fake file (7.5s)
+  ok 3 [chromium] › tests\e2e\teacher-sessions-redesign.spec.ts:135:5 › Report download is unavailable to an unauthenticated request (41ms)
+  3 passed (2.6m)

@@ -35,6 +35,7 @@ import { PracticeResponseFields } from "./practice-response-fields";
 import { PracticeResultHero } from "./practice-result";
 import type { PracticeSessionPlayerProps } from "./practice-session-player.types";
 import { PracticeStimulus } from "./practice-stimulus";
+import { PracticeFinalPlayer } from "./practice-final-player";
 
 export type { PracticeSessionPlayerProps } from "./practice-session-player.types";
 
@@ -122,8 +123,9 @@ function ItemScreen({
   const feedback = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    heading.current?.focus();
-  }, []);
+    // The teacher preview remounts while the author types; it must never steal focus.
+    if (!preview) heading.current?.focus();
+  }, [preview]);
   useEffect(() => {
     if (result) feedback.current?.focus();
   }, [result]);
@@ -338,16 +340,20 @@ function PreTask({
   objective,
   instructions,
   skill,
+  preview = false,
   onStart,
 }: {
   items: PracticeItemV3[];
   objective: string;
   instructions: string | undefined;
   skill: string;
+  preview?: boolean;
   onStart: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => heading.current?.focus(), []);
+  useEffect(() => {
+    if (!preview) heading.current?.focus();
+  }, [preview]);
   const criteria = [
     ...new Set(
       items.flatMap((item) =>
@@ -398,7 +404,7 @@ function PreTask({
   );
 }
 
-export function PracticeSessionPlayer({
+export function LegacyPracticeSessionPlayer({
   content,
   mode,
   stimulusUrls,
@@ -449,6 +455,7 @@ export function PracticeSessionPlayer({
           objective={content.objective}
           instructions={content.instructions}
           skill={skill ?? ""}
+          preview={preview}
           onStart={() => setStarted(true)}
         />
       </div>
@@ -591,5 +598,16 @@ export function PracticeSessionPlayer({
         </PracticeResultHero>
       </div>
     </div>
+  );
+}
+
+export function PracticeSessionPlayer(props: PracticeSessionPlayerProps) {
+  if (props.mode === "preview" || props.live?.finalFlow) return <PracticeFinalPlayer {...props} />;
+  return (
+    <Alert
+      tone="error"
+      title="Prática indisponível"
+      description="Não foi possível carregar esta tentativa. Atualize a página e tente novamente."
+    />
   );
 }

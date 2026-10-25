@@ -1,132 +1,138 @@
 import Link from "next/link";
-
-import { Badge, Card, EmptyState, Icon, PageHeader } from "@/components/ui";
+import { Breadcrumbs, Icon, PageHeader } from "@/components/ui";
 import {
-  teacherSessionStatusLabel,
-  teacherSessionTypeLabel,
-  type TeacherSessionStatus,
-} from "@/modules/teacher-operations";
-import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
-import { loadTeacherSessionsPage } from "@/server/teacher-operations/teacher-operations";
+  addDays,
+  filterSessions,
+  localParts,
+  parseSessionFilters,
+  sessionCanCancel,
+  sessionCanEdit,
+  weekStart,
+} from "@/modules/teacher-operations/domain/session-workspace";
+import { formatWeekRange } from "@/modules/teacher-operations/domain/session-calendar";
+import { SessionBoard } from "@/modules/teacher-operations/ui/session-board";
+import { SessionCalendar, sessionListUrl } from "@/modules/teacher-operations/ui/session-calendar";
+import { NextSessionCard, type SessionRowLinks } from "@/modules/teacher-operations/ui/session-row";
+import { QuickActions, WeekSummary } from "@/modules/teacher-operations/ui/session-sidebar";
+import { SessionToolbar } from "@/modules/teacher-operations/ui/session-toolbar";
+import styles from "@/modules/teacher-operations/ui/sessions.module.css";
+import {
+  loadSessionWorkspace,
+  sessionWorkspaceNow,
+} from "@/server/teacher-operations/session-workspace";
 
-type TeacherSession = Extract<
-  Awaited<ReturnType<typeof loadTeacherSessionsPage>>,
-  { sessions: unknown }
->["sessions"][number];
-
-const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Recife",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-});
-
-const dayLabelFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "America/Recife",
-  weekday: "long",
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "America/Recife",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-function statusTone(status: TeacherSessionStatus): "success" | "warning" | "neutral" {
-  if (status === "SCHEDULED") return "success";
-  if (status === "CANCELLED") return "warning";
-  return "neutral";
-}
-
-export default async function TeacherSessionsPage() {
-  const state = await loadTeacherSessionsPage();
-  const today = dayKeyFormatter.format(new Date());
-  const days = new Map<string, { label: string; items: TeacherSession[] }>();
-  if (state.status !== "empty") {
-    for (const session of state.sessions) {
-      const start = new Date(session.startsAt);
-      const key = dayKeyFormatter.format(start);
-      const day = days.get(key) ?? { label: dayLabelFormatter.format(start), items: [] };
-      day.items.push(session);
-      days.set(key, day);
-    }
-  }
-
+export default async function TeacherSessionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [context, query] = await Promise.all([loadSessionWorkspace(), searchParams]);
+  const now = sessionWorkspaceNow();
+  const today = localParts(new Date(now)).date;
+  const filters = parseSessionFilters(query, today);
+  const sessions = filterSessions(context.sessions, filters, now);
+  const returnTo = sessionListUrl(filters);
+  const links: Record<string, SessionRowLinks> = Object.fromEntries(
+    context.sessions.map((s) => [
+      s.id,
+      {
+        detail: `/teacher/sessoes/${s.id}?returnTo=${encodeURIComponent(returnTo)}`,
+        canEdit: sessionCanEdit(s, now),
+        canCancel: sessionCanCancel(s),
+      },
+    ]),
+  );
+  const names = Object.fromEntries(context.students.map((s) => [s.id, s.name]));
+  const cohorts = [
+    ...new Map(
+      [
+        ...context.cohorts,
+        ...context.sessions
+          .filter((s) => s.cohort_id)
+          .map((s) => ({ id: s.cohort_id!, name: s.cohort_name ?? "Turma" })),
+      ].map((c) => [c.id, c]),
+    ).values(),
+  ];
+  const week = weekStart(filters.date),
+    weekEnd = addDays(week, 7),
+    weekSessions = context.sessions.filter(
+      (s) =>
+        s.status !== "CANCELLED" &&
+        localParts(s.starts_at).date >= week &&
+        localParts(s.starts_at).date < weekEnd,
+    );
+  const next =
+    filters.view === "agenda" && filters.status === "upcoming"
+      ? [...context.sessions]
+          .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+          .find((s) => s.status === "SCHEDULED" && Date.parse(s.ends_at) > now)
+      : undefined;
+  const panel =
+    query.panel === "availability" || query.panel === "meeting" ? query.panel : undefined;
   return (
     <div className={styles.page}>
+      <Breadcrumbs
+        homeHref="/teacher"
+        homeLabel="Início do professor"
+        items={[{ label: "Sessões" }]}
+      />
       <PageHeader
         title="Suas sessões"
-        description="Consulte seus encontros e registre a presença dos participantes."
+        description="Organize, conduza e acompanhe seus encontros."
         actions={
-          <Link className="yas-button yas-button--primary" href="/teacher/sessoes/nova">
+          <Link
+            className="yas-button yas-button--secondary yas-button--lg"
+            href={`/teacher/sessoes/nova?returnTo=${encodeURIComponent(returnTo)}`}
+          >
             <Icon name="plus" size={18} />
-            Criar encontro
+            Criar sessão
           </Link>
         }
       />
-
-      {state.status === "empty" ? (
-        <EmptyState
-          title="Nenhuma sessão atribuída"
-          description="Quando uma sessão estiver associada ao seu perfil de professor, ela aparecerá aqui."
-        />
-      ) : (
-        [...days.entries()].map(([key, day]) => (
-          <section className={styles.dayGroup} key={key} aria-label={day.label}>
-            <h2 className={styles.dayTitle}>
-              {day.label}
-              {key === today && <span className={styles.todayChip}>Hoje</span>}
-            </h2>
-            {day.items.map((session) => {
-              const start = new Date(session.startsAt);
-              const end = new Date(session.endsAt);
-              return (
-                <Card
-                  key={session.id}
-                  className={styles.sessionRow}
-                  interactive
-                  aria-labelledby={"teacher-session-" + session.id}
-                >
-                  <div className={styles.sessionRowTime}>
-                    <time dateTime={session.startsAt}>{timeFormatter.format(start)}</time>
-                    <small>
-                      até <time dateTime={session.endsAt}>{timeFormatter.format(end)}</time>
-                    </small>
-                  </div>
-                  <div className={styles.agendaCopy}>
-                    <span>
-                      <span className={styles.typeChip} data-type={session.sessionType}>
-                        {teacherSessionTypeLabel(session.sessionType)}
-                      </span>
-                    </span>
-                    <h3 className={styles.sessionTitle} id={"teacher-session-" + session.id}>
-                      {session.title}
-                    </h3>
-                    <small>
-                      {session.participantCount}{" "}
-                      {session.participantCount === 1 ? "participante" : "participantes"} ·{" "}
-                      {session.attendanceMarkedCount} de {session.participantCount} com presença
-                      marcada
-                    </small>
-                  </div>
-                  <Badge tone={statusTone(session.status)} dot>
-                    {teacherSessionStatusLabel(session.status)}
-                  </Badge>
-                  <Link
-                    className="yas-button yas-button--soft yas-button--sm"
-                    href={"/teacher/sessoes/" + session.id}
-                  >
-                    Abrir sessão →
-                  </Link>
-                </Card>
-              );
-            })}
+      <SessionToolbar filters={filters} today={today} cohorts={cohorts} />
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          {next && links[next.id] && (
+            <NextSessionCard session={next} links={links[next.id]!} names={names} now={now} />
+          )}
+          <SessionBoard
+            filters={filters}
+            today={today}
+            now={now}
+            sessions={sessions}
+            availability={context.availability}
+            links={links}
+            names={names}
+            returnTo={returnTo}
+            hasAnySession={context.sessions.length > 0}
+          />
+        </div>
+        <aside className={styles.aside} aria-label="Calendário e ações rápidas">
+          <section className={styles.sideCard} aria-label="Calendário do mês">
+            <SessionCalendar filters={filters} sessions={context.sessions} today={today} />
           </section>
-        ))
-      )}
+          <WeekSummary
+            sessions={weekSessions.length}
+            students={new Set(weekSessions.flatMap((s) => s.student_ids)).size}
+            hours={weekSessions.reduce(
+              (n, s) => n + (Date.parse(s.ends_at) - Date.parse(s.starts_at)) / 3600000,
+              0,
+            )}
+            range={formatWeekRange(week)}
+            weekHref={sessionListUrl(filters, { view: "week" })}
+          />
+          <QuickActions
+            context={context}
+            now={now}
+            date={filters.date}
+            today={today}
+            returnTo={returnTo}
+            links={links}
+            names={names}
+            initialPanel={panel}
+          />
+        </aside>
+      </div>
     </div>
   );
 }

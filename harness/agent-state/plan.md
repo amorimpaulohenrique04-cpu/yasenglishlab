@@ -1,6 +1,68 @@
-# Plano — level-based-cohorts
+# Plano — teacher-release-gates / CI recovery F01–F04 (2026-10-25)
+
+1. Congelar logs/artefatos das runs 40166442125 e 40166440160 (HEAD 02c06b1).
+2. F01: comparar goldens Home mobile/tablet com evidência existente e registrar escopo exato.
+3. F02/F03: diagnosticar cores compostas e transições; corrigir causa e cobrir regressão.
+4. F04: alinhar prova persistida ao ADR 0025, conforme confirmação explícita do usuário:
+   sete respostas finais, 6/7, sem rodada nova; garantir identidade, retomada e idempotência.
+5. Checks focados, push no PR #89 e Official CI completo; registrar matriz e bloqueios reais.
+6. F07 revelado no CI corrigido: aguardar o salvamento/redirecionamento real de Turmas antes do axe;
+   F08 é conflito de porta no runner antes do E2E (não é falha dos testes). Reexecutar matriz completa.
+
+# Plano anterior — teacher-release-gates / CI recovery (2026-10-25)
+
+Plano do usuário: `plano_correcao_testes_teacher_sessions_redesign.md`. Matriz e causas: `harness/evidence/ci-recovery-teacher-sessions/README.md`.
+
+1. E04/E05: asserção de prática escopada à aula 01; fixture de placement isolada do reset canônico.
+2. E01/E02/A01/A02: axe só em quadro estável (`tests/helpers/settled-frame.ts`, inclui <title>).
+3. E03: nota CEFR quebra linha dentro do card.
+4. V01–V05: renders Linux do CI promovidos (mudanças intencionais da branch).
+5. Sem execução local (instrução do usuário); commit, push e CI oficial como prova.
+
+# Plano — teacher-release-gates
 
 ## Active task
+
+**teacher-release-gates**
+
+Goal: `harness/goals/teacher-release-gates.md`. Certificar histórico da branch e corrigir capturas/disponibilidade; gates, reset local, commits/push/PR autorizados em 2026-10-24. Sem auto-merge. Histórico abaixo preserva decisões anteriores, substituídas pela autorização atual quando conflitantes.
+
+# Plano — teacher-sessions-redesign
+
+## Active task
+
+**teacher-sessions-redesign**
+
+Goal: harness/goals/teacher-sessions-redesign.md. Plano aprovado pelo usuário.
+
+1. Projeções autenticadas completas e domínio/testes de filtros, disponibilidade e relatórios.
+2. Agenda/calendário, assistente, drawers e detalhes preservando operações.
+3. Relatórios CSV/PDF, regressões, acessibilidade e evidência visual.
+4. Entrega local, migrations, dev-seed e localhost. Gates completos suspensos por instrução expressa de 2026-10-22; certificação permanece pendente. Sem PR ou push.
+
+Fase 2 — polimento visual (aprovado 2026-10-22; visual+UX, sem regra nova; CTA violeta; motion):
+
+1. Fundação: motion provider, tokens de mola, primitivos (SegmentedNav, Tabs underline, Breadcrumbs, Drawer sizes/footer, Dropdown estendido, ToastProvider, Stepper, CommandPalette). Popover, DatePicker, Combobox e Switch não foram necessários: inputs nativos estilizados mantêm a semântica e os testes.
+2. Espaço de sessões (Hoje/Semana grade/Mês, toolbar instantânea, ⌘K, coluna lateral).
+3. Sheets Meet e Disponibilidade (grade semanal).
+4. Assistente de criação + edição em sheet.
+5. Detalhes (cabeçalho com faixa de metadados, abas, presença otimista, recursos). Morph via ViewTransition descartado: nomes duplicados durante a animação de troca de visão.
+6. Relatórios (KPIs, gráficos SVG animados, insights determinísticos).
+7. Responsivo/a11y/reduced-motion, testes focados, evidência.
+
+---
+
+# Plano — public-site-design-refinement
+
+## Active task
+
+**public-site-design-refinement**
+
+Goal: `harness/goals/public-site-design-refinement.md`. V4 aplicada; revisão visual e verify:ui pendentes. Core, harness e segurança passaram. Eval inclui commits preexistentes da branch fora do escopo desta tarefa.
+
+---
+
+# Plano — level-based-cohorts
 
 **level-based-cohorts** — goal: `harness/goals/level-based-cohorts.md`
 
@@ -12,8 +74,6 @@
 ---
 
 # Plano — placement-practice-dead-ends
-
-## Active task
 
 **placement-practice-dead-ends** — goal: `harness/goals/placement-practice-dead-ends.md`.
 
@@ -199,3 +259,107 @@ Atualizacao (2026-10-15): o Codex implementou D e F; o corte de custo que os adi
 Corrigir o bloqueio de chunks minificados no teste de hidratação e executar apenas o checkout FAKE em servidor dev isolado, preservando a proibição de FAKE em produção. Validar os dois casos, controles e CI completo.
 
 Ajuste final de integração: mover a prova de persistência/audit de publicação do pós-run para o próprio cenário, antes de afterEach limpar o módulo. Manter as mesmas asserções e deixar os demais checks de persistência/analytics intactos.
+
+---
+
+# Plano — public-site-design-refinement
+
+Goal: `harness/goals/public-site-design-refinement.md`.
+
+1. Refinar apenas o protótipo público: hero editorial, benefícios discretos, método e professora mais cedo, planos e mobile.
+2. Preservar preços/fluxo confirmado; substituir urgência simulada e depoimentos fictícios por conteúdo demonstrativo explícito.
+3. Executar verify:agent e verify:ui, validar estrutura local e registrar limitações de revisão visual sem contornar bloqueio do navegador.
+
+## teacher-practices-redesign — 2026-10-22
+
+Approved stages: 0 preparation; 1 contracts; 2 SQL access/final submission; 3 list; 4 authoring/autosave; 5 player; 6 publication/polish; 7 verification. See harness/goals/teacher-practices-redesign.md and docs/TEACHER_PRACTICES_REDESIGN.md. Preserve preexisting work. Main owns shared contracts and migration; workers have disjoint files.
+
+## 2026-10-22 — teacher-practices-redesign: lapidação visual/funcional (Claude)
+
+Escopo: só UI do Teacher em `src/modules/teacher-operations/ui/practice-*` + `practices.module.css`/`practice-list.module.css` (e o player compartilhado só se o defeito for dele). Sem migration, sem regra de produto nova.
+Gap matrix (inspeção Chrome 1440px vs referência):
+
+1. Listagem: título grande demais vs Sessões; coluna de status no centro; ação "Continuar" para rascunho; menu ⋮ com Editar/Duplicar; chips de habilidade/nível.
+2. Informações: breadcrumb quebrado em 2 linhas; ícone de "Visualizar como aluno"/"Nova questão" empilhado sobre o texto; contadores 0/100 e 0/200 à direita; confiança como switch com descrição; "Configurações adicionais" como link com chevron; Dica com ícone de alvo, não esticada.
+3. Questões: lista com tile de ícone do tipo + "1. Tipo" + trecho; ações Duplicar/Excluir/↑↓ no cabeçalho do editor; mídia como 4 tiles ao lado do enunciado; toolbar com ícones; prévia em cartão limpo (sem caixa alta indevida, sem sobreposição do rodapé).
+4. Tipos: "Nova questão" abre seletor antes de criar item; grade 4 colunas + Dica; sem rádio nativo visível; título com estilo de heading.
+5. Feedback/configurações: dois cartões lado a lado quando abertos (abas "Por alternativa"/"Feedback geral"; pontuação, dificuldade, tempo, switches).
+6. Revisão: checklist com resumos (contagem, mídias, configurações) e rodapé Voltar/Salvar rascunho/Publicar.
+   Funcional: status "Salvo automaticamente há X min"; confirmação ao excluir questão; stepper mantém etapas futuras inertes (padrão Sessões).
+   Delegação: Sonnet (yas-frontend) sequencial — A: Questões/tipos/feedback (3–5); B: cabeçalho/Informações/Revisão/Listagem (1,2,6). Gates e registros: Haiku. Revisão visual: principal no Chrome.
+
+## teacher-practice-header — 2026-10-23
+
+Goal: `harness/goals/teacher-practice-header.md`.
+
+1. Reorganizar somente cabeçalho: breadcrumb independente, título/badge e status, ações com hierarquia.
+2. Ajustar container queries para tablet/mobile usando os tokens e botões existentes.
+3. Inspecionar no navegador, executar verify:agent/verify:ui e registrar evidência/bloqueios sem alterar trabalhos preexistentes.
+
+## teacher-entry-demo — 2026-10-23
+
+Goal: `harness/goals/teacher-entry-demo.md`.
+
+1. Seed focado em quatro alunos Demo exclusivos, teste publicado e teacher.dev existente.
+2. Criar assinatura sintética local e atribuições; executar comandos de placement/avaliação sem finalizar revisão.
+3. Repetir para provar idempotência, consultar fila como teacher e inspecionar no navegador; executar checks e registrar pendências.
+
+## teacher-entry-redesign — 2026-10-23
+
+1. Projeções, rascunhos privados com versão e evidências autorizadas.
+2. Fila e workspace de revisão conforme referência, motion e responsivo.
+3. Smoke simples e registros; gates adiados por instrução do usuário; IA sem provedor.
+
+## teacher-availability-redesign — 2026-10-23
+
+1. Migration aditiva: ocorrências datadas, séries, pausa, lotes atômicos/idempotentes e cobertura de sessões.
+2. Workspace responsivo conforme referência; calendário com seleção, formulário, sheets e lista.
+3. Checks focados, smoke com rollback e browser; sem gates/build/commit/push.
+
+## 2026-10-23 — teacher-students-redesign
+
+1. Projeções autorizadas completas/paginadas para carteira, trilhas, feed e perfil, sem limites do contexto antigo.
+2. Listagem no padrão visual da referência; perfil com quatro abas, sheets de nota/pedido e URL preservada.
+3. Checks pequenos e smoke SQL transacional; conferir responsividade e registrar evidências. Sem gates/build/commit/push; verified:false.
+
+## Teacher screens polish (2026-10-23)
+
+0. Preparação mecânica: goal em harness/goals/teacher-screens-polish.md, código morto confirmado, runner SQL e helper de iniciais.
+1. Cabeçalho e barra lateral: sidebar sem corte do cartão do usuário, menu do usuário e Ctrl K global.
+2. Revisões de entrada: migration aditiva, fluxo de finalização com próxima revisão, UI conforme mock e modal de erro.
+3. Disponibilidade: erros mapeados, KPIs corretos, agenda sem sobreposição, card de regras somente leitura e toggle estável.
+4. Alunos: KPIs, ordenação, busca com debounce, ações por linha e paginação do perfil.
+5. Testes: seletores atualizados sem enfraquecer asserções, e2e/a11y/componente novos, sem goldens automáticos.
+6. Verificação: testes focados, verify:agent, verify:ui, verify:db, verify:security e verify:full, com evidências.
+7. Proposta fora do ciclo: tendências/sparklines (snapshots) e sino de notificações.
+   Detalhes e critérios: harness/goals/teacher-screens-polish.md.
+
+## teacher-students-refinement — 2026-10-24
+
+0. Preparação: goal em harness/goals/teacher-students-refinement.md, seção no plan.md e entrada no feature_list (in_progress, verified:false).
+1. Dados: migration aditiva com `actions` priorizadas, aba `pending`, `placement_state`, filtro do feed com "Teste de entrada", `engagement` do perfil, testes SQL e docs.
+2. Lista: painel "Próximas ações", tabela em largura total, três dimensões separadas, KPIs com base explícita, abas, "Visão da carteira" recolhível e acessibilidade.
+3. Perfil: CTA contextual, menu "Mais ações", resumo de acompanhamento e progresso explicado.
+4. Sidebar (item 13): reproduzir a 1440x900 e 768; corrigir só se não for artefato de captura.
+5. Testes: unitários, e2e e a11y (axe e contraste) sem enfraquecer asserções nem atualizar goldens automaticamente.
+6. Verificação: SQL suite, unitários, specs de Alunos, verify:db, verify:security, verify:ui e verify:agent, com evidências em harness/evidence/teacher-students-refinement/.
+   Detalhes e critérios: harness/goals/teacher-students-refinement.md.
+
+## teacher-cohorts-redesign — 2026-10-24
+
+1. Preservar alterações preexistentes; referência HTML, contratos e contexto autorizado inspecionados.
+2. Implementar cartões, indicadores, busca/ordenação e Drawer com primitivos existentes; sem comandos administrativos fictícios.
+3. Verificar lógica, lint/types, responsividade/a11y e gates; registrar evidências e bloqueios.
+
+## teacher-release-gates — 2026-10-24
+
+Goal: harness/goals/teacher-release-gates.md. Autorização atual substitui adiamentos antigos: gates, reset local, commits/push/PR permitidos, sem auto-merge.
+
+1. Diagnóstico somente leitura de PNG; executor separado de gates.
+2. Frontend único escritor: captura confiável e linhas maiores na disponibilidade, conforme escolha explícita do usuário; regressão determinística.
+3. Specs focados; rodada completa final e verify:full; SQL depois do Playwright em banco limpo.
+4. Ignorar propostas locais em artifacts; commitar somente evidências relevantes revisadas; registrar resultados e abrir PR.
+
+## 2026-10-25 — Execução completa transferida ao GitHub
+
+Por instrução expressa do usuário: concluir só cinco cenários de Sessões locais; depois push e PR. Não rodar os gates grandes restantes localmente. Ajustar CI para continuar checks independentes após falha, com pré-requisitos reais explícitos e resultado agregado vermelho. SQL também deve continuar arquivos/casos restantes e reprovar ao final. Manter diagnósticos sanitizados e artifacts por suíte. Validar apenas regressões focadas desta alteração antes do push.

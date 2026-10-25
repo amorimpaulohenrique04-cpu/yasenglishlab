@@ -72,6 +72,8 @@ export interface PracticeActivityItem {
   relatedModuleId: string | null;
   relatedLessonId: string | null;
   content: PracticeContent;
+  /** A submitted practice opens its existing result; null means the attempt is older than recent history. */
+  completedAttemptId?: string | null;
 }
 
 export interface PracticeRecommendationActivity {
@@ -420,7 +422,7 @@ export function practiceHistoryStatus(item: PracticeHistoryItem): string {
   if (item.status === "IN_PROGRESS") return "Em andamento";
   if (item.status === "ABANDONED") return "Interrompida";
   if (item.evaluationStatus === "CORRECT") return "Resposta correta";
-  if (item.evaluationStatus === "INCORRECT") return "Revisão recomendada";
+  if (item.evaluationStatus === "INCORRECT") return "Concluída com erros";
   if (item.evaluationStatus === "PENDING_MANUAL") return "Aguardando revisão";
   if (item.evaluationStatus === "MANUAL_REVIEWED") return "Revisada";
   return "Concluída";

@@ -1,36 +1,29 @@
 import Link from "next/link";
-import { Badge, Card, EmptyState, PageHeader, SectionHeader } from "@/components/ui";
-import { loadPlacementQueue } from "@/server/placement/placement";
-export default async function PlacementReviewsPage() {
-  const cases = await loadPlacementQueue("TEACHER", "REVIEW_PENDING");
+import { Icon, PageHeader } from "@/components/ui";
+import { entryFiltersSchema } from "@/modules/placement/domain/entry-workspace";
+import { EntryQueue } from "@/modules/placement/ui/entry-queue";
+import styles from "@/modules/placement/ui/entry-workspace.module.css";
+import { loadEntryQueue } from "@/server/placement/entry-workspace";
+import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
+export default async function PlacementReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const filters = entryFiltersSchema.parse(await searchParams);
+  const data = await loadEntryQueue(filters);
   return (
-    <div className="yas-stack">
+    <div className={styles.page}>
       <PageHeader
         title="Revisões de entrada"
         description="Revise os testes dos alunos no seu escopo antes de recomendar uma trilha."
+        actions={
+          <Link className="yas-button yas-button--ghost yas-button--sm" href="/teacher/revisoes">
+            Ver revisões de prática <Icon name="arrow" size={16} />
+          </Link>
+        }
       />
-      {cases.length === 0 && (
-        <EmptyState
-          title="Nenhuma avaliação de entrada pendente"
-          description="A fila mostra somente alunos atribuídos a você ou no seu escopo de turma."
-        />
-      )}
-      {cases.map((view) => (
-        <Card className="yas-stack" key={view.case.id}>
-          <Badge tone="info">Avaliação em andamento</Badge>
-          <SectionHeader title={`${view.displayName ?? "Aluno"} · Teste de entrada`} />
-          <p>
-            Concluído em{" "}
-            {view.assessmentSummary?.submittedAt
-              ? new Date(view.assessmentSummary.submittedAt).toLocaleString("pt-BR", {
-                  timeZone: "America/Recife",
-                })
-              : "data indisponível"}
-          </p>
-          <Link href={`/teacher/revisoes/placement/${view.case.id}`}>Revisar teste de entrada</Link>
-        </Card>
-      ))}
-      <Link href="/teacher/revisoes">Ver revisões de prática</Link>
+      <EntryQueue data={data} filters={filters} now={sessionWorkspaceNow()} />
     </div>
   );
 }

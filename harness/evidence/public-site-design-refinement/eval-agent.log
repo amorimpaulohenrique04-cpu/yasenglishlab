@@ -1,0 +1,16 @@
+
+> yasenglishlab@0.1.0 eval:agent
+> node scripts/eval-agent.mjs
+
+✓ required documentation declared: docs/TESTING.md, docs/DEFINITION_OF_DONE.md, docs/UI_CONTRACT.md, docs/DESIGN_SYSTEM.md, docs/ACCESSIBILITY.md
+✗ changed files stay in declared scope: harness/evidence/sidebar-fit/README.md, src/app/(protected)/(student)/pratica/page.tsx, src/components/layout/layout.css, src/modules/practice/ui/practice.css, tests/visual/goldens/desktop/aulas-linux.png, tests/visual/goldens/desktop/home-linux.png, tests/visual/goldens/desktop/progresso-linux.png
+✓ no unreviewed duplicate UI primitive: no new UI primitive files
+✓ no newly ignored failing checks: no new skip/fixme/failure suppression
+✓ UI changes carry screenshot evidence: visual test/evidence changed
+✓ database schema changes include migration: no schema-side change detected
+✓ RLS changes include executable authorization test: no RLS change
+✓ no high-confidence secret in changed files: clean
+✓ task exists in feature registry: in_progress
+✓ no premature success claim: status=in_progress, verified=false
+
+Agent behavioral eval failed: 1 rule(s).

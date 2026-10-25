@@ -1,0 +1,2 @@
+PASS: HTML/CSS parsed; 1 inline script compiled; 95 unique static IDs; 19 local asset references resolved.
+LIMIT: static inspection only; browser, responsive layout and flow execution remain unverified.

@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const stories = [
@@ -34,13 +35,62 @@ async function openStory(page: Page, id: string) {
   await page.waitForLoadState("networkidle");
 }
 
+test("confirmation is centered, fits mobile, and restores focus", async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openStory(page, "design-system-foundations--confirmation-dialog");
+    const trigger = page.getByRole("button", { name: "Mostrar confirmação" });
+    await trigger.click();
+    const dialog = page.getByRole("dialog", { name: "Revisão finalizada com sucesso!" });
+    await expect(dialog).toBeVisible();
+    const contentWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    await expect
+      .poll(async () => {
+        const box = await dialog.boundingBox();
+        return box ? Math.abs(box.x + box.width / 2 - contentWidth / 2) : 999;
+      })
+      .toBeLessThan(2);
+    const box = await dialog.boundingBox();
+    expect(box!.width).toBeLessThan(viewport.width);
+    expect(Math.abs(box!.y + box!.height / 2 - viewport.height / 2)).toBeLessThan(2);
+    await page.keyboard.press("Escape");
+    await expect(dialog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+  }
+});
+
 async function assertA11y(page: Page) {
-  const results = await new AxeBuilder({ page })
+  const results = await new AxeBuilder({ page: await settledPage(page) })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
 
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
 }
+
+test("outline labels stay readable when autosave re-enables the control", async ({ page }) => {
+  // Exercise the real transition too: reduced motion can hide the disabled-to-enabled race.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await openStory(page, "design-system-foundations--core-states");
+  const button = page.getByRole("button", { name: "Ver detalhes", exact: true });
+  await button.evaluate((element: HTMLButtonElement) => {
+    element.disabled = true;
+  });
+  await settledPage(page);
+  await button.evaluate((element: HTMLButtonElement) => {
+    element.disabled = false;
+  });
+  // No polling: an enabled button must have readable opacity from its first frame.
+  expect(await button.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
+  await assertA11y(page);
+  await button.hover();
+  await assertA11y(page);
+  await button.focus();
+  await expect(button).toBeFocused();
+  await assertA11y(page);
+});
 
 for (const story of stories) {
   test(`${story.name} has no automated WCAG A/AA violations and produces evidence`, async ({

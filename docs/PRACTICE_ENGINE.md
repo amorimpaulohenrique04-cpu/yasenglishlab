@@ -26,6 +26,16 @@ Conteúdo V1 contratado:
 - Speaking e Pronunciation: registro textual com estado `PENDING_MANUAL`, sem score, atrás de `PracticeEvaluationPolicyPort`;
 - Listening: `UNSUPPORTED` enquanto não houver asset de áudio contratado.
 
+## Contrato vigente — práticas do professor vinculadas à aula (ADR 0025)
+
+Este contrato substitui as regras históricas das Etapas 12A e 13A para práticas de autoria docente. A especificação técnica atual está em [PRACTICE_V3.md](./PRACTICE_V3.md), e a decisão durável em [ADR 0025](./adr/0025-lesson-bound-practice-final-submission.md).
+
+- Professor com TEACHER + AAL2 e escopo do curso cria práticas em três etapas: informações, questões e revisão/publicação. Rascunhos exigem curso, módulo e aula; conflito de versão não sobrescreve alterações recentes.
+- Toda prática publicada precisa de vínculo válido com uma aula. Alunos autorizados a acessar essa aula veem suas práticas publicadas pelas mesmas regras de matrícula, trilha e acesso pago. Atribuição a turma não concede acesso nem ignora a disponibilidade da aula.
+- Respostas ficam editáveis como rascunho, sem correção ou pontuação provisória. `practice_submit_final` valida e corrige todos os itens numa transação; tentativas enviadas repetidamente retornam o mesmo resultado. Há uma submissão final por aluno/prática.
+- Questões objetivas usam pontos ponderados (`weight`, padrão 1); WRITTEN/SPOKEN permanecem pendentes de revisão humana e não recebem score automático. `firstTryCorrect` conta questões, não pontos ponderados. Prática não altera proficiência CEFR.
+- Não há nova rodada de reforço ou revisão espaçada para esse fluxo. Tentativas, resultados e schedules históricos são preservados.
+
 Persistência usa `PracticeActivity → PracticeAttempt → PracticeResponse → PracticeResult`. Início e submissão são idempotentes e o banco deriva `auth.uid()`; o browser nunca envia `user_id` como autoridade.
 
 UX planejada:
@@ -64,22 +74,20 @@ UX planejada:
 - O gate de pagamento (trigger em `practice_attempts`) continua valendo; o histórico de tentativas permanece legível para o aluno suspenso.
 - Sem matrícula, `/pratica` mostra um estado vazio orientando concluir a entrada no Yas.
 
-## Etapa 12A — autoria do professor (content v2)
+## Histórico — Etapa 12A (ADR 0020, decisões supersedidas em 2026-10-22)
 
-Professor com AAL2 cria em /teacher/praticas um rascunho no seu escopo de curso, configura em seis passos, testa no mesmo player do aluno, publica diretamente e atribui a uma ou mais turmas próprias, com prazo opcional. A atribuição é por turma. Outro professor não edita a autoria alheia. Práticas com tentativas exigem duplicação para edição.
+Na versão histórica, o professor com AAL2 configurava a prática em seis passos e a atribuía a uma ou mais turmas próprias. Esse fluxo foi substituído pela autoria em três etapas e pelo acesso derivado da aula; atribuições antigas permanecem nos dados, mas não concedem acesso. Outro professor não edita a autoria alheia e práticas com tentativas continuam exigindo duplicação para edição.
 
 O formato v2 combina estímulo NONE/TEXT/IMAGE/AUDIO/VIDEO com resposta CHOICE_SINGLE/CHOICE_MULTI/TRUE_FALSE/CLOZE/ORDERING/WRITTEN/SPOKEN. Os cinco formatos objetivos são corrigidos no banco com gabarito privado. WRITTEN e SPOKEN seguem para revisão humana, sem score ou max_score. Listening v2 possui suporte; a limitação UNSUPPORTED descrita acima refere-se ao formato legado.
 
 Uploads de imagem, áudio e vídeo usam armazenamento privado e autorização por prática antes da emissão de URL assinada. Vídeo de prática usa arquivo protegido sem transcodificação (ADR 0020). O fluxo Mux das aulas permanece separado. Pré-visualização do professor não cria tentativa nem resultado.
 
-O aluno vê as práticas atribuídas à sua turma em /pratica; prazo, matrícula, entitlement e escopo continuam aplicados no servidor/banco. Revisão humana e desempenho de prática não alteram progresso de curso nem proficiência CEFR.
+Naquela versão, o aluno via práticas atribuídas à turma em /pratica. A persistência e as regras de conteúdo v2 descritas acima continuam relevantes para compatibilidade; a visibilidade atual segue o contrato vigente por aula.
 
-## Etapa 13A — ciclo de vida da tentativa e alcance por aula (practice-10-phase-0)
+## Histórico — Etapa 13A (ciclo de vida v3 anterior, supersedido em 2026-10-22)
 
-- Iniciar uma prática retoma a tentativa `IN_PROGRESS` do mesmo aluno e atividade quando houve atividade nas últimas 24h; uma tentativa aberta mais antiga vira `ABANDONED` no próximo início (sem rotina agendada). Um índice único parcial impede duas tentativas abertas para o mesmo (aluno, atividade, tipo).
-- O aluno só inicia práticas de aulas alcançadas: aula concluída, aula iniciada, a aula atual da trilha (primeira não concluída e disponível) ou prática sem vínculo de aula. Prática atribuída pelo professor à turma do aluno ignora esse bloqueio. O banco aplica a regra em `start_practice_attempt` e a expõe em `student_practice_reach()`; a UI só a espelha.
-- Aulas não alcançadas aparecem na Prática como bloqueadas, sem ação de início, e nunca como destaque. A recomendação considera apenas atividades alcançadas.
-- O resumo semanal mostra minutos **estimados** (soma do tempo previsto das atividades enviadas nos últimos 7 dias, por consulta própria) e atividades enviadas; não é tempo medido.
+- A regra anterior retomava tentativas abertas em até 24 horas, abandonava tentativas mais antigas, e permitia que atribuições de turma ignorassem a disponibilidade da aula. O contrato atual mantém respostas provisórias retomáveis, sem consumir a submissão final antes do envio; nenhuma atribuição ignora a autorização da aula.
+- Os detalhes de `student_practice_reach()` ainda podem ser usados por outras superfícies existentes, mas a política vigente de prática docente não permite o bypass por turma. Dados históricos de tentativa/schedule permanecem preservados.
 
 ## Assignment release (2026-10-21)
 
@@ -88,5 +96,7 @@ cohort_practice_assignments.available_from is an optional start instant; due_at 
 The existing teacher_practice_assign signature gains optional parameters p_available_from and p_require_lesson_available after p_context; no overload is retained. One assignment per practice/cohort remains authoritative; reassigning selected cohorts updates only their scheduling rule. student_path_available centralizes the release predicate used by activity RLS, start RPCs, recommendations and private asset authorization. DB triggers validate course/lesson/assignment coherence and protect referenced ancestry from being moved.
 
 Legacy COURSE assignments used solely to signal lesson reach remain supported with their inferred course scope. They cannot accept the new scheduling fields; scheduled authoring stays on ASSIGNED practices, whose per-cohort release predicate is authoritative.
+
+Update 2026-10-25 (ADR 0025, lesson-bound practices): lesson availability is always required for a Student to see or start a practice, so `require_lesson_available=false` no longer grants early execution. An ASSIGNED practice is additionally hidden until its cohort assignment's `available_from` has passed (`private.can_view_practice_activity`, migration `20261025130000_practice_visibility_respects_schedule.sql`). A lesson not yet reached answers `YP001` on start.
 
 Private practice stimulus assets also repeat has_paid_access for Students after release; author/Admin preview behavior and attempt history reads are preserved.

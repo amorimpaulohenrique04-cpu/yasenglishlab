@@ -1,0 +1,22 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.score {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.results {
+  display: grid;
+  gap: 1rem;
+  padding-left: 1.5rem;
+}
+.results li {
+  padding: 0.75rem;
+}
+.results li strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}

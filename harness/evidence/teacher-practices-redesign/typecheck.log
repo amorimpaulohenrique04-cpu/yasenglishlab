@@ -1,0 +1,7 @@
+.next/dev/types/validator.ts(25,44): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.next/dev/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.next-p18-build/types/routes").LayoutRoutes'.
+    Type '"/teacher/praticas"' is not assignable to type 'LayoutRoutes'.
+.next/dev/types/validator.ts(25,75): error TS2344: Type 'Route' does not satisfy the constraint 'LayoutRoutes'.
+  Type 'import("C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.next/dev/types/routes").LayoutRoutes' is not assignable to type 'import("C:/Users/PAULO HENRIQUE/Documents/Projetos/yasenglishlab/.next-p18-build/types/routes").LayoutRoutes'.
+    Type '"/teacher/praticas"' is not assignable to type 'LayoutRoutes'.
+src/app/(protected)/(student)/pratica/page.tsx(627,21): error TS2820: Type '"chart"' is not assignable to type 'IconName'. Did you mean '"chat"'?

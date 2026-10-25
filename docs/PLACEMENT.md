@@ -72,6 +72,18 @@ O Admin com AAL2 cria e publica avaliações em /admin/assessments (ADR 0021). S
 
 Cada tentativa guarda assessment_version_id. Publicações futuras preservam o conteúdo e as respostas das tentativas existentes. O Admin cria nova versão para alterar conteúdo publicado e não pode aposentar a única versão publicada da avaliação de entrada. Questões humanas seguem revisão pedagógica e não atribuem automaticamente CEFR.
 
+## Entrada do professor — redesign 2026-10-23
+
+A fila `/teacher/revisoes/placement` possui busca, filtros/paginação na URL, indicadores no escopo autenticado e SLA interno existente de 24 horas. `teacher_entry_queue` retorna somente resumos; evidências são carregadas ao abrir o caso.
+
+`placement_review_drafts` guarda uma cópia pessoal por caso/professor (curso opcional, confiança, feedback, notas, revisão e datas de salvamento). Leituras exigem autor + TEACHER/AAL2 + atribuição vigente. Gravações diretas são revogadas. `save_teacher_entry_draft` serializa pelo caso e verifica a versão esperada. Abrir a página não cria rascunho.
+
+`finalize_teacher_entry` salva a cópia pessoal e chama a finalização canônica na mesma transação. Recomendações continuam únicas, imutáveis e com retry idempotente; rascunhos ficam somente leitura depois da conclusão. Os eventos de analytics existentes são preservados. Notas nunca entram nas projeções do aluno.
+
+`get_placement_review_evidence` inclui ids, posição, tipo e gabarito da versão para o professor autorizado. Gabaritos de respostas manuais podem ser nulos. Não há nova coleta de confiança do aluno, inferência CEFR ou envio de notificações.
+
+`PlacementReviewAssistant` define o contrato sem provedor ativo. A UI informa indisponibilidade e mantém escrita manual. Não há SDK, chave ou chamada de IA nesta entrega. Avaliação posterior: Groq GPT-OSS 20B e Gemini Flash-Lite; escolha por custo e qualidade pedagógica, com preços revalidados na ativação.
+
 ## Auditoria 2026-10-18 — becos sem saída
 
 Disponibilidade: `save_placement_preferences` aceita edição até STUDENT_DECISION. Sem turma compatível,

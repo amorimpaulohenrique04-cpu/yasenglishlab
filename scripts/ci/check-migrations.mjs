@@ -74,9 +74,27 @@ if (validBase) {
     .filter(Boolean)
     .sort();
 
+  // A push that merges the default branch "adds" migrations already merged there. Those keep
+  // their original timestamps; only byte-identical copies of merged files are exempt from ordering.
+  const mergedRef = process.env.MERGED_MIGRATIONS_REF ?? "origin/main";
+  const mergedBlobs = new Map();
+  try {
+    for (const line of runGit(["ls-tree", "-r", mergedRef, "--", migrationDir])
+      .trim()
+      .split(/\r?\n/)) {
+      const [meta, path] = line.split("\t");
+      if (path) mergedBlobs.set(path, meta.split(" ")[2]);
+    }
+  } catch {
+    // The merged ref is unavailable (shallow or local checkout): every added file is treated as new.
+  }
+  const alreadyMerged = (path) =>
+    mergedBlobs.has(path) &&
+    mergedBlobs.get(path) === runGit(["rev-parse", `${head}:${path}`]).trim();
+
   const latestBaseTimestamp = baseTimestamps.at(-1);
   if (latestBaseTimestamp) {
-    for (const path of addedMigrations) {
+    for (const path of addedMigrations.filter((item) => !alreadyMerged(item))) {
       const timestamp = basename(path).match(/^(\d{14})_/)?.[1];
       if (timestamp && timestamp <= latestBaseTimestamp) {
         fail(

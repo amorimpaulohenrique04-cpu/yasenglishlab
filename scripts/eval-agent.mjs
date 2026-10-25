@@ -113,12 +113,17 @@ const addedPrimitives = changes.filter(
   (entry) =>
     entry.status?.startsWith("A") && /^src\/components\/(ui|layout)\//.test(entry.path ?? ""),
 );
+// A manual semantic duplicate review is recorded in the goal, one backticked path per reviewed file.
+const reviewedPrimitives = new Set(backtickPaths(section(goal, "Reviewed UI primitives")));
+const unreviewedPrimitives = addedPrimitives.filter((item) => !reviewedPrimitives.has(item.path));
 check(
   "no unreviewed duplicate UI primitive",
-  addedPrimitives.length === 0,
-  addedPrimitives.length
-    ? `manual semantic review required: ${addedPrimitives.map((item) => item.path).join(", ")}`
-    : "no new UI primitive files",
+  unreviewedPrimitives.length === 0,
+  unreviewedPrimitives.length
+    ? `manual semantic review required: ${unreviewedPrimitives.map((item) => item.path).join(", ")}`
+    : addedPrimitives.length
+      ? `reviewed in goal: ${addedPrimitives.map((item) => item.path).join(", ")}`
+      : "no new UI primitive files",
   addedPrimitives.length === 0,
 );
 

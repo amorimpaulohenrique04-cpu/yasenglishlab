@@ -39,6 +39,13 @@ insert into public.courses(id,slug,title,active,publication_status,published_at)
 insert into public.modules(id,course_id,position,title,publication_status,published_at) values
  ('b2210000-0000-4000-8000-000000000001','b2200000-0000-4000-8000-000000000001',1,'PA module 1','PUBLISHED',now()),
  ('b2210000-0000-4000-8000-000000000002','b2200000-0000-4000-8000-000000000002',1,'PA module 2','PUBLISHED',now());
+insert into public.lessons(id,module_id,position,title,slug,publication_status,published_at) values
+ ('b2220000-0000-4000-8000-000000000001','b2210000-0000-4000-8000-000000000001',1,'PA lesson 1','pa-lesson-1','DRAFT',null),
+ ('b2220000-0000-4000-8000-000000000002','b2210000-0000-4000-8000-000000000002',1,'PA lesson 2','pa-lesson-2','DRAFT',null);
+insert into public.lesson_assets(lesson_id,asset_type,position,content,publication_status,published_at) values
+ ('b2220000-0000-4000-8000-000000000001','TEXT',1,'{"title":"PA lesson 1","body":"Read lesson one."}','PUBLISHED',now()),
+ ('b2220000-0000-4000-8000-000000000002','TEXT',1,'{"title":"PA lesson 2","body":"Read lesson two."}','PUBLISHED',now());
+update public.lessons set publication_status='PUBLISHED',published_at=now() where id in ('b2220000-0000-4000-8000-000000000001','b2220000-0000-4000-8000-000000000002');
 insert into public.cohorts(id,course_id,name,code,status,starts_at) values
  ('b2400000-0000-4000-8000-000000000001','b2200000-0000-4000-8000-000000000001','PA K1','pa-k1','ACTIVE',now()-interval '1 day'),
  ('b2400000-0000-4000-8000-000000000002','b2200000-0000-4000-8000-000000000001','PA K2','pa-k2','ACTIVE',now()-interval '1 day'),
@@ -62,7 +69,10 @@ insert into public.complimentary_access_grants(user_id,reason,note) select pg_te
 
 -- Content builders --------------------------------------------------------------------------------------------
 create function pg_temp.payload(content jsonb, skill text default 'GRAMMAR', course uuid default 'b2200000-0000-4000-8000-000000000001') returns jsonb language sql as $$
-  select jsonb_build_object('title','PA practice','skill',skill,'estimated_minutes',5,'course_id',course,'content',content);
+  select jsonb_build_object('title','PA practice','skill',skill,'estimated_minutes',5,'course_id',course,
+    'related_module_id',case when course='b2200000-0000-4000-8000-000000000001'::uuid then 'b2210000-0000-4000-8000-000000000001'::uuid else 'b2210000-0000-4000-8000-000000000002'::uuid end,
+    'related_lesson_id',case when course='b2200000-0000-4000-8000-000000000001'::uuid then 'b2220000-0000-4000-8000-000000000001'::uuid else 'b2220000-0000-4000-8000-000000000002'::uuid end,
+    'content',case when content ? 'objective' or content->>'version'='2' then content else jsonb_set(content,'{objective}','"Practice objective"') end);
 $$;
 create function pg_temp.simple(prompt text default 'Pick one') returns jsonb language sql as $$
   select jsonb_build_object('version',2,'stimulus','{"type":"NONE"}'::jsonb,'prompt',prompt,
@@ -128,7 +138,7 @@ reset role;
 select pg_temp.login(pg_temp.u(2), 'aal2');
 set local role authenticated;
 insert into ids values ('p1', public.teacher_practice_save(null, pg_temp.payload(pg_temp.simple('Which letter is first?')), '{"optionId":"a"}', '{"correct":"Well done!","incorrect":"Look again."}', '{"request_id":"b2900000-0000-4000-8000-000000000001","environment":"test","version":"pa-1"}'));
-select pg_temp.assert_true((select publication_status='DRAFT' and audience='ASSIGNED' and created_by_teacher_id='b2100000-0000-4000-8000-000000000002' and course_id='b2200000-0000-4000-8000-000000000001' and content->>'evaluationMode'='DETERMINISTIC' and content->'version'='2'::jsonb from public.practice_activities where id=pg_temp.id('p1') ) is null,'Teacher has no direct select of its draft (RPC only)');
+select pg_temp.assert_true((select publication_status='DRAFT' and audience='ASSIGNED' and created_by_teacher_id='b2100000-0000-4000-8000-000000000002' and course_id='b2200000-0000-4000-8000-000000000001' and content->>'evaluationMode'='DETERMINISTIC' and content->'version'='2'::jsonb from public.practice_activities where id=pg_temp.id('p1')) is null,'Teacher has no direct select of its draft (RPC only)');
 select pg_temp.assert_true((select count(*)=1 from public.teacher_practice_list() r where r->>'id'=pg_temp.id('p1')::text and r->>'publicationStatus'='DRAFT'),'owner lists its draft');
 select pg_temp.assert_true((public.teacher_practice_get(pg_temp.id('p1'))->'answerKey')='{"optionId":"a"}'::jsonb,'owner reads its answer key via RPC');
 select pg_temp.assert_true((public.teacher_practice_get(pg_temp.id('p1'))->'feedback'->>'correct')='Well done!','owner reads feedback via RPC');
@@ -140,6 +150,12 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practi
 -- Related module of another course is rejected; same course is accepted.
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload(pg_temp.simple()) || '{"related_module_id":"b2210000-0000-4000-8000-000000000002"}'))='23514','module of another course rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload(pg_temp.simple()) || '{"related_module_id":"b2210000-0000-4000-8000-000000000001"}'))='OK','module of the same course accepted');
+-- Incomplete publication content is saved as a draft and rejected at publication.
+insert into ids values ('incomplete_objective', public.teacher_practice_save_v3(null,
+  jsonb_set(pg_temp.payload('{"version":3,"askConfidence":true,"items":[{"id":"q1","prompt":"Pick one","response":{"type":"CHOICE_SINGLE","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}}]}'::jsonb),'{content}',
+    '{"version":3,"askConfidence":true,"items":[{"id":"q1","prompt":"Pick one","response":{"type":"CHOICE_SINGLE","options":[{"id":"a","label":"A"},{"id":"b","label":"B"}]}}]}'::jsonb),
+  '{"q1":{"answerKey":{"optionId":"a"}}}'::jsonb));
+select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_publish(%L)',pg_temp.id('incomplete_objective')))='23514','draft without objective is rejected at publication');
 -- Content without a response, unsupported response type, bad skill.
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload('{"version":2,"prompt":"x"}')))='23514','content without response rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload('{"version":2,"prompt":"x","response":{"type":"AI"}}')))='23514','unsupported response type rejected');
@@ -215,18 +231,17 @@ select pg_temp.login(pg_temp.u(5), 'aal1');
 set local role authenticated;
 select pg_temp.assert_true((select count(*)=1 from public.practice_activities where id=pg_temp.id('p1')),'assigned Student sees the practice');
 select pg_temp.assert_true((select count(*)=1 from public.cohort_practice_assignments),'assigned Student sees the assignment row');
-select pg_temp.assert_true((select count(*)=1 and bool_and(status='NEW' and due_at is not null and practice_activity_id=pg_temp.id('p1')) from public.student_assigned_practices()),'assigned list: NEW');
-select pg_temp.assert_true((select not (to_jsonb(r)::text ~* '(answer|optionId|correct)') from public.student_assigned_practices() r limit 1),'assigned list carries no answer data');
+select pg_temp.assert_true((select count(*)=1 and bool_and(due_at is not null) from public.cohort_practice_assignments where practice_activity_id=pg_temp.id('p1')),'assignment metadata remains stored separately from lesson access');
 select pg_temp.assert_true(pg_temp.state_of('select * from private.practice_answer_keys')='42501','Student cannot read private answer keys');
 select pg_temp.assert_true(pg_temp.state_of('select * from public.practice_activity_assets')='42501','Student cannot read asset rows');
 select pg_temp.assert_true(pg_temp.state_of('insert into public.cohort_practice_assignments(cohort_id,practice_activity_id,assigned_by_teacher_id) values (gen_random_uuid(),gen_random_uuid(),gen_random_uuid())')='42501','Student cannot insert assignments');
 reset role;
 select pg_temp.login(pg_temp.u(6), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true((select count(*)=0 from public.practice_activities where id=pg_temp.id('p1')),'same-course Student of another cohort cannot see it');
+select pg_temp.assert_true((select count(*)=1 from public.practice_activities where id=pg_temp.id('p1')),'same-course Student with lesson access sees practice without assignment');
 select pg_temp.assert_true((select count(*)=0 from public.cohort_practice_assignments),'other-cohort Student sees no assignment');
 select pg_temp.assert_true((select count(*)=0 from public.student_assigned_practices()),'other-cohort Student has an empty list');
-select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L, gen_random_uuid())', pg_temp.id('p1')))='42501','other-cohort Student cannot start (42501)');
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L, gen_random_uuid())', pg_temp.id('p1')))='OK','same-course Student can start via lesson access');
 reset role;
 select pg_temp.login(pg_temp.u(7), 'aal1');
 set local role authenticated;
@@ -241,7 +256,7 @@ reset role;
 select pg_temp.login(pg_temp.u(2), 'aal2');
 set local role authenticated;
 select pg_temp.assert_true((select count(*)=1 from public.cohort_practice_assignments),'cohort Teacher sees the assignment');
-select pg_temp.assert_true(pg_temp.state_of('select * from public.student_assigned_practices()')='42501','Teacher cannot call the Student read');
+select pg_temp.assert_true((select count(*)=0 from public.student_assigned_practices()),'retired assigned-list projection returns no rows for a Teacher');
 select pg_temp.assert_true(pg_temp.state_of('insert into public.cohort_practice_assignments(cohort_id,practice_activity_id,assigned_by_teacher_id) values (''b2400000-0000-4000-8000-000000000001'',gen_random_uuid(),''b2100000-0000-4000-8000-000000000002'')')='42501','Teacher has no direct DML on assignments');
 select pg_temp.assert_true(pg_temp.state_of('update public.cohort_practice_assignments set due_at = now()')='42501','no direct UPDATE on assignments');
 select pg_temp.assert_true(pg_temp.state_of('delete from public.cohort_practice_assignments')='42501','no direct DELETE on assignments');
@@ -249,7 +264,7 @@ select pg_temp.assert_true(pg_temp.state_of('update public.practice_activities s
 reset role;
 select pg_temp.login(pg_temp.u(1), 'aal2');
 set local role authenticated;
-select pg_temp.assert_true((select count(*)=1 from public.cohort_practice_assignments),'Admin aal2 reads assignments');
+select pg_temp.assert_true((select count(*)=1 from public.cohort_practice_assignments where practice_activity_id=pg_temp.id('p1')),'Admin aal2 reads assignments');
 select pg_temp.assert_true((select count(*)>=1 from public.admin_content_list('practice_activities') r where r->>'id'=pg_temp.id('p1')::text),'admin_content_list works with the new columns');
 reset role;
 select pg_temp.login(pg_temp.u(1), 'aal1');
@@ -285,6 +300,20 @@ set local role authenticated;
 select pg_temp.assert_true((select count(*)=8 from public.practice_activities where audience='ASSIGNED'),'S1 sees exactly the 8 practices assigned to K1');
 select pg_temp.assert_true(not exists(select 1 from public.practice_activities where audience='ASSIGNED' and to_jsonb(practice_activities)::text ~ '(answer_key|optionIds|"value": ?true|accepted|"order":\[)'),'practice rows leak no key');
 select pg_temp.assert_true((select count(*)=0 from public.practice_results),'no result before submitting');
+-- Each practice allows one final submission, so cases that need distinct outcomes use separate activities.
+reset role;
+select pg_temp.login(pg_temp.u(2), 'aal2');
+set local role authenticated;
+select pg_temp.mk('single_correct', pg_temp.simple('Pick A'), '{"optionId":"a"}', '{"correct":"Great","incorrect":"Nope"}');
+select pg_temp.mk('multi_superset', '{"version":2,"stimulus":{"type":"TEXT","text":"Fruits are healthy."},"prompt":"Pick all fruits","response":{"type":"CHOICE_MULTI","options":[{"id":"a","label":"Apple"},{"id":"b","label":"Brick"},{"id":"c","label":"Cherry"},{"id":"d","label":"Door"}]}}', '{"optionIds":["a","c"]}');
+select pg_temp.mk('multi_exact', '{"version":2,"stimulus":{"type":"TEXT","text":"Fruits are healthy."},"prompt":"Pick all fruits","response":{"type":"CHOICE_MULTI","options":[{"id":"a","label":"Apple"},{"id":"b","label":"Brick"},{"id":"c","label":"Cherry"},{"id":"d","label":"Door"}]}}', '{"optionIds":["a","c"]}');
+select pg_temp.mk('tf_correct', '{"version":2,"stimulus":{"type":"NONE"},"prompt":"True or false?","response":{"type":"TRUE_FALSE","statement":"The sun is a star."}}', '{"value":true}');
+select pg_temp.mk('cloze_any', '{"version":2,"stimulus":{"type":"NONE"},"prompt":"Complete","response":{"type":"CLOZE","text":"I {{1}} to {{2}}."}}', '{"blanks":[{"id":"1","accepted":["go","went"],"caseSensitive":false},{"id":"2","accepted":["School"],"caseSensitive":true}]}');
+select pg_temp.mk('cloze_case', '{"version":2,"stimulus":{"type":"NONE"},"prompt":"Complete","response":{"type":"CLOZE","text":"I {{1}} to {{2}}."}}', '{"blanks":[{"id":"1","accepted":["go","went"],"caseSensitive":false},{"id":"2","accepted":["School"],"caseSensitive":true}]}');
+select pg_temp.mk('cloze_invalid', '{"version":2,"stimulus":{"type":"NONE"},"prompt":"Complete","response":{"type":"CLOZE","text":"I {{1}} to {{2}}."}}', '{"blanks":[{"id":"1","accepted":["go","went"],"caseSensitive":false},{"id":"2","accepted":["School"],"caseSensitive":true}]}');
+select pg_temp.mk('order_correct', '{"version":2,"stimulus":{"type":"NONE"},"prompt":"Order the words","response":{"type":"ORDERING","items":[{"id":"w1","label":"I"},{"id":"w2","label":"love"},{"id":"w3","label":"English"}]}}', '{"order":["w1","w2","w3"]}');
+select pg_temp.login(pg_temp.u(5), 'aal1');
+set local role authenticated;
 -- CHOICE_SINGLE
 insert into ids select 'a_single', (public.start_practice_attempt(pg_temp.id('single'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"optionId":"zz"}'')', pg_temp.id('a_single')))='23514','CHOICE_SINGLE unknown option rejected');
@@ -292,15 +321,15 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practic
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_single'), '{"optionId":"b"}')).evaluation_status='INCORRECT','CHOICE_SINGLE wrong -> INCORRECT');
 select pg_temp.assert_true((select feedback='Nope' and score=0 from public.practice_results where practice_attempt_id=pg_temp.id('a_single')),'incorrect feedback comes from the private key');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_single'), '{"optionId":"a"}')).evaluation_status='INCORRECT','resubmitting a SUBMITTED attempt is idempotent (first result kept)');
-insert into ids select 'a_single2', (public.start_practice_attempt(pg_temp.id('single'), gen_random_uuid())).id;
+insert into ids select 'a_single2', (public.start_practice_attempt(pg_temp.id('single_correct'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_single2'), '{"optionId":"a"}')).evaluation_status='CORRECT','CHOICE_SINGLE right -> CORRECT');
 select pg_temp.assert_true((select feedback='Great' and score=1 and max_score=1 from public.practice_results where practice_attempt_id=pg_temp.id('a_single2')),'correct feedback from the private key');
 -- CHOICE_MULTI: exact set only.
 insert into ids select 'a_multi1', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi1'), '{"optionIds":["a"]}')).evaluation_status='INCORRECT','CHOICE_MULTI partial -> INCORRECT');
-insert into ids select 'a_multi2', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
+insert into ids select 'a_multi2', (public.start_practice_attempt(pg_temp.id('multi_superset'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi2'), '{"optionIds":["a","c","b"]}')).evaluation_status='INCORRECT','CHOICE_MULTI superset -> INCORRECT');
-insert into ids select 'a_multi3', (public.start_practice_attempt(pg_temp.id('multi'), gen_random_uuid())).id;
+insert into ids select 'a_multi3', (public.start_practice_attempt(pg_temp.id('multi_exact'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"optionIds":["a","a"]}'')', pg_temp.id('a_multi3')))='23514','CHOICE_MULTI duplicated option rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"optionIds":[]}'')', pg_temp.id('a_multi3')))='23514','CHOICE_MULTI empty selection rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_multi3'), '{"optionIds":["c","a"]}')).evaluation_status='CORRECT','CHOICE_MULTI exact set (any order) -> CORRECT');
@@ -310,16 +339,16 @@ insert into ids select 'a_multi4', (public.start_practice_attempt(pg_temp.id('mu
 insert into ids select 'a_tf1', (public.start_practice_attempt(pg_temp.id('tf'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"value":"true"}'')', pg_temp.id('a_tf1')))='23514','TRUE_FALSE string value rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_tf1'), '{"value":false}')).evaluation_status='INCORRECT','TRUE_FALSE wrong');
-insert into ids select 'a_tf2', (public.start_practice_attempt(pg_temp.id('tf'), gen_random_uuid())).id;
+insert into ids select 'a_tf2', (public.start_practice_attempt(pg_temp.id('tf_correct'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_tf2'), '{"value":true}')).evaluation_status='CORRECT','TRUE_FALSE right');
 -- CLOZE: trim + case-insensitive by default, any accepted item, case-sensitive blank honoured.
 insert into ids select 'a_cl1', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl1'), '{"blanks":{"1":"  GO ","2":"School"}}')).evaluation_status='CORRECT','CLOZE trim + case-insensitive -> CORRECT');
-insert into ids select 'a_cl2', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
+insert into ids select 'a_cl2', (public.start_practice_attempt(pg_temp.id('cloze_any'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl2'), '{"blanks":{"1":"Went","2":"School"}}')).evaluation_status='CORRECT','CLOZE any accepted item -> CORRECT');
-insert into ids select 'a_cl3', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
+insert into ids select 'a_cl3', (public.start_practice_attempt(pg_temp.id('cloze_case'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl3'), '{"blanks":{"1":"go","2":"school"}}')).evaluation_status='INCORRECT','CLOZE case-sensitive blank -> INCORRECT');
-insert into ids select 'a_cl4', (public.start_practice_attempt(pg_temp.id('cloze'), gen_random_uuid())).id;
+insert into ids select 'a_cl4', (public.start_practice_attempt(pg_temp.id('cloze_invalid'), gen_random_uuid())).id;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"blanks":{"1":"go"}}'')', pg_temp.id('a_cl4')))='23514','CLOZE missing blank rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"blanks":{"1":"go","2":"School","3":"x"}}'')', pg_temp.id('a_cl4')))='23514','CLOZE extra blank rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_cl4'), '{"blanks":{"1":"walk","2":"School"}}')).evaluation_status='INCORRECT','CLOZE wrong word -> INCORRECT');
@@ -329,21 +358,20 @@ insert into ids select 'a_or1', (public.start_practice_attempt(pg_temp.id('order
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"order":["w1","w2"]}'')', pg_temp.id('a_or1')))='23514','ORDERING missing item rejected');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, ''{"order":["w1","w1","w2"]}'')', pg_temp.id('a_or1')))='23514','ORDERING duplicated item rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_or1'), '{"order":["w3","w2","w1"]}')).evaluation_status='INCORRECT','ORDERING wrong sequence -> INCORRECT');
-insert into ids select 'a_or2', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
+insert into ids select 'a_or2', (public.start_practice_attempt(pg_temp.id('order_correct'), gen_random_uuid())).id;
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_or2'), '{"order":["w1","w2","w3"]}')).evaluation_status='CORRECT','ORDERING right sequence -> CORRECT');
 insert into ids select 'a_or3', (public.start_practice_attempt(pg_temp.id('order'), gen_random_uuid())).id;
 -- Result of a deterministic attempt reveals correctness only, never the key.
 select pg_temp.assert_true(not exists(select 1 from public.practice_results where metrics::text ~ '(optionId|accepted|order|answer)'),'result metrics carry no key');
-select pg_temp.assert_true((select status='DONE' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('single')),'assigned list: DONE after submission');
-select pg_temp.assert_true((select status='NEW' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('written')),'assigned list: untouched practice stays NEW');
+select pg_temp.assert_true(not exists(select 1 from public.practice_attempts where practice_activity_id=pg_temp.id('written') and user_id=auth.uid()),'untouched practice has no attempt');
 insert into ids select 'a_wr_open', (public.start_practice_attempt(pg_temp.id('written'), gen_random_uuid())).id;
-select pg_temp.assert_true((select status='IN_PROGRESS' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('written')),'assigned list: IN_PROGRESS');
+select pg_temp.assert_true((select status='IN_PROGRESS' from public.practice_attempts where id=pg_temp.id('a_wr_open')),'attempt lifecycle records IN_PROGRESS');
 reset role;
 -- OVERDUE is derived from the due date when nothing was submitted.
 update public.cohort_practice_assignments set due_at = now() - interval '1 hour' where practice_activity_id = pg_temp.id('written');
 select pg_temp.login(pg_temp.u(5), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true((select status='OVERDUE' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('written')),'assigned list: OVERDUE');
+select pg_temp.assert_true((select due_at < now() from public.cohort_practice_assignments where practice_activity_id=pg_temp.id('written')),'due date remains assignment metadata');
 reset role;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -355,7 +383,7 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practic
 select pg_temp.assert_true(pg_temp.state_of(format('select public.submit_practice_attempt(%L, %L)', pg_temp.id('a_wr_open'), jsonb_build_object('text', repeat('x', 2001))))='23514','WRITTEN over 2000 chars rejected');
 select pg_temp.assert_true((public.submit_practice_attempt(pg_temp.id('a_wr_open'), '{"text":"On Saturday I played football with friends."}')).evaluation_status='PENDING_MANUAL','WRITTEN -> PENDING_MANUAL');
 select pg_temp.assert_true((select score is null and max_score is null and metrics->>'response_type'='WRITTEN' from public.practice_results where practice_attempt_id=pg_temp.id('a_wr_open')),'WRITTEN has no score');
-select pg_temp.assert_true((select status='DONE' from public.student_assigned_practices() where practice_activity_id=pg_temp.id('written')),'submitted WRITTEN is DONE even when overdue');
+select pg_temp.assert_true((select status='SUBMITTED' from public.practice_attempts where id=pg_temp.id('a_wr_open')),'submitted practice retains its attempt state when overdue');
 -- SPOKEN reuses the private audio upload.
 insert into ids select 'a_sp', (public.start_practice_attempt(pg_temp.id('spoken'), gen_random_uuid())).id;
 insert into ids select 'a_sp_choice', (public.start_practice_attempt(pg_temp.id('single'), gen_random_uuid())).id;
@@ -382,11 +410,19 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_pract
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Nice work'')', pg_temp.id('a_wr_open'), '{"task_completion":"SOLID","comprehensibility":"STRONG","language_accuracy":"DEVELOPING","vocabulary_use":"SOLID"}'))='OK','WRITTEN reviewed with the written dimensions');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Fine'')', pg_temp.id('a_sp'), '{"task_completion":"SOLID","comprehensibility":"SOLID","fluency":"SOLID","language_accuracy":"SOLID","vocabulary_use":"SOLID","pronunciation_intelligibility":"SOLID"}'))='OK','SPOKEN reviewed with the speaking dimensions');
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews()),'queue is empty after both reviews');
+-- Read-only review insights: today's count, saved reviews and context stay inside the Teacher scope.
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'reviewedToday')::int=2,'overview counts the reviews sent today');
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'avgResponseMinutes7d') is not null,'overview has an average response time');
+select pg_temp.assert_true(jsonb_array_length(public.get_teacher_review_context(pg_temp.id('a_wr_open'))->'reviews')=1,'context returns the saved review');
+select pg_temp.assert_true((public.get_teacher_review_context(pg_temp.id('a_wr_open'))->'reviews'->0->>'feedback')='Nice work','saved feedback is readable by its Teacher');
+select pg_temp.assert_true(public.get_teacher_review_context(pg_temp.id('a_wr_open'))::text !~ 'storage_path|score','context exposes no storage path or score');
 reset role;
 select pg_temp.assert_true((select evaluation_status='MANUAL_REVIEWED' and score is null and max_score is null from public.practice_results where practice_attempt_id=pg_temp.id('a_wr_open')),'review keeps score null (no aggregate, no CEFR)');
 select pg_temp.login(pg_temp.u(3), 'aal2');
 set local role authenticated;
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews(pg_temp.id('a_wr_open'))),'unrelated Teacher cannot read the attempt');
+select pg_temp.assert_true(public.get_teacher_review_context(pg_temp.id('a_wr_open')) is null,'unrelated Teacher gets no review context');
+select pg_temp.assert_true((public.get_teacher_review_overview()->>'reviewedToday')::int=0,'overview only counts the Teacher own reviews');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''x'')', pg_temp.id('a_sp'), '{}'))='42501','unrelated Teacher cannot finalize');
 reset role;
 
@@ -422,26 +458,26 @@ select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practi
 insert into ids values ('p1_dup', public.teacher_practice_duplicate(pg_temp.id('p1'), '{"request_id":"b2900000-0000-4000-8000-000000000004","environment":"test","version":"pa-1"}'));
 select pg_temp.assert_true((select r->>'publicationStatus'='DRAFT' and r->>'hasAttempts'='false' and (r->'answerKey')='{"optionId":"a"}'::jsonb and r->>'title' like '%(cópia)' and jsonb_array_length(r->'assignments')=0 from (select public.teacher_practice_get(pg_temp.id('p1_dup')) r) x),'duplicate is an editable DRAFT with the same key and no assignment');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(%L, ''{"title":"Edited copy"}''::jsonb, ''{"optionId":"b"}''::jsonb)', pg_temp.id('p1_dup')))='OK','the duplicate can be edited');
--- Unassign: scoped to the cohort Teacher and an existing assignment; the practice stays untouched.
+-- Unassign remains scoped to the cohort Teacher; it changes assignment metadata, not lesson access.
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_unassign(%L, %L)', pg_temp.id('single'), 'b2400000-0000-4000-8000-000000000002'))='42501','cannot unassign a cohort that is not yours');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_unassign(%L, %L)', pg_temp.id('p1_dup'), 'b2400000-0000-4000-8000-000000000001'))='42501','cannot unassign something that was never assigned');
 select public.teacher_practice_unassign(pg_temp.id('tf'), 'b2400000-0000-4000-8000-000000000001', '{"request_id":"b2900000-0000-4000-8000-000000000005","environment":"test","version":"pa-1"}');
 reset role;
 select pg_temp.login(pg_temp.u(9), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true((select count(*)=0 from public.practice_activities where id=pg_temp.id('tf')),'unassigned practice disappears for a Student without history');
-select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L, gen_random_uuid())', pg_temp.id('tf')))='42501','unassigned practice cannot be started');
+select pg_temp.assert_true((select count(*)=1 from public.practice_activities where id=pg_temp.id('tf')),'unassigned practice remains visible through its lesson');
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L, gen_random_uuid())',pg_temp.id('tf')))='42501','lesson-visible practice still requires paid access to start');
 reset role;
 -- Membership ends: access disappears.
 select pg_temp.login(pg_temp.u(9), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true((select count(*)>=1 from public.student_assigned_practices()),'S4 has assignments while member');
+select pg_temp.assert_true((select count(*)>=1 from public.cohort_practice_assignments),'S4 can read cohort assignment rows while member');
 reset role;
 update public.cohort_memberships set status='LEFT', ends_at=now() where user_id = pg_temp.u(9);
 select pg_temp.login(pg_temp.u(9), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true((select count(*)=0 from public.student_assigned_practices()),'a Student who left the cohort sees no assignments');
-select pg_temp.assert_true((select count(*)=0 from public.practice_activities where audience='ASSIGNED'),'a Student who left the cohort sees no ASSIGNED practice');
+select pg_temp.assert_true((select count(*)=0 from public.cohort_practice_assignments),'a Student who left the cohort cannot read its assignment rows');
+select pg_temp.assert_true((select count(*)=0 from public.practice_activities where id=pg_temp.id('p1')),'ending cohort membership removes lesson access');
 reset role;
 -- Admin keeps the transition path (content_change_guard does not block it) and cannot set audience.
 select pg_temp.login(pg_temp.u(1), 'aal2');
@@ -509,7 +545,7 @@ select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1'))
 reset role;
 select pg_temp.login(pg_temp.u(6), 'aal1');
 set local role authenticated;
-select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'other-cohort Student not authorized');
+select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'same-course Student with lesson access can read the stimulus asset');
 reset role;
 select pg_temp.login(pg_temp.u(3), 'aal2');
 set local role authenticated;
@@ -517,8 +553,8 @@ select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset
 reset role;
 select pg_temp.login(pg_temp.u(5), 'aal1');
 set local role authenticated;
--- The duplicate was published but never assigned: the Student is not authorized for it.
-select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset_dup')),'unassigned duplicate asset is not authorized');
+-- The duplicate was published but never assigned; its published lesson still authorizes access.
+select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset_dup')),'unassigned duplicate asset is authorized through the published lesson');
 reset role;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -548,7 +584,8 @@ begin
     'public.teacher_practice_assign(uuid,uuid[],timestamptz,jsonb,timestamptz,boolean)','public.teacher_practice_unassign(uuid,uuid,jsonb)',
     'public.teacher_practice_reserve_asset(uuid,text,text,jsonb)','public.teacher_practice_complete_asset(uuid,jsonb)',
     'public.authorize_practice_asset(uuid)','public.student_assigned_practices()','public.submit_practice_attempt(uuid,jsonb)',
-    'public.get_teacher_reviews(uuid)','public.finalize_practice_review(uuid,jsonb,text,text)','public.reserve_practice_audio(uuid,text)'] loop
+    'public.get_teacher_reviews(uuid)','public.finalize_practice_review(uuid,jsonb,text,text)','public.reserve_practice_audio(uuid,text)',
+    'public.get_teacher_review_overview()','public.get_teacher_review_context(uuid)'] loop
     if has_function_privilege('anon', f, 'EXECUTE') then raise exception 'practice_authoring: anon can execute %', f; end if;
     if not has_function_privilege('authenticated', f, 'EXECUTE') then raise exception 'practice_authoring: authenticated cannot execute %', f; end if;
   end loop;
@@ -623,12 +660,8 @@ select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
 select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'independent first cohort release still permits asset');
 reset role;
--- A lesson-linked assigned practice keeps the old early-execution behavior until explicitly opted in.
-insert into public.lessons(id,module_id,position,slug,title) values
- ('b2220000-0000-4000-8000-000000000001','b2210000-0000-4000-8000-000000000001',1,'pa-related-lesson','Related lesson');
-insert into public.lesson_assets(lesson_id,asset_type,position,content,publication_status,published_at) values
- ('b2220000-0000-4000-8000-000000000001','TEXT',1,'{"title":"Lesson","body":"Study"}','PUBLISHED',now());
-update public.lessons set publication_status='PUBLISHED',published_at=now() where id='b2220000-0000-4000-8000-000000000001';
+-- A lesson-linked assigned practice no longer executes early (ADR 0025); the explicit lesson rule stays accepted.
+-- The related lesson b2220000-...-0001 is already created and published by the base fixture above.
 select pg_temp.login(pg_temp.u(2),'aal2');
 set local role authenticated;
 insert into ids values('release',public.teacher_practice_save(null,
@@ -641,14 +674,14 @@ insert into public.cohort_path_items(cohort_id,content_kind,content_id,position,
  ('b2400000-0000-4000-8000-000000000001','modules','b2210000-0000-4000-8000-000000000001',0,null),
  ('b2400000-0000-4000-8000-000000000001','lessons','b2220000-0000-4000-8000-000000000001',1,now()+interval '1 day');
 select pg_temp.login(pg_temp.u(5),'aal1');
-select pg_temp.assert_true(private.can_view_practice_activity(pg_temp.id('release')),'legacy assignment still permits early execution');
+select pg_temp.assert_true(not private.can_view_practice_activity(pg_temp.id('release')),'assignment never bypasses lesson availability (ADR 0025 supersedes legacy early execution)');
 select pg_temp.login(pg_temp.u(2),'aal2');
 set local role authenticated;
 select public.teacher_practice_assign(pg_temp.id('release'),array['b2400000-0000-4000-8000-000000000001']::uuid[],null,'{}',null,true);
 reset role;
 select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
-select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('release')))='42501','explicit lesson rule blocks unreleased lesson');
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('release')))='YP001','explicit lesson rule blocks unreleased lesson (lesson-not-reached contract)');
 reset role;
 update public.cohort_path_items set available_from=now()-interval '1 hour' where cohort_id='b2400000-0000-4000-8000-000000000001' and content_kind='lessons';
 select pg_temp.login(pg_temp.u(5),'aal1');

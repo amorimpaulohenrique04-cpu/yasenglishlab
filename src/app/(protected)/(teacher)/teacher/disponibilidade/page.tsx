@@ -1,47 +1,35 @@
-import { Alert, Button, Card, PageHeader } from "@/components/ui";
-import { AvailabilitySlotForm } from "./availability-slot-form";
-import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
-import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
-import { saveAvailabilityAction } from "./actions";
+import { MotionProvider } from "@/components/motion";
+import { ToastProvider } from "@/components/ui";
+import {
+  availabilityFilters,
+  availabilityWeekStart,
+} from "@/modules/teacher-operations/domain/availability-workspace";
+import { localParts } from "@/modules/teacher-operations/domain/session-workspace";
+import { AvailabilityWorkspace } from "@/modules/teacher-operations/ui/availability-workspace";
+import { loadAvailabilityWorkspace } from "@/server/teacher-operations/availability-workspace";
+import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
+import { mutateAvailabilityWorkspace } from "./workspace-actions";
 export default async function AvailabilityPage({
   searchParams,
 }: {
-  searchParams: Promise<{ save?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const context = await loadTeacherOperationContext();
+  const now = sessionWorkspaceNow();
+  const today = localParts(new Date(now)).date;
+  const filters = availabilityFilters(await searchParams, today);
+  const week = availabilityWeekStart(filters.date);
+  const data = await loadAvailabilityWorkspace(week);
   return (
-    <div className={styles.page}>
-      <PageHeader
-        title="Disponibilidade"
-        description="Defina os horários disponíveis para seus encontros."
-      />
-      {(await searchParams).save === "error" && (
-        <Alert
-          tone="error"
-          title="Intervalo rejeitado"
-          description="Confira sobreposição, datas futuras e encontros que dependem deste intervalo."
+    <MotionProvider>
+      <ToastProvider>
+        <AvailabilityWorkspace
+          data={data}
+          filters={filters}
+          today={today}
+          now={now}
+          action={mutateAvailabilityWorkspace}
         />
-      )}
-      <Card>
-        <AvailabilitySlotForm operation="CREATE" />
-      </Card>
-      {context.availability.map((item) => (
-        <Card key={item.id}>
-          <AvailabilitySlotForm
-            id={item.id}
-            operation="EDIT"
-            startsAt={item.starts_at}
-            endsAt={item.ends_at}
-          />
-          <form action={saveAvailabilityAction}>
-            <input type="hidden" name="id" value={item.id} />
-            <input type="hidden" name="operation" value="DELETE" />
-            <Button type="submit" variant="secondary">
-              Remover intervalo
-            </Button>
-          </form>
-        </Card>
-      ))}
-    </div>
+      </ToastProvider>
+    </MotionProvider>
   );
 }

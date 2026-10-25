@@ -1,0 +1,2 @@
+src/modules/practice/application/queries.ts 606ms
+tests/integration/practice-application.test.ts 525ms

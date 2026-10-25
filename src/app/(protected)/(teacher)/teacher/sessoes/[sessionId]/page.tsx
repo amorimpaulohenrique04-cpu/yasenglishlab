@@ -1,360 +1,286 @@
 import Link from "next/link";
-
+import { z } from "zod";
+import { Breadcrumbs, ErrorState, Icon, PageHeader, ProgressRing } from "@/components/ui";
+import { teacherSessionTypeLabel } from "@/modules/teacher-operations";
+import { safeSessionReturn } from "@/modules/teacher-operations/domain/session-workspace";
+import { formatCountdown } from "@/modules/teacher-operations/domain/session-calendar";
+import { SessionDetailTabs } from "@/modules/teacher-operations/ui/session-detail-tabs";
+import { SaveToast, SessionActions } from "@/modules/teacher-operations/ui/session-actions";
+import { SessionAttendance } from "@/modules/teacher-operations/ui/session-attendance";
 import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Input,
-  Textarea,
-  EmptyState,
-  ErrorState,
-  PageHeader,
-} from "@/components/ui";
-import {
-  TEACHER_ATTENDANCE_ERROR_MESSAGES,
-  teacherAttendanceLabel,
-  teacherSessionStatusLabel,
-  type TeacherOperationsErrorCode,
-  teacherSessionTypeLabel,
-  type TeacherAttendanceStatus,
-  type TeacherSessionStatus,
-} from "@/modules/teacher-operations";
-import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
-import { loadTeacherSessionPage } from "@/server/teacher-operations/teacher-operations";
-
-import { markAttendanceAction } from "./actions";
-import { saveSessionAction, cancelTeacherSessionAction, teacherJoinAction } from "../actions";
-import { loadTeacherOperationContext } from "@/server/teacher-operations/operation-context";
-import { SessionForm } from "@/modules/teacher-operations/ui/session-form";
+  ResourceGrid,
+  RosterPreview,
+  SessionDetailHeader,
+} from "@/modules/teacher-operations/ui/session-detail";
+import { SessionResourcePanel } from "@/modules/teacher-operations/ui/session-resource-panel";
 import { JoinMeeting } from "@/modules/schedule/ui/join-meeting";
+import {
+  loadSessionWorkspace,
+  sessionWorkspaceNow,
+} from "@/server/teacher-operations/session-workspace";
 import {
   loadSessionResources,
   loadTeacherResourceChoices,
 } from "@/server/teacher-operations/resources";
-import { SessionResources } from "@/modules/teacher-operations/ui/session-resources";
-import { ResourceFileUpload } from "@/modules/teacher-operations/ui/resource-file-upload";
-import {
-  createResourceAction,
-  sessionResourceAccessAction,
-  resourceUploadAction,
-  completeResourceUploadAction,
-} from "../resource-actions";
-
-interface TeacherSessionPageProps {
-  params: Promise<{ sessionId: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "America/Recife",
-  weekday: "long",
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "America/Recife",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-function firstValue(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
-
-function sessionTone(status: TeacherSessionStatus): "success" | "warning" | "neutral" {
-  if (status === "SCHEDULED") return "success";
-  if (status === "CANCELLED") return "warning";
-  return "neutral";
-}
-
-function attendanceTone(status: TeacherAttendanceStatus | null): "success" | "warning" | "neutral" {
-  if (status === "ATTENDED") return "success";
-  if (status === "NO_SHOW") return "warning";
-  return "neutral";
-}
+import { SupabaseTeacherOperationsRepository } from "@/server/teacher-operations/supabase-teacher-operations-repository";
+import { createSupabaseServerClient } from "@/server/supabase/server";
+import { teacherJoinAction } from "../actions";
+import { sessionResourceAccessAction } from "../resource-actions";
+import styles from "@/modules/teacher-operations/ui/sessions.module.css";
 
 export default async function TeacherSessionPage({
   params,
   searchParams,
-}: TeacherSessionPageProps) {
-  const { sessionId } = await params;
-  const query = await searchParams;
-  const state = await loadTeacherSessionPage(sessionId);
-
-  if (state.status === "unavailable") {
+}: {
+  params: Promise<{ sessionId: string }>;
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const [{ sessionId }, query] = await Promise.all([params, searchParams]);
+  const back = safeSessionReturn(query.returnTo);
+  if (!z.uuid().safeParse(sessionId).success)
+    return (
+      <ErrorState title="Sessão indisponível" description="Você não pode acessar esta sessão." />
+    );
+  // Prove ownership before reading the roster or any resources.
+  const detail = await loadSessionWorkspace(undefined, undefined, sessionId);
+  const session = detail.sessions[0];
+  if (!session)
     return (
       <div className={styles.page}>
+        <Breadcrumbs
+          homeHref="/teacher"
+          homeLabel="Início do professor"
+          items={[{ label: "Sessões", href: back }, { label: "Indisponível" }]}
+        />
         <PageHeader title="Sessão indisponível" />
         <ErrorState
           title="Você não pode acessar esta sessão"
           description="A sessão não pertence ao seu escopo de professor ou não está disponível."
         />
-        <Link className={styles.backLink} href="/teacher">
-          ← Voltar para suas sessões
+        <Link href={back} className="yas-button yas-button--outline">
+          Voltar para suas sessões
         </Link>
       </div>
     );
-  }
-
-  const { session, roster } = state;
-  const context = await loadTeacherOperationContext();
-  const editable = context.sessions.find((item) => item.id === sessionId);
-  const [resources, choices] = await Promise.all([
+  const client = await createSupabaseServerClient();
+  const [roster, resources, choices, context] = await Promise.all([
+    new SupabaseTeacherOperationsRepository(client).getSessionRoster(sessionId),
     loadSessionResources(sessionId),
     loadTeacherResourceChoices(),
+    loadSessionWorkspace(),
   ]);
-  const start = new Date(session.startsAt);
-  const end = new Date(session.endsAt);
-  const attendanceResult = firstValue(query.attendance);
+  const now = sessionWorkspaceNow(),
+    started = Date.parse(session.starts_at) <= now;
+  const active = roster.filter((p) => p.bookingStatus === "BOOKED");
+  const present = active.filter((p) => p.attendanceStatus === "ATTENDED").length,
+    absent = active.filter((p) => p.attendanceStatus === "NO_SHOW").length,
+    pending = active.length - present - absent;
+  const tabHref = (tab: string) => {
+    const params = new URLSearchParams(
+      Object.entries(query).filter(
+        (entry): entry is [string, string] => typeof entry[1] === "string",
+      ),
+    );
+    params.set("tab", tab);
+    params.delete("edit");
+    params.delete("cancel");
+    params.delete("meeting");
+    return `?${params}`;
+  };
 
-  return (
-    <div className={styles.page}>
-      <Link className={styles.backLink} href="/teacher">
-        ← Suas sessões
-      </Link>
-
-      <PageHeader
-        title={session.title}
-        description={
-          dateFormatter.format(start) +
-          " · " +
-          timeFormatter.format(start) +
-          "–" +
-          timeFormatter.format(end)
-        }
-        actions={
-          <Badge tone={sessionTone(session.status)}>
-            {teacherSessionStatusLabel(session.status)}
-          </Badge>
-        }
-      />
-
-      {attendanceResult === "success" && (
-        <Alert
-          tone="success"
-          title="Presença atualizada"
-          description="A marcação foi persistida e auditada."
-        />
-      )}
-      {attendanceResult === "error" && (
-        <Alert
-          tone="error"
-          title="Não foi possível atualizar a presença"
-          description={
-            TEACHER_ATTENDANCE_ERROR_MESSAGES[
-              (firstValue(query.code) as TeacherOperationsErrorCode | undefined) ?? "UNAVAILABLE"
-            ] ?? TEACHER_ATTENDANCE_ERROR_MESSAGES.UNAVAILABLE
-          }
-        />
-      )}
-
-      <Card className={styles.detailSummary} variant="soft">
-        <strong>{teacherSessionTypeLabel(session.sessionType)}</strong>
-        <span className={styles.muted}>
-          {session.participantCount}{" "}
-          {session.participantCount === 1 ? "participante reservado" : "participantes reservados"} ·{" "}
-          {session.attendanceMarkedCount} com presença marcada
-        </span>
-      </Card>
-
-      {firstValue(query.save) === "error" && (
-        <Alert
-          tone="error"
-          title="Alteração rejeitada"
-          description="Confira disponibilidade, vínculos e reservas existentes."
-        />
-      )}
-      {firstValue(query.save) === "not_cancellable" && (
-        <Alert
-          tone="error"
-          title="Encontro não cancelado"
-          description={TEACHER_ATTENDANCE_ERROR_MESSAGES.SESSION_NOT_CANCELLABLE}
-        />
-      )}
-      {session.status === "SCHEDULED" && (
-        <>
-          <JoinMeeting sessionId={session.id} action={teacherJoinAction} />
-          {editable && (
-            <SessionForm context={context} action={saveSessionAction} session={editable} />
-          )}
-          <form action={cancelTeacherSessionAction}>
-            <input type="hidden" name="sessionId" value={session.id} />
-            <Button variant="secondary" type="submit">
-              Cancelar encontro
-            </Button>
-          </form>
-        </>
-      )}
-
-      <section aria-labelledby="teacher-roster-title">
-        <SessionResources resources={resources} action={sessionResourceAccessAction} />
-        <Card>
-          <h2>Atribuir recurso ou tarefa</h2>
-          <form action={createResourceAction} className={styles.operationForm}>
-            <input name="sessionId" type="hidden" value={sessionId} />
-            <label>
-              Tipo
-              <select name="resource_type">
-                <option value="RESOURCE">Recurso</option>
-                <option value="HOMEWORK">Tarefa</option>
-              </select>
-            </label>
-            <Input label="Título" name="title" required maxLength={200} />
-            <Textarea label="Instruções" name="instructions" maxLength={4000} />
-            <Input
-              label="Prazo com fuso (opcional)"
-              name="due_at"
-              placeholder="2026-10-10T18:00:00-03:00"
-            />
-            <label>
-              Material
-              <select name="material_id">
-                <option value="">Sem material</option>
-                {choices.materials.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Prática
-              <select name="practice_activity_id">
-                <option value="">Sem prática</option>
-                {choices.activities.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Input label="Link HTTPS (opcional)" name="external_url" type="url" maxLength={2048} />
-            <p>Selecione apenas uma referência por recurso.</p>
-            <Button type="submit">Atribuir</Button>
-          </form>
-          <ResourceFileUpload
-            sessionId={sessionId}
-            upload={resourceUploadAction}
-            complete={completeResourceUploadAction}
-          />
-        </Card>
-        <div className={styles.rosterHeading}>
-          <div>
-            <h2 id="teacher-roster-title">Participantes</h2>
-            <p>Roster operacional mínimo desta sessão.</p>
-          </div>
+  const participants = (
+    <section className={styles.panel} aria-labelledby="participants-title">
+      <header className={styles.panelHeader}>
+        <h2 id="participants-title">Participantes</h2>
+        <div className={styles.tally} aria-label="Resumo da presença">
+          <span data-tone="success">{present} presentes</span>
+          <span data-tone="error">{absent} ausentes</span>
+          <span>{pending} sem marcação</span>
         </div>
-
-        {roster.length === 0 ? (
-          <EmptyState
-            title="Nenhum participante"
-            description="Esta sessão ainda não possui reservas para exibir."
-          />
+      </header>
+      {!started && roster.length > 0 && (
+        <p className={styles.notice}>
+          <Icon name="clock" size={16} /> A presença será liberada a partir do início da sessão.
+        </p>
+      )}
+      {roster.length === 0 ? (
+        <div className={styles.emptyInline}>
+          <Icon name="users" size={22} />
+          <p>
+            <strong>Nenhum participante</strong>
+            <span>Esta sessão ainda não possui reservas.</span>
+          </p>
+        </div>
+      ) : (
+        <ol className={styles.roster}>
+          {roster.map((p, index) => (
+            <SessionAttendance
+              key={p.bookingId}
+              participant={p}
+              sessionId={sessionId}
+              started={started}
+              index={index}
+            />
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+  const materials = (
+    <section className={styles.panel} aria-labelledby="resources-title">
+      <header className={styles.panelHeader}>
+        <h2 id="resources-title">Recursos e tarefas</h2>
+        <SessionResourcePanel sessionId={sessionId} choices={choices} />
+      </header>
+      {resources.length === 0 ? (
+        <div className={styles.emptyInline}>
+          <Icon name="file" size={22} />
+          <p>
+            <strong>Nenhum recurso atribuído</strong>
+            <span>Adicione materiais, práticas, links ou tarefas para os participantes.</span>
+          </p>
+        </div>
+      ) : (
+        <ResourceGrid resources={resources} action={sessionResourceAccessAction} />
+      )}
+    </section>
+  );
+  const overview = (
+    <div className={styles.stack}>
+      <section className={styles.panel} aria-labelledby="about-title">
+        <header className={styles.panelHeader}>
+          <h2 id="about-title">
+            <Icon name="book" size={18} /> Sobre a sessão
+          </h2>
+        </header>
+        <dl className={styles.facts}>
+          <div>
+            <dt>Tipo</dt>
+            <dd>{teacherSessionTypeLabel(session.session_type)}</dd>
+          </div>
+          <div>
+            <dt>{session.session_type === "PRIVATE_SESSION" ? "Formato" : "Turma"}</dt>
+            <dd>
+              {session.cohort_name ??
+                (session.session_type === "PRIVATE_SESSION" ? "Sessão individual" : "Sem turma")}
+            </dd>
+          </div>
+          <div>
+            <dt>Capacidade</dt>
+            <dd>{session.capacity} vagas</dd>
+          </div>
+          <div>
+            <dt>Reservas ativas</dt>
+            <dd>{session.participant_count}</dd>
+          </div>
+          <div>
+            <dt>Local</dt>
+            <dd>Online · Google Meet</dd>
+          </div>
+          <div>
+            <dt>Fuso horário</dt>
+            <dd>America/Recife</dd>
+          </div>
+        </dl>
+      </section>
+      <RosterPreview roster={roster} href={tabHref("participants")} />
+      <section className={styles.panel} aria-labelledby="resources-preview-title">
+        <header className={styles.panelHeader}>
+          <h2 id="resources-preview-title">
+            <Icon name="file" size={18} /> Materiais anexados ({resources.length})
+          </h2>
+          {resources.length > 0 && (
+            <Link href={tabHref("resources")} className={styles.sideLink} scroll={false}>
+              Ver todos <Icon name="arrow" size={15} />
+            </Link>
+          )}
+        </header>
+        {resources.length === 0 ? (
+          <p className={styles.muted}>Nenhum recurso atribuído.</p>
         ) : (
-          <ol className={styles.rosterList}>
-            {roster.map((participant) => {
-              const activeBooking = participant.bookingStatus === "BOOKED";
-              return (
-                <li key={participant.bookingId}>
-                  <Card
-                    className={styles.participantCard}
-                    aria-labelledby={"participant-" + participant.bookingId}
-                  >
-                    <div className={styles.participantTopline}>
-                      <div className={styles.participantMeta}>
-                        <h3
-                          className={styles.participantName}
-                          id={"participant-" + participant.bookingId}
-                        >
-                          {participant.displayName}
-                        </h3>
-                        <span>Reserva: {participant.bookingStatus}</span>
-                      </div>
-                      <Badge tone={attendanceTone(participant.attendanceStatus)}>
-                        {teacherAttendanceLabel(participant.attendanceStatus)}
-                      </Badge>
-                    </div>
-
-                    {activeBooking ? (
-                      <div
-                        className={styles.attendanceActions}
-                        aria-label={"Presença de " + participant.displayName}
-                      >
-                        <form action={markAttendanceAction}>
-                          <input type="hidden" name="sessionId" value={session.id} />
-                          <input
-                            type="hidden"
-                            name="sessionBookingId"
-                            value={participant.bookingId}
-                          />
-                          <input type="hidden" name="status" value="ATTENDED" />
-                          {participant.attendanceStatus !== null && (
-                            <Textarea
-                              label="Motivo da correção"
-                              name="reason"
-                              required
-                              minLength={3}
-                              maxLength={500}
-                              message="Obrigatório para corrigir uma presença já marcada (3 a 500 caracteres)."
-                            />
-                          )}
-                          <Button
-                            type="submit"
-                            size="sm"
-                            variant={
-                              participant.attendanceStatus === "ATTENDED" ? "secondary" : "outline"
-                            }
-                            aria-label={"Marcar " + participant.displayName + " como Presente"}
-                          >
-                            Presente
-                          </Button>
-                        </form>
-
-                        <form action={markAttendanceAction}>
-                          <input type="hidden" name="sessionId" value={session.id} />
-                          <input
-                            type="hidden"
-                            name="sessionBookingId"
-                            value={participant.bookingId}
-                          />
-                          <input type="hidden" name="status" value="NO_SHOW" />
-                          {participant.attendanceStatus !== null && (
-                            <Textarea
-                              label="Motivo da correção"
-                              name="reason"
-                              required
-                              minLength={3}
-                              maxLength={500}
-                              message="Obrigatório para corrigir uma presença já marcada (3 a 500 caracteres)."
-                            />
-                          )}
-                          <Button
-                            type="submit"
-                            size="sm"
-                            variant={
-                              participant.attendanceStatus === "NO_SHOW" ? "secondary" : "outline"
-                            }
-                            aria-label={"Marcar " + participant.displayName + " como Ausente"}
-                          >
-                            Ausente
-                          </Button>
-                        </form>
-                      </div>
-                    ) : (
-                      <p className={styles.muted}>
-                        Attendance não pode ser alterada porque esta reserva não está BOOKED.
-                      </p>
-                    )}
-                  </Card>
-                </li>
-              );
-            })}
-          </ol>
+          <ResourceGrid resources={resources} action={sessionResourceAccessAction} limit={3} />
         )}
       </section>
+    </div>
+  );
+  const countdown = formatCountdown(Date.parse(session.starts_at) - now);
+  const ratio = active.length ? Math.round(((present + absent) / active.length) * 100) : 0;
+  return (
+    <div className={styles.page}>
+      <SaveToast show={query.save === "success"} />
+      <Breadcrumbs
+        homeHref="/teacher"
+        homeLabel="Início do professor"
+        items={[{ label: "Sessões", href: back }, { label: session.title }]}
+      />
+      <SessionDetailHeader session={session} now={now} />
+      <div className={styles.detailLayout}>
+        <aside id="session-actions" className={styles.detailAside} aria-label="Ações da sessão">
+          <section className={styles.sideCard} aria-labelledby="actions-title">
+            <header className={styles.sideHeader}>
+              <h2 id="actions-title">Ações da sessão</h2>
+              {session.status === "SCHEDULED" && countdown && (
+                <span className={styles.countdown}>{countdown}</span>
+              )}
+            </header>
+            {session.status === "SCHEDULED" && (
+              <JoinMeeting sessionId={sessionId} action={teacherJoinAction} block />
+            )}
+            <SessionActions
+              session={session}
+              context={context}
+              now={now}
+              initialEdit={query.edit === "1"}
+              initialCancel={query.cancel === "1"}
+              initialMeeting={query.meeting === "1"}
+              returnTo={back}
+            />
+          </section>
+          <section className={styles.sideCard} aria-labelledby="attendance-title">
+            <header className={styles.sideHeader}>
+              <h2 id="attendance-title">Presença</h2>
+            </header>
+            <div className={styles.attendanceSummary}>
+              <ProgressRing value={ratio} size={76} stroke={7} label="Presenças marcadas">
+                {present + absent}/{active.length}
+              </ProgressRing>
+              <p>
+                {started
+                  ? pending > 0
+                    ? `${pending} ${pending === 1 ? "participante aguarda" : "participantes aguardam"} marcação. Correções exigem um motivo.`
+                    : "Todas as presenças foram registradas."
+                  : "A presença estará disponível a partir do início da sessão."}
+              </p>
+            </div>
+            {started && active.length > 0 && (
+              <Link href={tabHref("participants")} className={styles.sideLink} scroll={false}>
+                Registrar presença <Icon name="arrow" size={15} />
+              </Link>
+            )}
+          </section>
+        </aside>
+        <div className={styles.detailMain}>
+          <SessionDetailTabs
+            items={[
+              { id: "overview", label: "Visão geral", icon: "grid", content: overview },
+              {
+                id: "participants",
+                label: "Participantes",
+                icon: "users",
+                badge: roster.length,
+                content: participants,
+              },
+              {
+                id: "resources",
+                label: "Recursos e tarefas",
+                icon: "file",
+                badge: resources.length,
+                content: materials,
+              },
+            ]}
+          />
+        </div>
+      </div>
     </div>
   );
 }

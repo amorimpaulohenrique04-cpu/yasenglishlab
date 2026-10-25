@@ -1,3 +1,74 @@
+## PR #89 — recuperação F01–F04 — 2026-10-25
+
+Ambas as runs de referência e seus oito artefatos inspecionados. Goldens Home mobile/tablet
+mantidos após comparação; caminhos exatos declarados. Entrada respeita reduced motion também
+na opacidade. Outline usa texto AA opaco durante disabled/autosave. Assert e prova DB no browser
+seguem ADR 0025, confirmado expressamente pelo usuário: sete respostas finais, 6/7, sem reforço.
+
+PASS local: 14 casos da prova + 2 de isolamento; TypeScript, ESLint focado, formatação,
+eval (10 regras), harness/ratchet/security/DB estrutural. Storybook build PASS; Chromium
+regressão de outline com movimento pleno PASS (reativação imediata, hover, foco, axe).
+Official CI final pendente. Evidência: harness/evidence/ci-recovery-final-submission/README.md.
+Registry permanece in_progress / verified:false; sem merge.
+
+Primeiro CI corrigido (1a28d35): Quality, DB, guardrails, visual, a11y e DB/RLS passam nas duas
+runs. Persistência canônica e Teacher practices passam no PR. Falha adicional F07: admin-cohorts
+escaneia durante o redirect do save, pois a linha antiga já satisfazia o expect; agora aguarda
+POST, URL de sucesso, confirmação, fechamento do drawer e título. F08: o runner de push falhou
+antes dos testes por porta 55324 ocupada. Matriz atualizada; nova certificação completa pendente.
+
+## teacher-sessions-redesign — Fase 2b (correções do usuário) — 2026-10-22
+
+Corrigido, a partir do feedback com capturas:
+
+- **Menu "⋯" cortado:** agora usa um Popover na camada superior (Popover API).
+- **Relatórios:** filtros e exportação numa linha; blocos alinhados (esticados) e legenda do donut corrigida.
+- **Calendário próprio:** DateField, DatePicker e DateRangePicker com atalhos.
+- **Horário próprio:** TimeField com lista de 15 min e duração a partir do início.
+- **Selects:** o Yas inteiro usa `appearance: base-select` (elemento nativo preservado).
+- **Painel de edição:** barra de ações encostada na borda.
+- **Uma só barra de rolagem:** a página trava sob modais e as barras internas ficam finas.
+- **Responsividade:** container queries por região, em vez de `@media`.
+
+Verificação:
+
+- **Rolagem horizontal:** varredura em 320, 390, 768, 1024, 1280, 1440 e 1920 px, sem rolagem horizontal em nenhuma tela.
+- **Passaram:** tsc; eslint src tests; vitest focado (18).
+- **E2E passaram:** teacher-sessions-redesign (4), teacher-operations (2), p21-responsive (1), core-live (1, após recarregar a fixture canônica, que tem uma sessão "agora" que vence com o tempo).
+- **A11y:** os 6 cenários de professor passaram.
+- **Não executados:** verify:*.
+
+---
+
+## teacher-sessions-redesign — Fase 2 (polimento visual) — 2026-10-22
+
+Escopo aprovado: visual + UX sem regra nova, CTA violeta, motion@13.5.1. Entregue:
+
+- espaço de sessões com Agenda, grade semanal real e Mês; filtros que se aplicam na hora; Ctrl/⌘ K;
+- sheets de Meet e Disponibilidade;
+- assistente com Stepper e verificação animada de horário, edição em sheet;
+- detalhes com abas underline e presença otimista;
+- relatórios com KPIs, área e donut em SVG/CSS e destaques determinísticos.
+
+Primitivos estendidos/novos estão documentados em docs/DESIGN_SYSTEM.md e src/components/ui/README.md.
+
+Verificação local (fixture canônica via scripts/setup-canonical-e2e.mjs; Supabase local 127.0.0.1):
+
+- **Passaram:** tsc; eslint src tests; vitest tests/unit (5 testes novos em session-calendar.test.ts); next build.
+- **E2E passaram:** teacher-sessions-redesign (4, com axe desktop/tablet/mobile e 22 capturas), teacher-operations (2), core-live (1), p21-responsive (1).
+- **A11y:** os cenários de professor passaram. Falharam cenários de aluno fora do escopo (Aulas, Prática, Progresso e Agenda), por dados da fixture: nível CEFR, "Começar" e um card de agenda extra.
+- **Instável sob carga:** isolated-next-config.test.ts falhou na suíte completa enquanto o Playwright rodava em paralelo e passou isolado.
+- **format:check:** falha só em harness/feature_list.json, que já estava modificado antes desta fase.
+- **Não executados:** verify:agent, verify:ui, verify:security, verify:db e verify:full. A feature continua in_progress / verified:false.
+
+---
+
+## teacher-sessions-redesign — 2026-10-22
+
+Implementação entregue localmente na branch codex/teacher-sessions-redesign. Build de produção, 15 testes focados de domínio/PDF/recursos, três testes de isolamento e seis cenários de navegador passaram; rodada final dos três cenários do redesign passou com 22 capturas responsivas e axe. SQL focado, verify:security e verify:db passaram. Gates completos não concluídos e não reexecutados após a instrução expressa do usuário; verified:false preservado. Migration local aplicada sem reset; dev-seed executado (três logins OK, um aviso de cota na presença fictícia); localhost responde HTTP 200. Sem PR ou push. Evidências e limites em harness/evidence/teacher-sessions-redesign/README.md.
+
+---
+
 # Progress Log
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
@@ -748,6 +819,99 @@ Base/main CI verified; regression red 18/29, green 29/29. Implementation complet
 
 Implementation/focused checks and verify:agent pass. Official CI 39081037545 fails Database on the pre-existing rate-window counter collision (proved locally in rollback-only SQL); Preview/CI Gate consequently fail. Local verify:ui also failed unchanged canonical lesson progress UI after persistence succeeded. Draft PR, no merge; full clean-stack verification running. Two open failure records preserve evidence; no out-of-scope fix or CI retry.
 
+## 2026-10-18 — public-site-design-refinement
+
+V4 implementada em artifacts/public-site-proposal/index.html + refinement.css: hero editorial, faixa discreta, exemplos antecipados, professora antes do tour, planos alinhados, mobile recomposto, conteúdo fictício removido e renovação explícita. Evidência: harness/evidence/public-site-design-refinement/README.md. Core/build, harness e segurança PASS. Ainda in_progress/verified:false: revisão visual indisponível; verify:ui exige CANONICAL_E2E=1; eval de escopo compara commits preexistentes da branch e permanece FAIL. Agregador verify:agent não declarado verde.
+
+## 2026-10-22 — teacher-reviews-redesign
+
+Fila e revisão de práticas redesenhadas (goal `harness/goals/teacher-reviews-redesign.md`). Migration aditiva só de leitura `20261022180000_teacher_review_insights.sql` aplicada localmente; asserts em `supabase/tests/practice_authoring.sql`. Inspeção visual no Chrome em 1440/834/390 sem overflow nem erros de console. Typecheck e lint PASS; unit review-queue corrigido após 1 falha do próprio teste. Disco C: chegou a 0 MB (ENOSPC) — `.next/dev` limpo com o servidor parado. verify:db, e2e e a11y pendentes; nada declarado verde.
+Gates (agente haiku): typecheck, lint, prettier --write, unit 9/9, verify:db PASS. SQL practice-authoring FAIL em `practice_authoring.sql:252` (assert preexistente "Admin aal2 reads assignments", depende de banco limpo; rodou contra o banco de dev com fixtures) — asserts novos não chegaram a executar. E2E/a11y inválidos: disco C: zerou (ENOSPC) durante a execução e o dev server passou a responder 500; `.next/dev` removido de novo com o servidor parado. Pendente: liberar disco, banco limpo para o SQL, rerun e2e/a11y.
+Rerun 2026-10-22 (agente haiku, disco 9 GB, sem ENOSPC): e2e 2 PASS / 7 FAIL; a11y Teacher 0/6. 12 das 13 falhas param no pré-requisito "Verified canonical Teacher/Admin MFA exists ... temporary test secret is absent": os segredos TOTP ficam em `%TEMP%/yas-canonical-*-totp.secret` (`tests/helpers/teacher-mfa.ts:20`, `admin-mfa.ts:14`) e sumiram na limpeza do Temp; `setup-canonical-e2e.mjs` não recria fatores MFA. Única falha fora disso: `teacher-pedagogy.spec.ts:123` (Aluno clica "Praticar →", URL fica em `/pratica?skill=SPEAKING`, sem `?bloqueada`/`?suspended`) — fluxo do Aluno fora do diff; provável compilação a frio, não confirmado. Nenhuma asserção de feature/axe chegou a rodar. Pendente: remover os fatores MFA verificados dos usuários canônicos no banco local (autorização) e rodar de novo.
+Rerun 2 (após remover os fatores MFA de canonical.admin/teacher no banco local, autorizado): a11y Teacher 6/6 PASS (desktop+mobile, sem violações axe). E2E 7 PASS / 2 FAIL. (1) `core-live.spec.ts:208` — Aluno home-now não vê "Entrar no encontro": a sessão de fixture `88400000-…-0002` ia de 15:13 a 16:13 UTC e o teste rodou depois; janela do `setup-canonical-e2e.mjs` expirou (ambiental). (2) `teacher-pedagogy.spec.ts:135` — envio do áudio do Aluno fica em "Enviando sua resposta…" e não chega a `?completed=1` em 5s; sem erro no log do servidor; fluxo do Aluno fora do diff; não confirmado se é ambiental. Pendente: rodar `setup-canonical-e2e.mjs` (grava no banco local) e repetir só esses dois specs.
+Rerun 3–5 (agente haiku): `setup-canonical-e2e.mjs` OK (autorizado) → `core-live` PASS. `teacher-pedagogy` falhou no dev em 123/135 por timeout de 5s: as ações (`startPracticeAction` 476ms, `submitPracticeAction` 224ms) terminam rápido, mas o render da página do Aluno após o redirect leva 3.7–13s em `next dev` (log do servidor). Contra build de produção (`npm run build` PASS; `PLAYWRIGHT_PORT=3200 YAS_E2E_PRODUCTION=1`, como no CI) `teacher-pedagogy` 1/1 PASS, incluindo a revisão do Professor (áudio, rubrica "Consistente", feedback). Status local: e2e 5 specs PASS (pedagogy só em prod), a11y Teacher 6/6 PASS. Ainda NOT RUN: SQL `practice_authoring` em banco limpo, `verify:ui`, `verify:full`.
+
+## 2026-10-22 — teacher-practices-redesign: entrega local em verificação
+
+Implementados: listagem por linhas/filtros/URL; editor em três etapas; sete formatos, enunciado estruturado, feedback e configurações; autosave serializado com revisão/conflito e chave de criação; preview e player com respostas provisórias, resultado ponderado e envio único; acesso herdado da aula; migration aditiva e fixtures atualizadas. Delegação interna por complexidade realizada com Luna low/medium e Sol high; integração e segurança pelo principal.
+
+Evidências aprovadas: 368 unitários (57 arquivos), 10 testes de integração da aplicação, SQL focado de acesso/envio único/pesos/privacidade e suítes adaptadas; verify:security final (475 arquivos) e verify:db final (66 migrations/51 testes). Build anterior aprovado; último build compilou e foi interrompido durante TypeScript por solicitação do usuário.
+
+Pendente: E2E completo e comparação visual final das seis composições, concorrência sob requisições simultâneas, gates oficiais agregados e UI. E2E encontrou remount após autosave; revalidatePath removido, mas rerun da correção não concluído. MotionProvider adicionado após captura invisível; capturas finais ainda não aprovadas. verify:agent falhou por lint na sincronização da busca; código corrigido, gate não reexecutado integralmente. verify:full e build interrompidos a pedido do usuário, que solicitou rapidez e nenhum gate gigante. Feature permanece in_progress / verified:false. Sem deploy ou alteração remota.
+
+## 2026-10-22 — teacher-practices-redesign: lapidação (Claude)
+
+Inspeção no Chrome (1440/834/390) contra `docs/reference-ui/teacher-practices/reference-six-compositions.webp` (referência agora salva no repositório). Corrigido: listagem (coluna de status, Continuar, menu ⋮, chips); cabeçalho (breadcrumb compartilhado em uma linha, "Salvo automaticamente há X min", ações alinhadas ao título); Informações (Dica compacta com ícone de alvo, confiança como switch, "Configurações adicionais" como link com grade 2 colunas, contadores, coluna Curso/Módulo/Aula); Questões (lista com ícone do tipo, ações no cabeçalho, exclusão com confirmação, "Nova questão" abre o seletor antes de criar o item, mídia em 4 tiles, feedback em abas, configurações com selects/switches, prévia limpa); Revisão (checklist com resumos, Publicar no rodapé); espaçamentos padronizados (tokens, ritmo de campos, padding de painéis, header em tablet/mobile).
+Bug do usuário corrigido: ao digitar nas respostas o foco pulava — a prévia remontava a cada tecla (key com JSON dos itens) e o player focava o título ao montar. Prévia agora usa snapshot com debounce de 500 ms e o foco inicial é pulado só em `mode="preview"` (aluno inalterado). Autosave: "Salvar e continuar" sem alterações não envia gravação (evitava conflito falso entre abas).
+Delegação: Sonnet (yas-frontend) para Questões, cabeçalho/Informações/Revisão/Listagem e espaçamentos; Haiku para gates e registros; principal revisou no Chrome.
+Gates: tsc PASS, eslint PASS, prettier PASS após --write, unit 367/368 (1 timeout ambiental em isolated-next-config; passou isolado 3/3), integração practice-application 10/10. E2E `teacher-practices.spec.ts` BLOQUEADO por ambiente: login canônico do Teacher rejeitado (`tests/helpers/teacher-mfa.ts:112`, `/login?error=credentials`); precisa rodar `setup-canonical-e2e.mjs` (grava no banco local; requer autorização). Disco C: ~1,3 GB livre. verify:ui/verify:full NÃO executados. Feature segue in_progress / verified:false.
+Gates desta rodada (Haiku): prettier --check PASS (sem necessidade de --write); tsc --noEmit PASS; eslint PASS.
+
+## teacher-practice-header — 2026-10-23
+
+Cabeçalho do editor recomposto em navegação, identidade/estado e ações. Status de salvamento em linha própria; prévia ghost, salvar outline e revisar/publicar violeta. Container queries recompõem tablet e empilham botões no celular sem ocultar ícones/rótulos. Revisão no Chrome autenticado: desktop, 834, 390 e 320 px; nenhuma largura de documento maior que a viewport; botões de 44 px em 390 px. Prévia abriu com aviso de não persistência. Capturas em `harness/evidence/teacher-practice-header/`.
+
+Verificação parcial: ESLint do builder, Prettier dos dois arquivos e git diff --check passaram. Primeira execução verify:agent falhou na formatação preexistente do estado harness; formatar os arquivos de estado autorizados preservando conteúdo e repetir. verify:ui bloqueado por ausência de CANONICAL_E2E=1; nenhuma fixture foi executada sobre o banco dev. Registry permanece in_progress/verified:false até gates obrigatórios verdes.
+
+Resultado da revisão: cabeçalho sem overflow também em 320 px (scrollWidth 320); prévia abriu e fechou normalmente. Typecheck bloqueado por sintaxe em `.next/dev/types/routes.d.ts` (arquivo gerado, fora do escopo). Evidência e pendências: `harness/evidence/teacher-practice-header/README.md` e `harness/failure-log/2026-10-23-teacher-practice-header.md`.
+
+Fechamento 2026-10-23: verify:agent repetido passou format:check (908 arquivos) e lint global (0 erros; 1 warning preexistente); parou no typecheck pelos mesmos erros em `.next/dev/types/routes.d.ts`. verify:ui continua bloqueado por configuração canônica ausente. Alteração visual aplicada e revisada; certificação completa pendente, sem done/verified:true.
+
+## teacher-entry-demo — 2026-10-23
+
+Seed focado `scripts/dev-seed-teacher-entry.mjs` adicionou Ana Martins, Bruno Oliveira, Carolina Santos e Diego Pereira (todos com sufixo Demo). Quatro casos REVIEW_PENDING e duas respostas por aluno, confirmados pela RPC da fila como Teacher+AAL2 e no Chrome autenticado. Assinaturas locais sintéticas e vínculos com professor dev; teste publicado existente reutilizado. Sem editar UI, schema, senhas existentes ou casos anteriores. Somente localhost; usuários identificados por metadata do seed e e-mail exclusivo. Checks e inspeção de detalhes em andamento.
+
+Fechamento: seed executado 3 vezes, mesmos IDs e 4 casos visíveis; detalhe de Ana validado com duas respostas e retorno à fila. Proteção de destino remoto passou. Syntax/ESLint do script, verify:db e diff --check passaram. verify:agent passou formato (908 arquivos) e lint (0 erros, 1 warning preexistente), mas falhou no typecheck por erros sintáticos preexistentes em `.next/dev/types/routes.d.ts:148–156`. Dados solicitados disponíveis; certificação de código completa pendente, registry in_progress/verified:false. Evidência em `harness/evidence/teacher-entry-demo/`.
+
+## teacher-entry-redesign — 2026-10-23
+
+Implementados fila/resumo de KPIs, filtros/paginação URL, detalhe por habilidades, resumo/histórico, rascunhos pessoais e notas com concorrência, finalização atômica canônica e IA desativada. Migration 20261023192114 aplicada somente ao localhost, sem reset. Smoke SQL rollback passou (rascunho, conflito, finalização, retry, imutabilidade, AAL1). Vitest focado 2/2 e TypeScript passaram. ESLint de domínio/UI/servidor passou; páginas ajustadas para usar relógio existente sessionWorkspaceNow e lint passou.
+Browser: fila/detalhe desktop e 390px, busca Carolina e rascunho persistido após reload. Feedback do usuário incorporado: confirmação compacta/centralizada no Dialog compartilhado e tracks iguais em todas as linhas da lista. Checagem geométrica confirmou alinhamento. Stories/teste de regressão do modal preparados, suíte não executada.
+Gates completos e certificação visual/security/db adiados expressamente pelo usuário; verified:false. Sem commit/push e sem chamadas pagas IA. Evidência: harness/evidence/teacher-entry-redesign/.
+
+## teacher-availability-redesign — 2026-10-23
+
+Implementação inicial entregue localmente: KPIs reais, calendário domingo–sábado, presets/formulário, recorrência finita com confirmação, pausa, edição/exclusão por ocorrência ou futuras, lista alinhada e mobile diário/sheet. Nova leitura por período e comandos atômicos/idempotentes. Registros legados ativos, cobertura de sessões e compatibilidade de RPCs preservadas; Sessões ignora pausados. Migration 20261023200125 e aditiva 20261023202030 aplicadas somente em localhost, sem reset.
+
+Checks focados: TypeScript sem emissão passou; lint dos arquivos da tarefa passou; Vitest availability-workspace 5/5 passou; smoke SQL real com rollback passou incluindo idempotência, overlap sem escrita parcial, pausa/reativação, edição futura, exclusão, dependências de sessões, cobertura ativa, autoria de workspace/pausados, DML direto e AAL1. Campo de horário temporariamente vazio protegido com teste vermelho→verde (failure-log desta tarefa).
+
+Browser: semana 25–31/10 carregou 6 intervalos e 15h livres, seleção por teclado preencheu 27/10 10–11, confirmação prévia mostrou 9 ocorrências sem gravar, pausa com sessão foi bloqueada com link. Desktop e mobile 390x844 inspecionados; mobile sem overflow (390/375). desktop.png salvo e inspecionado. A conexão de inspeção perdeu-se ao persistir a captura mobile; imagem mobile não salva; viewport restaurada. Evidência em harness/evidence/teacher-availability-redesign/.
+
+Certificação verify:agent/ui/security/db/full e build NÃO executados por instrução explícita do usuário; manter status in_progress/verified:false para certificação posterior. Sem commit, push ou produção. Nenhuma fixture permanente adicional criada.
+
+## 2026-10-23 — teacher-students-redesign
+
+Implementação local da listagem e perfil de Alunos, com projeções próprias completas/paginadas, regra de atenção aprovada, UI responsiva no padrão Revisões, notas/pedidos canônicos e URL preservada. Migration aplicada só em localhost. TypeScript/ESLint, 5 testes de domínio e smoke SQL transacional passaram; desktop/tablet/mobile conferidos e capturados. Fixture de 205 alunos, trilha CUSTOM, denominador completo, AAL1, vínculo expirado e notas de outro professor cobertos. Sem gates/build/commit/push. Certificação ampla pendente e verified:false. Evidências: harness/evidence/teacher-students-redesign/README.md.
+
+## Teacher screens polish — 2026-10-24 (in progress)
+
+- Done (code): Stage 0 cleanup; Stage 1 shell (sidebar fit, account menu, global Ctrl K lazy-loaded); Stage 2 entry reviews (migration 20261023213000, next-review fix, modals, kebab, keepMounted Tabs); Stage 3 availability (migration 20261024120000, lanes/overlay calendar, rules card, KPIs); Stage 4 students (migration 20261024130000, sortable headers, kebab, split profile pagers).
+- Checked in browser at 1440x900: shell, entry list/detail, availability, students.
+- Tests: tsc PASS; unit tests for touched domains PASS; new SQL suites teacher-entry-workspace / teacher-availability-workspace / teacher-students-workspace PASS; a11y placement PASS.
+- Open: core-live (Participantes tab exact name — fixed via aria-describedby, rerun pending); teacher-surfaces (fixture lacks teacher_student_assignments row for cohort student); placement-enrollment (stateful fixture, rerun after reseed); full integration/rls suites fail at vertical_slice_persistence.sql:47 and rls_permissions.sql:727 (baseline not checked); Stage 5b new e2e/component tests; Stage 6 gates.
+- Blocker: C: drive ~20 MB free (ENOSPC during Playwright).
+
+## Teacher screens polish — 2026-10-24 (final state of this session, verified=false)
+
+- E2E PASS: teacher-surfaces, placement-enrollment (2/2), teacher-sessions-redesign (4/4), new teacher-entry-workspace / teacher-availability-workspace / teacher-students-workspace (3/3). core-live: teacher part PASS; fails later on Student `/agenda` render (~7 s) vs 5 s expect.
+- Gates: verify:db PASS; verify:security PASS; verify:agent FAIL at test:unit (`isolated-next-config.test.ts` 20 s timeout in full suite; passes alone in 10 s); verify:harness FAIL on committed `harness/failure-log/2026-10-21-admin-overview-invalid-uuid.md`; eval:agent FAIL on committed branch diff (`origin/main...HEAD`) scope vs active goal; verify:ui FAIL 38/45 — remaining failures are practices/student work (canonical-slice, practice-access, teacher-pedagogy, teacher-practices), recorded-video upload env, cohorts-booking:78 (Admin cohorts page renders 10–15 s), none in files of this task. verify:full NOT RUN (runs `supabase db reset`).
+- Fixed this session: tab accessible names (aria-describedby count), topbar search name collision, lazy search index, seed draft cleanup, format checker on deleted files, server type import in entry-detail, fixture teacher_student_assignments for cohort students.
+- Evidence: harness/evidence/teacher-screens-polish/*.jpg; failure record harness/failure-log/2026-10-24-teacher-screens-polish.md.
+
+## teacher-cohorts-redesign — 2026-10-24
+
+Tela /teacher/turmas implementada com contexto autorizado existente, cartões conforme HTML, KPIs honestos, busca/ordenação, Drawer, perfis/agenda filtrada e estados loading/erro/vazio. Preservados shell, RLS e trabalhos anteriores; comandos administrativos da demo não foram simulados. TypeScript e lint focados passaram; 4 testes focados passaram. Gate agent passou format/lint/types e 403 unitários, parou em ENOENT temporário do Vitest; retry serial de integração passou 358 testes (1 opcional ignorado). verify:ui exige fixture canônica ausente. Browser validou desktop, busca, recuperação do vazio, ordenação, Drawer/Escape/foco e agenda com filtro real. Capturas em harness/evidence/teacher-cohorts-redesign/. Viewport falhou no conector; tablet/mobile/axe e gate completo pendentes. Registry in_progress/verified:false. Sem commit/push/deploy/reset.
+
+Turmas: verificador de segurança passou. verify-harness encontrou formato inválido no failure-log preexistente de admin-overview (21/10); eval-agent acusa escopo global com trabalho anterior do checkout. Logs anexados; sem alteração de arquivos alheios para obter verde.
+
+## teacher-release-gates — 2026-10-25, handoff ao GitHub
+
+Branch codex/teacher-sessions-redesign preservada. Capturas exclusivas, grade ampliada com prova antes/depois, guard canônico fail-closed e cenários Sessions separados preservam as asserções. PASS: 6 testes unitários iniciais; práticas 1/1 e Sessões 5/5 com JSON válido e zero pulados; security/db estruturais/harness. Eval segue FAIL na regra dos seis primitivos novos, apesar da revisão semântica registrada. A primeira rodada combinada emitiu duas falhas e perdeu o JSON no cleanup; essa limitação está registrada. Portas 3000/3001 livres.
+
+Usuário pediu push/PR e transferiu os gates completos restantes ao GitHub. Checks independentes continuam após falhas; SQL acumula resultados; evidências são sanitizadas; agregação final continua vermelha diante de falhas. Validação CI: 32/32 testes e política repo/lockfile/Actions PASS; os dois YAMLs foram parseados, com cinco suítes Preview. Os gates grandes locais ficam NOT RUN por instrução atual. Registry in_progress, verified:false; sem auto-merge. Evidência: harness/evidence/teacher-release-gates/README.md.
+
 ## 2026-10-21 — level-based-cohorts
 
 Implementation in isolated branch from main 5dde6a5. Targeted cohort-path, practice authoring, placement SQL and two-connection concurrency passed. Core formatting/lint/types/unit/integration/build passed; verify:agent requires correcting failure-log metadata before rerun. Security and DB structural gates passed. Full SQL suites exposed stateful fixture failures after repeated execution; clean full gate remains required. Feature remains in_progress and unverified.
+
+- 2026-10-25 CI recovery: 12 falhas + assert canônico mapeados com causa raiz; correções e goldens promovidos; validação delegada ao CI oficial (sem execução local, por instrução do usuário).

@@ -1,0 +1,49 @@
+Canonical E2E fixture ready.
+Placement fixtures ready: initial, resume, review pending and placement ready.
+
+Running 1 test using 1 worker
+
+(node:16372) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\teacher-practices.spec.ts:76:7 › Teacher practices › Teacher previews without persistence, publishes to a lesson, and students get one final attempt (32.9s)
+
+
+  1) [chromium] › tests\e2e\teacher-practices.spec.ts:76:7 › Teacher practices › Teacher previews without persistence, publishes to a lesson, and students get one final attempt 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Questões', exact: true })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('heading', { name: 'Questões', exact: true }) with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Questões', exact: true })
+
+
+       99 |     await page.getByRole("button", { name: "Salvar e continuar", exact: true }).click();
+      100 |
+    > 101 |     await expect(page.getByRole("heading", { name: "Questões", exact: true })).toBeVisible();
+          |                                                                                ^
+      102 |     await page
+      103 |       .getByRole("textbox", { name: "Enunciado", exact: true })
+      104 |       .fill("Choose the greeting.");
+        at C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\tests\e2e\teacher-practices.spec.ts:101:80
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\teacher-practices-Teacher--bb4d8-dents-get-one-final-attempt-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\teacher-practices-Teacher--bb4d8-dents-get-one-final-attempt-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\teacher-practices-Teacher--bb4d8-dents-get-one-final-attempt-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\teacher-practices-Teacher--bb4d8-dents-get-one-final-attempt-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\teacher-practices.spec.ts:76:7 › Teacher practices › Teacher previews without persistence, publishes to a lesson, and students get one final attempt 

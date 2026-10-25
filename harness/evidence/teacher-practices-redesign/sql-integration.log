@@ -1,0 +1,149 @@
+
+▶ psql supabase/tests/notification_delivery.sql
+BEGIN
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 3
+INSERT 0 3
+DO
+DO
+INSERT 0 1
+UPDATE 3
+SELECT 3
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+DO
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+SET
+              set_config              
+--------------------------------------
+ ae000000-0000-4000-8000-000000000001
+(1 row)
+
+              set_config               
+---------------------------------------
+ {"role":"authenticated","aal":"aal1"}
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+DO
+RESET
+SET
+DO
+RESET
+ set_config 
+------------
+ 
+(1 row)
+
+ set_config 
+------------
+ {}
+(1 row)
+
+UPDATE 1
+SET
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+DO
+DO
+RESET
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ assert_notification 
+---------------------
+ 
+(1 row)
+
+ROLLBACK
+
+▶ psql supabase/tests/billing_checkout.sql
+BEGIN
+INSERT 0 1
+INSERT 0 1
+DO
+INSERT 0 3
+INSERT 0 3
+DO
+DO
+DO
+SET
+DO
+RESET
+SET
+                                                                                               reserve_billing_checkout                                                                                               
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"name": "Start", "claimed": false, "currency": "BRL", "sessionId": "bd089597-4a1a-4d96-93a5-0339a275f2af", "checkoutId": "fb000000-0000-4000-8000-000000000002", "amountCents": 19990, "nextDueDate": "2026-10-22"}
+(1 row)
+
+RESET
+ROLLBACK
+
+▶ psql supabase/tests/domain_invariants.sql
+BEGIN
+INSERT 0 3
+INSERT 0 0
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+DO
+INSERT 0 1
+DO
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+UPDATE 1
+DO
+ROLLBACK
+
+▶ psql supabase/tests/vertical_slice_persistence.sql
+INSERT 0 0
+INSERT 0 0
+INSERT 0 0
+INSERT 0 0
+INSERT 0 1
+psql:supabase/tests/vertical_slice_persistence.sql:47: ERROR:  active compatible enrollment and STUDENT role required
+CONTEXT:  PL/pgSQL function private.validate_cohort_relation() line 18 at RAISE

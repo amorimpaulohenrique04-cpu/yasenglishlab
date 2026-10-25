@@ -23,16 +23,22 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
   }
 
   async loadPractice(userId: string): Promise<HomePracticeInputs> {
-    const [activities, history, recentLessonId, reachedIds, fullHistory] = await Promise.all([
-      this.practice.listRecommendationActivities(),
-      this.practice.listRecommendationHistory(userId),
-      this.practice.getRecentLessonId(userId),
-      this.practice.listReachedActivityIds(),
-      this.practice.listHistory(userId),
-    ]);
-    // Same gate as /pratica: never recommend a practice of a lesson the Student has not reached.
+    const [activities, history, recentLessonId, reachedIds, fullHistory, submittedIds] =
+      await Promise.all([
+        this.practice.listRecommendationActivities(),
+        this.practice.listRecommendationHistory(userId),
+        this.practice.getRecentLessonId(userId),
+        this.practice.listReachedActivityIds(),
+        this.practice.listHistory(userId),
+        this.practice.listSubmittedActivityIdsSince(userId, new Date(0)),
+      ]);
+    // Same gates as /pratica: never recommend a practice of a lesson the Student has not reached,
+    // nor one already submitted (ADR 0025: a lesson-bound practice has one final attempt).
     const reached = new Set(reachedIds);
-    const recommendable = activities.filter((activity) => reached.has(activity.id));
+    const completed = new Set(submittedIds);
+    const recommendable = activities.filter(
+      (activity) => reached.has(activity.id) && !completed.has(activity.id),
+    );
     // Complete attempted set: `history` is capped, so it cannot prove an activity was never tried.
     const attempted = await this.practice
       .listAttemptedActivityIds(

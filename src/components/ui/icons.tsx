@@ -27,6 +27,7 @@ export type IconName =
   | "grad"
   | "grid"
   | "headphones"
+  | "info"
   | "history"
   | "home"
   | "inbox"
@@ -36,6 +37,8 @@ export type IconName =
   | "logout"
   | "mail"
   | "menu"
+  | "sun"
+  | "moon"
   | "mic"
   | "more"
   | "pen"
@@ -56,9 +59,27 @@ export type IconName =
   | "user"
   | "users"
   | "video"
+  | "bolt"
+  | "bulb"
+  | "download"
+  | "external"
+  | "link"
+  | "monitor"
+  | "trash"
+  | "trend-down"
+  | "trend-up"
+  | "upload"
+  | "x-c"
   | "x";
 
 const paths: Record<IconName, ReactNode> = {
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5" />
+    </>
+  ),
+  moon: <path d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   logout: (
     <>
@@ -375,6 +396,58 @@ const paths: Record<IconName, ReactNode> = {
     <>
       <rect x="3" y="6" width="13" height="12" rx="2.5" />
       <path d="m16 10 5-3v10l-5-3" />
+    </>
+  ),
+  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 7.5v.5" />
+    </>
+  ),
+  bulb: (
+    <>
+      <path d="M9 18h6M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z" />
+    </>
+  ),
+  download: <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />,
+  external: (
+    <>
+      <path d="M14 4h6v6M20 4l-9 9" />
+      <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+    </>
+  ),
+  link: (
+    <>
+      <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+    </>
+  ),
+  monitor: (
+    <>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M8 20h8M12 16v4" />
+    </>
+  ),
+  trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />,
+  "trend-down": (
+    <>
+      <path d="M3 7l6 6 4-4 8 8" />
+      <path d="M15 17h6v-6" />
+    </>
+  ),
+  "trend-up": (
+    <>
+      <path d="M3 17l6-6 4 4 8-8" />
+      <path d="M15 7h6v6" />
+    </>
+  ),
+  upload: <path d="M12 16V5M7 10l5-5 5 5M5 20h14" />,
+  "x-c": (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m9 9 6 6M15 9l-6 6" />
     </>
   ),
   x: (

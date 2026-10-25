@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -115,23 +116,27 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
     await page.goto("/teacher/disponibilidade");
     const localStart = localDateTime(availabilityStart);
     const localEnd = localDateTime(availabilityEnd);
-    await page.getByLabel("Data").first().fill(localStart.date);
-    await page.getByLabel("Início").first().fill(localStart.time);
-    await page.getByLabel("Término").first().fill(localEnd.time);
-    await page.getByRole("button", { name: "Adicionar horário" }).click();
-    await expect(page).toHaveURL(/\/teacher\/disponibilidade\?save=success$/);
+    await page.getByLabel("Data do horário").first().fill(localStart.date);
+    await page.getByLabel("Horário de início").first().fill(localStart.time);
+    await page.getByLabel("Horário de término").first().fill(localEnd.time);
+    await page.getByRole("button", { name: "Adicionar horário", exact: true }).first().click();
+    await page.getByRole("button", { name: /^Confirmar 1 horário$/ }).click();
+    await expect(page.getByText("Disponibilidade salva", { exact: true }).first()).toBeVisible();
 
     await page.goto("/teacher/sessoes/nova");
     await page.getByLabel("Título").fill(title);
-    await page.getByLabel("Tipo").selectOption("CORE_CLASS");
-    await page.getByLabel("Início (data e hora com fuso)").fill(sessionStart.toISOString());
-    await page.getByLabel("Término (data e hora com fuso)").fill(sessionEnd.toISOString());
+    await page.getByRole("radio", { name: /^Core Class/ }).check();
+    await page.getByLabel(/^Data(?: \*)?$/).fill(localDateTime(sessionStart).date);
+    await page.getByLabel(/^Horário de início(?: \*)?$/).fill(localDateTime(sessionStart).time);
+    await page.getByRole("radio", { name: "1h", exact: true }).check();
+    await page.getByRole("button", { name: "Continuar" }).click();
     await page.getByLabel("Capacidade").fill("6");
-    await page.getByLabel("Turma (encontros em grupo)").selectOption({ label: "Cohort Basic" });
+    await page.getByLabel(/^Turma(?: \*)?$/).selectOption({ label: "Cohort Basic" });
     await page.getByLabel("Link do Google Meet").fill("https://meet.google.com/p21-core-live");
-    await page.getByRole("button", { name: "Salvar encontro" }).click();
+    await page.getByRole("button", { name: "Continuar" }).click();
+    await page.getByRole("button", { name: "Criar sessão", exact: true }).click();
 
-    await expect(page).toHaveURL(/\/teacher\/sessoes\/[0-9a-f-]+\?save=success$/i);
+    await expect(page).toHaveURL(/\/teacher\/sessoes\/[0-9a-f-]+\?save=success/i);
     const match = page.url().match(/\/teacher\/sessoes\/([0-9a-f-]+)/i);
     if (!match?.[1]) throw new Error("Created Teacher session id was not returned.");
     const sessionId = match[1];
@@ -166,8 +171,11 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
       await expect(card.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
 
       expect(
-        (await new AxeBuilder({ page: student }).withTags(["wcag2a", "wcag2aa"]).analyze())
-          .violations,
+        (
+          await new AxeBuilder({ page: await settledPage(student) })
+            .withTags(["wcag2a", "wcag2aa"])
+            .analyze()
+        ).violations,
       ).toEqual([]);
 
       const outsider = await outsiderContext.newPage();
@@ -177,11 +185,14 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
 
       await page.goto(`/teacher/sessoes/${sessionId}`);
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
+      await page.getByRole("tab", { name: "Participantes", exact: true }).click();
       await expect(page.getByRole("heading", { name: "Cohort Student A" })).toBeVisible();
       // Stage 06b: attendance is refused before the session starts (this session is 40 days ahead).
-      await page.getByRole("button", { name: "Marcar Cohort Student A como Presente" }).click();
       await expect(
-        page.getByText("A presença só pode ser marcada a partir do início da sessão."),
+        page.getByRole("button", { name: "Marcar Cohort Student A como Presente" }),
+      ).toBeDisabled();
+      await expect(
+        page.getByText("A presença será liberada a partir do início da sessão."),
       ).toBeVisible();
     } finally {
       await studentContext.close();

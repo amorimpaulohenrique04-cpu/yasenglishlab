@@ -1,0 +1,40 @@
+
+> yasenglishlab@0.1.0 verify:agent
+> npm run verify:core && npm run verify:harness && npm run verify:security && npm run eval:agent
+
+
+> yasenglishlab@0.1.0 verify:core
+> node scripts/verify-core.mjs
+
+
+▶ npm run format:check
+
+> yasenglishlab@0.1.0 format:check
+> node scripts/check-format.mjs
+
+Formatting passed: 908 tracked source files.
+
+▶ npm run lint
+
+> yasenglishlab@0.1.0 lint
+> eslint .
+
+
+C:\Users\PAULO HENRIQUE\Documents\Projetos\yasenglishlab\.stage12-df.config.ts
+  1:41  warning  Assign object to a variable before exporting as module default  import/no-anonymous-default-export
+
+✖ 1 problem (0 errors, 1 warning)
+
+
+▶ npm run typecheck
+
+> yasenglishlab@0.1.0 typecheck
+> tsc --noEmit --project tsconfig.verify.json
+
+.next/dev/types/routes.d.ts(148,2): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(148,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(149,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(150,4): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(156,1): error TS1160: Unterminated template literal.
+
+Verification failed at: typecheck

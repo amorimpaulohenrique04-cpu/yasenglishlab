@@ -44,3 +44,32 @@ pnpm-debug.log*
 
 # Isolated PR verification runtime (generated credentials and copied database)
 /artifacts/pr74-local/
+
+# Local agent/tooling state (project agents, skills and launch.json stay versioned)
+/.claude/worktrees/
+/.claude/settings.local.json
+/.level-based-cohorts/
+/tmp/
+debug.log
+/.stage12-df.config.ts
+
+# Generated test/build outputs and local-only design scratch
+/artifacts/e2e/
+/artifacts/a11y/
+/artifacts/golden/
+/artifacts/storybook/
+/artifacts/design-baseline/
+/artifacts/landing-references/
+/artifacts/teacher-practices-staging/
+/artifacts/teacher-sessions-staging/
+/artifacts/*.zip
+
+# Local proposals and reference downloads; approved tracked HTML stays versioned
+/artifacts/redesign-shots/
+/artifacts/design-references/
+/artifacts/public-site-proposal/
+/artifacts/design-proposal/*
+!/artifacts/design-proposal/APPROVED.md
+!/artifacts/design-proposal/admin.html
+!/artifacts/design-proposal/aluno.html
+!/artifacts/design-proposal/professor.html

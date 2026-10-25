@@ -25,7 +25,7 @@ runs:
         if [ ! -f supabase/config.toml ]; then
           supabase init
         fi
-        supabase start
+        supabase start 2>&1 | node scripts/ci/redact-ci-evidence.mjs --stdin
         supabase db reset
         supabase status -o env > /tmp/yas-supabase.env
         set -a
@@ -40,6 +40,7 @@ runs:
         E2E_PASSWORD="$(openssl rand -base64 36 | tr -d '\n')"
         echo "::add-mask::$E2E_PASSWORD"
         echo "::add-mask::$SERVER_KEY"
+        echo "::add-mask::$PUBLIC_KEY"
         {
           echo "APP_URL=http://127.0.0.1:3000"
           echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"

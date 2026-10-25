@@ -711,7 +711,7 @@ update public.practice_activities set publication_status = 'DRAFT', published_at
 update public.practice_activities set slug = slug || '-retired', active = false
  where id = '82600000-0000-0000-0000-000000000001';
 insert into public.practice_activities (
-  id, slug, title, skill, estimated_minutes, content, active, publication_status, published_at
+  id, slug, title, skill, estimated_minutes, related_module_id, related_lesson_id, course_id, content, active, publication_status, published_at
 )
 values (
   '82600000-0000-4000-8000-000000000001',
@@ -719,6 +719,9 @@ values (
   'P21 RLS speaking',
   'SPEAKING',
   5,
+  '41000000-0000-4000-8000-000000000001',
+  '42000000-0000-4000-8000-000000000001',
+  '40000000-0000-4000-8000-000000000001',
   '{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Speak for the RLS test","instructions":"Record a short answer"}',
   true,
   'PUBLISHED',

@@ -1,83 +1,51 @@
-# Practice v3 — multi-question practices, per-item feedback and spaced review
+# Practice v3 — current contract
 
-Contract for `practice-10` phases 1–4 (plan: `C:\Users\PAULO HENRIQUE\.claude\plans\crie-um-plano-para-serialized-umbrella.md`). The database and the app are built in parallel against this file; change it first if the contract must change.
+This document describes the current v3 contract for teacher-authored practices attached to a lesson. The approved lesson-bound flow in [ADR 0025](./adr/0025-lesson-bound-practice-final-submission.md) supersedes the earlier independent cohort assignment, lesson-gate bypass, immediate correction, reinforcement rounds, spaced review, and six-step authoring decisions. Historical attempts, responses, results, and schedule rows remain stored and readable under their existing authorization; they do not drive new lesson-bound attempts or reviews.
 
-Decisions: A (assignment bypasses lesson gating), B (round 1 shows verdict + explanation, never the answer key; the key is shown after round 2 or a skip), C (resume within 24h), D (WRITTEN/SPOKEN items are not scheduled). See `harness/agent-state/decisions.md`.
+## 1. Authoring and access
 
-## 1. Content v3 (`practice_activities.content`)
+Teacher + AAL2 and teacher course scope remain required. A new draft requires a title, course, module, and lesson; question completeness is required at publication. The three authoring stages are information, questions, and review/publication. `teacher_practice_autosave(p_id, p_payload, p_item_keys, p_creation_key, p_expected)` persists drafts with an idempotent creation key and expected revision. A stale revision returns a conflict instead of overwriting newer work. `teacher_practice_save_v3` remains the authorized content/key persistence command used by the autosave contract.
 
-```
-{
-  version: 3,
-  objective: string (1..200),            // "Ao final você consegue…"
-  askConfidence: boolean,                // ask LOW/HIGH confidence per objective item
-  instructions?: string (..600),
-  evaluationMode: "DETERMINISTIC" | "MANUAL_PENDING",  // derived: MANUAL_PENDING if any item is WRITTEN/SPOKEN
-  items: [ (1..20, unique ids)
-    {
-      id: /^[a-z0-9-]{1,40}$/,
-      prompt: string (1..600),
-      stimulus: v2 stimulus (NONE | TEXT | IMAGE | AUDIO | VIDEO),
-      response: v2 response (CHOICE_SINGLE | CHOICE_MULTI | TRUE_FALSE | CLOZE | ORDERING | WRITTEN | SPOKEN),
-      planningSeconds?: 0 | 30 | 60       // only WRITTEN/SPOKEN; client-side countdown, skippable
-    }
-  ]
-}
-```
+Every published teacher practice has a valid lesson link. Students who are authorized to access that lesson can see its published practices under the same lesson, enrollment, path, and paid-access rules. Cohort assignments do not grant access or bypass lesson availability. Unpublished practices and answer keys remain private.
 
-- Item ids are immutable once an attempt exists (existing "duplicate to edit" rule applies to v3).
-- Student read model adds `kind: "V3"` (read-side only). No answer key in `content`.
-- `PRONUNCIATION` skill: every item must be `stimulus.type = "AUDIO"` (model) + `response.type = "SPOKEN"`.
-- v2 is read as one item with `id = "main"` (`prompt`, `stimulus`, `response` from the v2 root). v1 legacy keeps its own path.
+## 2. Content v3 (`practice_activities.content`)
 
-## 2. Keys and feedback (private)
+The domain schema is `practiceContentV3Schema` in `src/modules/practice/domain/content-v3.ts`; the SQL validator is `private.validate_practice_v3`. The payload has `version: 3`, `objective` (1–200 characters), `askConfidence` (boolean), optional `instructions` (up to 600 characters), `evaluationMode` (derived as `MANUAL_PENDING` when any item is WRITTEN/SPOKEN, otherwise `DETERMINISTIC`), and 1–20 unique items.
 
-`private.practice_item_keys(practice_activity_id uuid, item_id text, answer_key jsonb null, feedback jsonb, primary key (practice_activity_id, item_id))`
+Each item has an id matching `^[a-z0-9-]{1,40}$`, a plain-text `prompt` (1–600 characters), `stimulus` (`NONE`, `TEXT`, `IMAGE`, `AUDIO`, or `VIDEO`), and `response` (`CHOICE_SINGLE`, `CHOICE_MULTI`, `TRUE_FALSE`, `CLOZE`, `ORDERING`, `WRITTEN`, or `SPOKEN`). Optional fields are top-level item fields:
 
-- `answer_key`: the v2 shapes (`{optionId}`, `{optionIds}`, `{value}`, `{blanks:[…]}`, `{order}`); null for WRITTEN/SPOKEN.
-- `feedback`: `{ correct?: string(..600), incorrect?: string(..600), options?: { [optionId]: string(..600) } }` — `options` only for CHOICE_SINGLE/CHOICE_MULTI.
-- Never readable by `authenticated`/`anon`. Same attempts guard as `private.practice_answer_keys`.
+| Field | Contract |
+| --- | --- |
+| `weight` | Integer 1–100 for objective items only; omitted means 1. Manual items cannot have a weight. |
+| `difficulty` | String up to 40 characters. |
+| `estimatedSeconds` | Integer 1–14,400. |
+| `shuffleOptions` | Boolean; omitted means false. |
+| `showExplanation` | Boolean; omitted means true. |
+| `promptDocument` | Optional bounded structured text, described below. |
+| `planningSeconds` | `0`, `30`, or `60`; applies only to WRITTEN/SPOKEN and can be skipped. |
 
-## 3. Responses per item
+`promptDocument` is an array of 1–50 strict blocks. Each block is `paragraph`, `bullet`, or `numbered`, with 1–100 children. Each child has `text` (up to 600 characters) and optional boolean `bold`, `italic`, and `underline` marks. Unknown fields and raw HTML are rejected. `prompt` remains the accessible plain-text fallback. The renderer creates React text and mark nodes; it never interprets content as HTML.
 
-`public.practice_item_responses(id uuid pk, practice_attempt_id uuid fk, item_id text, round smallint check (1,2), response jsonb, confidence text null check (LOW,HIGH), evaluation_status text check (CORRECT, INCORRECT, PENDING_MANUAL, SKIPPED), feedback text null, option_feedback text null, correct_answer jsonb null, created_at timestamptz, unique (practice_attempt_id, item_id, round))`
+`PRONUNCIATION` items require an AUDIO stimulus and SPOKEN response. Existing v1/v2 content remains readable; a v2 practice is projected as one item with id `main`. Student read models may add `kind: "V3"`; this is not stored in the database. Answer keys and feedback stay in `private.practice_item_keys` and never appear in the practice content payload.
 
-RLS: select only, through the same visibility as the attempt (owner Student, staff that can view the student). Writes only through RPCs.
+## 3. Draft answers and final submission
 
-## 4. RPCs (security definer, `search_path=''`, `auth.uid()`-derived, granted to `authenticated` only)
+The learner's editable provisional responses and option order are stored in private `practice_answer_drafts`. The authenticated Student RPCs are:
 
-| Function | Returns | Rules |
-|---|---|---|
-| `submit_practice_item(p_attempt uuid, p_item_id text, p_round smallint, p_response jsonb, p_confidence text default null)` | jsonb `{itemId, round, evaluationStatus, feedback, optionFeedback, correctAnswer, canRetry}` | Own IN_PROGRESS attempt; item belongs to the attempt (all items, or `item_ids` for REVIEW). Same (attempt, item, round) again returns the stored row (idempotent). Round 2 only after round-1 INCORRECT on an objective item. `p_response = {"skip": true}` in round 2 stores SKIPPED. `correctAnswer` is null in round 1; set in round 2 / skip (decision B). Objective items graded with the v2 rules; WRITTEN `{text}` and SPOKEN `{mediaId}` → PENDING_MANUAL. Touches `practice_attempts.last_activity_at`. Subscription gate error unchanged (42501 'active subscription required'). |
-| `finalize_practice_attempt(p_attempt uuid)` | jsonb `{score, maxScore, evaluationStatus, metrics}` | Every item of the attempt has a round-1 response. Sets attempt SUBMITTED, writes `practice_results` (`score` = objective items correct in round 1, `max_score` = objective items, `evaluation_status` = PENDING_MANUAL if any manual item else CORRECT when score = max_score else INCORRECT, new column `metrics jsonb` = `{itemCount, firstTryCorrect, recovered, missed, skipped, highConfidenceErrors, pendingManual}`). Updates schedules (§5). Idempotent for an already SUBMITTED attempt (returns the stored result). Never writes `lesson_progress`, `assessment_attempts`, `skill_scores`. |
-| `start_practice_review(p_practice_activity_id uuid, p_idempotency_key uuid)` | `practice_attempts` row | Same access/gating/subscription checks as `start_practice_attempt`; `attempt_kind = 'REVIEW'`, `item_ids` = the caller's due items for that activity (§5), ordered high-confidence errors first then oldest due. Resume rule C per kind. Raises SQLSTATE `YP002`, hint `PRACTICE_NOTHING_DUE` when nothing is due. |
-| `student_due_reviews()` | table `(practice_activity_id uuid, due_count int, high_confidence_errors int, oldest_due_at timestamptz)` | Only reachable, visible activities with `due_count > 0`. |
-| `reserve_practice_audio(p_attempt uuid, p_mime text, p_item_id text)` | as existing | Overload; media row gets `item_id`. |
-| `teacher_practice_save_v3(p_id uuid, p_payload jsonb, p_item_keys jsonb)` | as `teacher_practice_save` | Same authorization/scope/AAL2 as the existing save; `p_payload.content` is v3 and passes `private.validate_practice_v3`; `p_item_keys = { [itemId]: { answerKey, feedback } }` must cover every objective item. |
-| `finalize_practice_review(…, p_item_id text)` | as existing | Overload; review row gets `item_id` (one review per manual item). |
+| RPC | Contract |
+| --- | --- |
+| `practice_answers_get(p_attempt)` | Read the learner's own provisional answers. Returns no grading data. |
+| `practice_answers_save(p_attempt, p_answers)` | Save or replace the learner's own editable answers. Does not grade. |
+| `practice_submit_final(p_attempt)` | Validate that every item has an answer, grade and finalize the attempt transactionally, then return the stored result. Repeated submission returns the same result. |
 
-`start_practice_attempt` keeps its signature; for v3 it is the FULL start. `submit_practice_attempt` keeps v1/v2.
+`start_practice_attempt(p_practice_activity_id, p_idempotency_key)` remains the start command. A learner has one final submitted attempt per activity. An unfinished attempt can be resumed; leaving it unfinished does not consume the final submission. Lesson practices do not use `submit_practice_item`, `finalize_practice_attempt`, or `start_practice_review` for their current flow. Those compatibility RPCs reject the old round/review behavior, and `student_due_reviews()` reports no new v3 due reviews.
 
-## 5. Spaced review schedule
+The database derives the learner from `auth.uid()`. Provisional endpoints return no verdict, feedback, correct answer, or score. The final command grades all responses in one transaction; keys and configured explanations are available only after final submission. Teacher preview runs the same response semantics in memory and creates no attempt or result.
 
-`public.practice_item_schedules(user_id uuid, practice_activity_id uuid, item_id text, box smallint check (1..5), due_at timestamptz null, last_result text, high_confidence_error boolean, last_attempt_id uuid, updated_at timestamptz, primary key (user_id, practice_activity_id, item_id))` — select own rows only; written only by `finalize_practice_attempt`.
+## 4. Results and boundaries
 
-Per objective item, at finalize (FULL or REVIEW attempt):
-- round-1 CORRECT: `box = existing ? box + 1 : 2`; if `existing.box = 5` → graduated (`due_at = null`, box stays 5); else `due_at = day_start + interval[box]`.
-- round-1 INCORRECT (even if recovered in round 2): `box = 1`, `due_at = day_start + 1 day`, `high_confidence_error = (confidence = 'HIGH')`.
-- `interval = {1: 1d, 2: 3d, 3: 7d, 4: 14d, 5: 30d}`; `day_start = date_trunc('day', now() at time zone 'America/Recife') at time zone 'America/Recife'`.
-- Due = `due_at is not null and due_at <= now()`. WRITTEN/SPOKEN items are never scheduled (decision D).
+`score` and `maxScore` are weighted objective points, using each item's `weight` or 1. Manual WRITTEN/SPOKEN items remain `PENDING_MANUAL` and contribute no automatic points. `metrics.firstTryCorrect` is an item count, not a weighted score. Practice results do not write `lesson_progress`, `assessment_attempts`, or `skill_scores`; they do not establish or change CEFR proficiency.
 
-The app mirrors this in `src/modules/practice/domain/spaced-review.ts` (pure, unit-tested with the same table of cases).
+## Historical decisions
 
-## 6. App surfaces
-
-- Player: one item at a time, optional confidence toggle (when `askConfidence`), feedback in an `aria-live` region with focus moved to it, "Tentar de novo" for a missed objective item in a reinforcement round after the last item (not immediately), summary at the end ("6 de 8 na 1ª tentativa · 2 recuperadas"). Pre-task screen: objective, rubric criteria for WRITTEN/SPOKEN items (`rubric.ts`), optional planning countdown. Resume from stored item responses.
-- Result: per-item breakdown; no immediate "Praticar de novo" for v3 (reinforcement round + spaced review replace it).
-- Recommendation order: resume open attempt → due assignment → due review (high-confidence errors first, then oldest) → existing ranks; reachable only; each with a readable reason.
-- /pratica: hero "Revisão de hoje: N perguntas" when reviews are due; history with real states (Em andamento → Continuar, Abandonada, Aguardando revisão, Revisada, "X/Y na 1ª tentativa"); summary splits effort (≈ min estimados, práticas enviadas) from performance (acertos na 1ª tentativa nos últimos 7 dias, perguntas para revisar).
-- Teacher builder: item list (add, remove, reorder, type per item, max 20), objective field, per-item feedback and per-option explanations, pronunciation template (AUDIO model + SPOKEN), planning seconds for WRITTEN/SPOKEN; preview runs the same player; per-item manual review.
-
-## 7. Seed
-
-`supabase/seed.sql` gains two v3 examples linked to lesson 1 (reachable for a new Student): a grammar/vocabulary practice with 6–8 mixed objective items with per-option explanations, and a pronunciation practice with an AUDIO model asset (placeholder asset row if no file) + SPOKEN response.
+The earlier v3 phases specified round-one immediate verdicts, a second reinforcement round, per-item spaced-review schedules, 24-hour resume/abandonment, and a bypass for activities assigned to a student's cohort. Those decisions are superseded for lesson-bound practices by ADR 0025. Existing response/result history and schedule rows are retained; current lesson-bound creation and submission use the contracts above.

@@ -1,9 +1,20 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
-import { Button, Card, Checkbox, PageHeader, Select, Textarea, Input } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Input,
+  PageHeader,
+  Select,
+  Textarea,
+} from "@/components/ui";
 import {
   ADMIN_CONTENT_KINDS,
   adminContentLabel,
+  adminContentTitle,
   type AdminContentKind,
   type AdminContentRecord,
 } from "@/modules/admin-content";
@@ -26,6 +37,28 @@ const materialTypes = [
 ];
 const skills = ["SPEAKING", "PRONUNCIATION", "VOCABULARY", "GRAMMAR"];
 const cefr = ["A1", "A2", "B1", "B2", "C1", "C2"];
+
+function FormSection({
+  id,
+  title,
+  description,
+  children,
+}: {
+  id: string;
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="yas-form-section" aria-labelledby={`content-${id}`}>
+      <header>
+        <h2 id={`content-${id}`}>{title}</h2>
+        {description && <p>{description}</p>}
+      </header>
+      {children}
+    </section>
+  );
+}
 
 function value(record: AdminContentRecord | null, key: string, fallback = ""): string {
   const raw = record?.[key];
@@ -108,363 +141,474 @@ export function ContentEditor({
   const isNew = record === null;
   const active = record?.active === true;
   const saveLabel = isNew ? `Criar ${label} como rascunho` : "Salvar rascunho";
+  const slug = value(record, "slug");
+  const position = value(record, "position");
 
   return (
     <div className={styles.page}>
       <Link className={styles.backLink} href={`/admin/content?kind=${kind}`}>
-        ← Voltar para {kind}
+        ← Voltar para {adminContentTitle(kind).toLowerCase()}
       </Link>
       <PageHeader
         title={isNew ? `Novo ${label}` : `Editar ${label}`}
         description="Rascunhos não são exibidos aos alunos. A publicação é validada pelo sistema."
       />
-      <Card className={styles.editorCard}>
-        <form action={action} className={styles.editorForm}>
-          <input type="hidden" name="kind" value={kind} />
-          <input type="hidden" name="id" value={record?.id ?? ""} />
-
+      <form action={action} className="yas-editor-layout">
+        <input type="hidden" name="kind" value={kind} />
+        <input type="hidden" name="id" value={record?.id ?? ""} />
+        <div className="yas-editor-main">
           {kind === "courses" && (
             <>
-              <Input
-                label="Título"
-                name="title"
-                defaultValue={value(record, "title")}
-                required
-                maxLength={160}
-              />
-              <Input
-                label="Slug"
-                name="slug"
-                defaultValue={value(record, "slug")}
-                required
-                pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              />
-              <Textarea
-                label="Descrição"
-                name="description"
-                defaultValue={value(record, "description")}
-                rows={4}
-                maxLength={4000}
-              />
-              <Checkbox
-                name="active"
-                value="true"
-                defaultChecked={active}
-                label="Disponível para alunos após publicação"
-              />
+              <FormSection
+                id="identity"
+                title="Identificação"
+                description="Nome e endereço do curso."
+              >
+                <div className="yas-form-grid">
+                  <Input
+                    label="Título"
+                    name="title"
+                    defaultValue={value(record, "title")}
+                    required
+                    maxLength={160}
+                  />
+                  <Input
+                    label="Slug"
+                    name="slug"
+                    defaultValue={slug}
+                    required
+                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                  />
+                </div>
+                <Textarea
+                  label="Descrição"
+                  name="description"
+                  defaultValue={value(record, "description")}
+                  rows={4}
+                  maxLength={4000}
+                />
+              </FormSection>
+              <FormSection id="availability" title="Disponibilidade">
+                <Checkbox
+                  name="active"
+                  value="true"
+                  defaultChecked={active}
+                  label="Disponível para alunos após publicação"
+                />
+              </FormSection>
             </>
           )}
 
           {kind === "modules" && (
             <>
-              <ParentSelect
-                label="Curso"
-                name="course_id"
-                records={choices.courses}
-                current={value(record, "course_id")}
-              />
-              <Input
-                label="Ordem"
-                name="position"
-                type="number"
-                min={1}
-                defaultValue={value(record, "position", "1")}
-                required
-              />
-              <Input
-                label="Título"
-                name="title"
-                defaultValue={value(record, "title")}
-                required
-                maxLength={160}
-              />
-              <Textarea
-                label="Descrição"
-                name="description"
-                defaultValue={value(record, "description")}
-                rows={4}
-                maxLength={4000}
-              />
-              <AudienceSelect record={record} />
+              <FormSection
+                id="placement"
+                title="Posição na trilha"
+                description="Em qual curso o módulo fica e em que ordem."
+              >
+                <div className="yas-form-grid">
+                  <ParentSelect
+                    label="Curso"
+                    name="course_id"
+                    records={choices.courses}
+                    current={value(record, "course_id")}
+                  />
+                  <Input
+                    label="Ordem"
+                    name="position"
+                    type="number"
+                    min={1}
+                    defaultValue={value(record, "position", "1")}
+                    required
+                  />
+                </div>
+              </FormSection>
+              <FormSection id="content" title="Conteúdo">
+                <Input
+                  label="Título"
+                  name="title"
+                  defaultValue={value(record, "title")}
+                  required
+                  maxLength={160}
+                />
+                <Textarea
+                  label="Descrição"
+                  name="description"
+                  defaultValue={value(record, "description")}
+                  rows={4}
+                  maxLength={4000}
+                />
+              </FormSection>
+              <FormSection id="visibility" title="Visibilidade">
+                <AudienceSelect record={record} />
+              </FormSection>
             </>
           )}
 
           {kind === "lessons" && (
             <>
-              <ParentSelect
-                label="Módulo"
-                name="module_id"
-                records={choices.modules}
-                current={value(record, "module_id")}
-              />
-              <Input
-                label="Ordem"
-                name="position"
-                type="number"
-                min={1}
-                defaultValue={value(record, "position", "1")}
-                required
-              />
-              <Input
-                label="Título"
-                name="title"
-                defaultValue={value(record, "title")}
-                required
-                maxLength={160}
-              />
-              <Input
-                label="Slug"
-                name="slug"
-                defaultValue={value(record, "slug")}
-                required
-                pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              />
-              <Input
-                label="Duração estimada (minutos)"
-                name="estimated_minutes"
-                type="number"
-                min={1}
-                defaultValue={value(record, "estimated_minutes")}
-              />
-              <AudienceSelect record={record} />
-              <WelcomeCheckbox record={record} />
+              <FormSection
+                id="placement"
+                title="Posição no módulo"
+                description="Em qual módulo a aula fica e em que ordem."
+              >
+                <div className="yas-form-grid">
+                  <ParentSelect
+                    label="Módulo"
+                    name="module_id"
+                    records={choices.modules}
+                    current={value(record, "module_id")}
+                  />
+                  <Input
+                    label="Ordem"
+                    name="position"
+                    type="number"
+                    min={1}
+                    defaultValue={value(record, "position", "1")}
+                    required
+                  />
+                </div>
+              </FormSection>
+              <FormSection id="content" title="Conteúdo">
+                <div className="yas-form-grid">
+                  <Input
+                    label="Título"
+                    name="title"
+                    defaultValue={value(record, "title")}
+                    required
+                    maxLength={160}
+                  />
+                  <Input
+                    label="Slug"
+                    name="slug"
+                    defaultValue={slug}
+                    required
+                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                  />
+                  <Input
+                    label="Duração estimada (minutos)"
+                    name="estimated_minutes"
+                    type="number"
+                    min={1}
+                    defaultValue={value(record, "estimated_minutes")}
+                  />
+                </div>
+              </FormSection>
+              <FormSection id="visibility" title="Visibilidade">
+                <AudienceSelect record={record} />
+                <WelcomeCheckbox record={record} />
+              </FormSection>
             </>
           )}
 
           {kind === "lesson_assets" && (
             <>
-              <ParentSelect
-                label="Aula"
-                name="lesson_id"
-                records={choices.lessons}
-                current={value(record, "lesson_id")}
-              />
-              <Select
-                label="Tipo de conteúdo"
-                name="asset_type"
-                defaultValue={value(record, "asset_type", "TEXT")}
-                options={assetTypes.map((type) => ({ value: type, label: type }))}
-                required
-              />
-              <Input
-                label="Ordem"
-                name="position"
-                type="number"
-                min={1}
-                defaultValue={value(record, "position", "1")}
-                required
-              />
-              <Input
-                label="URL de origem"
-                name="source_url"
-                type="url"
-                defaultValue={value(record, "source_url")}
-              />
-              <Textarea
-                label="Conteúdo (JSON)"
-                name="content_json"
-                defaultValue={jsonValue(record, "content", { title: "", body: "" })}
-                rows={8}
-              />
-              <Input
-                label="Entitlement necessário (opcional)"
-                name="required_entitlement_key"
-                defaultValue={value(record, "required_entitlement_key")}
-                maxLength={64}
-              />
-              <Textarea
-                label="Metadados (JSON)"
-                name="metadata_json"
-                defaultValue={jsonValue(record, "metadata", {})}
-                rows={4}
-              />
-              {record?.has_storage_reference && (
-                <p className={styles.notice}>
-                  Este conteúdo usa um arquivo privado. O caminho interno não é exibido nem editável
-                  nesta tela.
-                </p>
-              )}
+              <FormSection
+                id="placement"
+                title="Vínculo"
+                description="A aula, o tipo e a ordem do conteúdo."
+              >
+                <div className="yas-form-grid">
+                  <ParentSelect
+                    label="Aula"
+                    name="lesson_id"
+                    records={choices.lessons}
+                    current={value(record, "lesson_id")}
+                  />
+                  <Select
+                    label="Tipo de conteúdo"
+                    name="asset_type"
+                    defaultValue={value(record, "asset_type", "TEXT")}
+                    options={assetTypes.map((type) => ({ value: type, label: type }))}
+                    required
+                  />
+                  <Input
+                    label="Ordem"
+                    name="position"
+                    type="number"
+                    min={1}
+                    defaultValue={value(record, "position", "1")}
+                    required
+                  />
+                </div>
+              </FormSection>
+              <FormSection id="content" title="Conteúdo">
+                <Input
+                  label="URL de origem"
+                  name="source_url"
+                  type="url"
+                  defaultValue={value(record, "source_url")}
+                />
+                <Textarea
+                  label="Conteúdo (JSON)"
+                  name="content_json"
+                  defaultValue={jsonValue(record, "content", { title: "", body: "" })}
+                  rows={8}
+                />
+                {record?.has_storage_reference && (
+                  <p className={styles.notice}>
+                    Este conteúdo usa um arquivo privado. O caminho interno não é exibido nem
+                    editável nesta tela.
+                  </p>
+                )}
+              </FormSection>
+              <FormSection id="access" title="Acesso e metadados">
+                <Input
+                  label="Entitlement necessário (opcional)"
+                  name="required_entitlement_key"
+                  defaultValue={value(record, "required_entitlement_key")}
+                  maxLength={64}
+                />
+                <Textarea
+                  label="Metadados (JSON)"
+                  name="metadata_json"
+                  defaultValue={jsonValue(record, "metadata", {})}
+                  rows={4}
+                />
+              </FormSection>
             </>
           )}
 
           {kind === "materials" && (
             <>
-              <Input
-                label="Título"
-                name="title"
-                defaultValue={value(record, "title")}
-                required
-                maxLength={160}
-              />
-              <Select
-                label="Tipo de material"
-                name="material_type"
-                defaultValue={value(record, "material_type", "SUMMARY")}
-                options={materialTypes.map((type) => ({ value: type, label: type }))}
-                required
-              />
-              <ParentSelect
-                label="Módulo (opcional)"
-                name="module_id"
-                records={choices.modules}
-                current={value(record, "module_id")}
-                required={false}
-              />
-              <ParentSelect
-                label="Aula (opcional)"
-                name="lesson_id"
-                records={choices.lessons}
-                current={value(record, "lesson_id")}
-                required={false}
-              />
-              <Input
-                label="URL externa"
-                name="external_url"
-                type="url"
-                defaultValue={value(record, "external_url")}
-                required={isNew}
-              />
-              <Input
-                label="Entitlement necessário (opcional)"
-                name="required_entitlement_key"
-                defaultValue={value(record, "required_entitlement_key")}
-                maxLength={64}
-              />
-              <Textarea
-                label="Metadados (JSON)"
-                name="metadata_json"
-                defaultValue={jsonValue(record, "metadata", {})}
-                rows={5}
-              />
-              <Checkbox
-                name="active"
-                value="true"
-                defaultChecked={active}
-                label="Disponível para alunos após publicação"
-              />
-              {isNew && (
-                <p className={styles.notice}>
-                  O envio de arquivos privados ainda não está disponível para materiais novos. Use
-                  uma URL externa segura; materiais existentes com arquivo privado podem ter os
-                  demais metadados editados.
-                </p>
-              )}
-              {record?.has_storage_reference && (
-                <p className={styles.notice}>
-                  Este material usa um arquivo privado. O caminho interno não é exibido nem editável
-                  nesta tela.
-                </p>
-              )}
-              <AudienceSelect record={record} />
-              <WelcomeCheckbox record={record} />
+              <FormSection id="identity" title="Identificação">
+                <div className="yas-form-grid">
+                  <Input
+                    label="Título"
+                    name="title"
+                    defaultValue={value(record, "title")}
+                    required
+                    maxLength={160}
+                  />
+                  <Select
+                    label="Tipo de material"
+                    name="material_type"
+                    defaultValue={value(record, "material_type", "SUMMARY")}
+                    options={materialTypes.map((type) => ({ value: type, label: type }))}
+                    required
+                  />
+                </div>
+              </FormSection>
+              <FormSection
+                id="resource"
+                title="Vínculo e recurso"
+                description="Onde o material aparece e onde o aluno o abre."
+              >
+                <div className="yas-form-grid">
+                  <ParentSelect
+                    label="Módulo (opcional)"
+                    name="module_id"
+                    records={choices.modules}
+                    current={value(record, "module_id")}
+                    required={false}
+                  />
+                  <ParentSelect
+                    label="Aula (opcional)"
+                    name="lesson_id"
+                    records={choices.lessons}
+                    current={value(record, "lesson_id")}
+                    required={false}
+                  />
+                </div>
+                <Input
+                  label="URL externa"
+                  name="external_url"
+                  type="url"
+                  defaultValue={value(record, "external_url")}
+                  required={isNew}
+                />
+                {isNew && (
+                  <p className={styles.notice}>
+                    O envio de arquivos privados ainda não está disponível para materiais novos. Use
+                    uma URL externa segura; materiais existentes com arquivo privado podem ter os
+                    demais metadados editados.
+                  </p>
+                )}
+                {record?.has_storage_reference && (
+                  <p className={styles.notice}>
+                    Este material usa um arquivo privado. O caminho interno não é exibido nem
+                    editável nesta tela.
+                  </p>
+                )}
+              </FormSection>
+              <FormSection id="access" title="Acesso e visibilidade">
+                <Input
+                  label="Entitlement necessário (opcional)"
+                  name="required_entitlement_key"
+                  defaultValue={value(record, "required_entitlement_key")}
+                  maxLength={64}
+                />
+                <AudienceSelect record={record} />
+                <Textarea
+                  label="Metadados (JSON)"
+                  name="metadata_json"
+                  defaultValue={jsonValue(record, "metadata", {})}
+                  rows={5}
+                />
+                <Checkbox
+                  name="active"
+                  value="true"
+                  defaultChecked={active}
+                  label="Disponível para alunos após publicação"
+                />
+                <WelcomeCheckbox record={record} />
+              </FormSection>
             </>
           )}
 
           {kind === "practice_activities" && (
             <>
-              <Input
-                label="Título"
-                name="title"
-                defaultValue={value(record, "title")}
-                required
-                maxLength={160}
-              />
-              <Input
-                label="Slug"
-                name="slug"
-                defaultValue={value(record, "slug")}
-                required
-                maxLength={100}
-              />
-              <Select
-                label="Habilidade"
-                name="skill"
-                defaultValue={value(record, "skill", "VOCABULARY")}
-                options={skills.map((skill) => ({ value: skill, label: skill }))}
-                required
-              />
-              <Select
-                label="Nível CEFR (opcional)"
-                name="cefr_target"
-                defaultValue={value(record, "cefr_target")}
-                options={[
-                  { value: "", label: "Sem nível definido" },
-                  ...cefr.map((level) => ({ value: level, label: level })),
-                ]}
-              />
-              <Input
-                label="Dificuldade (opcional)"
-                name="difficulty"
-                defaultValue={value(record, "difficulty")}
-                maxLength={80}
-              />
-              <Input
-                label="Duração estimada (minutos)"
-                name="estimated_minutes"
-                type="number"
-                min={1}
-                defaultValue={value(record, "estimated_minutes", "5")}
-                required
-              />
-              <ParentSelect
-                label="Módulo relacionado (opcional)"
-                name="related_module_id"
-                records={choices.modules}
-                current={value(record, "related_module_id")}
-                required={false}
-              />
-              <ParentSelect
-                label="Aula relacionada (opcional)"
-                name="related_lesson_id"
-                records={choices.lessons}
-                current={value(record, "related_lesson_id")}
-                required={false}
-              />
-              <Textarea
-                label="Conteúdo da atividade (JSON)"
-                name="content_json"
-                defaultValue={jsonValue(record, "content", {
-                  kind: "MULTIPLE_CHOICE",
-                  evaluationMode: "DETERMINISTIC",
-                  prompt: "Type a question for the learner.",
-                  options: [
-                    { id: "a", label: "Option A" },
-                    { id: "b", label: "Option B" },
-                  ],
-                })}
-                rows={10}
-                required
-              />
-              <Textarea
-                label="Gabarito privado (JSON)"
-                name="answer_key_json"
-                defaultValue={record?.answer_key ? jsonValue(record, "answer_key", {}) : ""}
-                rows={3}
-              />
-              <p className={styles.notice}>
-                {
-                  'Use `{"kind":"MANUAL_TEXT","evaluationMode":"MANUAL_PENDING","prompt":"...","instructions":"..."}` para uma atividade sem correção automática. O gabarito privado nunca aparece no preview.'
-                }
-              </p>
-              <Checkbox
-                name="active"
-                value="true"
-                defaultChecked={active}
-                label="Disponível para alunos após publicação"
-              />
+              <FormSection id="identity" title="Identificação">
+                <div className="yas-form-grid">
+                  <Input
+                    label="Título"
+                    name="title"
+                    defaultValue={value(record, "title")}
+                    required
+                    maxLength={160}
+                  />
+                  <Input label="Slug" name="slug" defaultValue={slug} required maxLength={100} />
+                  <Select
+                    label="Habilidade"
+                    name="skill"
+                    defaultValue={value(record, "skill", "VOCABULARY")}
+                    options={skills.map((skill) => ({ value: skill, label: skill }))}
+                    required
+                  />
+                  <Select
+                    label="Nível CEFR (opcional)"
+                    name="cefr_target"
+                    defaultValue={value(record, "cefr_target")}
+                    options={[
+                      { value: "", label: "Sem nível definido" },
+                      ...cefr.map((level) => ({ value: level, label: level })),
+                    ]}
+                  />
+                  <Input
+                    label="Dificuldade (opcional)"
+                    name="difficulty"
+                    defaultValue={value(record, "difficulty")}
+                    maxLength={80}
+                  />
+                  <Input
+                    label="Duração estimada (minutos)"
+                    name="estimated_minutes"
+                    type="number"
+                    min={1}
+                    defaultValue={value(record, "estimated_minutes", "5")}
+                    required
+                  />
+                </div>
+              </FormSection>
+              <FormSection
+                id="related"
+                title="Relacionamento"
+                description="Opcional: ligue a prática a um módulo ou aula."
+              >
+                <div className="yas-form-grid">
+                  <ParentSelect
+                    label="Módulo relacionado (opcional)"
+                    name="related_module_id"
+                    records={choices.modules}
+                    current={value(record, "related_module_id")}
+                    required={false}
+                  />
+                  <ParentSelect
+                    label="Aula relacionada (opcional)"
+                    name="related_lesson_id"
+                    records={choices.lessons}
+                    current={value(record, "related_lesson_id")}
+                    required={false}
+                  />
+                </div>
+              </FormSection>
+              <FormSection id="activity" title="Atividade">
+                <Textarea
+                  label="Conteúdo da atividade (JSON)"
+                  name="content_json"
+                  defaultValue={jsonValue(record, "content", {
+                    kind: "MULTIPLE_CHOICE",
+                    evaluationMode: "DETERMINISTIC",
+                    prompt: "Type a question for the learner.",
+                    options: [
+                      { id: "a", label: "Option A" },
+                      { id: "b", label: "Option B" },
+                    ],
+                  })}
+                  rows={10}
+                  required
+                />
+                <Textarea
+                  label="Gabarito privado (JSON)"
+                  name="answer_key_json"
+                  defaultValue={record?.answer_key ? jsonValue(record, "answer_key", {}) : ""}
+                  rows={3}
+                />
+                <p className={styles.notice}>
+                  {
+                    'Use `{"kind":"MANUAL_TEXT","evaluationMode":"MANUAL_PENDING","prompt":"...","instructions":"..."}` para uma atividade sem correção automática. O gabarito privado nunca aparece no preview.'
+                  }
+                </p>
+              </FormSection>
+              <FormSection id="availability" title="Disponibilidade">
+                <Checkbox
+                  name="active"
+                  value="true"
+                  defaultChecked={active}
+                  label="Disponível para alunos após publicação"
+                />
+              </FormSection>
             </>
           )}
+        </div>
 
-          <div className={styles.actions}>
+        <aside className="yas-editor-aside" aria-label="Resumo do conteúdo">
+          <Card className="yas-editor-summary">
+            <h2>Estado</h2>
+            <div>
+              <Badge tone={isNew ? "info" : "neutral"}>
+                {isNew ? "Novo rascunho" : "Rascunho"}
+              </Badge>
+            </div>
+            <ul className="yas-editor-summary-skills" aria-label="Detalhes do conteúdo">
+              <li>
+                <span>Tipo</span>
+                <strong>{label}</strong>
+              </li>
+              {slug && (
+                <li>
+                  <span>Endereço</span>
+                  <strong>{slug}</strong>
+                </li>
+              )}
+              {position && (
+                <li>
+                  <span>Posição</span>
+                  <strong>{position}</strong>
+                </li>
+              )}
+            </ul>
+            <p className="yas-editor-summary-note">
+              Salvar mantém o conteúdo como rascunho. A publicação é feita pela lista, depois da
+              pré-visualização.
+            </p>
             <Button type="submit" variant="primary">
               {saveLabel}
             </Button>
+            {record?.id && (
+              <Link
+                className={styles.secondaryLink}
+                href={`/admin/content/${String(record.id)}/preview?kind=${kind}`}
+              >
+                Pré-visualizar rascunho
+              </Link>
+            )}
             <Link className={styles.secondaryLink} href={`/admin/content?kind=${kind}`}>
               Cancelar
             </Link>
-          </div>
-        </form>
-      </Card>
+          </Card>
+        </aside>
+      </form>
     </div>
   );
 }

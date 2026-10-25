@@ -44,9 +44,9 @@ insert into public.teacher_student_assignments(id, teacher_id, student_user_id, 
 values ('99320000-0000-4000-8000-000000000001', '99310000-0000-4000-8000-000000000001',
   '99300000-0000-4000-8000-000000000003', '40000000-0000-4000-8000-000000000001', now() - interval '1 day')
 on conflict (id) do nothing;
-insert into public.practice_activities(id, slug, title, skill, estimated_minutes, content, active, publication_status, published_at)
+insert into public.practice_activities(id, slug, title, skill, estimated_minutes, related_module_id, related_lesson_id, course_id, content, active, publication_status, published_at)
 values ('99330000-0000-4000-8000-000000000001', 'teacher-ops-pending-review', 'Teacher Ops pending review',
-  'SPEAKING', 5, '{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Describe your day","instructions":"Record a short response"}',
+  'SPEAKING', 5, '41000000-0000-4000-8000-000000000001', '42000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-000000000001', '{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Describe your day","instructions":"Record a short response"}',
   true, 'PUBLISHED', now())
 on conflict (id) do nothing;
 insert into public.practice_attempts(id, user_id, practice_activity_id, status, submitted_at)

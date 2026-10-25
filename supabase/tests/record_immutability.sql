@@ -18,7 +18,7 @@ insert into public.user_roles(user_id,role) values
 insert into public.teachers(id,user_id) values('9e100000-0000-4000-8000-000000000001','9e000000-0000-4000-8000-000000000002');
 insert into public.practice_attempts(id,user_id,practice_activity_id,status,submitted_at) values
  ('9e200000-0000-4000-8000-000000000001','9e000000-0000-4000-8000-000000000001','83000000-0000-4000-8000-000000000001','SUBMITTED',now()),
- ('9e200000-0000-4000-8000-000000000002','9e000000-0000-4000-8000-000000000001','83000000-0000-4000-8000-000000000001','SUBMITTED',now());
+ ('9e200000-0000-4000-8000-000000000002','9e000000-0000-4000-8000-000000000001','83000000-0000-4000-8000-000000000002','SUBMITTED',now());
 insert into public.practice_results(id,practice_attempt_id,score,max_score,feedback,metrics,evaluation_status) values
  ('9e300000-0000-4000-8000-000000000001','9e200000-0000-4000-8000-000000000001',null,null,'Aguardando revisão do professor.','{"evaluation_mode":"MANUAL_PENDING"}','PENDING_MANUAL'),
  ('9e300000-0000-4000-8000-000000000002','9e200000-0000-4000-8000-000000000002',null,null,'Aguardando revisão do professor.','{"evaluation_mode":"MANUAL_PENDING"}','PENDING_MANUAL');

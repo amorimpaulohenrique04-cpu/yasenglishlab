@@ -26,6 +26,11 @@ export async function reviewPracticeAction(form: FormData) {
     .regex(/^[a-z0-9-]{1,40}$/)
     .nullish()
     .parse(form.get("itemId") || null);
+  // "Finalizar e ir para a próxima" posts the next attempt id; navigation only, no rule change.
+  const next = z
+    .uuid()
+    .nullish()
+    .parse(form.get("next") || null);
   let failed = false;
   try {
     await finalizeTeacherPracticeReview({ attemptId: id, itemId, ratings, feedback });
@@ -35,7 +40,7 @@ export async function reviewPracticeAction(form: FormData) {
   if (failed) redirect(`/teacher/revisoes/${id}?save=error`);
   revalidatePath("/teacher/revisoes");
   revalidatePath("/pratica");
-  redirect(`/teacher/revisoes/${id}?save=success`);
+  redirect(`/teacher/revisoes/${next ?? id}?save=success`);
 }
 export async function teacherAudioPlaybackAction(id: string) {
   await assertRole("TEACHER");
