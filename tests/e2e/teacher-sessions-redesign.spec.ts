@@ -29,7 +29,7 @@ async function evidence(page: Page, name: string) {
   ).toEqual([]);
 }
 
-test("Sessions filters, calendar, drawers, details and real report exports", async ({ page }) => {
+test("Sessions filters and drawers preserve navigation and focus", async ({ page }) => {
   test.setTimeout(180_000);
   await loginCanonicalTeacher(page, password!);
   await page.goto("/teacher/sessoes?status=all&q=Teacher+Ops+Student");
@@ -58,11 +58,16 @@ test("Sessions filters, calendar, drawers, details and real report exports", asy
   await page.getByRole("button", { name: "Cadastrar link do Meet", exact: true }).click();
   await evidence(page, "meet-desktop");
   await page.keyboard.press("Escape");
-  for (const [label, width, height] of [
-    ["desktop", 1440, 1000],
-    ["tablet", 834, 1112],
-    ["mobile", 390, 844],
-  ] as const) {
+});
+
+for (const [label, width, height] of [
+  ["desktop", 1440, 1000],
+  ["tablet", 834, 1112],
+  ["mobile", 390, 844],
+] as const) {
+  test(`Sessions calendar, details, creation and reports at ${label}`, async ({ page }) => {
+    test.setTimeout(180_000);
+    await loginCanonicalTeacher(page, password!);
     await page.setViewportSize({ width, height });
     await page.goto("/teacher/sessoes?status=all");
     await expect(page.getByRole("heading", { name: "Suas sessões", exact: true })).toBeVisible();
@@ -89,7 +94,11 @@ test("Sessions filters, calendar, drawers, details and real report exports", asy
       page.getByRole("heading", { name: "Relatórios de sessões", exact: true }),
     ).toBeVisible();
     await evidence(page, `reports-${label}`);
-  }
+  });
+}
+
+test("Sessions report exports preserve CSV privacy and valid PDF", async ({ page }) => {
+  await loginCanonicalTeacher(page, password!);
   const csv = await page.request.get("/teacher/sessoes/relatorios/exportar?format=csv");
   expect(csv.status()).toBe(200);
   expect(csv.headers()["cache-control"]).toContain("no-store");
