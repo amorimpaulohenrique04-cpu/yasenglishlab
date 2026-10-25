@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Alert, Breadcrumbs, Icon, PageHeader } from "@/components/ui";
-import { groupReviewQueue, queueNeighbors } from "@/modules/teacher-operations/domain/review-queue";
 import { ReviewDetail } from "@/modules/teacher-operations/ui/review-detail";
 import styles from "@/modules/teacher-operations/ui/reviews.module.css";
-import { loadReviewContext, loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
+import {
+  loadReviewContext,
+  loadReviewQueuePosition,
+  loadTeacherReviews,
+} from "@/server/teacher-operations/pedagogy";
 import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
 import { reviewPracticeAction, teacherAudioPlaybackAction } from "../actions";
 
@@ -16,16 +19,16 @@ export default async function ReviewPage({
   searchParams: Promise<{ save?: string }>;
 }) {
   const { attemptId } = await params;
-  const [items, queue, context, query] = await Promise.all([
+  const [items, nav, context, query] = await Promise.all([
     loadTeacherReviews(attemptId),
-    loadTeacherReviews(),
+    loadReviewQueuePosition(attemptId),
     loadReviewContext(attemptId),
     searchParams,
   ]);
   const [first] = items;
   if (!first || !context) notFound();
-  const nav = queueNeighbors(groupReviewQueue(queue), attemptId);
-  // Outside the queue (already reviewed), queueNeighbors points "next" at the oldest pending attempt.
+  // Position over the whole queue, computed in the database. Outside the queue (already reviewed),
+  // "next" is the first pending attempt after this one.
   const next = nav.next;
 
   return (
@@ -83,11 +86,13 @@ export default async function ReviewPage({
         <Alert
           tone="error"
           title="Revisão rejeitada"
-          description="O vínculo pode ter mudado ou outro professor já concluiu esta revisão."
+          description="Nada foi sobrescrito. O vínculo pode ter mudado ou outro professor já concluiu esta resposta; se ela continuar pendente, seu texto segue no formulário."
         />
       )}
       <ReviewDetail
+        key={attemptId}
         items={items}
+        questions={context.questions}
         studentName={first.studentName ?? "Aluno"}
         cohortNames={context.cohortNames}
         mediaDurationSeconds={context.mediaDurationSeconds}

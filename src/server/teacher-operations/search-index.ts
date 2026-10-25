@@ -4,10 +4,9 @@ import {
   type TeacherSearchIndex,
 } from "@/modules/teacher-operations/domain/search-index";
 import { entryDetailUrl, entryFiltersSchema } from "@/modules/placement/domain/entry-workspace";
-import { groupReviewQueue } from "@/modules/teacher-operations/domain/review-queue";
 import { studentFiltersSchema } from "@/modules/teacher-operations/domain/student-workspace";
 import { loadEntryQueue } from "@/server/placement/entry-workspace";
-import { loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
+import { loadReviewQueuePage } from "@/server/teacher-operations/pedagogy";
 import { loadStudentsWorkspace } from "@/server/teacher-operations/student-workspace";
 
 async function settle<T>(label: string, task: () => Promise<T>): Promise<T | null> {
@@ -29,7 +28,10 @@ export async function loadTeacherSearchIndex(): Promise<TeacherSearchIndex> {
   const [workspace, entries, practices] = await Promise.all([
     settle("students", () => loadStudentsWorkspace(studentFiltersSchema.parse({}))),
     settle("entry", () => loadEntryQueue(entryFilters)),
-    settle("practice", () => loadTeacherReviews()),
+    // One page of the paginated queue (oldest first); the index is capped anyway.
+    settle("practice", () =>
+      loadReviewQueuePage({ tab: "all", q: "", cohort: "", order: "oldest", limit: 50 }),
+    ),
   ]);
   const students = (workspace?.items ?? []).map((student) => ({
     id: student.id,
@@ -56,9 +58,9 @@ export async function loadTeacherSearchIndex(): Promise<TeacherSearchIndex> {
         kind: "entry" as const,
         href: entryDetailUrl(item.id, entryFilters),
       })),
-    ...groupReviewQueue(practices ?? []).map((entry) => ({
+    ...(practices?.entries ?? []).map((entry) => ({
       id: entry.id,
-      title: `${entry.title} · ${entry.studentName}`,
+      title: `${entry.title} · ${entry.studentName ?? "Aluno"}`,
       kind: "practice" as const,
       href: `/teacher/revisoes/${entry.id}`,
     })),

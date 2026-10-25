@@ -101,23 +101,40 @@ function useWide<T extends HTMLElement>() {
   return [ref, wide] as const;
 }
 
+/** All kinds of an attempt: a written + spoken practice shows both chips. */
+function KindChips({ entry }: { entry: ReviewQueueEntry }) {
+  return (
+    <span className={styles.kindList}>
+      {entry.kinds.map((kind) => (
+        <KindChip key={kind} kind={kind} />
+      ))}
+    </span>
+  );
+}
+
 export function ReviewQueue({
   entries,
   total,
+  filteredTotal,
   counts,
   filters,
   cohorts,
-  studentCohorts,
   now,
+  nextHref,
+  firstHref,
   audioAction,
 }: {
+  /** One page of attempts, already filtered and ordered by the database. */
   entries: readonly ReviewQueueEntry[];
   total: number;
+  filteredTotal: number;
+  /** Whole-scope counts; a mixed attempt counts in each of its tabs. */
   counts: Record<QueueTab, number>;
   filters: QueueFilters;
   cohorts: readonly string[];
-  studentCohorts: Readonly<Record<string, readonly string[]>>;
   now: number;
+  nextHref: string | null;
+  firstHref: string | null;
   audioAction: (id: string) => Promise<string>;
 }) {
   const router = useRouter();
@@ -132,7 +149,7 @@ export function ReviewQueue({
 
   const go = (patch: Partial<QueueFilters>) =>
     startTransition(() =>
-      router.replace(queueUrl(filters, { ...patch, item: "" }), { scroll: false }),
+      router.replace(queueUrl(filters, { ...patch, item: "", after: "" }), { scroll: false }),
     );
 
   const select = (id: string, focus = false) => {
@@ -169,7 +186,7 @@ export function ReviewQueue({
             return (
               <Link
                 key={tab}
-                href={queueUrl(filters, { tab, item: "" })}
+                href={queueUrl(filters, { tab, item: "", after: "" })}
                 className={styles.tab}
                 aria-current={current ? "page" : undefined}
                 scroll={false}
@@ -236,7 +253,14 @@ export function ReviewQueue({
         {filtered && (
           <Link
             className="yas-button yas-button--ghost yas-button--sm"
-            href={queueUrl({ tab: "all", q: "", cohort: "", order: filters.order, item: "" })}
+            href={queueUrl({
+              tab: "all",
+              q: "",
+              cohort: "",
+              order: filters.order,
+              item: "",
+              after: "",
+            })}
             onClick={() => setQuery("")}
             scroll={false}
           >
@@ -272,7 +296,7 @@ export function ReviewQueue({
               </thead>
               <tbody ref={listRef} onKeyDown={onKeyDown}>
                 {entries.map((entry, index) => {
-                  const cohortNames = studentCohorts[entry.studentId] ?? [];
+                  const cohortNames = entry.cohortNames ?? [];
                   const isSelected = wide && entry.id === selected?.id;
                   return (
                     <tr
@@ -293,12 +317,13 @@ export function ReviewQueue({
                           <span className={styles.activity}>{entry.title}</span>{" "}
                           <small>
                             {cohortNames.length > 0 ? cohortNames.join(", ") : "Sem turma ativa"}
-                            {entry.items.length > 1 && ` · ${entry.items.length} respostas`}
+                            {entry.pendingItems > 1 &&
+                              ` · ${entry.pendingItems} respostas abertas pendentes`}
                           </small>
                         </span>
                       </td>
                       <td data-label="Tipo">
-                        <KindChip kind={entry.kind} />
+                        <KindChips entry={entry} />
                       </td>
                       <td data-label="Enviada em" className={styles.cellMuted}>
                         <time dateTime={entry.submittedAt}>
@@ -312,7 +337,7 @@ export function ReviewQueue({
                         <Link
                           href={`/teacher/revisoes/${entry.id}`}
                           className={`yas-button yas-button--sm ${
-                            index === 0 && filters.order === "oldest"
+                            index === 0 && filters.order === "oldest" && !filters.after
                               ? "yas-button--secondary"
                               : "yas-button--soft"
                           }`}
@@ -331,6 +356,25 @@ export function ReviewQueue({
                 <kbd>↑</kbd> <kbd>↓</kbd> navegam pela fila · <kbd>Enter</kbd> abre a revisão
               </p>
             )}
+            {(nextHref || firstHref) && (
+              <nav className={styles.queuePager} aria-label="Páginas da fila">
+                <span>
+                  {entries.length} de {filteredTotal}{" "}
+                  {filteredTotal === 1 ? "prática nesta lista" : "práticas nesta lista"}
+                </span>
+                {firstHref && (
+                  <Link className="yas-button yas-button--ghost yas-button--sm" href={firstHref}>
+                    Primeira página
+                  </Link>
+                )}
+                {nextHref && (
+                  <Link className="yas-button yas-button--soft yas-button--sm" href={nextHref}>
+                    Próxima página
+                    <Icon name="arrow" size={16} />
+                  </Link>
+                )}
+              </nav>
+            )}
           </div>
         )}
 
@@ -347,7 +391,7 @@ export function ReviewQueue({
               >
                 <ReviewPreview
                   entry={selected}
-                  cohorts={studentCohorts[selected.studentId] ?? []}
+                  cohorts={selected.cohortNames ?? []}
                   now={now}
                   audioAction={audioAction}
                   onNext={nextOfSelected ? () => select(nextOfSelected.id, true) : undefined}
@@ -389,14 +433,17 @@ function ReviewPreview({
         </div>
       </div>
       <div className={styles.previewMeta}>
-        <KindChip kind={entry.kind} />
+        <KindChips entry={entry} />
         <WaitingChip submittedAt={entry.submittedAt} now={now} />
       </div>
       <div className={styles.previewBlock}>
         <span className={styles.eyebrow}>Atividade</span>
         <strong>{entry.title}</strong>
         {entry.items.length > 1 && (
-          <small>{entry.items.length} respostas para revisar · mostrando a primeira</small>
+          <small>
+            {entry.pendingItems} respostas abertas para revisar · mostrando 1 de{" "}
+            {entry.items.length}
+          </small>
         )}
       </div>
       <div className={styles.previewBlock}>

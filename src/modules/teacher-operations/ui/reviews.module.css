@@ -258,6 +258,17 @@
   color: var(--yas-tint-green-ink);
 }
 
+.statusPill[data-status="auto"] {
+  background: var(--yas-tint-blue);
+  color: var(--yas-tint-blue-ink);
+}
+
+.kindList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--yas-space-1);
+}
+
 /* ---------- Queue card ---------- */
 .queueCard {
   display: grid;
@@ -524,6 +535,23 @@
   color: var(--yas-color-muted);
   padding: var(--yas-space-3) var(--yas-space-5);
   font-size: var(--yas-font-size-xs);
+}
+
+/* Pages of the queue: cursor-based, one practice per row. */
+.queuePager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--yas-space-2);
+  border-top: var(--yas-border-width) solid var(--yas-color-border-soft);
+  color: var(--yas-color-ink-soft);
+  padding: var(--yas-space-3) var(--yas-space-5);
+  font-size: var(--yas-font-size-sm);
+}
+
+.queuePager > span {
+  margin-inline-end: auto;
 }
 
 .hint kbd,
@@ -861,6 +889,39 @@ a.pagerButton:focus-visible {
 
 .itemCard[data-active] {
   border-color: var(--yas-color-purple-200);
+}
+
+.itemStates {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--yas-space-2);
+}
+
+/* Objective question: read-only, already graded automatically. */
+.objectiveAnswer {
+  display: grid;
+  gap: var(--yas-space-1);
+  margin: 0;
+  color: var(--yas-color-ink);
+}
+
+.objectiveAnswer strong[data-verdict="ok"] {
+  color: var(--yas-tint-green-ink);
+}
+
+.objectiveAnswer strong[data-verdict="no"] {
+  color: var(--yas-tint-red-ink);
+}
+
+.manualProgress {
+  display: flex;
+  align-items: center;
+  gap: var(--yas-space-2);
+  margin: 0;
+  color: var(--yas-color-ink-soft);
+  font-size: var(--yas-font-size-sm);
+  font-weight: var(--yas-weight-bold);
 }
 
 .itemHead {

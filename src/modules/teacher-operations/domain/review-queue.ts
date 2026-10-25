@@ -1,6 +1,7 @@
 /**
  * Pure helpers for the Teacher practice-review queue: grouping v3 items per attempt, URL
- * filters, waiting-time tone and "n de m" navigation. No grading rules live here; levels stay
+ * filters and cursor, waiting-time tone and "n de m" navigation. The live queue is filtered and
+ * paginated by attempt in the database (get_teacher_review_queue_page); these helpers mirror it. No grading rules live here; levels stay
  * categorical (ADR 0010) and practice reviews have no SLA, so the UI only shows age.
  */
 
@@ -33,14 +34,22 @@ export function reviewKind(skill: string, responseType?: string | null): ReviewK
   return "speaking";
 }
 
+const KIND_ORDER: readonly ReviewKind[] = ["speaking", "pronunciation", "writing"];
+
 export interface ReviewQueueEntry {
   id: string;
   studentId: string;
   studentName: string;
   title: string;
   skill: string;
+  /** Kind of the first answer, for a single visual chip. Filters use `kinds`. */
   kind: ReviewKind;
+  /** Union of the kinds of every pending answer: a written + spoken attempt is in both tabs. */
+  kinds: ReviewKind[];
+  /** Pending open answers of the attempt (all of them, never just the first). */
+  pendingItems: number;
   submittedAt: string;
+  cohortNames?: readonly string[];
   items: ReviewQueueItem[];
 }
 
@@ -48,9 +57,15 @@ export interface ReviewQueueEntry {
 export function groupReviewQueue(items: readonly ReviewQueueItem[]): ReviewQueueEntry[] {
   const entries = new Map<string, ReviewQueueEntry>();
   for (const item of items) {
+    const kind = reviewKind(item.skill, item.responseType);
+    const pending = item.status === "PENDING_MANUAL" ? 1 : 0;
     const entry = entries.get(item.id);
     if (entry) {
       entry.items.push(item);
+      entry.pendingItems += pending;
+      if (!entry.kinds.includes(kind)) {
+        entry.kinds = KIND_ORDER.filter((k) => k === kind || entry.kinds.includes(k));
+      }
       continue;
     }
     entries.set(item.id, {
@@ -59,7 +74,9 @@ export function groupReviewQueue(items: readonly ReviewQueueItem[]): ReviewQueue
       studentName: item.studentName ?? "Aluno",
       title: item.title,
       skill: item.skill,
-      kind: reviewKind(item.skill, item.responseType),
+      kind,
+      kinds: [kind],
+      pendingItems: pending,
       submittedAt: item.submittedAt,
       items: [item],
     });
@@ -76,6 +93,30 @@ export interface QueueFilters {
   cohort: string;
   order: "oldest" | "newest";
   item: string;
+  /** Keyset cursor of the page ("<submittedAt>~<attemptId>"); empty on the first page. */
+  after: string;
+}
+
+export interface QueueCursor {
+  submittedAt: string;
+  id: string;
+}
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function formatQueueCursor(cursor: QueueCursor) {
+  return `${cursor.submittedAt}~${cursor.id}`;
+}
+
+/** Null for anything that is not "<valid timestamp>~<uuid>"; the database validates it again. */
+export function parseQueueCursor(value: string): QueueCursor | null {
+  const split = value.lastIndexOf("~");
+  if (split <= 0) return null;
+  const submittedAt = value.slice(0, split);
+  const id = value.slice(split + 1);
+  if (!UUID.test(id) || submittedAt.length > 40 || Number.isNaN(Date.parse(submittedAt)))
+    return null;
+  return { submittedAt, id };
 }
 
 type Query = Record<string, string | string[] | undefined>;
@@ -89,17 +130,21 @@ export function parseQueueFilters(query: Query): QueueFilters {
     cohort: (one(query.cohort) ?? "").slice(0, 200),
     order: one(query.order) === "newest" ? "newest" : "oldest",
     item: /^[0-9a-f-]{36}$/i.test(one(query.item) ?? "") ? one(query.item)! : "",
+    after: parseQueueCursor(one(query.after) ?? "") ? one(query.after)! : "",
   };
 }
 
+/** Changing a filter or the order restarts at the first page; selecting an item keeps the page. */
 export function queueUrl(filters: QueueFilters, patch: Partial<QueueFilters> = {}) {
-  const next = { ...filters, ...patch };
+  const keepsPage = Object.keys(patch).every((key) => key === "item" || key === "after");
+  const next = { ...filters, ...patch, after: keepsPage ? (patch.after ?? filters.after) : "" };
   const params = new URLSearchParams();
   if (next.tab !== "all") params.set("tab", next.tab);
   if (next.q) params.set("q", next.q);
   if (next.cohort) params.set("cohort", next.cohort);
   if (next.order !== "oldest") params.set("order", next.order);
   if (next.item) params.set("item", next.item);
+  if (next.after) params.set("after", next.after);
   const search = params.toString();
   return `/teacher/revisoes${search ? `?${search}` : ""}`;
 }
@@ -155,7 +200,7 @@ export function filterQueue(
   const q = normalize(filters.q);
   const result = entries.filter((entry) => {
     if (filters.tab === "over24h" && waitingHours(entry.submittedAt, now) < 24) return false;
-    if (filters.tab !== "all" && filters.tab !== "over24h" && entry.kind !== filters.tab)
+    if (filters.tab !== "all" && filters.tab !== "over24h" && !entry.kinds.includes(filters.tab))
       return false;
     if (filters.cohort && !(cohorts[entry.studentId] ?? []).includes(filters.cohort)) return false;
     if (q && !normalize(`${entry.studentName} ${entry.title}`).includes(q)) return false;
@@ -165,6 +210,7 @@ export function filterQueue(
   return filters.order === "newest" ? sorted.reverse() : sorted;
 }
 
+/** Per-tab counts. A mixed attempt counts in each of its tabs, so tabs may sum above `all`. */
 export function queueCounts(entries: readonly ReviewQueueEntry[], now: number) {
   const counts: Record<QueueTab, number> = {
     all: entries.length,
@@ -174,7 +220,7 @@ export function queueCounts(entries: readonly ReviewQueueEntry[], now: number) {
     over24h: 0,
   };
   for (const entry of entries) {
-    counts[entry.kind] += 1;
+    for (const kind of entry.kinds) counts[kind] += 1;
     if (waitingHours(entry.submittedAt, now) >= 24) counts.over24h += 1;
   }
   return counts;
