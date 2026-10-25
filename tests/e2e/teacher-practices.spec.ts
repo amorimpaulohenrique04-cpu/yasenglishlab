@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
-import { mkdirSync } from "node:fs";
+import { captureScreenshot } from "../helpers/capture-screenshot";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalOtherTeacher, loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
@@ -42,7 +42,7 @@ async function attemptCount(activityId: string) {
   return count ?? 0;
 }
 
-async function captureComposition(page: Page, folder: string, name: string) {
+async function captureComposition(page: Page, name: string) {
   for (const [viewport, width, height] of [
     ["desktop", 1440, 1000],
     ["tablet", 834, 1112],
@@ -64,7 +64,7 @@ async function captureComposition(page: Page, folder: string, name: string) {
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(axe.violations).toEqual([]);
-    await page.screenshot({ path: `${folder}/${name}-${viewport}.png`, fullPage: true });
+    await captureScreenshot(page, test.info(), `${name}-${viewport}`, { fullPage: true });
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
 }
@@ -85,8 +85,6 @@ test.describe("Teacher practices", () => {
     await loginCanonicalTeacher(page, password!);
     await page.goto("/teacher/praticas/nova");
 
-    const folder = "harness/evidence/teacher-practices-redesign/screenshots";
-    mkdirSync(folder, { recursive: true });
     const title = `Prática E2E ${Date.now()}`;
     await page.getByLabel("Título *", { exact: true }).fill(title);
     await page
@@ -95,7 +93,7 @@ test.describe("Teacher practices", () => {
     await page.getByLabel("Curso *", { exact: true }).selectOption(courseId);
     await page.getByLabel("Módulo *", { exact: true }).selectOption(moduleId);
     await page.getByLabel("Aula *", { exact: true }).selectOption(lessonId);
-    await captureComposition(page, folder, "information");
+    await captureComposition(page, "information");
     await page.getByRole("button", { name: "Salvar e continuar", exact: true }).click();
 
     await expect(page.getByRole("heading", { name: "Questões", exact: true })).toBeVisible();
@@ -110,13 +108,13 @@ test.describe("Teacher practices", () => {
     await option("C").fill("Thanks");
     await option("D").fill("Please");
     await page.getByLabel("A é a correta", { exact: true }).check();
-    await captureComposition(page, folder, "question-editor");
+    await captureComposition(page, "question-editor");
 
     await page.getByRole("button", { name: "Nova questão", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "Adicionar questão", exact: true }),
     ).toBeVisible();
-    await captureComposition(page, folder, "question-types");
+    await captureComposition(page, "question-types");
     await page.getByRole("button", { name: /^Alternativa única/ }).click();
     await page.getByRole("button", { name: "Excluir questão 2", exact: true }).click();
     await page
@@ -127,7 +125,7 @@ test.describe("Teacher practices", () => {
 
     await page.locator("summary").filter({ hasText: "Feedback e explicações" }).click();
     await page.locator("summary").filter({ hasText: "Configurações da questão" }).click();
-    await captureComposition(page, folder, "question-feedback-settings");
+    await captureComposition(page, "question-feedback-settings");
     await page.getByRole("button", { name: "Salvar rascunho", exact: true }).click();
     await expect(page).toHaveURL(/\/teacher\/praticas\/[0-9a-f-]+$/i, { timeout: 30000 });
     const practiceUrl = page.url();
@@ -143,12 +141,12 @@ test.describe("Teacher practices", () => {
     ).toBeVisible();
     expect(await attemptCount(practiceId)).toBe(0);
 
-    await captureComposition(page, folder, "preview-result");
+    await captureComposition(page, "preview-result");
     await preview.getByRole("button", { name: "Fechar", exact: true }).click();
 
     await page.getByRole("button", { name: "Revisar e publicar", exact: true }).click();
     await expect(page.getByText("Acesso herdado da aula", { exact: true })).toBeVisible();
-    await captureComposition(page, folder, "review-before-publish");
+    await captureComposition(page, "review-before-publish");
     await expect(page.getByRole("button", { name: "Atribuir prática", exact: true })).toHaveCount(
       0,
     );
@@ -158,7 +156,7 @@ test.describe("Teacher practices", () => {
     });
     await page.goto("/teacher/praticas");
     await expect(page.getByRole("link", { name: title, exact: true })).toBeVisible();
-    await captureComposition(page, folder, "published-listing");
+    await captureComposition(page, "published-listing");
 
     const studentContext = await browser.newContext();
     const student = await studentContext.newPage();

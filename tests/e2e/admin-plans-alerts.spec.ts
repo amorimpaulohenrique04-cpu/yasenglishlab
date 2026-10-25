@@ -3,7 +3,7 @@ import { test as base, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
-import { mkdirSync } from "node:fs";
+import { captureScreenshot } from "../helpers/capture-screenshot";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const enabled = process.env.CANONICAL_E2E === "1";
 const test = base.extend<{ adminPage: Page }>({
@@ -24,7 +24,7 @@ const stamp = Date.now();
 const planName = "Plano D E2E " + stamp;
 const cohortName = "Turma sem entrada F E2E " + stamp;
 const right = "Quantidade de Core Classes disponíveis por semana.";
-const folder = "harness/evidence/stage-12-lacunas-operacionais/screenshots";
+
 function admin() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,7 +33,6 @@ function admin() {
   );
 }
 async function capture(page: Page, prefix: string) {
-  mkdirSync(folder, { recursive: true });
   for (const [name, width, height] of [
     ["desktop", 1440, 1000],
     ["tablet", 834, 1112],
@@ -46,7 +45,7 @@ async function capture(page: Page, prefix: string) {
     expect(result.violations).toEqual([]);
     await assertNoDocumentOverflow(page);
     await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({ path: folder + "/" + prefix + "-" + name + ".png", fullPage: true });
+    await captureScreenshot(page, test.info(), `${prefix}-${name}`, { fullPage: true });
   }
 }
 test.describe("Stage 12D/F Admin operations", () => {

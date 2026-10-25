@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { captureScreenshot } from "../helpers/capture-screenshot";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
@@ -9,7 +9,6 @@ if (process.env.CANONICAL_E2E !== "1" || !password)
   throw new Error("Sessions redesign E2E requires the canonical local fixture.");
 
 async function evidence(page: Page, name: string) {
-  await mkdir("harness/evidence/teacher-sessions-redesign/screenshots", { recursive: true });
   const dialog = page.getByRole("dialog").first();
   const modalVisible = await dialog.isVisible();
   if (modalVisible) {
@@ -18,10 +17,7 @@ async function evidence(page: Page, name: string) {
     if (page.viewportSize()!.width >= 850)
       expect(box?.width).toBeLessThanOrEqual(name.startsWith("availability") ? 1024 : 480);
   }
-  await page.screenshot({
-    path: `harness/evidence/teacher-sessions-redesign/screenshots/${name}.png`,
-    fullPage: !modalVisible,
-  });
+  await captureScreenshot(page, test.info(), name, { fullPage: !modalVisible });
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
