@@ -4,7 +4,6 @@ import { captureScreenshot } from "../helpers/capture-screenshot";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalOtherTeacher, loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
-const enabled = process.env.CANONICAL_E2E === "1";
 const password = process.env.CANONICAL_E2E_PASSWORD;
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -12,8 +11,10 @@ const courseId = "40000000-0000-4000-8000-000000000001";
 const moduleId = "41000000-0000-4000-8000-000000000001";
 const lessonId = "42000000-0000-4000-8000-000000000001";
 
-if (enabled && (!password || !url || !serviceRoleKey)) {
-  throw new Error("Teacher practices E2E requires canonical local Supabase credentials.");
+if (process.env.CANONICAL_E2E !== "1" || !password || !url || !serviceRoleKey) {
+  throw new Error(
+    "Teacher practices E2E requires CANONICAL_E2E=1 and canonical local Supabase credentials.",
+  );
 }
 
 const admin =
@@ -71,7 +72,6 @@ async function captureComposition(page: Page, name: string) {
 
 test.describe("Teacher practices", () => {
   test.use({ actionTimeout: 15000 });
-  test.skip(!enabled, "Requires canonical Supabase.");
 
   test("Teacher previews without persistence, publishes to a lesson, and students get one final attempt", async ({
     page,
