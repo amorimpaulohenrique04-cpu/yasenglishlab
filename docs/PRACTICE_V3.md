@@ -46,6 +46,14 @@ The database derives the learner from `auth.uid()`. Provisional endpoints return
 
 `score` and `maxScore` are weighted objective points, using each item's `weight` or 1. Manual WRITTEN/SPOKEN items remain `PENDING_MANUAL` and contribute no automatic points. `metrics.firstTryCorrect` is an item count, not a weighted score. Practice results do not write `lesson_progress`, `assessment_attempts`, or `skill_scores`; they do not establish or change CEFR proficiency.
 
+## 5. Manual review and feedback progress
+
+Each WRITTEN/SPOKEN answer is reviewed on its own by an assigned Teacher (`finalize_practice_review` with `p_item_id`); the result becomes `MANUAL_REVIEWED` only when the last open answer of the attempt is reviewed, with one `PRACTICE_FEEDBACK_READY` notification and the objective score untouched. Read models (migration `20261025140000_practice_review_feedback_consistency.sql`):
+
+- **Teacher queue** — `get_teacher_review_queue_page(p_filters)` returns one entry per attempt with all of its pending answers. Tab, search and cohort filters run before the page is cut; pages are keyset cursors over `(submitted_at, attempt id)` (20 by default, at most 50), so an attempt with up to 20 open answers is never split. `kinds` is the union of the pending answers' kinds: a written + spoken attempt appears in both tabs and once in "all", so tab counts may sum above the total. Totals and counts cover the Teacher's whole scope. `get_teacher_review_queue_position(p_attempt)` gives "n de m" and neighbours.
+- **Teacher detail** — `get_teacher_reviews(p_attempt)` lists the manual answers; `get_teacher_review_context(p_attempt).questions` lists every question in its original order (prompt, public response definition, the Student's round-1 answer, persisted evaluation, review flag), never `private.practice_item_keys`. Only WRITTEN/SPOKEN questions take a rubric. After a save the server re-reads the attempt: while an answer is pending the Teacher stays on it ("próxima pergunta"); only a finished attempt moves to the next one.
+- **Student Feedbacks** — `list_student_feedbacks` returns one PRACTICE row per attempt: `PENDING` (0 of M reviewed), `PARTIAL` (1..M-1) or `REVIEWED` (`MANUAL_REVIEWED`), with `manual_total/manual_reviewed/manual_pending`. v1/v2 count as one answer. v3 comments are read per question on `/pratica/<attempt>`, never flattened into the feed.
+
 ## Historical decisions
 
 The earlier v3 phases specified round-one immediate verdicts, a second reinforcement round, per-item spaced-review schedules, 24-hour resume/abandonment, and a bypass for activities assigned to a student's cohort. Those decisions are superseded for lesson-bound practices by ADR 0025. Existing response/result history and schedule rows are retained; current lesson-bound creation and submission use the contracts above.
