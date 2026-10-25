@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { runSqlSuite } from "./_sql-test-runner.mjs";
 
 const suite = process.argv[2];
 const suites = {
@@ -138,68 +138,4 @@ if (!files) {
   process.exit(2);
 }
 
-const databaseUrl = process.env.DATABASE_URL;
-const psqlArgs = databaseUrl ? [`--dbname=${databaseUrl}`] : [];
-psqlArgs.push("-v", "ON_ERROR_STOP=1");
-
-for (const file of files) {
-  console.log(`\n▶ psql ${file}`);
-  const result = spawnSync("psql", [...psqlArgs, "-f", file], {
-    stdio: "inherit",
-  });
-  if (result.error?.code === "ENOENT") {
-    console.error("psql is required for executable database/RLS tests.");
-    process.exit(2);
-  }
-  if (result.status !== 0) process.exit(result.status ?? 1);
-}
-
-if (suite === "integration") {
-  console.log("\n▶ real Agenda concurrency");
-  const concurrency = spawnSync(process.execPath, ["scripts/test-schedule-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (concurrency.status !== 0) process.exit(concurrency.status ?? 1);
-}
-
-if (suite === "integration") {
-  const core = spawnSync(process.execPath, ["scripts/test-core-experience-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (core.status !== 0) process.exit(core.status ?? 1);
-  const placement = spawnSync(process.execPath, ["scripts/test-placement-concurrency.mjs"], {
-    stdio: "inherit",
-    env: process.env,
-  });
-  if (placement.status !== 0) process.exit(placement.status ?? 1);
-  const notifications = spawnSync(
-    process.execPath,
-    ["scripts/test-notification-delivery-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (notifications.status !== 0) process.exit(notifications.status ?? 1);
-  const billingWebhook = spawnSync(
-    process.execPath,
-    ["scripts/test-billing-webhook-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (billingWebhook.status !== 0) process.exit(billingWebhook.status ?? 1);
-  const courseCompletion = spawnSync(
-    process.execPath,
-    ["scripts/test-course-completion-concurrency.mjs"],
-    {
-      stdio: "inherit",
-      env: process.env,
-    },
-  );
-  if (courseCompletion.status !== 0) process.exit(courseCompletion.status ?? 1);
-}
-console.log(`\n✓ ${suite} SQL suite passed (${files.length} file(s)).`);
+process.exitCode = runSqlSuite(suite, files).exitCode;
