@@ -47,6 +47,7 @@ import {
   makeAvailabilityDraft,
 } from "./availability-form";
 import styles from "./availability-workspace.module.css";
+import { TeacherMetric, TeacherMetricGrid } from "./teacher-metric";
 
 type Scope = "occurrence" | "future";
 type Pending = { slot: AvailabilitySlot; action: "PAUSE" | "RESUME" | "DELETE" };
@@ -271,13 +272,15 @@ export function AvailabilityWorkspace({
       </fieldset>
     ) : null;
   const nextDay = next ? localParts(next.starts_at).date : null;
-  const nextLabel =
+  // Time in the value slot, day in the caption, so the card never wraps a long sentence.
+  const nextTime = next
+    ? `${localParts(next.starts_at).time} – ${localParts(next.ends_at).time}`
+    : "Nenhum";
+  const nextDayLabel =
     next && nextDay
-      ? `${
-          nextDay === today || nextDay === addDays(today, 1)
-            ? relativeDayLabel(nextDay, today)
-            : `${relativeDayLabel(nextDay, today)}, ${formatDay(nextDay, "short")}`
-        }, ${localParts(next.starts_at).time} – ${localParts(next.ends_at).time}`
+      ? nextDay === today || nextDay === addDays(today, 1)
+        ? relativeDayLabel(nextDay, today)
+        : `${relativeDayLabel(nextDay, today)}, ${formatDay(nextDay, "short")}`
       : "Nenhum intervalo futuro";
   return (
     <div className={styles.page} ref={root}>
@@ -291,51 +294,49 @@ export function AvailabilityWorkspace({
           </span>
         }
       />
-      <div className={styles.metrics}>
-        <button type="button" className={styles.metric} onClick={showList}>
-          <span className={styles.iconTile} data-tone="lilac">
-            <Icon name="cal" size={24} />
-          </span>
-          <div>
-            <strong className={styles.metricValue}>
-              <AnimatedNumber value={activeCount} />
-            </strong>
-            <h2>Horários ativos</h2>
-            <p>Na semana selecionada</p>
-          </div>
-          <Icon name="right" size={16} className={styles.metricMore} />
-        </button>
-        <section className={styles.metric}>
-          <span className={styles.iconTile} data-tone="blue">
-            <Icon name="clock" size={24} />
-          </span>
-          <div>
-            <strong className={styles.metricValue}>{formatDuration(minutes)}</strong>
-            <h2>Horas disponíveis na semana</h2>
-            <p>Descontando sessões agendadas</p>
-          </div>
-        </section>
-        <section className={styles.metric}>
-          <span className={styles.iconTile} data-tone="yellow">
-            <Icon name="bell" size={23} />
-          </span>
-          <div>
-            <h2>Próximo intervalo</h2>
-            <strong className={styles.next}>{nextLabel}</strong>
-          </div>
-        </section>
-        <section className={styles.metric}>
-          <span className={styles.iconTile} data-tone="green">
-            <Icon name="eye" size={24} />
-          </span>
-          <div>
-            <h2 className={styles.configured}>
-              {activeCount ? "Disponibilidade configurada" : "Configure seus horários"}
-            </h2>
-            <p>Alunos visualizam as sessões abertas para reserva.</p>
-          </div>
-        </section>
-      </div>
+      <TeacherMetricGrid label="Resumo da disponibilidade">
+        <TeacherMetric
+          icon="cal"
+          tone="lilac"
+          label="Horários ativos"
+          labelAs="h2"
+          value={<AnimatedNumber value={activeCount} />}
+          caption="Na semana selecionada"
+          onClick={showList}
+          arrow
+          enterStep={0}
+        />
+        <TeacherMetric
+          icon="clock"
+          tone="blue"
+          label="Horas na semana"
+          labelAs="h2"
+          value={formatDuration(minutes)}
+          caption="Descontando sessões agendadas"
+          enterStep={1}
+        />
+        <TeacherMetric
+          icon="bell"
+          tone="yellow"
+          label="Próximo intervalo"
+          labelAs="h2"
+          value={nextTime}
+          valueKind="text"
+          caption={nextDayLabel}
+          enterStep={2}
+        />
+        <TeacherMetric
+          icon="eye"
+          tone="green"
+          label="Visibilidade"
+          labelAs="h2"
+          value={activeCount ? "Configurada" : "Configure seus horários"}
+          valueKind="text"
+          valueTone={activeCount ? "success" : "default"}
+          caption="Alunos veem as sessões abertas para reserva."
+          enterStep={3}
+        />
+      </TeacherMetricGrid>
       <div className={styles.mobileAdd}>
         <Button
           leadingIcon={<Icon name="plus" size={17} />}

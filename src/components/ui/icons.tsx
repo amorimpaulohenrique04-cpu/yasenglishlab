@@ -27,6 +27,7 @@ export type IconName =
   | "grad"
   | "grid"
   | "headphones"
+  | "info"
   | "history"
   | "home"
   | "inbox"
@@ -398,6 +399,12 @@ const paths: Record<IconName, ReactNode> = {
     </>
   ),
   bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v5M12 7.5v.5" />
+    </>
+  ),
   bulb: (
     <>
       <path d="M9 18h6M10 21h4" />

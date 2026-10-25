@@ -852,6 +852,11 @@ textarea.yas-field-control {
   flex: none;
 }
 
+.yas-avatar[data-tone="neutral"] {
+  background: var(--yas-tint-grey);
+  color: var(--yas-tint-grey-ink);
+}
+
 .yas-avatar img {
   width: 100%;
   height: 100%;

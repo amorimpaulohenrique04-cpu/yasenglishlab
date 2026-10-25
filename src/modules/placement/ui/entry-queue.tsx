@@ -12,7 +12,6 @@ import {
   EmptyState,
   FilterBar,
   Icon,
-  IconBadge,
   Input,
   Select,
   useToast,
@@ -28,6 +27,7 @@ import {
   type EntryQueueData,
 } from "../domain/entry-workspace";
 import { reviewSlaLabels, reviewSlaStatus } from "../domain/review-sla";
+import { TeacherMetric, TeacherMetricGrid } from "@/modules/teacher-operations/ui/teacher-metric";
 import styles from "./entry-workspace.module.css";
 
 export function EntryStatus({ status }: { status: "pending" | "draft" | "done" }) {
@@ -163,29 +163,24 @@ export function EntryQueue({
   };
   return (
     <>
-      <div className="yas-metric-strip" role="group" aria-label="Resumo das revisões de entrada">
-        {metrics.map((metric) => {
+      <TeacherMetricGrid label="Resumo das revisões de entrada">
+        {metrics.map((metric, index) => {
           const active = filters.status === metric.status;
           return (
-            <button
+            <TeacherMetric
               key={metric.key}
-              type="button"
-              className={`yas-metric-card ${styles.metric}`}
-              aria-pressed={active}
+              icon={metric.icon}
+              tone={metric.tone}
+              label={metric.label}
+              value={<AnimatedNumber value={data.counts[metric.key]} />}
+              caption={metric.note}
+              pressed={active}
               onClick={() => go({ status: active ? "active" : metric.status })}
-            >
-              <span className="yas-metric-label">
-                <IconBadge icon={metric.icon} tone={metric.tone} shape="square" size="sm" />
-                {metric.label}
-              </span>
-              <strong className="yas-metric-value">
-                <AnimatedNumber value={data.counts[metric.key]} />
-              </strong>
-              <span className="yas-metric-detail">{metric.note}</span>
-            </button>
+              enterStep={index}
+            />
           );
         })}
-      </div>
+      </TeacherMetricGrid>
       <section className={styles.queue} aria-labelledby="entry-queue-title" aria-busy={pending}>
         <h2 id="entry-queue-title" className="sr-only">
           Fila de testes de entrada

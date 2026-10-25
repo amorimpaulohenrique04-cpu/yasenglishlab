@@ -28,94 +28,6 @@
   color: var(--yas-color-ink-soft);
   font-size: var(--yas-font-size-xs);
 }
-.metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1.1fr 1.4fr;
-  gap: var(--yas-space-3);
-}
-.metric {
-  display: flex;
-  gap: var(--yas-space-4);
-  align-items: center;
-  background: var(--yas-color-surface);
-  border: 1px solid var(--yas-color-border-soft);
-  border-radius: var(--yas-radius-lg);
-  padding: var(--yas-space-4);
-  box-shadow: var(--yas-shadow-card);
-  min-width: 0;
-}
-.metric > div {
-  min-width: 0;
-  display: grid;
-  gap: var(--yas-space-1);
-}
-.metric h2 {
-  font-family: var(--yas-font-sans);
-  font-size: var(--yas-font-size-sm);
-  font-weight: var(--yas-weight-medium);
-  letter-spacing: normal;
-}
-.metric p {
-  font-size: var(--yas-font-size-xs);
-  color: var(--yas-color-muted);
-}
-.metricValue {
-  font-size: var(--yas-font-size-2xl);
-  font-weight: var(--yas-weight-display);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-}
-.next {
-  font-size: var(--yas-font-size-sm);
-}
-.configured {
-  color: var(--yas-color-success);
-}
-.iconTile {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: var(--yas-tint-lilac);
-  color: var(--yas-tint-lilac-ink);
-}
-.iconTile[data-tone="blue"] {
-  background: var(--yas-tint-blue);
-  color: var(--yas-tint-blue-ink);
-}
-.iconTile[data-tone="yellow"] {
-  background: var(--yas-tint-yellow);
-  color: var(--yas-tint-yellow-ink);
-}
-button.metric {
-  font: inherit;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-  width: 100%;
-}
-button.metric:hover {
-  border-color: var(--yas-color-purple-200);
-}
-button.metric:focus-visible {
-  outline: 2px solid var(--yas-color-focus);
-  outline-offset: 2px;
-}
-.metricMore {
-  margin-inline-start: auto;
-  color: var(--yas-color-muted);
-  flex: none;
-}
-.metricValue small {
-  font-size: var(--yas-font-size-sm);
-  font-weight: var(--yas-weight-medium);
-}
-.iconTile[data-tone="green"] {
-  background: var(--yas-tint-green);
-  color: var(--yas-tint-green-ink);
-}
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(22rem, 24rem);
@@ -701,9 +613,6 @@ button.metric:focus-visible {
   .workspace {
     grid-template-columns: minmax(0, 1.4fr) minmax(21rem, 1fr);
   }
-  .metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .calendarHeader nav {
     width: 100%;
     justify-content: space-between;
@@ -819,11 +728,6 @@ button.metric:focus-visible {
   }
 }
 @container availability (max-width: 28rem) {
-  .metric {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: var(--yas-space-4);
-  }
   .calendarPanel,
   .panel {
     padding: var(--yas-space-4);

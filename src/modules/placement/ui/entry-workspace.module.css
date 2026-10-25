@@ -24,21 +24,6 @@
   color: var(--yas-color-muted);
   font-size: var(--yas-font-size-xs);
 }
-.metric {
-  border: 0;
-  width: 100%;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.metric[aria-pressed="true"] {
-  outline: 2px solid var(--yas-color-purple-500);
-  outline-offset: -2px;
-}
-.metric:focus-visible {
-  outline: 2px solid var(--yas-color-focus);
-  outline-offset: 2px;
-}
 .queue {
   display: grid;
   gap: var(--yas-space-3);
