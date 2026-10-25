@@ -189,13 +189,8 @@ test("Student profile: mobile evidence", async ({ page }) => {
     path: "harness/evidence/teacher-students-refinement/profile-mobile.png",
     fullPage: false,
   });
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    ),
-  ).toBeLessThanOrEqual(1);
-  // Panels fade in (CSS and Motion, which animates inline opacity); measure contrast on the
-  // settled colors, not a mid-fade frame.
+  // Panels fade and rise in (CSS and Motion, which animates inline opacity/transform); measure
+  // layout and contrast on the settled frame, not mid-animation.
   await page.waitForFunction(
     () =>
       document.getAnimations().every((animation) => animation.playState !== "running") &&
@@ -203,6 +198,11 @@ test("Student profile: mobile evidence", async ({ page }) => {
         (element) => getComputedStyle(element).opacity === "1",
       ),
   );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    ),
+  ).toBeLessThanOrEqual(1);
   const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   expect(axe.violations).toEqual([]);
 });

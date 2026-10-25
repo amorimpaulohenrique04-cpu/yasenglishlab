@@ -72,6 +72,8 @@ test("Teacher scoped review preserves keyboard and WCAG AA", async ({ browser })
   await expect(page.getByLabel("Feedback para o aluno")).toBeVisible();
   await page.getByLabel("Trilha recomendada").focus();
   await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Nível pedagógico recomendado")).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(page.getByLabel("Confiança na recomendação")).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(page.getByRole("tab", { name: "Escrever manualmente" })).toBeFocused();

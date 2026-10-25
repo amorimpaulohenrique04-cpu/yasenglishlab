@@ -50,10 +50,13 @@ async function captureComposition(page: Page, name: string) {
     ["mobile", 390, 844],
   ] as const) {
     await page.setViewportSize({ width, height });
-    await page.waitForFunction(() =>
-      Array.from(document.querySelectorAll("[data-practice-stage]")).every(
-        (el) => getComputedStyle(el).opacity === "1",
-      ),
+    // Settled frame only: stage fades and button transitions (autosave re-enables "Salvar
+    // rascunho" from its disabled opacity) would otherwise be measured mid-animation by axe.
+    await page.waitForFunction(
+      () =>
+        Array.from(document.querySelectorAll("[data-practice-stage]")).every(
+          (el) => getComputedStyle(el).opacity === "1",
+        ) && document.getAnimations().every((animation) => animation.playState !== "running"),
     );
     await page.evaluate(async () => {
       await document.fonts.ready;
