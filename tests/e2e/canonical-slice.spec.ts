@@ -404,9 +404,9 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Próxima sessão" })).toBeVisible();
     await expect(page.getByText("Core Class · Building confidence").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Prática recomendada" })).toBeVisible();
-    await expect(
-      page.getByText("Cumprimentos e present simple", { exact: true }).first(),
-    ).toBeVisible();
+    // The only lesson practice was submitted (final attempt, ADR 0025): it is no longer recommended.
+    // (Other reachable practices created by sibling specs may legitimately be recommended instead.)
+    await expect(page.getByRole("link", { name: /Abrir prática Cumprimentos/ })).toHaveCount(0);
     await expect(
       page.getByRole("progressbar", { name: "Conclusão de Yas Foundations" }),
     ).toBeVisible();

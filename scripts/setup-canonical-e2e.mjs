@@ -442,7 +442,10 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
 // lesson 01 is completed, so B is the "unassigned student" of the future-lesson practice scenarios.
 const { error: cohortBPathError } = await admin
   .from("cohort_paths")
-  .upsert({ cohort_id: cohortIds[1], mode: "DEFAULT", sequential: true }, { onConflict: "cohort_id" });
+  .upsert(
+    { cohort_id: cohortIds[1], mode: "DEFAULT", sequential: true },
+    { onConflict: "cohort_id" },
+  );
 if (cohortBPathError) throw cohortBPathError;
 // Decision A: an explicit teacher assignment legitimately opens future-lesson
 // practice for this cohort, without changing lesson progress or access for cohort B.

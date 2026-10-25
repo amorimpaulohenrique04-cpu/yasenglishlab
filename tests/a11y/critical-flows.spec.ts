@@ -367,6 +367,7 @@ test("Stage 12A practice builder preserves keyboard steps and accessible fields"
   // disabled until their parent is chosen, so each is checked right after it becomes enabled.
   const focusable = async (label: string) => {
     const control = page.getByLabel(label, { exact: true });
+    await expect(control).toBeVisible();
     await expect(control).toBeEnabled();
     await control.focus();
     await expect(control).toBeFocused();

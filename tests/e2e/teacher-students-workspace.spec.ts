@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
@@ -117,6 +118,12 @@ test("Students list: next actions, pending tab, portfolio", async ({ page }) => 
 
 test("Student profile: pending review CTA and follow-up card", async ({ page }) => {
   test.setTimeout(240_000);
+  // Earlier specs (teacher-pedagogy, teacher-entry-workspace) review and consume the fixture's
+  // pending items, so this test restores its own precondition.
+  execFileSync(process.execPath, ["scripts/setup-canonical-e2e.mjs"], {
+    env: process.env,
+    stdio: "inherit",
+  });
   await loginCanonicalTeacher(page, password);
   await page.goto("/teacher/alunos?tab=pending");
   const table = page.getByRole("table");

@@ -40,9 +40,8 @@ describe("practice prompt document", () => {
       ]).success,
     ).toBe(false);
     expect(
-      promptDocumentSchema.safeParse([
-        { type: "paragraph", children: [{ text: "x".repeat(601) }] },
-      ]).success,
+      promptDocumentSchema.safeParse([{ type: "paragraph", children: [{ text: "x".repeat(601) }] }])
+        .success,
     ).toBe(false);
   });
 });

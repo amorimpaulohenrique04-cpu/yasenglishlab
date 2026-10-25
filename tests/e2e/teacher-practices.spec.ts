@@ -157,7 +157,7 @@ test.describe("Teacher practices", () => {
       timeout: 30000,
     });
     await page.goto("/teacher/praticas");
-    await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: title, exact: true })).toBeVisible();
     await captureComposition(page, folder, "published-listing");
 
     const studentContext = await browser.newContext();
