@@ -50,8 +50,10 @@ select set_config('request.jwt.claim.sub','',true),set_config('request.jwt.claim
 update public.placement_cases set state_changed_at=now()-interval '30 days' where id=(select id from cases where n=2);
 
 -- Students 3 and 4 have a submitted manual practice waiting for review; only Student 4 has a Teacher.
-insert into public.practice_activities(id,slug,title,skill,estimated_minutes,content,active,publication_status,published_at)
+-- Published practices are lesson-bound (ADR 0025): attach it to the seeded Foundations lesson.
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,related_module_id,related_lesson_id,course_id,content,active,publication_status,published_at)
 values(pg_temp.id(400),'dead-ends-manual','Dead ends manual','SPEAKING',5,
+ '41000000-0000-4000-8000-000000000001','42000000-0000-4000-8000-000000000001','40000000-0000-4000-8000-000000000001',
  '{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Describe your day","instructions":"Record a short response"}',true,'PUBLISHED',now());
 insert into public.practice_attempts(id,user_id,practice_activity_id,status,submitted_at) values
  (pg_temp.id(403),pg_temp.id(3),pg_temp.id(400),'SUBMITTED',now()-interval '2 days'),
