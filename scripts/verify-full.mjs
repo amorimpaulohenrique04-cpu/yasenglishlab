@@ -1,3 +1,4 @@
+import { redactCIText } from "./ci/redact-ci-evidence.mjs";
 import { runPlaywrightSuite } from "./_playwright-suite.mjs";
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -17,8 +18,8 @@ function run(command, args, env = process.env, capture = false) {
   }
   if (result.status !== 0) {
     if (capture) {
-      process.stderr.write(result.stderr ?? "");
-      process.stdout.write(result.stdout ?? "");
+      process.stderr.write(redactCIText(result.stderr ?? ""));
+      process.stdout.write(redactCIText(result.stdout ?? ""));
     }
     throw new Error(`Command failed: ${command} ${args.join(" ")}`);
   }
@@ -67,9 +68,9 @@ try {
   if (!existsSync(`${process.env.YAS_SUPABASE_WORKDIR ?? "."}/supabase/config.toml`)) {
     sb(["init"]);
   }
-  sb(["start"]);
+  sb(["start"], true);
   supabaseStarted = true;
-  sb(["db", "reset"]);
+  sb(["db", "reset"], true);
 
   const status = sb(["status", "-o", "env"], true);
   const local = parseEnv(status.stdout ?? "");

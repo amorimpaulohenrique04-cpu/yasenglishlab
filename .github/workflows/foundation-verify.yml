@@ -26,26 +26,37 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Use Node 24
+        id: node
+        if: ${{ !cancelled() }}
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: npm
       - name: Repository and lockfile policy
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
         run: node scripts/ci/check-repo-policy.mjs
       - name: Secret scan
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
         run: node scripts/ci/secret-scan.mjs
       - name: Install locked dependencies
+        id: dependencies
+        if: ${{ !cancelled() && steps.node.outcome == 'success' }}
         run: npm ci
       - name: Apply reviewed dependency security patch
+        id: patch
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
         run: npm run security:patch-deps
       - name: Verify reviewed dependency security patch
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run verify:dependency-patches
       - name: Audit locked dependency graph
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run verify:supply-chain
 
   quality:
     name: Quality
     needs: supply-chain
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -62,27 +73,43 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Apply reviewed dependency security patch
+        id: patch
         run: npm run security:patch-deps
       - name: Format
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run format:check
       - name: Lint
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run lint
       - name: Typecheck
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run typecheck
       - name: Unit tests
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run test:unit
       - name: Integration tests
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run test:integration
       - name: Harness invariants
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run verify:harness
       - name: Security invariants
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run verify:security
+      - name: Database structural invariants
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
+        run: npm run verify:db
+      - name: Agent behavioral eval
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
+        run: npm run eval:agent
       - name: Production build
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: npm run build
 
   database:
     name: Database
     needs: supply-chain
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -115,21 +142,27 @@ jobs:
         with:
           node-version: 24
       - name: Install PostgreSQL client
+        id: client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
       - name: Enforce migration policy
+        if: ${{ !cancelled() && steps.client.outcome == 'success' }}
         run: node scripts/ci/check-migrations.mjs
       - name: Validate migrations from a clean database
+        if: ${{ !cancelled() && steps.client.outcome == 'success' }}
         run: bash scripts/ci/validate-migrations.sh yas_clean_first
       - name: Replay migrations from a second clean database
+        if: ${{ !cancelled() && steps.client.outcome == 'success' }}
         run: bash scripts/ci/validate-migrations.sh yas_clean_replay
       - name: Validate base-to-head upgrade with legacy data
+        if: ${{ !cancelled() && steps.client.outcome == 'success' }}
         run: bash scripts/ci/validate-upgrade.sh yas_upgrade
 
   guardrail-simulations:
     name: Guardrail Simulations
     needs: supply-chain
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -165,17 +198,21 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Apply reviewed dependency security patch
+        id: patch
         run: npm run security:patch-deps
       - name: Install PostgreSQL client
+        id: client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
       - name: Simulate valid PR
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         run: |
           node scripts/ci/check-repo-policy.mjs
           node scripts/ci/check-migrations.mjs
           node scripts/ci/secret-scan.mjs
       - name: Simulate failing test and prove it is rejected
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -192,6 +229,7 @@ jobs:
           rm tests/unit/__ci_expected_failure.test.ts
           echo "✓ failing test was blocked"
       - name: Simulate invalid migration and prove it is rejected
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' && steps.client.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -203,6 +241,7 @@ jobs:
           rm supabase/migrations/99991231235959_ci_invalid.sql
           echo "✓ invalid migration was blocked"
       - name: Simulate detectable secret and prove it is rejected
+        if: ${{ !cancelled() && steps.patch.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -255,7 +294,7 @@ jobs:
       YAS_E2E_PRODUCTION: "1"
     name: Preview (${{ matrix.suite }})
     needs: [changes, quality, database]
-    if: needs.changes.outputs.code == 'true'
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -263,79 +302,95 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [database-proofs, e2e, accessibility, visual]
+        suite: [database-proofs, e2e, accessibility, visual, full-verification]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Prepare isolated Preview
+        id: setup
         uses: ./.github/actions/preview-setup
       - name: Prove real database integration and booking concurrency
-        if: matrix.suite == 'database-proofs'
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite == 'database-proofs' }}
         run: npm run test:integration:db
       - name: Prove RLS permissions
-        if: matrix.suite == 'database-proofs'
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite == 'database-proofs' }}
         run: npm run test:rls
       - name: Prove intentional error reaches observability
-        if: matrix.suite == 'database-proofs'
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite == 'database-proofs' }}
         env:
           OBSERVABILITY_LIVE_TEST: "1"
         run: npm run test:observability:live
       - name: Prepare canonical preview fixture
-        if: matrix.suite != 'database-proofs'
+        id: fixture
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite != 'database-proofs' && matrix.suite != 'full-verification' }}
         run: node scripts/setup-canonical-e2e.mjs
       - name: Cache Playwright Chromium
-        if: matrix.suite != 'database-proofs'
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite != 'database-proofs' }}
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - name: Install Playwright Chromium
-        if: matrix.suite != 'database-proofs'
+        id: browser
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite != 'database-proofs' }}
         run: npx playwright install chromium
       - name: Build Preview app
-        if: matrix.suite != 'database-proofs'
+        id: build
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite != 'database-proofs' && matrix.suite != 'full-verification' && steps.fixture.outcome == 'success' && steps.browser.outcome == 'success' }}
         run: npm run build
       - name: Critical E2E
-        if: matrix.suite == 'e2e'
-        run: npm run test:e2e
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && steps.build.outcome == 'success' && matrix.suite == 'e2e' }}
+        run: npm run test:e2e -- --trace off
       - name: Reject skipped or retried-until-green E2E tests
         if: ${{ !cancelled() && matrix.suite == 'e2e' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/e2e/results.json "Critical E2E"
       - name: Assert persistence and analytics
-        if: matrix.suite == 'e2e'
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && steps.build.outcome == 'success' && matrix.suite == 'e2e' }}
         run: node scripts/assert-canonical-e2e.mjs
       - name: Accessibility checks
-        if: matrix.suite == 'accessibility'
-        run: npm run test:a11y
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && steps.build.outcome == 'success' && matrix.suite == 'accessibility' }}
+        run: npm run test:a11y -- --trace off
       - name: Reject skipped or retried-until-green accessibility tests
         if: ${{ !cancelled() && matrix.suite == 'accessibility' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/a11y/results.json "Accessibility checks"
       - name: Build Storybook
-        if: matrix.suite == 'visual'
+        id: storybook
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite == 'visual' }}
         run: npm run storybook:build
       - name: Design-system visual checks
-        if: matrix.suite == 'visual'
-        run: npm run test:visual:storybook
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && matrix.suite == 'visual' && steps.storybook.outcome == 'success' && steps.browser.outcome == 'success' }}
+        run: npm run test:visual:storybook -- --trace off
       - name: Validate Storybook results
         if: ${{ !cancelled() && matrix.suite == 'visual' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/storybook/results.json "Storybook"
       - name: Product golden visual checks
-        if: matrix.suite == 'visual'
-        run: npm run test:visual:golden
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && steps.build.outcome == 'success' && matrix.suite == 'visual' }}
+        run: npm run test:visual:golden -- --trace off
       - name: Validate golden results
         if: ${{ !cancelled() && matrix.suite == 'visual' }}
         run: node scripts/ci/check-playwright-results.mjs artifacts/golden/results.json "Goldens"
-      - name: Upload preview evidence
+      - name: Full release verification
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && steps.browser.outcome == 'success' && matrix.suite == 'full-verification' }}
+        run: npm run verify:full
+      - name: Sanitize preview evidence
+        id: sanitize
         if: always()
+        run: node scripts/ci/redact-ci-evidence.mjs
+      - name: Upload preview evidence
+        if: ${{ always() && steps.sanitize.outcome == 'success' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: preview-evidence-${{ matrix.suite }}-${{ github.sha }}
           path: |
-            artifacts/
-            test-results/
-            playwright-report/
+            artifacts/e2e/
+            artifacts/a11y/
+            artifacts/golden/
+            artifacts/storybook/
+            test-results/**/*.png
+            test-results/**/error-context.md
+            test-results/**/attachments/*.json
           if-no-files-found: warn
           retention-days: 14
       - name: Stop isolated preview database

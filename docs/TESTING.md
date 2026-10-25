@@ -227,3 +227,9 @@ Cada golden é um teste independente por tela e viewport. O E2E canônico conser
 Para executar sem disputar tipos ou build com um servidor dev aberto, defina `YAS_ISOLATED_VERIFY=1`; a verificação usa `tsconfig.verify.json` e `.next-p18-build`. `verify:full` aceita `YAS_SUPABASE_WORKDIR` apontando para uma stack de teste exclusiva; esse banco será resetado e parado ao final.
 
 Exceção explícita: o projeto `chromium-commercial` executa somente `commercial.spec.ts` em `next dev` isolado (porta principal + 1 e APP_URL correspondente). O provedor FAKE recusa produção por contrato; essa proteção permanece intacta. Os outros E2E e as suítes a11y/golden continuam no build de produção. Ambos os projetos alimentam o mesmo relatório obrigatório.
+
+## Diagnóstico completo no GitHub
+
+O Official CI executa checks independentes mesmo após falhas anteriores, desde que seus pré-requisitos reais (dependências com patch, banco, fixture e build) tenham sucesso. Os steps continuam com resultado failure, e CI Gate exige sucesso de todos os jobs. A matriz Preview usa fail-fast:false e inclui database-proofs, e2e, accessibility, visual e full-verification (o comando verify:full); a falha desse comando não impede as suítes independentes.
+
+O runner SQL mantém ON_ERROR_STOP por arquivo, continua os outros arquivos e casos de concorrência e retorna falha agregada. Ausência de psql impede a execução explicitamente. Relatórios JSON, screenshots e error-contexts são sanitizados antes do upload; traces com headers/cookies não são publicados. Os logs dos jobs preservam os diagnósticos dos checks estáticos. Não usar continue-on-error para tornar uma falha verde.
