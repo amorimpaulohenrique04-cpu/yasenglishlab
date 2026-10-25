@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 
 import { createClient } from "@supabase/supabase-js";
+import { assertCanonicalPractice } from "./_canonical-practice-proof.mjs";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -249,8 +250,8 @@ if (eventsResult.status !== 0) {
 
 const events = JSON.parse(eventsResult.stdout.trim() || "[]");
 
-// The canonical v3 journey must complete real work, including its reinforcement
-// answer. An unrelated completion event must never satisfy this release proof.
+// ADR 0025: the canonical journey submits seven final answers, without reinforcement.
+// An unrelated completion event must never satisfy this release proof.
 const { data: attempts, error: attemptsError } = await admin
   .from("practice_attempts")
   .select("id, status")
@@ -267,37 +268,12 @@ const { data: practiceResult, error: practiceResultError } = await admin
   .eq("practice_attempt_id", practiceAttemptId)
   .single();
 if (practiceResultError) throw practiceResultError;
-if (
-  practiceResult.score !== 6 ||
-  practiceResult.max_score !== 7 ||
-  practiceResult.metrics?.itemCount !== 7 ||
-  practiceResult.metrics?.recovered !== 1
-) {
-  throw new Error("Canonical practice must persist seven graded items and one recovered answer.");
-}
 const { data: itemResponses, error: itemResponsesError } = await admin
   .from("practice_item_responses")
   .select("item_id, round, evaluation_status")
   .eq("practice_attempt_id", practiceAttemptId);
 if (itemResponsesError) throw itemResponsesError;
-const expectedItems = ["greet-1", "greet-2", "be-1", "ps-1", "ps-2", "ps-3", "order-1"];
-if (
-  itemResponses?.length !== 8 ||
-  expectedItems.some(
-    (id) =>
-      !itemResponses.some(
-        (row) =>
-          row.item_id === id &&
-          row.round === 1 &&
-          row.evaluation_status === (id === "ps-1" ? "INCORRECT" : "CORRECT"),
-      ),
-  ) ||
-  !itemResponses.some(
-    (row) => row.item_id === "ps-1" && row.round === 2 && row.evaluation_status === "CORRECT",
-  )
-) {
-  throw new Error("Canonical practice responses are incomplete or duplicated.");
-}
+assertCanonicalPractice({ result: practiceResult, responses: itemResponses });
 const practiceEvents = events.filter((row) => row.event_name === "practice_completed");
 if (
   practiceEvents.length !== 1 ||

@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { expect, test, type Page } from "@playwright/test";
+import { assertCanonicalPractice } from "../../scripts/_canonical-practice-proof.mjs";
 
 const enabled = process.env.CANONICAL_E2E === "1";
 const email = "canonical.student@example.test";
@@ -262,6 +263,32 @@ test.describe("canonical learning vertical slice", () => {
           { encoding: "utf8" },
         ).trim(),
       );
+    const assertFinalPractice = () => {
+      const proof = JSON.parse(
+        execFileSync(
+          "psql",
+          [
+            `--dbname=${process.env.DATABASE_URL}`,
+            "-v",
+            "ON_ERROR_STOP=1",
+            "-At",
+            "-c",
+            `select jsonb_build_object(
+              'result', (select jsonb_build_object('score', score, 'max_score', max_score, 'metrics', metrics)
+                         from public.practice_results where practice_attempt_id = a.id),
+              'responses', (select jsonb_agg(jsonb_build_object('item_id', item_id, 'round', round,
+                            'evaluation_status', evaluation_status)) from public.practice_item_responses
+                            where practice_attempt_id = a.id)
+            ) from public.practice_attempts a
+            where a.id = '${attemptId}'::uuid
+              and a.practice_activity_id = '83000000-0000-4000-8000-000000000005'::uuid
+              and a.user_id = (select id from auth.users where email = '${email}')`,
+          ],
+          { encoding: "utf8" },
+        ).trim(),
+      );
+      assertCanonicalPractice(proof);
+    };
     expect(persistedPractice()).toEqual({
       status: "IN_PROGRESS",
       responses: 0,
@@ -370,6 +397,7 @@ test.describe("canonical learning vertical slice", () => {
       events: 1,
     });
     await page.unroute(`**/pratica/${attemptId}`);
+    assertFinalPractice();
     await page.reload();
     await expect(page.getByRole("heading", { name: "Prática concluída" })).toBeVisible();
     expect(persistedPractice()).toEqual({
@@ -379,6 +407,7 @@ test.describe("canonical learning vertical slice", () => {
       events: 1,
     });
     await captureEvidence(page, "pratica-resultado-desktop.png");
+    assertFinalPractice();
 
     await page.goto("/agenda");
     await expect(page.getByRole("heading", { name: "Agenda", exact: true })).toBeVisible();
