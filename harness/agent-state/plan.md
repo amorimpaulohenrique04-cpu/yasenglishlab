@@ -6,6 +6,8 @@
 4. F04: alinhar prova persistida ao ADR 0025, conforme confirmação explícita do usuário:
    sete respostas finais, 6/7, sem rodada nova; garantir identidade, retomada e idempotência.
 5. Checks focados, push no PR #89 e Official CI completo; registrar matriz e bloqueios reais.
+6. F07 revelado no CI corrigido: aguardar o salvamento/redirecionamento real de Turmas antes do axe;
+   F08 é conflito de porta no runner antes do E2E (não é falha dos testes). Reexecutar matriz completa.
 
 # Plano anterior — teacher-release-gates / CI recovery (2026-10-25)
 

@@ -11,6 +11,12 @@ regressão de outline com movimento pleno PASS (reativação imediata, hover, fo
 Official CI final pendente. Evidência: harness/evidence/ci-recovery-final-submission/README.md.
 Registry permanece in_progress / verified:false; sem merge.
 
+Primeiro CI corrigido (1a28d35): Quality, DB, guardrails, visual, a11y e DB/RLS passam nas duas
+runs. Persistência canônica e Teacher practices passam no PR. Falha adicional F07: admin-cohorts
+escaneia durante o redirect do save, pois a linha antiga já satisfazia o expect; agora aguarda
+POST, URL de sucesso, confirmação, fechamento do drawer e título. F08: o runner de push falhou
+antes dos testes por porta 55324 ocupada. Matriz atualizada; nova certificação completa pendente.
+
 ## teacher-sessions-redesign — Fase 2b (correções do usuário) — 2026-10-22
 
 Corrigido, a partir do feedback com capturas:

@@ -20,6 +20,18 @@ Reference report inventory: PR E2E 55 passed, a11y 33 passed/1 failed; push E2E 
 a11y 33 passed/1 failed. Both visual artifacts: 12 golden + 8 Storybook passed, zero skipped/flaky.
 Full artifacts have no later browser results because eval stopped the suite.
 
+## First corrected CI: 1a28d35
+
+Runs [40197095102](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/40197095102)
+and [40197091192](https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/actions/runs/40197091192).
+Quality, database, guardrails, visual (12+9), a11y (34) and real DB/RLS passed in both.
+Canonical E2E persistence and analytics passed in the PR run; Teacher practices also passed.
+
+| Additional finding                        | Cause / evidence                                                                                                                                                                                                                                                                                     | Action                                                                                                                                                                        |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F07: admin-cohorts document-title, PR E2E | The test asserted the old row count immediately after clicking Save. That row and the old title satisfy `settledPage` before the Server Action starts its redirect. Axe then scans the new document while metadata is being replaced. Failure occurs within 2s, not after the helper's 10s fallback. | Await the actual POST, successful result URL, saved confirmation, closed drawer and destination title for both saves before further checks. Existing full axe audit retained. |
+| F08: push E2E infrastructure              | Supabase local mail container could not bind host port 55324 (`address already in use`) in setup; no E2E test ran. Other runners initialized normally.                                                                                                                                               | Record separately from product failures. A new corrected SHA receives a fresh complete matrix. No test retries, skipped assertions or gate changes introduced.                |
+
 ## Visual baseline review
 
 Compared existing expected/actual mobile Home and tablet diff in

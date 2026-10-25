@@ -50,3 +50,8 @@ case and accepts the obsolete eight-response case. Autosave contrast depends on 
 Before: runs 40166442125 / 40166440160; two deterministic persistence unit regressions red.
 After: focused unit checks pass, eval/harness/ratchet/security/DB structural pass.
 Full browser/golden/SQL and Official CI certification pending; keep this record open until inspected.
+
+First corrected CI (1a28d35): a11y 34/34, visual 12+9, DB/RLS and canonical persistence pass.
+Admin cohorts still scans during a save redirect (F07); explicit Server Action/destination
+completion now replaces the old-row-only synchronization. Push E2E had a setup-only port conflict
+(F08), no tests executed. See the evidence matrix for exact run/job context.
