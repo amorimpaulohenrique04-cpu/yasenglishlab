@@ -1,10 +1,10 @@
 # Failure — Availability grid cell partially covered by a session block fails WCAG 2.2 target size
 
 Classification: ui contract
-Status: open
+Status: resolved
 Repeatable: yes
 Date: 2026-10-24
-PR/commit related: `codex/teacher-sessions-redesign` (Teacher availability workspace)
+PR/commit related: `ca16dd5` on `codex/teacher-sessions-redesign` (Teacher availability workspace)
 
 ## Symptom
 
@@ -37,7 +37,7 @@ The first fixture attempt tried to move the booked canonical session and was rej
 
 ## Test/eval created
 
-`tests/unit/availability-grid-geometry.test.ts` and the fixed partial-hour Playwright case above. Execution and before/after production evidence pending; status stays open until the same scenario is proved red then green.
+`tests/unit/availability-grid-geometry.test.ts` and the fixed partial-hour Playwright case above. Execution completed against production builds: the same fixed session failed before with 14.890625px and passed after (1 test, exit 0), including geometry, axe and composer interaction. Reviewed screenshots are in `harness/evidence/teacher-release-gates/availability-before.png` and `availability-after.png`.
 
 ## Reproduction
 
@@ -45,4 +45,5 @@ Schedule a Teacher session from 22:40 to 23:40 on a future day, open `/teacher/d
 
 ## Before/after proof
 
-Before: axe `target-size` violation on the 23:00 cell (prod-runtime a11y run, 2026-10-24). After: pending.
+Before: production run with the dedicated fixed 2099-10-24 22:40–23:40 session measured 14.890625px and failed the >=24px assertion; historical axe violation independently recorded above.
+After: same scenario against the corrected production build passed geometry >= 24 px, WCAG 2.2 AA axe and pointer selection 23:45; Playwright 1 passed (4.1 min), exit 0. Runtime teardown required cleanup of the confirmed server tree; no claim is made that teardown is fixed. See `harness/evidence/teacher-release-gates/README.md`.

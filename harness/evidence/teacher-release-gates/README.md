@@ -30,13 +30,19 @@ No environment files, tokens, service keys or raw Supabase status are stored in 
 
 ## Deterministic before proof
 
-Production build at initial HEAD, dedicated fixed session on 2099-10-24 22:40–23:40: free target height was 14.890625px, rejected by the same regression requiring at least24px. Capture reviewed: availability-before.png. Initial fixture attempt failed before UI with SQLSTATE23514 because it tried to move a reserved session; fixture was corrected to insert/delete its own unbooked session, preserving the immutable reservation guard.
+Production build at initial HEAD, dedicated fixed session on 2099-10-24 22:40–23:40: free target height was 14.890625px, rejected by the same regression requiring at least 24 px. Capture reviewed: availability-before.png. Initial fixture attempt failed before UI with SQLSTATE23514 because it tried to move a reserved session; fixture was corrected to insert/delete its own unbooked session, preserving the immutable reservation guard.
 
 ## Focused non-browser checks
 
-- PASS: 2 unit files /6 tests (capture-screenshot and availability-grid-geometry).
+- PASS: 2 unit files / 6 tests (capture-screenshot and availability-grid-geometry).
 - PASS: verify:security (504 source files inspected).
-- PASS: verify:db (74 migrations, seed and54 SQL invariant files, structural check only).
-- FAIL then document corrected, rerun pending: verify:harness rejected missing required headings in the new screenshot-open failure record. No guard was disabled.
+- PASS: verify:db (74 migrations, seed and 54 SQL invariant files, structural check only).
+- PASS after document repair: verify:harness initially rejected missing required headings in the new screenshot-open failure record. No guard was disabled.
 
 Current commits: f54cb7e (capture isolation), ca16dd5 (availability geometry and fixed fixture).
+
+## Deterministic after proof
+
+PASS: same fixed session against corrected production build; geometry >= 24 px, axe WCAG 2.2 AA and click/composer 23:45 assertions passed. Playwright reported 1 passed (4.1 min), exit 0. Screenshot availability-after.png reviewed. Runner completion was delayed and executor cleaned up the confirmed server tree; no teardown fix is claimed. Functional result and environment cleanup are recorded separately.
+
+PASS: verify:harness after failure-record heading repair. Eval after `6e6296c` has one remaining FAIL for primitive semantic review; skip rule now PASS. Manual review is in semantic-review.md; evaluator remains unchanged.
