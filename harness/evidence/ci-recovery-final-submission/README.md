@@ -37,7 +37,12 @@ Retained deliberately; no baseline update/regeneration in this correction.
 - `eval:agent`: 10/10 passes with exact baseline paths declared.
 - Harness, ratchet, security and DB structural verifiers pass.
 - TypeScript, focused ESLint and format check pass. Storybook build passes; Chromium outline
-  regression passes with full motion (first enabled frame, hover/focus and axe). Final CI pending.
+  suite passes 9/9 with full-motion regression (first enabled frame, hover/focus and axe).
+- Reviewed `outline-before.png` / `outline-after.png` show the real shared disabled styles.
+  A separate browser reproduction loaded CSS directly from 02c06b1 and from this correction:
+  the first sampled enabled frame had opacity 0.640016 before and 1 after
+  (`outline-first-frame.json`). The old label faded exactly as reported in CI; the fixed label
+  retains AA text color while transitioning from saving. Final CI pending.
 - The bare `npm` shim points at a missing roaming npm-cli.js. Invoking the installed Node npm-cli.js
   directly works; no repository dependency/script change is needed.
 - Storybook initially hit sandbox directory access; retry uses normal installed runtime with escalation.
