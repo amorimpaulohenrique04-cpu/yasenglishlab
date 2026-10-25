@@ -1967,9 +1967,13 @@
   border-color: var(--yas-color-purple-600);
   background: linear-gradient(90deg, var(--yas-color-purple-600), var(--yas-color-purple-500));
 }
+/* A sentence, not a tag: it wraps inside the card instead of overflowing narrow phones. */
 .panel .cefrNote {
   display: inline-flex;
   width: fit-content;
+  max-inline-size: 100%;
+  padding-block: var(--yas-space-1);
+  white-space: normal;
   margin-block-start: var(--yas-space-4);
 }
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,7 @@
 import { assertNoDocumentOverflow } from "../helpers/responsive";
 import { test as base, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
 import { captureScreenshot } from "../helpers/capture-screenshot";
@@ -39,7 +40,7 @@ async function capture(page: Page, prefix: string) {
     ["mobile", 390, 844],
   ] as const) {
     await page.setViewportSize({ width, height });
-    const result = await new AxeBuilder({ page })
+    const result = await new AxeBuilder({ page: await settledPage(page) })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(result.violations).toEqual([]);

@@ -894,3 +894,5 @@ Usuário pediu push/PR e transferiu os gates completos restantes ao GitHub. Chec
 ## 2026-10-21 — level-based-cohorts
 
 Implementation in isolated branch from main 5dde6a5. Targeted cohort-path, practice authoring, placement SQL and two-connection concurrency passed. Core formatting/lint/types/unit/integration/build passed; verify:agent requires correcting failure-log metadata before rerun. Security and DB structural gates passed. Full SQL suites exposed stateful fixture failures after repeated execution; clean full gate remains required. Feature remains in_progress and unverified.
+
+- 2026-10-25 CI recovery: 12 falhas + assert canônico mapeados com causa raiz; correções e goldens promovidos; validação delegada ao CI oficial (sem execução local, por instrução do usuário).

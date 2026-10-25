@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { loginCanonicalTeacher, loginCanonicalOtherTeacher } from "../helpers/teacher-mfa";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 const password = process.env.CANONICAL_E2E_PASSWORD,
@@ -31,7 +32,7 @@ async function fixtureUser(suffix: string) {
   return u.id;
 }
 async function axe(page: Page) {
-  const result = await new AxeBuilder({ page })
+  const result = await new AxeBuilder({ page: await settledPage(page) })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   expect(result.violations).toEqual([]);

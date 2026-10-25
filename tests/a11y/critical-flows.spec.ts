@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test, type Page } from "@playwright/test";
 
 import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
@@ -12,7 +13,7 @@ if (process.env.CANONICAL_E2E !== "1" || !password) {
 }
 
 async function assertAxe(page: Page) {
-  const results = await new AxeBuilder({ page })
+  const results = await new AxeBuilder({ page: await settledPage(page) })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);

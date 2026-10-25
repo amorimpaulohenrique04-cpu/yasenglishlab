@@ -24,7 +24,14 @@ test("an unassigned student cannot start a future-lesson audio practice through 
   // the practice is not offered at all, so there is no way to start it from the UI.
   await expect(page.getByRole("heading", { name: "Prática", exact: true })).toBeVisible();
   await expect(activity).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Praticar →" })).toHaveCount(0);
+  // Only the reachable lesson 01 may offer practice. verify:full runs the RLS SQL suite first, which
+  // publishes "P21 RLS speaking" on lesson 01; starting that one is legitimate for Cohort B.
+  await expect(
+    page
+      .getByRole("group")
+      .filter({ hasNotText: "Aula 01" })
+      .getByRole("button", { name: "Praticar →" }),
+  ).toHaveCount(0);
 
   const student = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

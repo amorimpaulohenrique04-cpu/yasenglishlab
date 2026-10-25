@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
@@ -69,7 +70,9 @@ test("Students list and profile workspace", async ({ page }) => {
   await expect(how).toContainText(/alerta de sete dias/);
   await page.keyboard.press("Escape");
   await expect(how).toBeHidden();
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const axe = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(axe.violations).toEqual([]);
 });
 
@@ -119,8 +122,10 @@ test("Students list: next actions, pending tab, portfolio", async ({ page }) => 
 test("Student profile: pending review CTA and follow-up card", async ({ page }) => {
   test.setTimeout(240_000);
   // Earlier specs (teacher-pedagogy, teacher-entry-workspace) review and consume the fixture's
-  // pending items, so this test restores its own precondition.
-  execFileSync(process.execPath, ["scripts/setup-canonical-e2e.mjs"], {
+  // pending items, so this test restores its own precondition. Only the placement journeys are
+  // reset: the full canonical setup would also erase lesson progress that other specs persisted
+  // and that scripts/assert-canonical-e2e.mjs verifies after the run.
+  execFileSync(process.execPath, ["scripts/setup-placement-e2e.mjs"], {
     env: process.env,
     stdio: "inherit",
   });
@@ -170,7 +175,9 @@ test("Students list: axe on mobile", async ({ page }) => {
     path: "harness/evidence/teacher-students-refinement/list-mobile.png",
     fullPage: false,
   });
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const axe = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(axe.violations).toEqual([]);
 });
 
@@ -203,7 +210,9 @@ test("Student profile: mobile evidence", async ({ page }) => {
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const axe = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(axe.violations).toEqual([]);
 });
 

@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
@@ -38,7 +39,11 @@ test("Teacher cohorts search, details, navigation and responsive accessibility",
       ),
     ).toBeLessThanOrEqual(1);
     expect(
-      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+      (
+        await new AxeBuilder({ page: await settledPage(page) })
+          .withTags(["wcag2a", "wcag2aa"])
+          .analyze()
+      ).violations,
     ).toEqual([]);
     await page.screenshot({
       path: testInfo.outputPath(`turmas-${viewport.width}.png`),
@@ -54,7 +59,11 @@ test("Teacher cohorts search, details, navigation and responsive accessibility",
       /^\/teacher\/alunos\?cohort=/,
     );
     expect(
-      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+      (
+        await new AxeBuilder({ page: await settledPage(page) })
+          .withTags(["wcag2a", "wcag2aa"])
+          .analyze()
+      ).violations,
     ).toEqual([]);
     await page.screenshot({
       path: testInfo.outputPath(`turma-detalhe-${viewport.width}.png`),

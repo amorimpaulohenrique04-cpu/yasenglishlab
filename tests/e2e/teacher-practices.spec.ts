@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { captureScreenshot } from "../helpers/capture-screenshot";
 import { expect, test, type Page } from "@playwright/test";
 import { loginCanonicalOtherTeacher, loginCanonicalTeacher } from "../helpers/teacher-mfa";
@@ -64,7 +65,7 @@ async function captureComposition(page: Page, name: string) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
     );
-    const axe = await new AxeBuilder({ page })
+    const axe = await new AxeBuilder({ page: await settledPage(page) })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(axe.violations).toEqual([]);

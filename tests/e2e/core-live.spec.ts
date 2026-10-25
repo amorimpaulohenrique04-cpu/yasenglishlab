@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { createClient } from "@supabase/supabase-js";
 import { expect, test, type Page } from "@playwright/test";
 
@@ -170,8 +171,11 @@ test.describe("P21.4 Teacher Operations V2 + Student Agenda V2", () => {
       await expect(card.getByRole("button", { name: /^Reservar/ })).toHaveCount(0);
 
       expect(
-        (await new AxeBuilder({ page: student }).withTags(["wcag2a", "wcag2aa"]).analyze())
-          .violations,
+        (
+          await new AxeBuilder({ page: await settledPage(student) })
+            .withTags(["wcag2a", "wcag2aa"])
+            .analyze()
+        ).violations,
       ).toEqual([]);
 
       const outsider = await outsiderContext.newPage();

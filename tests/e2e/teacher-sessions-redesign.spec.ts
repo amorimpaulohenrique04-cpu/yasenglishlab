@@ -1,5 +1,6 @@
 import { captureScreenshot } from "../helpers/capture-screenshot";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test, type Page } from "@playwright/test";
 import { PDFDocument } from "pdf-lib";
 import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
@@ -24,8 +25,11 @@ async function evidence(page: Page, name: string) {
     ),
   ).toBeLessThanOrEqual(1);
   expect(
-    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze())
-      .violations,
+    (
+      await new AxeBuilder({ page: await settledPage(page) })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze()
+    ).violations,
   ).toEqual([]);
 }
 

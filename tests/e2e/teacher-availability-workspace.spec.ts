@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -63,7 +64,7 @@ test("Availability partial-hour targets remain accessible with a fixed 22:40–2
     expect(blockBox).not.toBeNull();
     const freeHeight = cellBox!.y + cellBox!.height - (blockBox!.y + blockBox!.height);
     expect(freeHeight).toBeGreaterThanOrEqual(24);
-    const axe = await new AxeBuilder({ page })
+    const axe = await new AxeBuilder({ page: await settledPage(page) })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();
     expect(axe.violations).toEqual([]);
@@ -146,6 +147,8 @@ test("Availability workspace: desktop lifecycle and mobile drawer", async ({ pag
   await expect(mobileComposer.getByLabel("Data do horário")).toBeVisible();
   await expect(mobileComposer.getByLabel("Horário de início")).toBeVisible();
   await expect(mobileComposer.getByLabel("Horário de término")).toBeVisible();
-  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const axe = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(axe.violations).toEqual([]);
 });

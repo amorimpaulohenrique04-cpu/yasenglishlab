@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
@@ -33,6 +34,10 @@ test("Admin can inspect bounded Teacher operations after MFA", async ({ page }) 
     await page.keyboard.press("Escape");
   }
   expect(
-    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations,
+    (
+      await new AxeBuilder({ page: await settledPage(page) })
+        .withTags(["wcag2a", "wcag2aa"])
+        .analyze()
+    ).violations,
   ).toEqual([]);
 });

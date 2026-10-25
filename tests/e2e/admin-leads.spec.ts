@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
 
@@ -44,10 +45,14 @@ test("Admin manages a lead and accessible follow-up workflow after MFA", async (
   await page.getByRole("textbox", { name: "Buscar nome, email ou telefone" }).fill(leadName);
   await page.getByRole("button", { name: "Filtrar" }).click();
   await expect(page.getByRole("heading", { name: leadName })).toHaveCount(1);
-  const violations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const violations = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(violations.violations).toEqual([]);
   await page.setViewportSize({ width: 390, height: 844 });
-  const mobileViolations = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  const mobileViolations = await new AxeBuilder({ page: await settledPage(page) })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
   expect(mobileViolations.violations).toEqual([]);
   const mobile = await page.screenshot({
     path: testInfo.outputPath("admin-leads-mobile.png"),

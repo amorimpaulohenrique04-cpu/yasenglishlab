@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const stories = [
@@ -62,7 +63,7 @@ test("confirmation is centered, fits mobile, and restores focus", async ({ page 
 });
 
 async function assertA11y(page: Page) {
-  const results = await new AxeBuilder({ page })
+  const results = await new AxeBuilder({ page: await settledPage(page) })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
 

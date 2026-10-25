@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { settledPage } from "../helpers/settled-frame";
 import { createClient } from "@supabase/supabase-js";
 import { mkdirSync } from "node:fs";
 import { loginCanonicalAdmin } from "../helpers/admin-mfa";
@@ -47,7 +48,7 @@ test.describe("Stage 12B assessment authoring", () => {
         ["mobile", 390, 844],
       ] as const) {
         await page.setViewportSize({ width, height });
-        const axe = await new AxeBuilder({ page })
+        const axe = await new AxeBuilder({ page: await settledPage(page) })
           .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
           .analyze();
         expect(axe.violations).toEqual([]);

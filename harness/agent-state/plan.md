@@ -1,3 +1,13 @@
+# Plano — teacher-release-gates / CI recovery (2026-10-25)
+
+Plano do usuário: `plano_correcao_testes_teacher_sessions_redesign.md`. Matriz e causas: `harness/evidence/ci-recovery-teacher-sessions/README.md`.
+
+1. E04/E05: asserção de prática escopada à aula 01; fixture de placement isolada do reset canônico.
+2. E01/E02/A01/A02: axe só em quadro estável (`tests/helpers/settled-frame.ts`, inclui <title>).
+3. E03: nota CEFR quebra linha dentro do card.
+4. V01–V05: renders Linux do CI promovidos (mudanças intencionais da branch).
+5. Sem execução local (instrução do usuário); commit, push e CI oficial como prova.
+
 # Plano — teacher-release-gates
 
 ## Active task
