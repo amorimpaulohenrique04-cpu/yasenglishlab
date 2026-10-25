@@ -14,6 +14,7 @@ import {
   type AvailabilityWorkspaceData,
 } from "../domain/availability-workspace";
 import styles from "./availability-workspace.module.css";
+import { availabilityHourHeight } from "./availability-grid-geometry";
 
 const clock = (minutes: number) => {
   const n = Math.max(0, Math.min(1439, minutes));
@@ -82,6 +83,11 @@ export function AvailabilityBoard({
   );
   const total = (to - from) * 60;
   const hours = Array.from({ length: to - from }, (_, i) => from + i);
+  const hourHeight = availabilityHourHeight(
+    days.map((day) => dayBlocks(all, day)),
+    from,
+    to,
+  );
   const [drag, setDrag] = useState<Drag | null>(null);
   const dragging = useRef<Drag | null>(null);
   const reduced = useReducedMotion();
@@ -244,7 +250,7 @@ export function AvailabilityBoard({
                   dragging.current = null;
                   setDrag(null);
                 }}
-                style={{ height: `${hours.length * 2.8}rem` }}
+                style={{ height: `${hours.length * hourHeight}px` }}
               >
                 {hours.map((hour) => (
                   <button

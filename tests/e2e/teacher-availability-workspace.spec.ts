@@ -1,6 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
+import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
-import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
+import { createClient } from "@supabase/supabase-js";
+import { canonicalTeacherSessionId, loginCanonicalTeacher } from "../helpers/teacher-mfa";
+import { captureScreenshot } from "../helpers/capture-screenshot";
 
 const password = process.env.CANONICAL_E2E_PASSWORD;
 if (process.env.CANONICAL_E2E !== "1" || !password)
@@ -10,6 +13,69 @@ if (process.env.CANONICAL_E2E !== "1" || !password)
 function futureDate() {
   return new Date(Date.now() + 40 * 86_400_000).toISOString().slice(0, 10);
 }
+
+test("Availability partial-hour targets remain accessible with a fixed 22:40–23:40 session", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+    },
+  );
+  const teacher = await db
+    .from("live_sessions")
+    .select("teacher_id")
+    .eq("id", canonicalTeacherSessionId)
+    .single();
+  expect(teacher.error).toBeNull();
+  const sessionId = randomUUID();
+  // A dedicated, unbooked session preserves the canonical reservation's immutable schedule.
+  const fixed = {
+    id: sessionId,
+    teacher_id: teacher.data!.teacher_id,
+    session_type: "CONVERSATION_LAB",
+    title: "Availability partial-hour target fixture",
+    starts_at: "2099-10-24T22:40:00-03:00",
+    ends_at: "2099-10-24T23:40:00-03:00",
+    capacity: 4,
+    required_entitlement_key: null,
+    status: "SCHEDULED",
+  };
+  try {
+    expect((await db.from("live_sessions").insert(fixed)).error).toBeNull();
+    await loginCanonicalTeacher(page, password);
+    await page.goto("/teacher/disponibilidade?date=2099-10-24");
+    const cell = page.getByRole("button", {
+      name: /Adicionar horário em .*24 de outubro de 2099 às 23:00/,
+    });
+    const block = page.getByRole("link", { name: /Sessão agendada: .*22:40 a 23:40/ });
+    await expect(cell).toBeEnabled();
+    await expect(block).toBeVisible();
+    await cell.scrollIntoViewIfNeeded();
+    await captureScreenshot(page, test.info(), "availability-partial-hour", { fullPage: true });
+    const cellBox = await cell.boundingBox();
+    const blockBox = await block.boundingBox();
+    expect(cellBox).not.toBeNull();
+    expect(blockBox).not.toBeNull();
+    const freeHeight = cellBox!.y + cellBox!.height - (blockBox!.y + blockBox!.height);
+    expect(freeHeight).toBeGreaterThanOrEqual(24);
+    const axe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(axe.violations).toEqual([]);
+    await cell.click({ position: { x: cellBox!.width / 2, y: cellBox!.height - freeHeight / 2 } });
+    // Pointer selection keeps the existing 15-minute snapping at the clicked position.
+    await expect(page.locator("[data-composer]").getByLabel("Horário de início")).toHaveValue(
+      "23:45",
+    );
+  } finally {
+    expect((await db.from("live_sessions").delete().eq("id", sessionId)).error).toBeNull();
+  }
+});
 
 test("Availability workspace: desktop lifecycle and mobile drawer", async ({ page }) => {
   test.setTimeout(240_000);
