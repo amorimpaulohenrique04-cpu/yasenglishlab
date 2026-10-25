@@ -29,6 +29,7 @@ Capturas confiáveis, grade acessível com linhas maiores conforme escolha do us
 
 ## Allowed files / domains
 
+- `supabase/migrations/20261025120000_teacher_entry_level.sql` (merge de `main` #88: migration aditiva do `level` no workspace de entrada)
 - `src/modules/teacher-operations/**` (somente disponibilidade e helpers associados nesta execução)
 - `tests/e2e/**`, `tests/a11y/**`, `tests/helpers/**`, `tests/unit/**`
 - `scripts/**` e configs de verificação apenas para causas comprovadas
@@ -615,6 +616,8 @@ Revisão semântica manual de duplicidade (2026-10-25), comparando com os primit
 - `src/components/ui/time-field.tsx`: campo de horário com parsing validado; sem equivalente em `main`.
 - `src/components/ui/stepper.tsx`: indicador de etapas do assistente; sem equivalente em `main`.
 - `src/components/ui/command-palette.tsx`: busca global Ctrl+K; sem equivalente em `main`.
+
+Merge de `main` (#88, 2026-10-25): migration aditiva `supabase/migrations/20261025120000_teacher_entry_level.sql` encaminha o `p_level` opcional de `finalize_placement_review` para `finalize_teacher_entry` do novo workspace de entrada (mesma autorização e idempotência; grants reaplicados).
 
 Atualização de segurança (2026-10-25): `next` 16.3.8 → 16.4.3 e `zod` 4.6.5 → 4.6.7, exigidas pela auditoria de produção (advisories críticos/altos do Supply Chain).
 
