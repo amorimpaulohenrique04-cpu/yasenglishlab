@@ -660,12 +660,8 @@ select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
 select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'independent first cohort release still permits asset');
 reset role;
--- A lesson-linked assigned practice keeps the old early-execution behavior until explicitly opted in.
-insert into public.lessons(id,module_id,position,slug,title) values
- ('b2220000-0000-4000-8000-000000000001','b2210000-0000-4000-8000-000000000001',1,'pa-related-lesson','Related lesson');
-insert into public.lesson_assets(lesson_id,asset_type,position,content,publication_status,published_at) values
- ('b2220000-0000-4000-8000-000000000001','TEXT',1,'{"title":"Lesson","body":"Study"}','PUBLISHED',now());
-update public.lessons set publication_status='PUBLISHED',published_at=now() where id='b2220000-0000-4000-8000-000000000001';
+-- A lesson-linked assigned practice no longer executes early (ADR 0025); the explicit lesson rule stays accepted.
+-- The related lesson b2220000-...-0001 is already created and published by the base fixture above.
 select pg_temp.login(pg_temp.u(2),'aal2');
 set local role authenticated;
 insert into ids values('release',public.teacher_practice_save(null,
@@ -678,14 +674,14 @@ insert into public.cohort_path_items(cohort_id,content_kind,content_id,position,
  ('b2400000-0000-4000-8000-000000000001','modules','b2210000-0000-4000-8000-000000000001',0,null),
  ('b2400000-0000-4000-8000-000000000001','lessons','b2220000-0000-4000-8000-000000000001',1,now()+interval '1 day');
 select pg_temp.login(pg_temp.u(5),'aal1');
-select pg_temp.assert_true(private.can_view_practice_activity(pg_temp.id('release')),'legacy assignment still permits early execution');
+select pg_temp.assert_true(not private.can_view_practice_activity(pg_temp.id('release')),'assignment never bypasses lesson availability (ADR 0025 supersedes legacy early execution)');
 select pg_temp.login(pg_temp.u(2),'aal2');
 set local role authenticated;
 select public.teacher_practice_assign(pg_temp.id('release'),array['b2400000-0000-4000-8000-000000000001']::uuid[],null,'{}',null,true);
 reset role;
 select pg_temp.login(pg_temp.u(5),'aal1');
 set local role authenticated;
-select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('release')))='42501','explicit lesson rule blocks unreleased lesson');
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('release')))='YP001','explicit lesson rule blocks unreleased lesson (lesson-not-reached contract)');
 reset role;
 update public.cohort_path_items set available_from=now()-interval '1 hour' where cohort_id='b2400000-0000-4000-8000-000000000001' and content_kind='lessons';
 select pg_temp.login(pg_temp.u(5),'aal1');

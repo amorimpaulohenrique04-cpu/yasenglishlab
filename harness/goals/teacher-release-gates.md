@@ -30,6 +30,7 @@ Capturas confiáveis, grade acessível com linhas maiores conforme escolha do us
 ## Allowed files / domains
 
 - `supabase/migrations/20261025120000_teacher_entry_level.sql` (merge de `main` #88: migration aditiva do `level` no workspace de entrada)
+- `supabase/migrations/20261025130000_practice_visibility_respects_schedule.sql` (merge de `main` #88: restaura a liberação agendada de atribuições em `can_view_practice_activity` e `start_practice_attempt`)
 - `src/modules/teacher-operations/**` (somente disponibilidade e helpers associados nesta execução)
 - `tests/e2e/**`, `tests/a11y/**`, `tests/helpers/**`, `tests/unit/**`
 - `scripts/**` e configs de verificação apenas para causas comprovadas

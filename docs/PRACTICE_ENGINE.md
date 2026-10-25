@@ -97,4 +97,6 @@ The existing teacher_practice_assign signature gains optional parameters p_avail
 
 Legacy COURSE assignments used solely to signal lesson reach remain supported with their inferred course scope. They cannot accept the new scheduling fields; scheduled authoring stays on ASSIGNED practices, whose per-cohort release predicate is authoritative.
 
+Update 2026-10-25 (ADR 0025, lesson-bound practices): lesson availability is always required for a Student to see or start a practice, so `require_lesson_available=false` no longer grants early execution. An ASSIGNED practice is additionally hidden until its cohort assignment's `available_from` has passed (`private.can_view_practice_activity`, migration `20261025130000_practice_visibility_respects_schedule.sql`). A lesson not yet reached answers `YP001` on start.
+
 Private practice stimulus assets also repeat has_paid_access for Students after release; author/Admin preview behavior and attempt history reads are preserved.
