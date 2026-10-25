@@ -17,8 +17,12 @@
       "status": "in_progress",
       "verified": false,
       "dependencies": ["teacher-sessions-redesign"],
-      "evidence": ["harness/goals/teacher-release-gates.md"],
-      "updated_at": "2026-10-24T23:00:00-03:00"
+      "evidence": [
+        "harness/goals/teacher-release-gates.md",
+        "harness/evidence/teacher-release-gates/README.md",
+        "harness/failure-log/2026-10-24-teacher-release-gates.md"
+      ],
+      "updated_at": "2026-10-25T03:11:06.768Z"
     },
     {
       "id": "teacher-cohorts-redesign",

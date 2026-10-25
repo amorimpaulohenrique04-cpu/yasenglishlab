@@ -1,0 +1,30 @@
+{
+  "source": "executor observations of Playwright line/list reporter; not a generated Playwright report",
+  "run": "focused admin-plans-alerts, teacher-practices, teacher-sessions-redesign",
+  "status": "failed_incomplete_teardown",
+  "passed_cases_observed": 5,
+  "failed_cases_observed": 2,
+  "failures": [
+    {
+      "file": "tests/e2e/teacher-practices.spec.ts",
+      "trigger": "student clicks Praticar on the newly published activity",
+      "observed": "URL remained /pratica after the 5000 ms assertion",
+      "screenshot_open_error": false,
+      "cause": "not yet proved"
+    },
+    {
+      "file": "tests/e2e/teacher-sessions-redesign.spec.ts",
+      "trigger": "first authenticated CSV request after 22 screenshot and axe sequences",
+      "observed": "180000 ms total test timeout; PDF request not reached",
+      "screenshot_sequence_span_seconds": 167,
+      "cause": "aggregate scenario exhausted its budget before exports"
+    }
+  ],
+  "cleanup": {
+    "natural_exit": false,
+    "playwright_json_produced": false,
+    "runner_wrapper_was_terminated_by_broad_filter": true,
+    "ports_3000_3001_free_after_cleanup": true,
+    "required_next_guard": "track exact server helper/Next PIDs; preserve Playwright and its shell wrapper"
+  }
+}

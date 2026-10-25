@@ -3,7 +3,7 @@
 Status: in_progress
 Owner: agent/human
 Created: 2026-10-24
-Updated: 2026-10-24
+Updated: 2026-10-25
 
 ## Objective
 
@@ -34,6 +34,8 @@ Capturas confiáveis, grade acessível com linhas maiores conforme escolha do us
 - `scripts/**` e configs de verificação apenas para causas comprovadas
 - `supabase/tests/**` e fixtures SQL, somente se falha real exigir
 - `.gitignore` para propostas locais; `harness/**`
+
+- `.github/workflows/foundation-verify.yml`, `.github/actions/preview-setup/action.yml`, `scripts/ci/**` e `docs/TESTING.md`: autorização de 2026-10-25 para CI executar checks independentes mesmo após falhas, sem ocultar o resultado vermelho.
 
 ### Inventário histórico para certificação da branch
 
@@ -609,6 +611,8 @@ A comparação inicial contém 35 commits e 563 arquivos, já publicados no orig
 - Decisões abertas de produto não aprovadas
 
 ## Mandatory tests
+
+Atualização expressa em 2026-10-25: após os cinco cenários focados de Sessões, não executar os gates grandes restantes localmente. Fazer push e PR; a rodada completa fica no GitHub. Validar somente regressões focadas do novo fluxo CI antes do push. O CI deve executar checks independentes apesar de falhas, preservar pré-requisitos reais e manter agregação final FAIL quando qualquer gate falhar. A lista abaixo continua sendo o escopo de certificação, não uma alegação de execução local.
 
 - Specs falhos focados e regressões determinísticas
 - Vitest, tsc, lint, prettier --check, verify:security, verify:harness, verify:db

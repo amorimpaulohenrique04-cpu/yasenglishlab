@@ -314,3 +314,7 @@ Goal: harness/goals/teacher-release-gates.md. Autorização atual substitui adia
 2. Frontend único escritor: captura confiável e linhas maiores na disponibilidade, conforme escolha explícita do usuário; regressão determinística.
 3. Specs focados; rodada completa final e verify:full; SQL depois do Playwright em banco limpo.
 4. Ignorar propostas locais em artifacts; commitar somente evidências relevantes revisadas; registrar resultados e abrir PR.
+
+## 2026-10-25 — Execução completa transferida ao GitHub
+
+Por instrução expressa do usuário: concluir só cinco cenários de Sessões locais; depois push e PR. Não rodar os gates grandes restantes localmente. Ajustar CI para continuar checks independentes após falha, com pré-requisitos reais explícitos e resultado agregado vermelho. SQL também deve continuar arquivos/casos restantes e reprovar ao final. Manter diagnósticos sanitizados e artifacts por suíte. Validar apenas regressões focadas desta alteração antes do push.

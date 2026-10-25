@@ -40,4 +40,4 @@ Run the three affected production E2E specs; the original environmental lock is 
 
 ## Before/after proof
 
-Before: historical error-context records of `UNKNOWN` opening tracked PNG destinations. After: focused production specs and unit execution pending. The underlying external cause is unproved, so this record stays open until runtime mitigation is demonstrated and any remaining limitation is recorded.
+Before: historical error-context records of `UNKNOWN` opening tracked PNG destinations. After: all three capture-helper unit cases passed (including simulated UNKNOWN write failure). Both production Admin scenarios passed, all 22 Sessions captures completed before an unrelated aggregate timeout, and the full Teacher-practices scenario passed in a focused rerun (case 2.2 min; runner 5.3 min) without capture errors. The original external cause remains unproved; the record stays open pending the final official suites. No Windows security setting was changed.
