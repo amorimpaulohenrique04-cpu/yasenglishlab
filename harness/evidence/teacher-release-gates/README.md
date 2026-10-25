@@ -65,3 +65,7 @@ After the five Sessions cases passed, the user explicitly moved the remaining co
 CI now runs independent checks after unrelated failures while preserving actual installation/database/build prerequisites and the final failing aggregate. The Preview matrix also includes the literal verify:full release command; its failure does not suppress the independent DB/E2E/a11y/visual entries. SQL executes remaining files/concurrency cases after a failing case and fails at the end. Runtime evidence is sanitized before upload; authentication-bearing trace archives are excluded.
 
 Targeted validation of these CI changes: PASS, 4 Vitest files / 32 tests; repository/lockfile/pinned-Actions policy PASS. Complete GitHub results remain pending.
+
+## Delivery and CI trigger
+
+PR #89: https://github.com/amorimpaulohenrique04-cpu/yasenglishlab/pull/89 (draft, no auto-merge). GitHub reports merge conflicts with main across16 files; pull_request checks were not scheduled. A dry merge-tree inspection changed no checkout files or migrations. Official CI is therefore also triggered by push to codex/teacher-sessions-redesign, testing the requested branch directly. Release remains restricted to successful main pushes. Domain merge conflicts remain explicit pending work; they were not resolved by choosing one side blindly.

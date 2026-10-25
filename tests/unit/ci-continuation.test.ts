@@ -43,6 +43,7 @@ describe("CI continues diagnostics while preserving failures", () => {
     expect(workflow).toContain("needs: supply-chain\n    if: ${{ !cancelled() }}");
     expect(workflow).toContain("if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}");
     expect(workflow).toContain("fail-fast: false");
+    expect(workflow).toContain("  push:\n    branches: [main, codex/teacher-sessions-redesign]");
     expect(workflow).not.toContain("continue-on-error: true");
     expect(() => requireSuccessfulGates({ quality: "failure", preview: "success" })).toThrow();
   });
