@@ -1,3 +1,15 @@
+# Plano — practice-review-consistency (2026-10-25)
+
+Goal: `harness/goals/practice-review-consistency.md`. Origem: `PLANO_CORRECAO_PRATICA_REVISAO_PROFESSOR.md` (R01–R05).
+Base `origin/main` = `251ec1c` (SHA auditado, sem desvio). Branch `fix/practice-review-consistency`.
+
+1. A: `list_student_feedbacks` 1 linha/tentativa, PENDING/PARTIAL/REVIEWED + contadores; UI /feedbacks e resultado da prática.
+2. B: ação de revisão relê a tentativa; "próxima" = próxima pergunta pendente antes da próxima prática.
+3. C: `get_teacher_review_context.questions` (ordem real, sem gabarito); detalhe renderiza todas as perguntas.
+4. D/E: `get_teacher_review_queue_page` (kinds = união; filtros antes do corte; cursor por tentativa) e
+   `get_teacher_review_queue_position`; home/busca deixam de usar `get_teacher_reviews()` sem paginação.
+5. F: SQL `practice_review_consistency.sql` (101+ tentativas, 20 itens), v2 em `practice_authoring.sql`, unit, E2E v3.
+
 # Plano — teacher-release-gates / CI recovery F01–F04 (2026-10-25)
 
 1. Congelar logs/artefatos das runs 40166442125 e 40166440160 (HEAD 02c06b1).

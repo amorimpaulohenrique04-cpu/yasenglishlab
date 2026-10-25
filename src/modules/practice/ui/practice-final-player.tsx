@@ -341,6 +341,11 @@ export function PracticeFinalPlayer({
   }
 
   if (outcome) {
+    // Results follow the original question order; open answers count toward the review progress only.
+    const position = (itemId: string) => items.findIndex((candidate) => candidate.id === itemId);
+    const results = [...outcome.results].sort((a, b) => position(a.itemId) - position(b.itemId));
+    const openAnswers = results.filter((result) => result.evaluationStatus === "PENDING_MANUAL");
+    const reviewedAnswers = openAnswers.filter((result) => manualReviews?.[result.itemId]).length;
     return (
       <div className="yas-practice-player yas-practice-session">
         {mode === "preview" && <Badge tone="neutral">Prévia do professor: nada é salvo</Badge>}
@@ -349,7 +354,9 @@ export function PracticeFinalPlayer({
           title="Prática concluída"
           lead={
             outcome.evaluationStatus === "PENDING_MANUAL"
-              ? "Respostas enviadas para revisão do professor."
+              ? reviewedAnswers > 0
+                ? `Revisão parcial — ${reviewedAnswers} de ${openAnswers.length} respostas avaliadas.`
+                : "Respostas enviadas para revisão do professor."
               : outcome.evaluationStatus === "MANUAL_REVIEWED"
                 ? "O professor revisou suas respostas."
                 : "Confira o resultado das perguntas abaixo."
@@ -361,7 +368,7 @@ export function PracticeFinalPlayer({
             </p>
           )}
           <ol className={styles.results}>
-            {outcome.results.map((result) => {
+            {results.map((result) => {
               const source = items.find((candidate) => candidate.id === result.itemId);
               const correct = source ? describeCorrectAnswer(source, result.correctAnswer) : null;
               const review = manualReviews?.[result.itemId];

@@ -1,16 +1,18 @@
 import Link from "next/link";
 import { Breadcrumbs, Icon, PageHeader } from "@/components/ui";
 import {
-  filterQueue,
+  formatQueueCursor,
   formatWaiting,
-  groupReviewQueue,
+  parseQueueCursor,
   parseQueueFilters,
-  queueCounts,
+  queueUrl,
+  reviewKind,
+  type ReviewQueueEntry,
 } from "@/modules/teacher-operations/domain/review-queue";
 import { ReviewKpis } from "@/modules/teacher-operations/ui/review-kpis";
 import { ReviewQueue } from "@/modules/teacher-operations/ui/review-queue";
 import styles from "@/modules/teacher-operations/ui/reviews.module.css";
-import { loadReviewOverview, loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
+import { loadReviewOverview, loadReviewQueuePage } from "@/server/teacher-operations/pedagogy";
 import { sessionWorkspaceNow } from "@/server/teacher-operations/session-workspace";
 import { teacherAudioPlaybackAction } from "./actions";
 
@@ -19,23 +21,32 @@ export default async function ReviewsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [items, overview, query] = await Promise.all([
-    loadTeacherReviews(),
+  const filters = parseQueueFilters(await searchParams);
+  // Filters, order and the page cut run in the database, by attempt: a practice is never split
+  // across pages and every pending answer of a listed practice comes along.
+  const [page, overview] = await Promise.all([
+    loadReviewQueuePage({
+      tab: filters.tab,
+      q: filters.q,
+      cohort: filters.cohort,
+      order: filters.order,
+      after: parseQueueCursor(filters.after),
+    }),
     loadReviewOverview(),
-    searchParams,
   ]);
   const now = sessionWorkspaceNow();
-  const queue = groupReviewQueue(items);
-  const filters = parseQueueFilters(query);
-  const visible = filterQueue(queue, filters, overview.studentCohorts, now);
-  const counts = queueCounts(queue, now);
-  const oldest = queue.reduce<string | null>(
-    (min, entry) => (min === null || entry.submittedAt < min ? entry.submittedAt : min),
-    null,
-  );
-  const cohorts = [
-    ...new Set(queue.flatMap((entry) => overview.studentCohorts[entry.studentId] ?? [])),
-  ].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const visible: ReviewQueueEntry[] = page.entries.map((entry) => ({
+    ...entry,
+    studentName: entry.studentName ?? "Aluno",
+    kind: entry.items[0]
+      ? reviewKind(entry.items[0].skill, entry.items[0].responseType)
+      : (entry.kinds[0] ?? "speaking"),
+  }));
+  const nextHref =
+    page.hasMore && page.nextCursor
+      ? queueUrl(filters, { after: formatQueueCursor(page.nextCursor), item: "" })
+      : null;
+  const firstHref = filters.after ? queueUrl(filters, { after: "", item: "" }) : null;
 
   return (
     <div className={styles.page}>
@@ -58,15 +69,15 @@ export default async function ReviewsPage({
         }
       />
       <ReviewKpis
-        pending={queue.length}
-        over24h={counts.over24h}
-        oldestLabel={oldest ? formatWaiting(oldest, now) : null}
+        pending={page.total}
+        over24h={page.counts.over24h}
+        oldestLabel={page.oldestSubmittedAt ? formatWaiting(page.oldestSubmittedAt, now) : null}
         reviewedToday={overview.reviewedToday}
         reviewedYesterday={overview.reviewedYesterday}
         avg7d={overview.avgResponseMinutes7d}
         avgPrev7d={overview.avgResponseMinutesPrev7d}
       />
-      {queue.length === 0 ? (
+      {page.total === 0 ? (
         <section className={`${styles.zero} yas-reveal`} aria-labelledby="zero-title">
           <span className={styles.zeroArt} aria-hidden="true">
             <Icon name="trophy" size={34} />
@@ -83,12 +94,14 @@ export default async function ReviewsPage({
       ) : (
         <ReviewQueue
           entries={visible}
-          total={queue.length}
-          counts={counts}
+          total={page.total}
+          filteredTotal={page.filteredTotal}
+          counts={page.counts}
           filters={filters}
-          cohorts={cohorts}
-          studentCohorts={overview.studentCohorts}
+          cohorts={page.cohorts}
           now={now}
+          nextHref={nextHref}
+          firstHref={firstHref}
           audioAction={teacherAudioPlaybackAction}
         />
       )}

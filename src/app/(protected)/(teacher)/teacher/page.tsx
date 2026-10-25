@@ -18,7 +18,7 @@ import {
 import { practiceSkillVisual } from "@/modules/practice/ui/skill-visual";
 import styles from "@/modules/teacher-operations/ui/teacher-operations.module.css";
 import { loadTeacherUpcomingSessions } from "@/server/teacher-operations/teacher-operations";
-import { loadTeacherReviews } from "@/server/teacher-operations/pedagogy";
+import { loadReviewQueuePage } from "@/server/teacher-operations/pedagogy";
 import { loadPlacementQueue } from "@/server/placement/placement";
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -49,13 +49,16 @@ function statusTone(status: TeacherSessionStatus): "success" | "warning" | "neut
 }
 
 export default async function TeacherHomePage() {
-  const [upcoming, practiceReviews, placementReviews] = await Promise.all([
+  const [upcoming, practiceQueue, placementReviews] = await Promise.all([
     loadTeacherUpcomingSessions(),
-    loadTeacherReviews(),
+    // First page only (oldest first); the total covers the whole queue, one entry per practice.
+    loadReviewQueuePage({ tab: "all", q: "", cohort: "", order: "oldest", limit: 3 }),
     loadPlacementQueue("TEACHER", "REVIEW_PENDING"),
   ]);
   const next = upcoming[0];
-  const pendingPractice = practiceReviews.filter((review) => review.status === "PENDING_MANUAL");
+  const pendingPractice = practiceQueue.entries.flatMap((entry) =>
+    entry.items[0] ? [{ ...entry, skill: entry.items[0].skill }] : [],
+  );
 
   return (
     <div className={styles.page}>
@@ -210,7 +213,7 @@ export default async function TeacherHomePage() {
           icon="mic"
           tone="yellow"
           label="Revisões de prática"
-          value={practiceReviews.length}
+          value={practiceQueue.total}
           detail="Na sua fila de revisão"
           href="/teacher/revisoes"
         />

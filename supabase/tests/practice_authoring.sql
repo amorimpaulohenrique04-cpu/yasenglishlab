@@ -405,11 +405,18 @@ set local role authenticated;
 select pg_temp.assert_true((select count(*)=2 from public.get_teacher_reviews() r where r->>'responseType' in ('WRITTEN','SPOKEN')),'cohort Teacher sees the WRITTEN and SPOKEN attempts');
 select pg_temp.assert_true((select r->>'skill'='WRITING' and r->>'prompt'='Write 3 sentences' from public.get_teacher_reviews() r where r->>'responseType'='WRITTEN'),'WRITTEN of skill WRITING is reviewable');
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews() r where r->>'responseType' in ('CHOICE_SINGLE','CHOICE_MULTI','TRUE_FALSE','CLOZE','ORDERING')),'deterministic attempts never enter the queue');
+-- v2 attempts keep one legacy review item each (no item id) in the paginated queue and in the question context.
+select pg_temp.assert_true((select count(*)=2 from jsonb_array_elements(public.get_teacher_review_queue_page('{"limit":50}')->'entries') e
+  where (e->>'pendingItems')::int=1 and e#>>'{items,0,itemId}' is null and e#>>'{items,0,responseType}' in ('WRITTEN','SPOKEN')),'v2 attempts are one queue entry with one legacy item');
+select pg_temp.assert_true((select jsonb_array_length(c->'questions')=1 and c#>>'{questions,0,itemId}' is null and (c#>>'{questions,0,manual}')::boolean
+  and c#>>'{questions,0,prompt}'='Write 3 sentences' from (select public.get_teacher_review_context(pg_temp.id('a_wr_open')) c) x),'v2 context projects one manual question');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''feedback'')', pg_temp.id('a_wr_open'), '{"intelligibility":"SOLID","target_sounds":"SOLID","word_stress":"SOLID","sentence_stress_rhythm":"SOLID"}'))='23514','WRITTEN rejects pronunciation dimensions');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''feedback'')', pg_temp.id('a_wr_open'), '{"task_completion":"SOLID","comprehensibility":"SOLID","language_accuracy":"SOLID"}'))='23514','WRITTEN rubric needs every dimension');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Nice work'')', pg_temp.id('a_wr_open'), '{"task_completion":"SOLID","comprehensibility":"STRONG","language_accuracy":"DEVELOPING","vocabulary_use":"SOLID"}'))='OK','WRITTEN reviewed with the written dimensions');
 select pg_temp.assert_true(pg_temp.state_of(format('select public.finalize_practice_review(%L, %L, ''Fine'')', pg_temp.id('a_sp'), '{"task_completion":"SOLID","comprehensibility":"SOLID","fluency":"SOLID","language_accuracy":"SOLID","vocabulary_use":"SOLID","pronunciation_intelligibility":"SOLID"}'))='OK','SPOKEN reviewed with the speaking dimensions');
 select pg_temp.assert_true((select count(*)=0 from public.get_teacher_reviews()),'queue is empty after both reviews');
+select pg_temp.assert_true((select count(*)=0 from jsonb_array_elements(public.get_teacher_review_queue_page('{"limit":50}')->'entries') e
+  where e#>>'{items,0,responseType}' in ('WRITTEN','SPOKEN')),'paginated queue drops reviewed v2 attempts');
 -- Read-only review insights: today's count, saved reviews and context stay inside the Teacher scope.
 select pg_temp.assert_true((public.get_teacher_review_overview()->>'reviewedToday')::int=2,'overview counts the reviews sent today');
 select pg_temp.assert_true((public.get_teacher_review_overview()->>'avgResponseMinutes7d') is not null,'overview has an average response time');

@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
 import { Icon, useToast } from "@/components/ui";
 import {
   RUBRIC_LABELS,
@@ -9,7 +16,16 @@ import {
   rubricDimensionsFor,
 } from "@/modules/practice/domain/rubric";
 import { AudioPlayer } from "@/modules/practice/ui/audio-player";
-import { reviewKind, type ReviewQueueItem } from "../domain/review-queue";
+import { reviewKind, type ReviewKind, type ReviewQueueItem } from "../domain/review-queue";
+import {
+  QUESTION_STATE_LABELS,
+  describeStudentAnswer,
+  manualProgress,
+  manualProgressLabel,
+  objectiveVerdict,
+  questionState,
+  type ReviewQuestion,
+} from "../domain/review-question";
 import { KindChip, StudentAvatar, WaitingChip, formatSubmitted } from "./review-queue";
 import { RubricScale } from "./rubric-scale";
 import styles from "./reviews.module.css";
@@ -31,10 +47,30 @@ const SUGGESTIONS = [
 ];
 
 const FEEDBACK_MAX = 4000;
-const keyOf = (item: ReviewQueueItem) => item.itemId ?? item.id;
+// Drafts are keyed by attempt and item, so an item id like "w1" never leaks into another attempt.
+const keyOf = (item: ReviewQueueItem) => `${item.id}:${item.itemId ?? ""}`;
+const sameItem = (a: string | null | undefined, b: string | null | undefined) =>
+  (a ?? null) === (b ?? null);
+
+/** Without a question context (older payloads), the manual answers are the questions. */
+function fallbackQuestions(items: readonly ReviewQueueItem[]): ReviewQuestion[] {
+  return items.map((item, index) => ({
+    itemId: item.itemId ?? null,
+    position: index + 1,
+    prompt: item.prompt,
+    responseType: item.responseType ?? null,
+    definition: null,
+    response: item.response,
+    evaluationStatus: item.status,
+    manual: true,
+    reviewed: item.status === "MANUAL_REVIEWED",
+    mediaDurationSeconds: null,
+  }));
+}
 
 export function ReviewDetail({
   items,
+  questions: contextQuestions,
   studentName,
   cohortNames,
   mediaDurationSeconds,
@@ -45,39 +81,69 @@ export function ReviewDetail({
   reviewAction,
   audioAction,
 }: {
+  /** Manual answers of the attempt (pending and reviewed), in question order. */
   items: readonly ReviewQueueItem[];
+  /** Every question of the attempt, in its original order (read-only context). */
+  questions: readonly ReviewQuestion[];
   studentName: string;
   cohortNames: readonly string[];
   mediaDurationSeconds: number | null;
   saved: readonly SavedReview[];
+  /** Next attempt of the queue, for navigation links only; the server decides where a save lands. */
   next: string | null;
   saveSuccess: boolean;
   now: number;
-  reviewAction: (form: FormData) => Promise<void>;
+  reviewAction: (state: null, form: FormData) => Promise<null>;
   audioAction: (id: string) => Promise<string>;
 }) {
   const toast = useToast();
-  const toasted = useRef(false);
+  const [, formAction, submitting] = useActionState(reviewAction, null);
   const [ratings, setRatings] = useState<Record<string, Record<string, string>>>({});
   const [feedback, setFeedback] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
+  const activeRef = useRef<HTMLElement>(null);
 
+  const questions = contextQuestions.length > 0 ? contextQuestions : fallbackQuestions(items);
+  // Manual state comes from the review rows (authoritative per item), not from the context flag.
+  const manualQuestions = questions.map((question) =>
+    question.manual
+      ? {
+          ...question,
+          reviewed:
+            items.find((item) => sameItem(item.itemId, question.itemId))?.status ===
+            "MANUAL_REVIEWED",
+        }
+      : question,
+  );
+  const progress = manualProgress(manualQuestions);
+  const active = items.find((item) => item.status === "PENDING_MANUAL");
+  const activeKey = active ? keyOf(active) : null;
+  const pendingAfterActive = Math.max(0, progress.pending - 1);
+
+  // One toast and one focus move per saved review: the reviewed count only grows.
+  const toasted = useRef<number | null>(null);
+  const savedDescription =
+    progress.pending > 0
+      ? `O feedback já está disponível ao aluno. Próxima resposta aberta selecionada (${manualProgressLabel(progress)}).`
+      : "O feedback já está disponível ao aluno.";
   useEffect(() => {
-    if (!saveSuccess || toasted.current) return;
-    toasted.current = true;
-    toast({ title: "Revisão enviada", description: "O feedback já está disponível ao aluno." });
-  }, [saveSuccess, toast]);
+    if (!saveSuccess || toasted.current === progress.reviewed) return;
+    toasted.current = progress.reviewed;
+    toast({ title: "Revisão enviada", description: savedDescription });
+    activeRef.current?.focus();
+  }, [saveSuccess, progress.reviewed, savedDescription, toast]);
 
   const [first] = items;
   if (!first) return null;
-  const active = items.find((item) => item.status === "PENDING_MANUAL");
-  const activeKey = active ? keyOf(active) : null;
-  const formId = activeKey ? `review-form-${activeKey}` : undefined;
+  const formId = activeKey ? `review-form-${activeKey.replace(/[^a-z0-9-]/gi, "-")}` : undefined;
   const dimensions = active ? rubricDimensionsFor(active.skill, active.responseType) : [];
   const chosen = activeKey ? (ratings[activeKey] ?? {}) : {};
   const done = dimensions.filter((dimension) => chosen[dimension]).length;
   const text = activeKey ? (feedback[activeKey] ?? "") : "";
   const skipHref = next ? `/teacher/revisoes/${next}` : "/teacher/revisoes";
+  const kinds = [
+    ...new Set(items.map((item) => reviewKind(item.skill, item.responseType))),
+  ] as ReviewKind[];
+  const progressText = manualProgressLabel(progress);
 
   return (
     <div className={styles.detailLayout}>
@@ -105,28 +171,81 @@ export function ReviewDetail({
             </div>
             <div>
               <dt>Tipo</dt>
-              <dd>
-                <KindChip kind={reviewKind(first.skill, first.responseType)} />
+              <dd className={styles.kindList}>
+                {kinds.map((kind) => (
+                  <KindChip key={kind} kind={kind} />
+                ))}
               </dd>
             </div>
+            {questions.length > 1 && (
+              <div>
+                <dt>Correção</dt>
+                <dd>
+                  {questions.length} perguntas · {progressText}
+                </dd>
+              </div>
+            )}
           </dl>
         </section>
 
-        {items.map((item, index) => {
+        {manualQuestions.map((question, index) => {
+          const item = question.manual
+            ? items.find((candidate) => sameItem(candidate.itemId, question.itemId))
+            : undefined;
+          const title =
+            questions.length > 1
+              ? `Pergunta ${question.position} de ${questions.length}`
+              : "Resposta do aluno";
+          const state = questionState(question);
+          const response = item?.response ?? question.response ?? {};
+          const mediaId = typeof response.mediaId === "string" ? response.mediaId : null;
+          const answer = typeof response.text === "string" ? response.text : null;
+
+          if (!item) {
+            const verdict = objectiveVerdict(question.evaluationStatus);
+            const described = describeStudentAnswer(question.definition, question.response);
+            return (
+              <section
+                key={`q-${question.itemId ?? index}`}
+                className={`${styles.itemCard} yas-reveal`}
+                style={{ "--yas-i": index + 1 } as CSSProperties}
+                aria-label={title}
+                data-readonly=""
+              >
+                <header className={styles.itemHead}>
+                  <h2>{title}</h2>
+                  <span className={styles.statusPill} data-status={state}>
+                    <span aria-hidden="true" />
+                    {QUESTION_STATE_LABELS[state]}
+                  </span>
+                </header>
+                <div className={styles.promptBox}>
+                  <span className={styles.eyebrow}>Enunciado</span>
+                  <p className={styles.prompt}>{question.prompt}</p>
+                </div>
+                <p className={styles.objectiveAnswer}>
+                  <span className={styles.eyebrow}>Resposta do aluno</span>
+                  <span>{described ?? "Resposta registrada."}</span>
+                  {verdict && (
+                    <strong data-verdict={question.evaluationStatus === "CORRECT" ? "ok" : "no"}>
+                      {verdict}
+                    </strong>
+                  )}
+                </p>
+              </section>
+            );
+          }
+
           const key = keyOf(item);
           const isActive = key === activeKey;
-          const savedReview = saved.find(
-            (review) => (review.itemId ?? null) === (item.itemId ?? null),
-          );
+          const savedReview = saved.find((review) => sameItem(review.itemId, item.itemId));
           const itemDimensions = rubricDimensionsFor(item.skill, item.responseType);
-          const mediaId = typeof item.response.mediaId === "string" ? item.response.mediaId : null;
-          const answer = typeof item.response.text === "string" ? item.response.text : null;
           const itemText = feedback[key] ?? "";
-          const title =
-            items.length > 1 ? `Pergunta ${index + 1} de ${items.length}` : "Resposta do aluno";
           return (
             <section
               key={key}
+              ref={isActive ? activeRef : undefined}
+              tabIndex={isActive ? -1 : undefined}
               className={`${styles.itemCard} yas-reveal`}
               style={{ "--yas-i": index + 1 } as CSSProperties}
               aria-label={title}
@@ -135,11 +254,17 @@ export function ReviewDetail({
               <header className={styles.itemHead}>
                 <h2>{title}</h2>
                 {item.status === "PENDING_MANUAL" ? (
-                  <WaitingChip submittedAt={item.submittedAt} now={now} />
+                  <span className={styles.itemStates}>
+                    <span className={styles.statusPill} data-status="pending">
+                      <span aria-hidden="true" />
+                      {QUESTION_STATE_LABELS.pending}
+                    </span>
+                    <WaitingChip submittedAt={item.submittedAt} now={now} />
+                  </span>
                 ) : (
                   <span className={styles.statusPill} data-status="done">
                     <span aria-hidden="true" />
-                    Revisada
+                    {QUESTION_STATE_LABELS.reviewed}
                   </span>
                 )}
               </header>
@@ -151,7 +276,10 @@ export function ReviewDetail({
                 <AudioPlayer
                   id={mediaId}
                   action={audioAction}
-                  knownDuration={items.length === 1 ? mediaDurationSeconds : null}
+                  knownDuration={
+                    question.mediaDurationSeconds ??
+                    (items.length === 1 ? mediaDurationSeconds : null)
+                  }
                 />
               )}
               {answer && <blockquote className={styles.quote}>{answer}</blockquote>}
@@ -160,9 +288,8 @@ export function ReviewDetail({
               {isActive && (
                 <form
                   id={formId}
-                  action={reviewAction}
+                  action={formAction}
                   className={styles.reviewForm}
-                  onSubmit={() => setSubmitting(true)}
                   onKeyDown={(event: KeyboardEvent<HTMLFormElement>) => {
                     if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
                       event.preventDefault();
@@ -269,6 +396,12 @@ export function ReviewDetail({
       </div>
 
       <aside className={styles.detailAside} aria-label="Ações da revisão">
+        {progress.total > 1 && (
+          <p className={styles.manualProgress} role="status" aria-live="polite">
+            <Icon name="check" size={14} />
+            {progressText}
+          </p>
+        )}
         {active ? (
           <div className={styles.actionCard}>
             <h2>Finalizar</h2>
@@ -309,17 +442,26 @@ export function ReviewDetail({
                 <Icon name="check" size={17} />
                 Finalizar revisão
               </button>
-              {next && (
+              {(pendingAfterActive > 0 || next) && (
+                // Pending answers of this attempt come first; the server re-reads them after saving.
                 <button
                   type="submit"
                   form={formId}
-                  name="next"
-                  value={next}
+                  name="intent"
+                  value="next"
                   className="yas-button yas-button--soft yas-button--block"
                   disabled={submitting}
-                  aria-label="Finalizar e ir para a próxima"
+                  aria-label={
+                    pendingAfterActive > 0
+                      ? "Finalizar e ir para a próxima pergunta"
+                      : "Finalizar e ir para a próxima prática"
+                  }
                 >
-                  <span className={styles.longLabel}>Finalizar e ir para a próxima</span>
+                  <span className={styles.longLabel}>
+                    {pendingAfterActive > 0
+                      ? "Finalizar e ir para a próxima pergunta"
+                      : "Finalizar e ir para a próxima prática"}
+                  </span>
                   <span className={styles.shortLabel}>Próxima</span>
                   <Icon name="arrow" size={16} />
                 </button>

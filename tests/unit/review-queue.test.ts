@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   filterQueue,
   formatMinutes,
+  formatQueueCursor,
   formatWaiting,
   groupReviewQueue,
+  parseQueueCursor,
   parseQueueFilters,
   queueCounts,
   queueNeighbors,
@@ -107,11 +109,68 @@ describe("review queue", () => {
       item: "not-a-uuid",
       q: " x ",
     });
-    expect(filters).toEqual({ tab: "all", q: "x", cohort: "", order: "newest", item: "" });
+    expect(filters).toEqual({
+      tab: "all",
+      q: "x",
+      cohort: "",
+      order: "newest",
+      item: "",
+      after: "",
+    });
     expect(queueUrl(filters, { tab: "writing" })).toBe(
       "/teacher/revisoes?tab=writing&q=x&order=newest",
     );
     expect(queueUrl(parseQueueFilters({}))).toBe("/teacher/revisoes");
+  });
+
+  it("files a mixed attempt under every kind of its pending answers, whatever their order", () => {
+    const written = item({ id: "00000000-0000-4000-8000-000000000010", skill: "GRAMMAR" });
+    const writtenFirst = [
+      { ...written, itemId: "w1", responseType: "WRITTEN" },
+      { ...written, itemId: "s1", responseType: "SPOKEN" },
+    ];
+    const spokenFirst = [...writtenFirst]
+      .reverse()
+      .map((row) => ({ ...row, id: "00000000-0000-4000-8000-000000000011" }));
+    const entries = groupReviewQueue([...writtenFirst, ...spokenFirst, b]);
+    expect(entries.map((e) => e.kinds)).toEqual([
+      ["speaking", "writing"],
+      ["speaking", "writing"],
+      ["pronunciation"],
+    ]);
+    expect(entries[0]?.pendingItems).toBe(2);
+    const base = parseQueueFilters({});
+    const ids = (tab: (typeof base)["tab"]) =>
+      filterQueue(entries, { ...base, tab }, {}, now).map((e) => e.id);
+    expect(ids("writing")).toEqual(ids("speaking"));
+    expect(ids("writing")).toHaveLength(2);
+    expect(ids("all")).toHaveLength(3);
+    // Tabs may sum above the total: never add them up to deduce the backlog.
+    const counts = queueCounts(entries, now);
+    expect(counts.all).toBe(3);
+    expect(counts.speaking + counts.writing + counts.pronunciation).toBe(5);
+  });
+
+  it("keeps only reviewed answers out of the pending count", () => {
+    const [entry] = groupReviewQueue([c1, { ...c2, status: "MANUAL_REVIEWED" }]);
+    expect(entry?.items).toHaveLength(2);
+    expect(entry?.pendingItems).toBe(1);
+  });
+
+  it("round-trips the page cursor and restarts it when a filter changes", () => {
+    const cursor = {
+      submittedAt: "2026-10-22T12:00:00.123456-03:00",
+      id: "00000000-0000-4000-8000-000000000003",
+    };
+    expect(parseQueueCursor(formatQueueCursor(cursor))).toEqual(cursor);
+    expect(parseQueueCursor("x~00000000-0000-4000-8000-000000000003")).toBeNull();
+    expect(parseQueueCursor("2026-10-22T12:00:00Z~nope")).toBeNull();
+    const filters = parseQueueFilters({ after: formatQueueCursor(cursor) });
+    expect(filters.after).toBe(formatQueueCursor(cursor));
+    expect(parseQueueFilters({ after: "garbage" }).after).toBe("");
+    expect(queueUrl(filters, { item: cursor.id })).toContain("after=");
+    expect(queueUrl(filters, { tab: "writing" })).toBe("/teacher/revisoes?tab=writing");
+    expect(queueUrl(filters, { order: "newest" })).toBe("/teacher/revisoes?order=newest");
   });
 
   it("computes n of m navigation and points reviewed attempts at the oldest pending one", () => {

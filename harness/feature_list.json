@@ -832,6 +832,15 @@
         "harness/evidence/placement-practice-dead-ends/README.md"
       ],
       "updated_at": "2026-10-18T12:00:00Z"
+    },
+    {
+      "id": "practice-review-consistency",
+      "title": "Prática v3 ↔ revisão do professor: feed parcial, contexto completo, fila paginada por tentativa",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["practice-10-v3", "teacher-practices-redesign"],
+      "evidence": ["harness/goals/practice-review-consistency.md"],
+      "updated_at": "2026-10-25T12:00:00-03:00"
     }
   ]
 }
