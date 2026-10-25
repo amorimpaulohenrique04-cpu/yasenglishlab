@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { m } from "motion/react";
 import {
@@ -10,9 +10,11 @@ import {
   Button,
   Card,
   Drawer,
+  Dropdown,
   EmptyState,
   Icon,
-  PageHeader,
+  Popover,
+  ProgressRing,
   Select,
   Tabs,
   Textarea,
@@ -23,21 +25,28 @@ import {
   KIND_LABELS,
   PROFILE_TABS,
   STATUS_LABELS,
+  lessonSteps,
+  oldestPendingReview,
+  recifeDateParts,
   reviewHref,
+  studentPaceComparison,
   studentDate,
   studentProfileUrl,
+  studentRelativeDate,
+  studentReviewCta,
+  studentSuggestedAction,
+  studentTrend,
+  studentWaitingLabel,
   type ProfileFilters,
   type StudentCommandResult,
   type StudentProfileData,
 } from "../domain/student-workspace";
 import {
-  EnrollmentContext,
   EnrollmentStatus,
-  StudentAttention,
+  StudentEngagement,
   StudentEventList,
   StudentIdentity,
   StudentPagination,
-  StudentProgress,
 } from "./student-shared";
 import styles from "./students.module.css";
 
@@ -117,57 +126,41 @@ export function StudentProfile({
       setSaving(false);
     }
   };
-  const pendingReviews = <PendingReviews data={data} />;
+  const [now] = useState(() => Date.now());
+  const primaryReview = oldestPendingReview(data.pending);
+  const suggestion = studentSuggestedAction(student, data.pending);
+  const pendingReviews = <PendingReviews data={data} now={now} />;
   const courses = <CourseProgress data={data} />;
+  const cohorts = [...new Set(currentEnrollments.flatMap((e) => e.cohorts.map((c) => c.name)))];
+  const metaLine = [
+    currentEnrollments.length
+      ? currentEnrollments
+          .slice(0, 2)
+          .map((item) => item.title)
+          .join(" · ") +
+        (currentEnrollments.length > 2 ? ` · +${currentEnrollments.length - 2} cursos` : "")
+      : "Sem matrícula",
+    cohorts.join(" · ") || "Sem turma ativa",
+  ].join(" · ");
+  const enrollmentChip = student.enrollments.some((e) => e.status === "ACTIVE")
+    ? { tone: "success" as const, label: "Matrícula ativa" }
+    : student.enrollments.some((e) => e.status === "COMPLETED")
+      ? { tone: "muted" as const, label: "Curso concluído" }
+      : { tone: "muted" as const, label: "Sem matrícula ativa" };
   const content =
     filters.tab === "summary" ? (
-      <div className={styles.profileGrid}>
+      <div className={styles.summaryGrid}>
         <div className={styles.stack}>
           {courses}
           <Card className={styles.panel}>
-            <h2>Últimas atividades</h2>
-            <StudentEventList events={data.events.slice(0, 5)} />
+            <h2>Atividades recentes</h2>
+            <StudentEventList events={data.events} grouped limit={5} />
             <Link className={styles.textLink} href={href({ tab: "activities" })}>
               Ver histórico de atividades <Icon name="arrow" size={15} />
             </Link>
           </Card>
         </div>
-        <aside className={styles.stack}>
-          {pendingReviews}
-          <Card className={styles.panel}>
-            <h2>Próxima sessão</h2>
-            {data.nextSession ? (
-              <div className={styles.nextSession}>
-                <span className={styles.eventIcon} data-kind="session" aria-hidden="true">
-                  <Icon name="video" size={20} />
-                </span>
-                <div>
-                  <strong>{data.nextSession.title}</strong>
-                  <time dateTime={data.nextSession.starts_at}>
-                    {studentDate(data.nextSession.starts_at)}
-                  </time>
-                  <Link
-                    className={styles.textLink}
-                    href={`/teacher/sessoes/${data.nextSession.id}`}
-                  >
-                    Ver sessão <Icon name="arrow" size={14} />
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <p className={styles.muted}>Nenhuma sessão futura reservada com você.</p>
-            )}
-          </Card>
-          <Card className={styles.panel}>
-            <h2>Acompanhamento</h2>
-            <StudentAttention student={student} />
-            <p className={styles.muted}>
-              O alerta de sete dias considera os registros de aprendizagem acessíveis e só se aplica
-              a matrículas ativas. A contagem respeita o início do vínculo.
-            </p>
-            <p className={styles.muted}>Datas e horários em America/Recife · GMT−3.</p>
-          </Card>
-        </aside>
+        <aside className={styles.stack}>{pendingReviews}</aside>
       </div>
     ) : filters.tab === "activities" ? (
       <div className={styles.profileGrid}>
@@ -214,10 +207,10 @@ export function StudentProfile({
                     </Link>
                     <time dateTime={session.starts_at}>{studentDate(session.starts_at)}</time>
                     <div className={styles.badges}>
-                      <Badge tone="neutral">
+                      <Badge tone="muted">
                         {STATUS_LABELS[session.booking_status] ?? "Reserva registrada"}
                       </Badge>
-                      <Badge tone={session.attendance_status === "NO_SHOW" ? "warning" : "neutral"}>
+                      <Badge tone={session.attendance_status === "NO_SHOW" ? "warning" : "muted"}>
                         {session.attendance_status
                           ? (STATUS_LABELS[session.attendance_status] ?? "Presença registrada")
                           : (STATUS_LABELS[session.status] ?? "Sessão registrada")}
@@ -260,7 +253,7 @@ export function StudentProfile({
                 <li key={`${item.kind}:${item.id}`}>
                   <div className={styles.sectionHeading}>
                     <strong>{item.title}</strong>
-                    <Badge tone={item.status === "OPEN" ? "warning" : "neutral"}>
+                    <Badge tone={item.status === "OPEN" ? "warning" : "muted"}>
                       {STATUS_LABELS[item.status] ?? "Registrada"}
                     </Badge>
                   </div>
@@ -385,59 +378,74 @@ export function StudentProfile({
         homeLabel="Início do professor"
         items={[{ label: "Alunos", href: filters.back }, { label: student.name }]}
       />
-      <Link className={styles.back} href={filters.back}>
-        <Icon name="left" size={15} />
-        Voltar para alunos
-      </Link>
-      <PageHeader
-        title="Perfil pedagógico"
-        description="Progresso, evidências e acompanhamento individual."
-      />
       <Card className={styles.profileHero}>
-        <div className={styles.profileIdentity}>
-          <StudentIdentity name={student.name} large />
-          <div>
-            <h2>{student.name}</h2>
+        <div className={styles.heroTop}>
+          <StudentIdentity name={student.name} size="lg" />
+          <div className={styles.profileIdentity}>
+            <h1>{student.name}</h1>
+            <p className={styles.heroMetaLine}>{metaLine}</p>
             <div className={styles.badges}>
-              {currentEnrollments.length ? (
-                currentEnrollments.slice(0, 3).map((item) => (
-                  <Badge key={item.id} tone="neutral">
-                    {item.title}
-                  </Badge>
-                ))
-              ) : (
-                <Badge tone="neutral">Sem matrícula</Badge>
+              <Badge tone={enrollmentChip.tone}>{enrollmentChip.label}</Badge>
+              {data.placement && data.placement.state !== "ENROLLED" && (
+                <Badge tone="info">
+                  Entrada: {STATUS_LABELS[data.placement.state] ?? "processo registrado"}
+                </Badge>
               )}
-              {currentEnrollments.length > 3 && (
-                <Badge tone="neutral">+{currentEnrollments.length - 3} cursos</Badge>
-              )}
+              {student.reassessment_open && <Badge tone="warning">Novo teste solicitado</Badge>}
             </div>
-            <p>
-              {[...new Set(student.enrollments.flatMap((e) => e.cohorts.map((c) => c.name)))].join(
-                " · ",
-              ) || "Sem turma ativa"}
-            </p>
+          </div>
+          <div className={styles.heroActions}>
+            {primaryReview ? (
+              // Segmented CTA: the button and its waiting time share one bordered group.
+              <div
+                className={styles.ctaGroup}
+                data-split={primaryReview.submitted_at ? "" : undefined}
+              >
+                <Link
+                  className={`yas-button yas-button--primary ${styles.reviewCta}`}
+                  href={reviewHref(primaryReview.kind, primaryReview.id)}
+                  aria-describedby={primaryReview.submitted_at ? "hero-cta-context" : undefined}
+                >
+                  <Icon name={primaryReview.kind === "entry" ? "file" : "pen"} size={17} />
+                  {studentReviewCta(primaryReview.kind)}
+                  <Icon name="arrow" size={16} className={styles.reviewCtaArrow} />
+                </Link>
+                {primaryReview.submitted_at && (
+                  <span id="hero-cta-context" className={styles.ctaMeta}>
+                    <Icon name="clock" size={14} />
+                    {primaryReview.kind === "entry" ? "Enviado" : "Enviada"}{" "}
+                    {studentWaitingLabel(primaryReview.submitted_at, now)}
+                  </span>
+                )}
+              </div>
+            ) : suggestion.href ? (
+              // Inactivity itself is already shown in the follow-up strip.
+              <Link className="yas-button yas-button--outline" href={suggestion.href}>
+                {student.inactive ? "Agendar sessão" : suggestion.text}
+              </Link>
+            ) : null}
+            <Dropdown
+              label="Mais ações"
+              icon="more"
+              items={[
+                {
+                  id: "note",
+                  label: "Adicionar nota",
+                  icon: "pen",
+                  onSelect: () => open("note"),
+                },
+                {
+                  id: "reassessment",
+                  label: student.reassessment_open ? "Novo teste solicitado" : "Pedir novo teste",
+                  icon: "redo",
+                  disabled: student.reassessment_open,
+                  onSelect: () => open("reassessment"),
+                },
+              ]}
+            />
           </div>
         </div>
-        <div className={styles.heroMeta}>
-          <StudentAttention student={student} />
-          <span className={styles.muted}>
-            Última atividade: {studentDate(student.last_activity?.occurred_at ?? null)}
-          </span>
-        </div>
-        <div className={styles.heroActions}>
-          <Button leadingIcon={<Icon name="pen" size={16} />} onClick={() => open("note")}>
-            Adicionar nota
-          </Button>
-          <Button
-            variant="outline"
-            disabled={student.reassessment_open}
-            leadingIcon={<Icon name="redo" size={16} />}
-            onClick={() => open("reassessment")}
-          >
-            {student.reassessment_open ? "Novo teste solicitado" : "Pedir novo teste"}
-          </Button>
-        </div>
+        <FollowUpStrip data={data} now={now} />
       </Card>
       <section className={styles.profileTabs} aria-busy={pending}>
         <Tabs
@@ -518,36 +526,72 @@ export function StudentProfile({
     </div>
   );
 }
+const RING_GRADIENT = "student-ring-gradient";
 function CourseProgress({ data }: { data: StudentProfileData }) {
   return (
     <Card className={styles.panel}>
-      <h2>Matrículas e progresso curricular</h2>
-      <p className={styles.muted}>
-        Média do progresso das aulas publicadas que compõem a trilha de cada matrícula, incluindo
-        aulas ainda não iniciadas.
-      </p>
+      <h2>Progresso curricular</h2>
+      {/* Shared gradient for the rings' value stroke (referenced from CSS). */}
+      <svg width="0" height="0" className={styles.svgDefs} aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id={RING_GRADIENT} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--yas-color-purple-500)" />
+            <stop offset="100%" stopColor="var(--yas-color-purple-700)" />
+          </linearGradient>
+        </defs>
+      </svg>
       {data.student.enrollments.length ? (
         <ul className={styles.courseList}>
-          {data.student.enrollments.map((enrollment) => (
-            <li key={enrollment.id}>
-              <div className={styles.sectionHeading}>
-                <h3>{enrollment.title}</h3>
-                <EnrollmentStatus enrollment={enrollment} />
-              </div>
-              <EnrollmentContext enrollment={enrollment} />
-              <StudentProgress enrollment={enrollment} />
-              {enrollment.progress !== null && (
-                <p className={styles.muted}>
-                  {enrollment.completed} de {enrollment.total} aulas concluídas
-                </p>
-              )}
-              {enrollment.completed_at && (
-                <small className={styles.muted}>
-                  Conclusão registrada em {studentDate(enrollment.completed_at)}
-                </small>
-              )}
-            </li>
-          ))}
+          {data.student.enrollments.map((enrollment) => {
+            const steps = lessonSteps(enrollment.completed, enrollment.total);
+            return (
+              <li key={enrollment.id} className={styles.courseRow}>
+                {enrollment.progress !== null ? (
+                  <span className={styles.courseRing}>
+                    <ProgressRing
+                      value={enrollment.progress}
+                      size={72}
+                      stroke={7}
+                      label={`Progresso em ${enrollment.title}`}
+                    >
+                      <strong>{enrollment.progress}%</strong>
+                    </ProgressRing>
+                  </span>
+                ) : (
+                  <span className={styles.courseRingEmpty} aria-hidden="true">
+                    —
+                  </span>
+                )}
+                <div className={styles.courseInfo}>
+                  <div className={styles.sectionHeading}>
+                    <h3>{enrollment.title}</h3>
+                    <EnrollmentStatus enrollment={enrollment} />
+                  </div>
+                  {steps.segments > 0 && (
+                    <div
+                      className={styles.lessonSteps}
+                      role="img"
+                      aria-label={`${enrollment.completed} de ${enrollment.total} ${enrollment.total === 1 ? "aula concluída" : "aulas concluídas"}`}
+                    >
+                      {Array.from({ length: steps.segments }, (_, i) => (
+                        <span key={i} data-done={i < steps.filled || undefined} />
+                      ))}
+                    </div>
+                  )}
+                  <p className={styles.muted}>
+                    {enrollment.progress !== null
+                      ? `${enrollment.progress}% do conteúdo · ${enrollment.completed} de ${enrollment.total} ${enrollment.total === 1 ? "aula concluída" : "aulas concluídas"} · inclui aulas em andamento`
+                      : "Sem progresso disponível"}
+                  </p>
+                  {enrollment.completed_at && (
+                    <small className={styles.muted}>
+                      Conclusão registrada em {studentDate(enrollment.completed_at)}
+                    </small>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <EmptyState
@@ -555,31 +599,189 @@ function CourseProgress({ data }: { data: StudentProfileData }) {
           description="As trilhas aparecerão quando houver uma matrícula autorizada."
         />
       )}
-      <p className={styles.disclaimer}>
-        <Icon name="bulb" size={16} />
-        Progresso curricular não equivale a proficiência CEFR.
-      </p>
+      <Badge tone="muted" icon="bulb" className={styles.cefrNote}>
+        Progresso curricular não equivale a proficiência CEFR
+      </Badge>
     </Card>
   );
 }
-function PendingReviews({ data }: { data: StudentProfileData }) {
+function FollowUpStrip({ data, now }: { data: StudentProfileData; now: number }) {
+  const { student, engagement, nextSession } = data;
+  // Prefer a meaningful interaction; fall back to any learning activity so the strip
+  // never says "sem interações" while Ritmo counts activity.
+  const event = engagement.lastRelevantEvent ?? student.last_activity;
+  const trend = studentTrend(engagement.learningLast7, engagement.learningPrev7);
+  const pace = studentPaceComparison(engagement.learningLast7, engagement.learningPrev7);
+  const session = nextSession ? recifeDateParts(nextSession.starts_at) : null;
+  return (
+    <section className={styles.followStrip} aria-labelledby="follow-up-title">
+      <div className={styles.stripHead}>
+        <h2 id="follow-up-title">Acompanhamento</h2>
+        <HowWeCalculate />
+      </div>
+      <dl>
+        <div>
+          <dt>
+            <span className={styles.metricIcon} data-tint="green" aria-hidden="true">
+              <Icon name="flame" size={16} />
+            </span>
+            Engajamento
+          </dt>
+          <dd>
+            <StudentEngagement student={student} pulse />
+          </dd>
+        </div>
+        <div>
+          <dt>
+            <span className={styles.metricIcon} data-tint="lilac" aria-hidden="true">
+              <Icon name="bars" size={16} />
+            </span>
+            Ritmo
+          </dt>
+          <dd>
+            <span className={styles.paceRow}>
+              <span className={styles.metricValue}>{engagement.learningLast7} em 7 dias</span>
+              <span className={styles.trendPill} data-tone={pace.tone}>
+                <span aria-hidden="true">{pace.deltaLabel}</span>
+                <span className={styles.srOnly}>{trend.text}</span>
+              </span>
+            </span>
+            <span
+              className={styles.paceChart}
+              role="img"
+              aria-label={`Últimos 7 dias: ${engagement.learningLast7}; 7 dias anteriores: ${engagement.learningPrev7}`}
+            >
+              {(
+                [
+                  ["7 dias", engagement.learningLast7, pace.lastPct, "last"],
+                  ["Anterior", engagement.learningPrev7, pace.prevPct, "prev"],
+                ] as const
+              ).map(([label, value, pct, week]) => (
+                <span key={week} className={styles.paceLine} aria-hidden="true">
+                  <span>{label}</span>
+                  <span className={styles.paceTrack}>
+                    <span style={{ inlineSize: `${pct}%` }} data-week={week} />
+                  </span>
+                  <span>{value}</span>
+                </span>
+              ))}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>
+            <span className={styles.metricIcon} data-tint="blue" aria-hidden="true">
+              <Icon name="history" size={16} />
+            </span>
+            Última interação
+          </dt>
+          <dd>
+            {event ? (
+              <>
+                <span className={styles.metricValue}>{event.title}</span>
+                <time className={styles.timeChip} dateTime={event.occurred_at}>
+                  {studentRelativeDate(event.occurred_at, now)}
+                </time>
+              </>
+            ) : (
+              <span className={styles.metricValue}>Sem interações registradas</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>
+            <span className={styles.metricIcon} data-tint="yellow" aria-hidden="true">
+              <Icon name="cal" size={16} />
+            </span>
+            Próxima sessão
+          </dt>
+          <dd>
+            {nextSession && session ? (
+              <span className={styles.sessionChip}>
+                <time className={styles.dateBlock} dateTime={nextSession.starts_at}>
+                  <strong>{session.day}</strong>
+                  <span>{session.month}</span>
+                </time>
+                <span className={styles.sessionText}>
+                  <Link className={styles.textLink} href={`/teacher/sessoes/${nextSession.id}`}>
+                    {nextSession.title}
+                  </Link>
+                  <small>{session.time}</small>
+                </span>
+              </span>
+            ) : (
+              <span className={styles.metricValue}>Nenhuma</span>
+            )}
+          </dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+function HowWeCalculate() {
+  const id = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className={styles.infoButton}
+        popoverTarget={id}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label="Como calculamos"
+        title="Como calculamos"
+      >
+        <Icon name="info" size={16} />
+      </button>
+      <Popover
+        id={id}
+        anchorRef={triggerRef}
+        open={open}
+        onOpenChange={setOpen}
+        placement="bottom-end"
+        role="dialog"
+        aria-label="Como calculamos"
+      >
+        <div className={styles.infoSurface}>
+          <strong>Como calculamos</strong>
+          <p>
+            O alerta de sete dias considera os registros de aprendizagem acessíveis e só se aplica a
+            matrículas ativas. A contagem respeita o início do vínculo.
+          </p>
+          <p>Datas e horários em America/Recife · GMT−3.</p>
+        </div>
+      </Popover>
+    </>
+  );
+}
+function PendingReviews({ data, now }: { data: StudentProfileData; now: number }) {
   return (
     <Card className={styles.panel}>
-      <h2>Pendências de acompanhamento</h2>
+      <h2>Pendências</h2>
       {data.pending.length ? (
         <ul className={styles.pendingList}>
           {data.pending.map((item) => (
             <li key={`${item.kind}:${item.id}`}>
               <span className={styles.eventIcon} aria-hidden="true">
-                <Icon name="file" size={17} />
+                <Icon name={item.kind === "entry" ? "file" : "pen"} size={17} />
               </span>
               <div>
                 <strong>{item.title}</strong>
-                <span>{item.kind === "entry" ? "Revisão de entrada" : "Revisão de prática"}</span>
-                <Link className={styles.textLink} href={reviewHref(item.kind, item.id)}>
-                  Abrir revisão <Icon name="arrow" size={14} />
-                </Link>
+                <span>
+                  {item.kind === "entry" ? "Teste de entrada" : "Prática"}
+                  {item.submitted_at ? ` · ${studentWaitingLabel(item.submitted_at, now)}` : ""}
+                </span>
               </div>
+              <Link
+                className="yas-button yas-button--outline yas-button--sm"
+                href={reviewHref(item.kind, item.id)}
+                aria-label={`Abrir revisão: ${item.title}`}
+              >
+                Abrir revisão
+              </Link>
             </li>
           ))}
         </ul>

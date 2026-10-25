@@ -1,13 +1,22 @@
 "use client";
 import Link from "next/link";
-import { Avatar, Badge, Icon, ProgressBar, type IconName } from "@/components/ui";
+import { Avatar, AvatarStack, Badge, Icon, ProgressBar, type IconName } from "@/components/ui";
 import { initials } from "../domain/session-calendar";
 import {
   attentionReasons,
+  groupStudentEvents,
+  groupedEventTitle,
+  studentAdministrativeLabel,
+  studentEngagementLabel,
+  studentEngagementState,
+  studentPendingItems,
+  studentRelativeDate,
+  uniqueEventStudents,
   ENROLLMENT_LABELS,
   studentDate,
   type StudentEnrollment,
   type StudentEvent,
+  type StudentPendingKey,
   type StudentRow,
 } from "../domain/student-workspace";
 import styles from "./students.module.css";
@@ -18,22 +27,52 @@ export const eventIcons: Record<StudentEvent["kind"], IconName> = {
   assessment: "file",
   session: "video",
 };
-export function StudentIdentity({ name, large = false }: { name: string; large?: boolean }) {
+const pendingIcons: Record<StudentPendingKey, IconName> = {
+  entry: "file",
+  practice: "pen",
+  reassessment: "redo",
+};
+export function StudentIdentity({
+  name,
+  large = false,
+  size,
+}: {
+  name: string;
+  large?: boolean;
+  size?: "sm" | "md" | "lg";
+}) {
   return (
     <span aria-hidden="true">
-      <Avatar label={name} fallback={initials(name)} size={large ? "lg" : "md"} />
+      <Avatar
+        label={name}
+        fallback={initials(name)}
+        size={size ?? (large ? "lg" : "md")}
+        tone="neutral"
+      />
     </span>
   );
 }
 export function StudentProgress({
   enrollment,
+  lessons = false,
 }: {
   enrollment: StudentEnrollment | null | undefined;
+  /** Compact list variant: short bar and a "completed/total aulas" line. */
+  lessons?: boolean;
 }) {
   if (enrollment?.progress == null)
-    return <span className={styles.muted}>Sem progresso disponível</span>;
-  return (
-    <div className={styles.progress}>
+    return (
+      <span
+        className={styles.muted}
+        role="img"
+        aria-label="Sem progresso disponível"
+        title="Sem progresso disponível"
+      >
+        —
+      </span>
+    );
+  const bar = (
+    <div className={lessons ? styles.progressCompact : styles.progress}>
       <ProgressBar
         value={enrollment.progress}
         label={`Progresso em ${enrollment.title}`}
@@ -41,6 +80,15 @@ export function StudentProgress({
         showValue={false}
       />
       <strong>{enrollment.progress}%</strong>
+    </div>
+  );
+  if (!lessons) return bar;
+  return (
+    <div className={styles.progressCell}>
+      {bar}
+      <small>
+        {enrollment.completed}/{enrollment.total} aulas
+      </small>
     </div>
   );
 }
@@ -60,14 +108,96 @@ export function StudentAttention({ student }: { student: StudentRow }) {
           ))}
         </>
       ) : student.enrollments.some((item) => item.status === "ACTIVE") ? (
-        <Badge tone={student.last_activity ? "success" : "neutral"} dot>
+        <Badge tone={student.last_activity ? "success" : "muted"} dot>
           {student.last_activity ? "Em dia" : "Sem atividade"}
         </Badge>
       ) : (
-        <Badge tone="neutral">
+        <Badge tone="muted">
           {student.enrollments.some((item) => item.status === "COMPLETED")
             ? "Cursos concluídos"
             : "Sem matrícula ativa"}
+        </Badge>
+      )}
+    </div>
+  );
+}
+export function StudentAdministrative({
+  student,
+  showCourse = false,
+}: {
+  student: StudentRow;
+  /** List variant: the primary course sits under the cohort. */
+  showCourse?: boolean;
+}) {
+  const label = studentAdministrativeLabel(student);
+  const waiting = label === "Aguardando turma" || label === "Em nivelamento";
+  const hasCohort = !waiting && label !== "Sem matrícula" && label !== "Cursos concluídos";
+  const value = hasCohort ? (
+    <span className={styles.cohortName} title={label}>
+      {label}
+    </span>
+  ) : (
+    <Badge tone={label === "Em nivelamento" ? "info" : "muted"}>{label}</Badge>
+  );
+  const course = showCourse ? student.primary_enrollment?.title : undefined;
+  if (!showCourse) return value;
+  return (
+    <div className={styles.adminCell}>
+      {value}
+      {course && <small>{course}</small>}
+    </div>
+  );
+}
+export function StudentEngagement({
+  student,
+  pulse = false,
+}: {
+  student: StudentRow;
+  /** Soft pulsing dot (static under reduced motion). */
+  pulse?: boolean;
+}) {
+  const state = studentEngagementState(student);
+  if (state.tone === "none")
+    return (
+      <span className={styles.muted} aria-label="Sem matrícula ativa">
+        —
+      </span>
+    );
+  return (
+    <span
+      className={styles.engagement}
+      data-tone={state.tone}
+      data-pulse={pulse || undefined}
+      title={studentEngagementLabel(student)}
+    >
+      {state.label}
+    </span>
+  );
+}
+export function StudentPending({ student }: { student: StudentRow }) {
+  const items = studentPendingItems(student);
+  if (!items.length)
+    return (
+      <span className={styles.muted} aria-label="Sem pendências">
+        —
+      </span>
+    );
+  const rest = items.slice(2);
+  return (
+    <div className={styles.statuses}>
+      {items.slice(0, 2).map((item) => (
+        <Badge
+          key={item.key}
+          tone={item.key === "reassessment" ? "warning" : "info"}
+          icon={pendingIcons[item.key]}
+        >
+          {item.label}
+        </Badge>
+      ))}
+      {rest.length > 0 && (
+        <Badge tone="muted" title={rest.map((item) => item.label).join(", ")}>
+          <span aria-hidden="true">+{rest.length}</span>
+          <span className={styles.srOnly}>{rest.map((item) => item.label).join(", ")}</span>
         </Badge>
       )}
     </div>
@@ -94,7 +224,7 @@ export function EnrollmentContext({
 }
 export function EnrollmentStatus({ enrollment }: { enrollment: StudentEnrollment }) {
   return (
-    <Badge tone={enrollment.status === "ACTIVE" ? "success" : "neutral"}>
+    <Badge tone={enrollment.status === "ACTIVE" ? "success" : "muted"}>
       {ENROLLMENT_LABELS[enrollment.status] ?? "Matrícula registrada"}
     </Badge>
   );
@@ -102,12 +232,19 @@ export function EnrollmentStatus({ enrollment }: { enrollment: StudentEnrollment
 export function StudentEventList({
   events,
   profileHref,
+  grouped = false,
+  limit = 4,
 }: {
   events: readonly StudentEvent[];
-  profileHref?: (id: string) => string;
+  profileHref?: ((id: string) => string) | undefined;
+  /** Maximum grouped rows. */
+  limit?: number;
+  /** Listing feed only: same-day repeats collapse into one row, at most 4 rows. */
+  grouped?: boolean;
 }) {
   if (!events.length)
     return <p className={styles.emptySmall}>Nenhuma atividade registrada neste período.</p>;
+  if (grouped) return <GroupedEventList events={events} profileHref={profileHref} limit={limit} />;
   return (
     <ol className={styles.eventList}>
       {events.map((event) => (
@@ -132,6 +269,125 @@ export function StudentEventList({
           </div>
         </li>
       ))}
+    </ol>
+  );
+}
+function StudentName({
+  student,
+  profileHref,
+}: {
+  student: { id: string; name: string };
+  profileHref?: ((id: string) => string) | undefined;
+}) {
+  return profileHref ? (
+    <Link className={styles.eventStudent} href={profileHref(student.id)}>
+      {student.name}
+    </Link>
+  ) : (
+    <>{student.name}</>
+  );
+}
+function GroupedEventList({
+  events,
+  profileHref,
+  limit,
+}: {
+  limit: number;
+  events: readonly StudentEvent[];
+  profileHref?: ((id: string) => string) | undefined;
+}) {
+  return (
+    <ol className={styles.feed}>
+      {groupStudentEvents(events, limit).map((group) => {
+        const students = uniqueEventStudents(group.events);
+        const many = group.events.length > 1;
+        const heading = many
+          ? groupedEventTitle(group.title, group.detail, group.events.length)
+          : null;
+        const first = students[0];
+        const time = (
+          <time className={styles.timeChip} dateTime={group.occurred_at}>
+            {studentRelativeDate(group.occurred_at)}
+          </time>
+        );
+        const names = students.map((student) => student.name).join(", ");
+        return (
+          <li key={group.key}>
+            <span className={styles.feedIcon} data-kind={group.kind} aria-hidden="true">
+              <Icon name={eventIcons[group.kind]} size={15} />
+            </span>
+            <div>
+              {heading ? (
+                <>
+                  <span className={styles.feedHead}>
+                    <strong>{heading.title}</strong>
+                    {time}
+                  </span>
+                  {heading.detail && <span>{heading.detail}</span>}
+                  {students.length > 0 && (
+                    <span className={styles.feedAvatars}>
+                      <AvatarStack label={`Alunos: ${names}`}>
+                        {students.slice(0, 3).map((student) => {
+                          const avatar = (
+                            <Avatar
+                              label={student.name}
+                              fallback={initials(student.name)}
+                              size="sm"
+                              tone="neutral"
+                            />
+                          );
+                          return profileHref ? (
+                            <Link
+                              key={student.id}
+                              href={profileHref(student.id)}
+                              aria-label={`Abrir perfil de ${student.name}`}
+                              title={student.name}
+                            >
+                              {avatar}
+                            </Link>
+                          ) : (
+                            <span key={student.id} title={student.name}>
+                              {avatar}
+                            </span>
+                          );
+                        })}
+                      </AvatarStack>
+                      {students.length > 3 && (
+                        <span className={styles.avatarMore} title={names}>
+                          +{students.length - 3}
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  <span className={styles.feedHead}>
+                    <strong>
+                      {first ? (
+                        <>
+                          <StudentName student={first} profileHref={profileHref} /> ·{" "}
+                        </>
+                      ) : null}
+                      {group.title}
+                    </strong>
+                    {time}
+                  </span>
+                  {group.detail && <span>{group.detail}</span>}
+                  {group.events[0]?.session_id && (
+                    <Link
+                      className={styles.textLink}
+                      href={`/teacher/sessoes/${group.events[0].session_id}`}
+                    >
+                      Ver sessão <Icon name="arrow" size={13} />
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatedNumber } from "@/components/motion";
 import {
   Alert,
+  Badge,
   Breadcrumbs,
   Button,
   Card,
@@ -12,49 +13,70 @@ import {
   Dropdown,
   EmptyState,
   Icon,
-  IconBadge,
   IconButton,
   PageHeader,
   Select,
   Tabs,
   type IconName,
+  type Tint,
 } from "@/components/ui";
 import {
   EVENT_KINDS,
   KIND_LABELS,
-  STUDENT_TABS,
+  groupStudentActions,
+  studentActionCta,
+  studentActionDetail,
+  studentActionHref,
+  studentActionText,
+  studentOverdueLabel,
   studentProfileUrl,
   studentRelativeDate,
   studentsUrl,
   type EventKind,
+  type StudentActionLane,
   type StudentEventPage,
   type StudentFilters,
+  type StudentAction,
   type StudentRow,
   type StudentsWorkspaceData,
 } from "../domain/student-workspace";
 import {
-  EnrollmentContext,
-  StudentAttention,
+  StudentAdministrative,
+  StudentEngagement,
+  StudentPending,
   StudentEventList,
   StudentIdentity,
   StudentPagination,
   StudentProgress,
 } from "./student-shared";
 import styles from "./students.module.css";
+import { TeacherMetric, TeacherMetricGrid } from "./teacher-metric";
 
 const tabLabels = {
   all: "Todos os alunos",
   attention: "Precisam de atenção",
   inactive: "Sem atividade",
+  pending: "Com pendências",
 };
+const TAB_ORDER = ["all", "attention", "pending", "inactive"] as const;
+const PORTFOLIO_KEY = "yas:teacher-students:portfolio-open";
+/** Matches the `48rem` breakpoint where the portfolio stops being a disclosure. */
+const WIDE_QUERY = "(min-width: 48rem)";
+const VISIBLE_ACTIONS = { desktop: 5, mobile: 3 };
 const chartColors = [
   "var(--yas-color-purple-600)",
   "var(--yas-tint-blue-ink)",
   "var(--yas-tint-pink-ink)",
   "var(--yas-tint-green-ink)",
   "var(--yas-tint-yellow-ink)",
-  "var(--yas-color-muted)",
+  "var(--yas-color-ink-soft)",
 ];
+const laneCta: Record<StudentActionLane, string> = {
+  overdue: "secondary",
+  reviews: "outline",
+  followUp: "ghost",
+};
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 export function StudentsWorkspace({
   data,
   filters,
@@ -79,42 +101,47 @@ export function StudentsWorkspace({
     value: number | null;
     detail: string;
     icon: IconName;
-    tone: "lilac" | "yellow";
+    tone: Tint;
     suffix?: string;
+    href?: string;
+    alert?: boolean;
   }[] = [
     {
       label: "Alunos acompanhados",
       value: metrics.students,
-      detail: "Com vínculo pedagógico vigente",
+      detail: "com vínculo vigente",
       icon: "users",
       tone: "lilac",
     },
     {
       label: "Precisam de atenção",
       value: metrics.attention,
-      detail: `${
-        metrics.students ? Math.round((metrics.attention / metrics.students) * 100) : 0
-      }% do total`,
+      detail: `de ${plural(metrics.students, "aluno", "alunos")} · inatividade ou novo teste`,
       icon: "clock",
       tone: "yellow",
+      href: studentsUrl(filters, { tab: "attention" }),
+      alert: metrics.attention > 0,
     },
     {
       label: "Revisões pendentes",
       value: metrics.practicePending + metrics.entryPending,
-      detail: `${metrics.practicePending} práticas · ${metrics.entryPending} de entrada`,
+      detail: `${plural(metrics.practicePending, "prática", "práticas")} · ${plural(metrics.entryPending, "entrada", "entradas")}`,
       icon: "file",
-      tone: "lilac",
+      tone: "blue",
+      href: studentsUrl(filters, { tab: "pending" }),
     },
     {
       label: "Progresso médio",
       value: metrics.averageProgress,
       suffix: "%",
-      detail: `${metrics.activeEnrollments} matrículas ativas com trilha`,
+      detail: `média de ${plural(metrics.activeEnrollments, "matrícula ativa", "matrículas ativas")} · curricular, não CEFR`,
       icon: "bars",
-      tone: "lilac",
+      tone: "green",
     },
   ];
-  const filterControls = <StudentFilterControls data={data} filters={filters} onChange={go} />;
+  const activeFilters = [filters.course, filters.cohort, filters.status !== "all"].filter(
+    Boolean,
+  ).length;
   const tableContent = (
     <>
       <div className={styles.toolbar}>
@@ -124,14 +151,23 @@ export function StudentsWorkspace({
           current={filters.q}
           onSearch={(q) => go({ q })}
         />
-        <div className={styles.desktopFilters}>{filterControls}</div>
+        <div className={styles.desktopFilters}>
+          <StudentFilterControls
+            data={data}
+            filters={filters}
+            onChange={go}
+            compact
+            includeOrder={filters.view === "cards"}
+          />
+        </div>
         <Button
           className={styles.mobileFilterButton}
           variant="outline"
+          size="sm"
           leadingIcon={<Icon name="funnel" size={16} />}
           onClick={() => setFiltersOpen(true)}
         >
-          Filtros
+          {activeFilters ? `Filtros (${activeFilters})` : "Filtros"}
         </Button>
         <div className={styles.viewToggle} role="group" aria-label="Visualização dos alunos">
           <IconButton
@@ -185,10 +221,11 @@ export function StudentsWorkspace({
               <caption className={styles.srOnly}>Alunos com vínculo pedagógico vigente</caption>
               <colgroup>
                 <col className={styles.nameColumn} />
-                <col className={styles.courseColumn} />
+                <col className={styles.cohortColumn} />
                 <col className={styles.progressColumn} />
+                <col className={styles.engagementColumn} />
+                <col className={styles.pendingColumn} />
                 <col className={styles.activityColumn} />
-                <col className={styles.statusColumn} />
                 <col className={styles.actionColumn} />
               </colgroup>
               <thead>
@@ -196,46 +233,45 @@ export function StudentsWorkspace({
                   <SortHeader order="name" filters={filters} onSort={go}>
                     Aluno
                   </SortHeader>
-                  <th scope="col">Turma / curso</th>
+                  <th scope="col">Turma</th>
                   <SortHeader order="progress" filters={filters} onSort={go}>
-                    Progresso curricular
+                    Progresso
                   </SortHeader>
-                  <SortHeader order="activity" filters={filters} onSort={go}>
-                    Última atividade
+                  <th scope="col">Engajamento</th>
+                  <th scope="col">Pendências</th>
+                  <SortHeader
+                    order="activity"
+                    filters={filters}
+                    onSort={go}
+                    label="Última atividade"
+                  >
+                    Atividade
                   </SortHeader>
-                  <th scope="col">Situação</th>
-                  <th scope="col">Ações</th>
+                  <th scope="col">
+                    <span className={styles.srOnly}>Ações</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {data.items.map((student) => (
                   <tr key={student.id}>
                     <td>
-                      <Link className={styles.studentName} href={href(student.id)}>
-                        <StudentIdentity name={student.name} />
-                        <span>
-                          <strong>{student.name}</strong>
-                        </span>
-                      </Link>
+                      <StudentCell student={student} href={href(student.id)} />
                     </td>
                     <td>
-                      <EnrollmentContext
-                        enrollment={student.primary_enrollment}
-                        extra={Math.max(
-                          0,
-                          student.enrollments.filter((e) => e.status !== "CANCELLED").length -
-                            (student.primary_enrollment ? 1 : 0),
-                        )}
-                      />
+                      <StudentAdministrative student={student} showCourse />
                     </td>
                     <td>
-                      <StudentProgress enrollment={student.primary_enrollment} />
+                      <StudentProgress enrollment={student.primary_enrollment} lessons />
+                    </td>
+                    <td>
+                      <StudentEngagement student={student} />
+                    </td>
+                    <td>
+                      <StudentPending student={student} />
                     </td>
                     <td>
                       <LastActivity student={student} />
-                    </td>
-                    <td>
-                      <StudentAttention student={student} />
                     </td>
                     <td>
                       <RowActions student={student} href={href} />
@@ -248,24 +284,30 @@ export function StudentsWorkspace({
           <div className={styles.studentCards} data-view={filters.view}>
             {data.items.map((student) => (
               <article key={student.id} className={styles.studentCard}>
-                <Link className={styles.studentName} href={href(student.id)}>
-                  <StudentIdentity name={student.name} />
-                  <span>
-                    <strong>{student.name}</strong>
-                  </span>
-                </Link>
-                <EnrollmentContext
-                  enrollment={student.primary_enrollment}
-                  extra={Math.max(
-                    0,
-                    student.enrollments.filter((e) => e.status !== "CANCELLED").length -
-                      (student.primary_enrollment ? 1 : 0),
-                  )}
-                />
-                <StudentProgress enrollment={student.primary_enrollment} />
+                <StudentCell student={student} href={href(student.id)} />
+                <dl className={styles.cardFacts}>
+                  <div>
+                    <dt>Turma</dt>
+                    <dd>
+                      <StudentAdministrative student={student} showCourse />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Engajamento</dt>
+                    <dd>
+                      <StudentEngagement student={student} />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Pendências</dt>
+                    <dd>
+                      <StudentPending student={student} />
+                    </dd>
+                  </div>
+                </dl>
+                <StudentProgress enrollment={student.primary_enrollment} lessons />
                 <LastActivity student={student} />
-                <StudentAttention student={student} />
-                <RowActions student={student} href={href} />
+                <RowActions student={student} href={href} labelled />
               </article>
             ))}
           </div>
@@ -291,85 +333,53 @@ export function StudentsWorkspace({
         title="Alunos"
         description="Acompanhe o progresso, a participação e o engajamento dos seus alunos."
       />
-      <div className={styles.kpis}>
-        {kpis.map((kpi) => (
-          <Card key={kpi.label} className={styles.kpi}>
-            <IconBadge icon={kpi.icon} tone={kpi.tone} shape="square" />
-            <div>
-              <span>{kpi.label}</span>
-              <strong>
-                {kpi.value === null ? (
-                  "—"
-                ) : (
-                  <>
-                    <AnimatedNumber value={kpi.value} />
-                    {kpi.suffix}
-                  </>
-                )}
-              </strong>
-              <small>{kpi.detail}</small>
-            </div>
-          </Card>
-        ))}
-      </div>
-      <p className={styles.metricHelp}>
-        Indicadores de toda a sua carteira autorizada. Progresso curricular não representa
-        proficiência CEFR. “Sem atividade” considera alunos com matrícula ativa sem registros de
-        aprendizagem há 7 dias ou mais.
-      </p>
-      <div className={styles.layout}>
-        <Card className={styles.directory} aria-busy={pending}>
-          <Tabs
-            variant="underline"
-            ariaLabel="Filtrar alunos por acompanhamento"
-            value={filters.tab}
-            onValueChange={(tab) => go({ tab: tab as StudentFilters["tab"] })}
-            items={STUDENT_TABS.map((tab) => ({
-              id: tab,
-              label: tabLabels[tab],
-              badge: data.counts[tab],
-              content: tableContent,
-            }))}
+      <TeacherMetricGrid label="Indicadores da carteira">
+        {kpis.map((kpi, index) => (
+          <TeacherMetric
+            key={kpi.label}
+            icon={kpi.icon}
+            tone={kpi.tone}
+            label={kpi.label}
+            value={
+              kpi.value === null ? (
+                "—"
+              ) : (
+                <>
+                  <AnimatedNumber value={kpi.value} />
+                  {kpi.suffix}
+                </>
+              )
+            }
+            caption={kpi.detail}
+            alert={kpi.alert ?? false}
+            {...(kpi.href ? { href: kpi.href, arrow: true } : {})}
+            enterStep={index}
           />
-        </Card>
-        <aside className={styles.sidebar} aria-label="Resumo da carteira">
-          <Card className={styles.reviewLinks}>
-            <Link
-              className="yas-button yas-button--outline yas-button--sm"
-              href="/teacher/revisoes"
-            >
-              Ver revisões de práticas <Icon name="arrow" size={15} />
-            </Link>
-            <Link className={styles.textLink} href="/teacher/revisoes/placement">
-              Revisões de entrada <Icon name="arrow" size={14} />
-            </Link>
-          </Card>
-          <Card className={styles.sideCard}>
-            <h2>Distribuição por curso</h2>
-            <CourseDistribution data={data.distribution} />
-          </Card>
-          <Card className={styles.sideCard}>
-            <h2>Atividades recentes</h2>
-            <StudentEventList events={data.events} profileHref={href} />
-            <StudentEventsSheet action={eventsAction} profileHref={href} />
-          </Card>
-          <Link
-            className={styles.coaching}
-            href={studentsUrl(filters, { tab: data.counts.attention ? "attention" : "all" })}
-          >
-            <IconBadge icon="bars" shape="square" />
-            <h2>Acompanhamento individual</h2>
-            <p>
-              Abra o perfil de cada aluno para ver detalhes do progresso, revisões e histórico
-              pedagógico.
-            </p>
-            <span className={styles.coachingCta}>
-              {data.counts.attention ? "Ver quem precisa de atenção" : "Ver todos os alunos"}
-              <Icon name="arrow" size={15} />
-            </span>
-          </Link>
-        </aside>
+        ))}
+      </TeacherMetricGrid>
+      <div className={styles.overview}>
+        <NextActions
+          actions={data.actions}
+          total={data.actionsTotal}
+          href={href}
+          allHref={studentsUrl(filters, { tab: "pending" })}
+        />
+        <PortfolioOverview data={data} href={href} eventsAction={eventsAction} />
       </div>
+      <Card className={styles.directory} aria-busy={pending}>
+        <Tabs
+          variant="underline"
+          ariaLabel="Filtrar alunos por acompanhamento"
+          value={filters.tab}
+          onValueChange={(tab) => go({ tab: tab as StudentFilters["tab"] })}
+          items={TAB_ORDER.map((tab) => ({
+            id: tab,
+            label: tabLabels[tab],
+            badge: data.counts[tab],
+            content: tableContent,
+          }))}
+        />
+      </Card>
       <Drawer
         open={filtersOpen}
         onOpenChange={setFiltersOpen}
@@ -377,7 +387,7 @@ export function StudentsWorkspace({
         icon="funnel"
         footer={<Button onClick={() => setFiltersOpen(false)}>Ver {data.total} alunos</Button>}
       >
-        {filterControls}
+        <StudentFilterControls data={data} filters={filters} onChange={go} includeOrder />
       </Drawer>
       <span className={styles.srOnly} role="status">
         {pending ? "Atualizando alunos…" : `${data.total} alunos encontrados`}
@@ -430,7 +440,7 @@ function SearchField({
         onSearch(q.trim());
       }}
     >
-      <Icon name="search" size={18} />
+      <Icon name="search" size={16} />
       <input
         aria-label="Buscar aluno por nome ou turma"
         placeholder="Buscar por nome ou turma…"
@@ -438,8 +448,8 @@ function SearchField({
         maxLength={120}
         onChange={(event) => setQ(event.target.value)}
       />
-      <button type="submit" aria-label="Buscar alunos">
-        <Icon name="arrow" size={16} />
+      <button type="submit" className={styles.srOnly}>
+        Buscar alunos
       </button>
     </form>
   );
@@ -448,20 +458,29 @@ function SortHeader({
   order,
   filters,
   onSort,
+  label,
   children,
 }: {
   order: StudentFilters["order"];
   filters: StudentFilters;
   onSort: (patch: Partial<StudentFilters>) => void;
+  /** Full accessible name when the visible header is shortened. */
+  label?: string;
   children: React.ReactNode;
 }) {
   const active = filters.order === order;
   return (
-    <th scope="col" aria-sort={active ? (order === "name" ? "ascending" : "descending") : "none"}>
+    <th
+      scope="col"
+      data-active={active || undefined}
+      aria-sort={active ? (order === "name" ? "ascending" : "descending") : "none"}
+    >
       <button
         type="button"
         className={styles.sortButton}
         data-active={active}
+        aria-label={label}
+        title={label}
         onClick={() => onSort({ order })}
       >
         {children}
@@ -470,43 +489,277 @@ function SortHeader({
     </th>
   );
 }
-function RowActions({ student, href }: { student: StudentRow; href: (id: string) => string }) {
+function RowActions({
+  student,
+  href,
+  labelled = false,
+}: {
+  student: StudentRow;
+  href: (id: string) => string;
+  /** Cards view shows the visible "Abrir perfil" text next to the chevron. */
+  labelled?: boolean;
+}) {
   const profile = href(student.id);
   const base = profile.split("?")[0];
+  const items = [
+    ...(student.practice_pending > 0
+      ? [
+          {
+            id: "reviews",
+            label: "Revisões pendentes",
+            href: `/teacher/revisoes?q=${encodeURIComponent(student.name)}`,
+          },
+        ]
+      : []),
+    { id: "sessions", label: "Sessões do aluno", href: `${base}?tab=activities&kind=session` },
+  ];
   return (
     <div className={styles.rowActions}>
-      <Link className={styles.profileLink} href={profile}>
-        Ver perfil <Icon name="arrow" size={15} />
+      <Link
+        className={labelled ? styles.profileLink : styles.profileIcon}
+        href={profile}
+        aria-label={`Abrir perfil de ${student.name}`}
+        title={labelled ? undefined : "Abrir perfil"}
+      >
+        {labelled && "Abrir perfil"}
+        <Icon name="right" size={labelled ? 15 : 18} />
       </Link>
       <Dropdown
         label={`Mais ações para ${student.name}`}
         iconOnly
         icon="more"
         align="end"
-        items={[
-          { id: "profile", label: "Ver perfil", href: profile },
-          { id: "reviews", label: "Revisões pendentes", href: "/teacher/revisoes" },
-          {
-            id: "sessions",
-            label: "Sessões do aluno",
-            href: `${base}?tab=activities&kind=session`,
-          },
-        ]}
+        items={items}
       />
     </div>
+  );
+}
+function StudentCell({ student, href }: { student: StudentRow; href: string }) {
+  const extra = Math.max(
+    0,
+    student.enrollments.filter((e) => e.status !== "CANCELLED").length -
+      (student.primary_enrollment ? 1 : 0),
+  );
+  return (
+    <div className={styles.studentName}>
+      <StudentIdentity name={student.name} size="sm" />
+      <span>
+        <Link className={styles.studentLink} href={href}>
+          {student.name}
+        </Link>
+        {extra > 0 && <small>+{plural(extra, "curso", "cursos")}</small>}
+      </span>
+    </div>
+  );
+}
+function NextActions({
+  actions,
+  total,
+  href,
+  allHref,
+}: {
+  actions: readonly StudentAction[];
+  total: number;
+  href: (id: string) => string;
+  allHref: string;
+}) {
+  const [now] = useState(() => Date.now());
+  const [expanded, setExpanded] = useState(false);
+  const lanes = groupStudentActions(actions);
+  const offsets = lanes.map((_, i) =>
+    lanes.slice(0, i).reduce((sum, lane) => sum + lane.items.length, 0),
+  );
+  const hiddenDesktop = Math.max(0, actions.length - VISIBLE_ACTIONS.desktop);
+  const hiddenMobile = Math.max(0, actions.length - VISIBLE_ACTIONS.mobile);
+  const rank = (index: number) =>
+    index < VISIBLE_ACTIONS.mobile ? "base" : index < VISIBLE_ACTIONS.desktop ? "desktop" : "more";
+  return (
+    <Card
+      className={styles.actionsPanel}
+      aria-labelledby="next-actions-title"
+      data-expanded={expanded || undefined}
+    >
+      <div className={styles.actionsHeader}>
+        <h2 id="next-actions-title">Próximas ações</h2>
+        <span className={styles.muted}>{plural(total, "item", "itens")}</span>
+      </div>
+      {lanes.length ? (
+        <div className={styles.lanes}>
+          {lanes.map((lane, laneIndex) => (
+            <section
+              key={lane.lane}
+              className={styles.lane}
+              aria-labelledby={`next-actions-${lane.lane}`}
+            >
+              <h3
+                id={`next-actions-${lane.lane}`}
+                className={styles.laneTitle}
+                data-lane={lane.lane}
+              >
+                {lane.label} <span>{lane.items.length}</span>
+              </h3>
+              <ul className={styles.actionsList}>
+                {lane.items.map((action, i) => (
+                  <li
+                    key={`${action.studentId}-${action.kind}`}
+                    data-rank={rank(offsets[laneIndex]! + i)}
+                  >
+                    <StudentIdentity name={action.name} size="sm" />
+                    <div className={styles.actionText}>
+                      <strong>{action.name}</strong>
+                      <span>{studentActionDetail(action, now)}</span>
+                    </div>
+                    {action.overdue ? (
+                      <Badge tone="error" className={styles.actionBadge}>
+                        {studentOverdueLabel(action.waitingSince, now)}
+                      </Badge>
+                    ) : (
+                      <span aria-hidden="true" />
+                    )}
+                    <Link
+                      className={`yas-button yas-button--${laneCta[lane.lane]} yas-button--sm`}
+                      href={studentActionHref(action, href)}
+                      aria-label={`${studentActionCta(action)}: ${action.name}, ${studentActionText(action, now)}`}
+                    >
+                      {studentActionCta(action)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p className={styles.actionsEmpty}>Nada pendente agora</p>
+      )}
+      {(hiddenMobile > 0 || total > 0) && (
+        <div className={styles.actionsFooter}>
+          {hiddenMobile > 0 && (
+            <button
+              type="button"
+              className={styles.textLink}
+              data-only={hiddenDesktop > 0 ? undefined : "mobile"}
+              aria-expanded={expanded}
+              onClick={() => setExpanded((open) => !open)}
+            >
+              {expanded ? (
+                "Ver menos"
+              ) : (
+                <>
+                  Ver mais <span className={styles.onlyDesktop}>{hiddenDesktop}</span>
+                  <span className={styles.onlyMobile}>{hiddenMobile}</span>
+                </>
+              )}
+            </button>
+          )}
+          {total > 0 && (
+            <Link className={styles.textLink} href={allHref} scroll={false}>
+              Ver alunos com pendências{total > 8 ? ` (${total})` : ""}{" "}
+              <Icon name="arrow" size={14} />
+            </Link>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+function PortfolioOverview({
+  data,
+  href,
+  eventsAction,
+}: {
+  data: StudentsWorkspaceData;
+  href: (id: string) => string;
+  eventsAction: (kind: string, page: number) => Promise<StudentEventPage>;
+}) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    // Server render is open (desktop card); below 48rem it becomes a disclosure,
+    // closed unless the teacher left it open.
+    const query = window.matchMedia(WIDE_QUERY);
+    const sync = () => {
+      if (!ref.current) return;
+      let stored = false;
+      try {
+        stored = window.localStorage.getItem(PORTFOLIO_KEY) === "1";
+      } catch {
+        /* storage unavailable: stay closed */
+      }
+      ref.current.open = query.matches || stored;
+    };
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  const enrolled = data.distribution.filter((item) => item.id !== null);
+  const waiting = data.distribution.find((item) => item.id === null)?.total ?? 0;
+  return (
+    <details
+      ref={ref}
+      open
+      className={styles.portfolio}
+      onToggle={(event) => {
+        if (window.matchMedia(WIDE_QUERY).matches) return;
+        try {
+          window.localStorage.setItem(PORTFOLIO_KEY, event.currentTarget.open ? "1" : "0");
+        } catch {
+          /* ignore */
+        }
+      }}
+    >
+      <summary>
+        <span className={styles.portfolioHeading}>
+          <span className={styles.tileIcon} aria-hidden="true">
+            <Icon name="layers" size={16} />
+          </span>
+          Visão da carteira
+        </span>
+        <Icon name="down" size={16} />
+      </summary>
+      <div className={styles.portfolioBody}>
+        <h2 className={`${styles.portfolioTitle} ${styles.portfolioHeading}`}>
+          <span className={styles.tileIcon} aria-hidden="true">
+            <Icon name="layers" size={16} />
+          </span>
+          Visão da carteira
+        </h2>
+        <section aria-labelledby="portfolio-courses">
+          <CourseDistribution data={enrolled} headingId="portfolio-courses" />
+          {waiting > 0 && (
+            <p className={styles.waitingStat}>
+              <span className={styles.tileIcon} data-tint="yellow" aria-hidden="true">
+                <Icon name="clock" size={16} />
+              </span>
+              <strong>{waiting}</strong>{" "}
+              <span>{waiting === 1 ? "aluno aguardando" : "alunos aguardando"} matrícula</span>
+            </p>
+          )}
+        </section>
+        <section aria-labelledby="portfolio-events">
+          <h3 id="portfolio-events">Atividades recentes</h3>
+          <StudentEventList events={data.events} profileHref={href} grouped />
+          <StudentEventsSheet action={eventsAction} profileHref={href} />
+        </section>
+      </div>
+    </details>
   );
 }
 function StudentFilterControls({
   data,
   filters,
   onChange,
+  compact = false,
+  includeOrder = false,
 }: {
   data: StudentsWorkspaceData;
   filters: StudentFilters;
   onChange: (patch: Partial<StudentFilters>) => void;
+  /** Toolbar variant: visually hidden labels and short controls. */
+  compact?: boolean;
+  includeOrder?: boolean;
 }) {
   return (
-    <div className={styles.filterFields}>
+    <div className={styles.filterFields} data-compact={compact || undefined}>
       <Select
         label="Curso"
         value={filters.course}
@@ -537,65 +790,67 @@ function StudentFilterControls({
           { value: "NONE", label: "Sem matrícula" },
         ]}
       />
-      <Select
-        label="Ordenar"
-        value={filters.order}
-        onChange={(event) => onChange({ order: event.target.value as StudentFilters["order"] })}
-        options={[
-          { value: "name", label: "Nome A–Z" },
-          { value: "progress", label: "Maior progresso" },
-          { value: "activity", label: "Atividade mais recente" },
-        ]}
-      />
+      {includeOrder && (
+        <Select
+          label="Ordenar"
+          value={filters.order}
+          onChange={(event) => onChange({ order: event.target.value as StudentFilters["order"] })}
+          options={[
+            { value: "name", label: "Nome A–Z" },
+            { value: "progress", label: "Maior progresso" },
+            { value: "activity", label: "Atividade mais recente" },
+          ]}
+        />
+      )}
     </div>
   );
 }
-function CourseDistribution({ data }: { data: StudentsWorkspaceData["distribution"] }) {
-  const id = useId();
+function CourseDistribution({
+  data,
+  headingId,
+}: {
+  data: StudentsWorkspaceData["distribution"];
+  headingId: string;
+}) {
   const total = data.reduce((sum, item) => sum + item.total, 0);
+  const percent = (value: number) => Math.round((value / Math.max(1, total)) * 100);
   return (
     <div className={styles.distribution}>
-      <div className={styles.donut} aria-hidden="true">
-        <svg viewBox="0 0 120 120">
-          <circle cx="60" cy="60" r="47" fill="none" stroke="var(--yas-track)" strokeWidth="12" />
-          {data.map((item, i) => {
-            const fraction = (item.total / Math.max(1, total)) * 100;
-            const previous =
-              (data.slice(0, i).reduce((sum, segment) => sum + segment.total, 0) /
-                Math.max(1, total)) *
-              100;
-            return (
-              <circle
-                key={item.id ?? "none"}
-                cx="60"
-                cy="60"
-                r="47"
-                fill="none"
-                stroke={chartColors[i % chartColors.length]}
-                strokeWidth="12"
-                pathLength="100"
-                strokeDasharray={`${fraction} ${100 - fraction}`}
-                strokeDashoffset={-previous}
-                transform="rotate(-90 60 60)"
-              />
-            );
-          })}
-        </svg>
-        <div>
-          <strong>{total}</strong>
-          <span>alunos</span>
-        </div>
+      <div className={styles.blockHead}>
+        <h3 id={headingId}>Distribuição por curso</h3>
+        {total > 0 && (
+          <span className={styles.meta}>
+            Base: {plural(total, "aluno matriculado", "alunos matriculados")}
+          </span>
+        )}
       </div>
-      <ul aria-label="Alunos por curso" id={id} className={styles.legend}>
+      {total > 0 && (
+        <div className={styles.stackedBar} aria-hidden="true">
+          {data.map((item, i) => (
+            <span
+              key={item.id ?? "none"}
+              style={{
+                width: `${(item.total / total) * 100}%`,
+                background:
+                  i === 0
+                    ? "linear-gradient(90deg, var(--yas-color-purple-600), var(--yas-color-purple-500))"
+                    : chartColors[i % chartColors.length],
+              }}
+            />
+          ))}
+        </div>
+      )}
+      <ul aria-label="Alunos matriculados por curso" className={styles.legend}>
         {data.map((item, i) => (
           <li key={item.id ?? "none"}>
             <i style={{ background: chartColors[i % chartColors.length] }} aria-hidden="true" />
             <span>{item.name}</span>
-            <strong>{item.total}</strong>
-            <small>{Math.round((item.total / Math.max(1, total)) * 100)}%</small>
+            <strong>
+              {item.total} · {percent(item.total)}%
+            </strong>
           </li>
         ))}
-        {!total && <li>Sem alunos para distribuir.</li>}
+        {!total && <li>Nenhum aluno matriculado.</li>}
       </ul>
     </div>
   );
@@ -631,6 +886,7 @@ function StudentEventsSheet({
     <>
       <Button
         variant="ghost"
+        size="sm"
         className={styles.feedButton}
         trailingIcon={<Icon name="arrow" size={15} />}
         onClick={() => {

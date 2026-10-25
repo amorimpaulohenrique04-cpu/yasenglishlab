@@ -22,6 +22,33 @@ O progresso por matrícula usa a média do completion_percent das aulas publicad
 
 A distribuição é por curso principal, uma participação por aluno: matrícula ativa mais recente, senão concluída mais recente, senão Sem matrícula. Na tabela, filtros de curso/turma/situação selecionam o contexto correspondente. Matrículas encerradas permanecem consultáveis no perfil e em seu filtro explícito.
 
+## Três dimensões do aluno
+
+Estados distintos, nunca fundidos em um único rótulo:
+
+- Administrativa: matrícula (ACTIVE/COMPLETED/CANCELLED/sem matrícula), turma e `placement_state` (estado do caso de Entrada mais recente, ou nulo). É situação de cadastro e fluxo de Entrada, não desempenho.
+- Engajamento: atividade de aprendizagem e inatividade (sete dias, abaixo). No perfil, `engagement` traz `learningLast7` (eventos de aprendizagem em [agora-7d, agora)), `learningPrev7` ([agora-14d, agora-7d)) e `lastRelevantEvent` (último evento relevante ou nulo).
+- Pendência pedagógica: revisões de Entrada e de prática aguardando o professor, e pedido de novo teste aberto.
+
+## Próximas ações
+
+`actions` (máx. 8) e `actionsTotal` são calculados sobre a carteira inteira do professor, independentemente de página, aba, busca ou filtros, e só com alunos de vínculo vigente. Tipos (`kind`):
+
+1. `entry_review`: teste de entrada em REVIEW_PENDING sem revisão finalizada. `waitingSince` = `placement_cases.state_changed_at` (entrada em revisão, mesma convenção do SLA de 24h de `teacher_entry_queue`); `overdue` = true após 24h; `targetId` = id do caso.
+2. `practice_review`: tentativas de prática pendentes de revisão manual, agrupadas por aluno (`count`); `waitingSince` = envio mais antigo; `targetId` = tentativa pendente mais antiga.
+3. `reassessment`: pedido de novo teste aberto; `waitingSince` = data do pedido; `targetId` nulo.
+4. `inactive`: aluno inativo há sete dias ou mais; `waitingSince` = referência de inatividade; `targetId` nulo.
+
+Um aluno pode gerar mais de um item (ex.: Entrada + prática). Ordem: Entrada atrasada primeiro; depois Entrada e prática por `waitingSince` crescente; depois pedidos de novo teste por data crescente; por fim inatividade por dias de inatividade decrescentes. Itens além de oito ficam fora de `actions`, mas contam em `actionsTotal`.
+
+## Aba "Com pendências"
+
+`tab=pending` lista alunos com `practice_pending + entry_pending > 0` e `counts.pending` os conta (respeitando busca/filtros, como as demais abas). Não altera "Precisam de atenção", que segue sendo inatividade ou pedido de novo teste aberto.
+
+## Feed de atividades
+
+O feed recente da listagem (5 itens) mostra apenas eventos relevantes (`relevant`): aula concluída, prática enviada, avaliação enviada, presença em sessão e falta registrada. Aula acessada, prática/avaliação iniciada e reserva não entram. Avaliações do teste de entrada têm `detail` = "Teste de entrada". O perfil e "ver todas" mantêm todos os tipos e expõem `relevant`.
+
 ## Atenção após sete dias
 
 Aplica-se apenas quando existe matrícula ACTIVE. A referência é a maior data entre o início do vínculo vigente e a última atividade de aprendizagem visível. Aos sete dias completos, o aluno entra no filtro de inatividade. Sem registros, há sete dias de tolerância desde o vínculo; matrículas concluídas e alunos apenas em Entrada não recebem esse alerta temporal.
