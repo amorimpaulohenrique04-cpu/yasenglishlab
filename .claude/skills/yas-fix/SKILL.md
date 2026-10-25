@@ -4,6 +4,7 @@ description: Implement a specifically authorized Yas English Lab fix with scoped
 argument-hint: "[bug confirmado + critério de aceite]"
 disable-model-invocation: true
 ---
+
 Implement ONLY the authorized fix: $ARGUMENTS
 
 1. Verify scope and working tree, then follow `harness/GOAL.template.md` / `AGENTS.md`; reuse existing architecture and tests.

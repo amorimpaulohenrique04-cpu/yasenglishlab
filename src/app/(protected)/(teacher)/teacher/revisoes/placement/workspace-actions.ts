@@ -59,6 +59,7 @@ export async function saveEntryWorkspace(
     const valid = reviewInputSchema.safeParse({
       caseId: draft.caseId,
       courseId: draft.courseId,
+      level: draft.level ?? null,
       confidence: draft.confidence,
       feedback: draft.feedback,
     });
@@ -76,6 +77,7 @@ export async function saveEntryWorkspace(
       p_feedback: draft.feedback,
       p_notes: draft.notes,
       p_revision: draft.revision,
+      ...(finalize ? { p_level: draft.level ?? null } : {}),
     },
   );
   if (error) return fail(classifyEntryRpcError(error));
@@ -94,5 +96,5 @@ export async function saveEntryWorkspace(
   }
   const saved = entryDraftSchema.safeParse(data);
   if (!saved.success) return fail("unknown");
-  return { ok: true, finalized: false, draft: saved.data };
+  return { ok: true, finalized: false, draft: { ...saved.data, level: draft.level } };
 }

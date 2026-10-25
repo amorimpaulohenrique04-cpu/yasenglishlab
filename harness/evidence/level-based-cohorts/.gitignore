@@ -1,0 +1,4 @@
+runtime/
+supabase-changelog.txt
+*.log
+*.exit

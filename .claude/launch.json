@@ -4,10 +4,7 @@
     {
       "name": "yasenglishlab",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
+      "runtimeArgs": ["run", "dev"],
       "port": 3000
     },
     {
@@ -26,10 +23,7 @@
     {
       "name": "design-artifacts",
       "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "artifacts/serve.mjs",
-        "4173"
-      ],
+      "runtimeArgs": ["artifacts/serve.mjs", "4173"],
       "port": 4173
     }
   ]

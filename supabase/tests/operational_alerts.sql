@@ -62,7 +62,7 @@ create temp table before_audit as select count(*) total from public.audit_logs;
 select pg_temp.login(20);
 set local role authenticated;
 create temp table view as select public.admin_operational_alerts() doc;
-select pg_temp.ok(jsonb_array_length(doc->'alerts')=6,'six fixed operational categories') from view;
+select pg_temp.ok(jsonb_array_length(doc->'alerts')=7,'seven fixed operational categories') from view;
 select pg_temp.ok((select jsonb_array_length(a->'items')=10 and (a->>'count')::integer>=13 from jsonb_array_elements(doc->'alerts')a where a->>'kind'='COHORT_CONFIGURATION'),'count remains complete while details are capped at ten') from view;
 select pg_temp.ok(pg_temp.item(doc,'COHORT_CONFIGURATION',pg_temp.id(302))->>'reason'='MISSING_SETTINGS','missing cohort configuration') from view;
 select pg_temp.ok(pg_temp.item(doc,'PLACEMENT_NO_COHORT',(select id from cases where n=1))->>'reason'='NO_COHORT','course has no active cohort') from view;

@@ -98,3 +98,9 @@ AVAILABLE descreve apenas a trilha, nao concede acesso a um asset pago.
 atomicidade inclusive em falha tardia, ordem, datas herdadas, sequencia, copia e conclusao apos save.
 Ambos sao transacionais e registrados nas suites integration/rls e aliases cohort-path/cohort-path-admin.
 Evidencia local: `harness/evidence/stage-12-lacunas-operacionais/README.md`.
+
+## Formal levels (2026-10-21)
+
+BASIC, INTERMEDIATE and ADVANCED use the same catalog and existing CUSTOM paths. Module order now follows path positions in the shared Learning projection, as lesson order already did. A lesson may appear at position 3/release October 25 in Basic, position 1/release October 22 in Intermediate, and be absent from Advanced; cohort_path_admin.sql verifies independent references without copies.
+
+Completing BASIC or INTERMEDIATE leaves enrollment ACTIVE. Only a current ADVANCED membership may trigger final shared-course completion, using its published included lesson requirements. NULL-level cohorts retain legacy completion behavior. Membership transfer and path edits use the same completion helper and preserve progress/attempt history.

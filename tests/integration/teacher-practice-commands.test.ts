@@ -177,12 +177,16 @@ describe("teacher practice commands", () => {
         practiceId,
         cohortIds: [cohortId],
         dueAt: "2030-01-01T12:00:00-03:00",
+        availableFrom: "2029-12-30T12:00:00-03:00",
+        requireLessonAvailable: true,
       }),
     ).resolves.toBe(1);
     expect(mocks.rpc.mock.calls[0]![1]).toMatchObject({
       p_id: practiceId,
       p_cohort_ids: [cohortId],
       p_due_at: "2030-01-01T12:00:00-03:00",
+      p_available_from: "2029-12-30T12:00:00-03:00",
+      p_require_lesson_available: true,
     });
 
     await expect(

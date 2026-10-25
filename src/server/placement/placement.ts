@@ -36,6 +36,16 @@ export async function loadStudentPlacement() {
   const { repo } = await context("STUDENT");
   return getPlacement(repo);
 }
+/**
+ * True when the Student already studies in an active cohort (e.g. enrolled by `admin_enroll_in_course`).
+ * A failed read keeps the onboarding journey as before: content access is still enforced by the database.
+ */
+export async function loadStudentHasActiveCohortEnrollment() {
+  const { client } = await context("STUDENT");
+  const { data, error } = await client.rpc("student_has_active_cohort_enrollment");
+  if (error) return false;
+  return z.boolean().parse(data);
+}
 export async function beginCurrentPlacement() {
   const { repo, analytics } = await context("STUDENT");
   return beginPlacement(repo, analytics);
@@ -97,6 +107,23 @@ export async function loadTeacherPlacement(id: string) {
 export async function finalizeCurrentPlacementReview(input: unknown) {
   const { repo, analytics } = await context("TEACHER");
   return finalizeReview(repo, analytics, input);
+}
+export async function overrideCurrentPlacementLevel(input: {
+  caseId: unknown;
+  level: unknown;
+  reason: unknown;
+}) {
+  const { repo } = await context("ADMIN");
+  const view = await repo.getCase(z.uuid().parse(input.caseId));
+  if (!view?.review) throw new Error("Finalized review required.");
+  return repo.finalizeReview({
+    caseId: view.case.id,
+    courseId: view.review.recommended_course_id,
+    feedback: view.review.feedback,
+    confidence: view.review.confidence,
+    level: z.enum(["BASIC", "INTERMEDIATE", "ADVANCED"]).parse(input.level),
+    adminReason: z.string().trim().min(1).max(1000).parse(input.reason),
+  });
 }
 export async function transferCurrentPlacement(input: unknown) {
   const { repo } = await context("ADMIN");

@@ -23,14 +23,19 @@ import {
   weekdays,
 } from "@/modules/placement";
 import { loadOpenReassessments } from "@/server/placement/reassessments";
-import { loadPlacementTeacherCandidates } from "@/server/placement/teacher-assignment";
+import {
+  loadPlacementTeacherCandidates,
+  loadStudentsWithActiveReviewer,
+} from "@/server/placement/teacher-assignment";
 import { loadEnrollmentsWithoutActiveCohort } from "@/server/billing/complimentary-access";
 import { loadPlacementQueuePage, loadPlacementCohortSettings } from "@/server/placement/placement";
 import {
   assignPlacementTeacherAction,
+  reassignPlacementTeacherAction,
   resolveReassessmentAction,
   configurePlacementCohortAction,
   transferPlacementAction,
+  overridePlacementLevelAction,
 } from "./actions";
 export default async function EnrollmentsPage({
   searchParams,
@@ -52,19 +57,21 @@ export default async function EnrollmentsPage({
   const pageHref = (target: number) =>
     `/admin/enrollments?${new URLSearchParams({ ...(activeState ? { state: activeState } : {}), page: String(target) })}`;
   // Teacher candidates are only needed while a case waits for review. A failure must not hide the queue.
-  const candidatesByCase = new Map(
-    await Promise.all(
-      cases
-        .filter((view) => view.case.state === "REVIEW_PENDING")
-        .map(
-          async (view) =>
-            [
-              view.case.id,
-              await loadPlacementTeacherCandidates(view.case.id).catch(() => null),
-            ] as const,
-        ),
+  const reviewing = cases.filter((view) => view.case.state === "REVIEW_PENDING");
+  const [candidatesByCase, withReviewer] = await Promise.all([
+    Promise.all(
+      reviewing.map(
+        async (view) =>
+          [
+            view.case.id,
+            await loadPlacementTeacherCandidates(view.case.id).catch(() => null),
+          ] as const,
+      ),
+    ).then((entries) => new Map(entries)),
+    loadStudentsWithActiveReviewer(reviewing.map((view) => view.case.user_id)).catch(
+      () => new Set<string>(),
     ),
-  );
+  ]);
   return (
     <div className="yas-stack">
       <PageHeader
@@ -204,6 +211,8 @@ export default async function EnrollmentsPage({
             const candidates = candidatesByCase.get(view.case.id);
             const assignedTeacher = candidates?.find((candidate) => candidate.assigned);
             const suggestion = candidates?.find((candidate) => candidate.suggested);
+            const hasReviewer = Boolean(assignedTeacher) || withReviewer.has(view.case.user_id);
+            const reassignOptions = (candidates ?? []).filter((candidate) => !candidate.assigned);
             const teacherPanel = sla && (
               <div className="yas-stack">
                 <h3>Professor da revisão</h3>
@@ -225,7 +234,29 @@ export default async function EnrollmentsPage({
                 {candidates && candidates.length === 0 && (
                   <Badge tone="warning">Ação necessária: nenhum professor elegível</Badge>
                 )}
-                {candidates && !assignedTeacher && candidates.length > 0 && (
+                {candidates && hasReviewer && !assignedTeacher && (
+                  <p>O professor designado não está mais elegível. Troque o revisor abaixo.</p>
+                )}
+                {candidates && hasReviewer && reassignOptions.length > 0 && (
+                  <form action={reassignPlacementTeacherAction} className="yas-stack">
+                    <input type="hidden" name="caseId" value={view.case.id} />
+                    <Select
+                      label="Novo professor da revisão"
+                      name="teacherId"
+                      defaultValue={reassignOptions.find((c) => c.suggested)?.teacherId}
+                      options={reassignOptions.map((candidate) => ({
+                        value: candidate.teacherId,
+                        label: `${candidate.displayName}${candidate.suggested ? " (sugerido)" : ""} · ${candidate.openCases} revisões pendentes`,
+                      }))}
+                      required
+                    />
+                    <Input label="Motivo da troca" name="reason" required maxLength={1000} />
+                    <Button type="submit" variant="secondary">
+                      Trocar professor
+                    </Button>
+                  </form>
+                )}
+                {candidates && !hasReviewer && !assignedTeacher && candidates.length > 0 && (
                   <form action={assignPlacementTeacherAction} className="yas-stack">
                     <input type="hidden" name="caseId" value={view.case.id} />
                     <Select
@@ -259,6 +290,37 @@ export default async function EnrollmentsPage({
                   <p>Escolha inicial: {view.chosenTitle ?? "Aguardando aluno"}</p>
                   <p>Turma atual: {view.currentCohort ?? "Ainda sem matrícula"}</p>
                   {teacherPanel}
+                  {view.review &&
+                    ["PLACEMENT_READY", "STUDENT_DECISION"].includes(view.case.state) && (
+                      <form action={overridePlacementLevelAction} className="yas-stack">
+                        <h3>Ajustar nível recomendado</h3>
+                        <input type="hidden" name="caseId" value={view.case.id} />
+                        <Select
+                          name="level"
+                          label="Nível pedagógico"
+                          defaultValue={
+                            view.recommendedLevel ?? view.review.recommended_level ?? ""
+                          }
+                          options={[
+                            { value: "", label: "Escolha o nível" },
+                            { value: "BASIC", label: "Básico" },
+                            { value: "INTERMEDIATE", label: "Intermediário" },
+                            { value: "ADVANCED", label: "Avançado" },
+                          ]}
+                          required
+                        />
+                        <Textarea
+                          name="reason"
+                          label="Justificativa da alteração de nível"
+                          required
+                          maxLength={1000}
+                        />
+                        <p>
+                          A revisão original do professor será preservada. O ajuste será auditado.
+                        </p>
+                        <Button type="submit">Registrar ajuste de nível</Button>
+                      </form>
+                    )}
                   {view.case.state === "ENROLLED" && (
                     <form action={transferPlacementAction} className="yas-stack">
                       <h3>Transferir turma</h3>

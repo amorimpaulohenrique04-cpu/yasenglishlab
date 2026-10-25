@@ -3,12 +3,14 @@
 @AGENTS.md
 
 ## Scope and truth
+
 - This file only routes work; **AGENTS.md**, `docs/README.md`, applicable domain contracts/ADRs, and `harness/` are authoritative. Do not duplicate them here.
 - Inspect local `git status` and relevant implementation before planning changes. `docs/OPEN_QUESTIONS.md` is not permission to assume unapproved behavior.
 - Read only docs relevant to the task; start from `docs/README.md`. Consult `harness/feature_list.json`, goals/evidence and open blockers to determine what is actually completed.
 - The codebase uses Next.js 16, TypeScript, Supabase/RLS, Vitest and Playwright. Consult installed Next.js docs per `AGENTS.md` before modifying framework APIs.
 
 ## Routing contract (applies also to normal language requests)
+
 1. Classify the request: QUESTION, DIAGNOSE, IMPLEMENT, REVIEW, or RELEASE; select the primary domain and identify cross-domain risks.
 2. Never delegate a trivial one-file edit just for delegation. For large search/log volumes use `yas-scout` (Haiku, read-only); its reply must be short.
 3. For substantial tasks select **one** primary specialist, based on where the root cause actually is, not where the symptom appears:
@@ -25,6 +27,7 @@
 7. The main Claude remains accountable for integration, scope, evidence and sign-off. Subagent completion is NOT task completion.
 
 ## Safety and cost
+
 - DIAGNOSE/AUDIT means **read-only**. Do not edit, reset DB, run snapshot-update, commit, push, merge or deploy unless explicitly authorized by task.
 - Follow `harness/GOAL.template.md` and state tracking before nontrivial code changes. Do not modify previously applied migrations; use additive migration if approved. Protect secrets and AAL2/roles/RLS.
 - Validate narrowly first: relevant unit/integration test -> necessary typecheck/lint -> domain gate(s). Preserve mandatory `verify:agent`, `verify:security`, `verify:db`, `verify:ui`, `verify:full` when applicable. Never dilute, skip, auto-update goldens or rewrite tests merely to turn them green.
@@ -34,4 +37,5 @@
 - Never commit secrets or disclose provider/customer data in logs/evidence.
 
 ## Final response
+
 Task | specialist(s) used (or why none) | files changed | checks PASS/FAIL/NOT RUN | real blockers/risks | smallest next action. No fabricated verification.

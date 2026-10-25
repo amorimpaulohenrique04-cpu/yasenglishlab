@@ -4,6 +4,7 @@ description: Manually route a Yas English Lab task to the smallest appropriate s
 argument-hint: "[descreva a tarefa]"
 disable-model-invocation: true
 ---
+
 Task: $ARGUMENTS
 
 1. Read the routing contract in `CLAUDE.md` and the minimum needed from `AGENTS.md`.

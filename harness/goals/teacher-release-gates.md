@@ -605,6 +605,19 @@ A comparação inicial contém 35 commits e 563 arquivos, já publicados no orig
 - `tests/visual/goldens/desktop/home-linux.png`
 - `tests/visual/goldens/desktop/progresso-linux.png`
 
+## Reviewed UI primitives
+
+Revisão semântica manual de duplicidade (2026-10-25), comparando com os primitivos de `main` (`controls`, `display`, `feedback`, `headers`, `icons`, `navigation`, `overlays`):
+
+- `src/components/ui/toast.tsx`: fila/live region (`ToastProvider`, `useToast`) que reutiliza o `Toast` visual de `feedback.tsx`; não o duplica.
+- `src/components/ui/popover.tsx`: contêiner flutuante genérico (posição, foco, Escape). O `Dropdown` de `navigation.tsx` é um menu de ações, não um popover reutilizável.
+- `src/components/ui/calendar.tsx`: grade de datas WAI-ARIA (`Calendar`, `DatePicker`, `DateField`, `DateRangePicker`); não havia seletor de data em `main`.
+- `src/components/ui/time-field.tsx`: campo de horário com parsing validado; sem equivalente em `main`.
+- `src/components/ui/stepper.tsx`: indicador de etapas do assistente; sem equivalente em `main`.
+- `src/components/ui/command-palette.tsx`: busca global Ctrl+K; sem equivalente em `main`.
+
+Atualização de segurança (2026-10-25): `next` 16.3.8 → 16.4.3 e `zod` 4.6.5 → 4.6.7, exigidas pela auditoria de produção (advisories críticos/altos do Supply Chain).
+
 ## Forbidden areas
 
 - Migrations já aplicadas, enfraquecimento RLS/testes, configurações de segurança Windows

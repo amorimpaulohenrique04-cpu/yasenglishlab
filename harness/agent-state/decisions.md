@@ -1,5 +1,31 @@
 # Harness Decisions
 
+## 2026-10-18 — Admin enrollment supersedes an open placement journey
+
+`docs/PLACEMENT.md` (Etapa 12E) fixes that `admin_enroll_in_course` never alters review, decision or
+`placement_case`, and the case guard only allows STUDENT_DECISION → ENROLLED with a Student decision.
+Closing the case from the Admin command would fabricate a Student choice. Instead the read side treats
+the journey as finished when the Student holds an effective ACTIVE membership in an ACTIVE cohort backed
+by an ACTIVE enrollment (`private.has_active_cohort_enrollment`, same predicate as
+`has_cohort_membership`). Home, the pedagogic decision gate, onboarding pages and the
+STALE_DECISION/PLACEMENT_NO_COHORT alerts use it. Read-side projection only, no new state or table,
+so no ADR. `confirm_placement_choice` is unchanged; a superseded Student is no longer shown the choice CTA.
+
+## 2026-10-18 — Practice "never tried" uses a complete count, not new copy
+
+Softening the sentence changed the approved Home golden (mobile wrapped one more line; CI run
+39096978807). The approved copy is kept and the claim is made reliable instead: the Practice repository
+pages through every attempt of the recommendable activities (`listAttemptedActivityIds`), and
+`recommendPractice` only returns LESS_PRACTICED when that complete set lacks the activity. An activity
+tried long ago, or an unavailable lookup, falls back to the existing neutral reasons.
+
+## 2026-10-18 — Placement reviewer reassignment
+
+`assign_placement_teacher` keeps refusing to stack reviewers. A separate `reassign_placement_teacher`
+(ADMIN+AAL2, REVIEW_PENDING, 1–1000 char reason) ends other direct course-less assignments (never deletes)
+and audits `placement_teacher_reassigned` with the previous teacher ids. Course-scoped assignments and
+cohort teaching scope are not touched.
+
 ## 2026-10-06 — Stage 03E transactional notification boundary
 
 ADR 0014 chooses authorized Resend behind a provider port, without SDK. Applied Billing requires the existing audit witness as well as mirror ordering/status, distinguishing equal-priority stale events without touching 3B. Local notification/channel dedupe, stable generated delivery keys, lease fencing and bounded retries control delivery independently of Billing. A 23-hour retry horizon avoids resend outside the provider's 24-hour dedupe window. Current verified Auth email is resolved server-side; operational rows and RPCs have no browser privileges. Provider acceptance alone establishes SENT. Invocation/hosting, Resend webhooks, UI and 3F remain out of scope.
@@ -196,3 +222,17 @@ HTML fornecido é referência visual, não fonte de permissões nem dados. Conte
 ## teacher-release-gates — 2026-10-24
 
 Usuário escolheu aumentar altura das linhas da grade para preservar faixa clicável confortável. Propostas/referências locais em artifacts ficam ignoradas; os quatro arquivos de referência já versionados são preservados. Somente evidências relevantes revisadas serão commitadas; regenerações anteriores permanecem preservadas no checkout, fora do staging se não usadas como prova desta tarefa.
+
+## 2026-10-21 — formal levels
+
+Nullable level preserves legacy cohorts and immutable historical reviews; new formal-course reviews require explicit recommendation independent of course/CEFR. Assignment lesson-release rule defaults false, preserving early execution. Formal membership exclusivity uses an immediate-by-default constraint, deferred only during existing atomic transfer and forced immediate before return; cohort relationship guard remains intact.
+
+The user request explicitly resolves cohort module ordering: configured module positions must be reflected in the Student Learning projection. The corresponding historical open question is removed; no proficiency cut scores or other unanswered policies are inferred.
+
+The full gate exposed canonical COURSE practice assignments used by the existing reach override. Preserve those records and their writes using the inferred course relation; reject new scheduling flags on COURSE assignments, since COURSE visibility is curricular. The same review RPC now supports a justified Admin level override before confirmation, storing current routing separately from immutable Teacher review.
+
+CI run 39620533896 blocked every subsequent gate on an unreviewed Vite advisory. A compatible patch of the existing transitive Vite resolution is indispensable to the required CI verification; scope includes only package-lock.json for this dependency fix. The production audit was already clean; no audit allowlist, severity threshold or dependency-patch guard is changed.
+
+The broad npm update candidate was narrowed to Vite 8.3.3 metadata only. Its dependency ranges accept already locked versions; no package is added and package.json stays unchanged.
+
+Path positions control ordering, while displayed module ordinals remain one-based. Progress controls explicitly refresh their server projection after a successful checkpoint; no optimistic success, timeout increase, assertion removal or baseline update is used.

@@ -165,14 +165,17 @@ export class SupabaseLearningRepository implements LearningRepository {
           p_course_id: courseId,
         });
         if (error) throw new Error("Unable to load learning path.");
-        return parseLessonPath(data);
+        return { lessons: parseLessonPath(data), modules: parseLessonPath(data, "modules") };
       }),
     );
     const pathByLesson = new Map<string, LessonPathEntry>();
     for (const entries of pathResults)
-      for (const [id, entry] of entries) pathByLesson.set(id, entry);
+      for (const [id, entry] of entries.lessons) pathByLesson.set(id, entry);
+    const pathByModule = new Map<string, LessonPathEntry>();
+    for (const entries of pathResults)
+      for (const [id, entry] of entries.modules) pathByModule.set(id, entry);
     const coursesWithPath = new Set(
-      visibleCourseIds.filter((_, index) => (pathResults[index]?.size ?? 0) > 0),
+      visibleCourseIds.filter((_, index) => (pathResults[index]?.lessons.size ?? 0) > 0),
     );
     const courseByModule = new Map(
       (moduleRows ?? []).map((row) => [String(row.id), String(row.course_id)]),
@@ -215,7 +218,7 @@ export class SupabaseLearningRepository implements LearningRepository {
       const courseModule: LearningModule = {
         id: String(row.id),
         courseId,
-        position: Number(row.position),
+        position: pathByModule.get(String(row.id))?.position ?? Number(row.position),
         title: String(row.title),
         description: row.description ? String(row.description) : null,
         // Path order already applied above; keep module-local order for courses without a path.
@@ -238,7 +241,13 @@ export class SupabaseLearningRepository implements LearningRepository {
       slug: String(row.slug),
       title: String(row.title),
       description: row.description ? String(row.description) : null,
-      modules: (modulesByCourse.get(String(row.id)) ?? []).sort((a, b) => a.position - b.position),
+      modules: (modulesByCourse.get(String(row.id)) ?? [])
+        .sort((a, b) => a.position - b.position)
+        .map((courseModule, index) =>
+          pathByModule.has(courseModule.id)
+            ? { ...courseModule, position: index + 1 }
+            : courseModule,
+        ),
       completedAt: completedAtByCourse.get(String(row.id)) ?? null,
     }));
   }

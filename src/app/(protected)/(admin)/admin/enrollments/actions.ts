@@ -8,8 +8,12 @@ import { redirect } from "next/navigation";
 import {
   configureCurrentPlacementCohort,
   transferCurrentPlacement,
+  overrideCurrentPlacementLevel,
 } from "@/server/placement/placement";
-import { assignPlacementTeacher } from "@/server/placement/teacher-assignment";
+import {
+  assignPlacementTeacher,
+  reassignPlacementTeacher,
+} from "@/server/placement/teacher-assignment";
 function minutes(value: FormDataEntryValue | null) {
   const [h, m] = String(value ?? "")
     .split(":")
@@ -49,6 +53,21 @@ export async function assignPlacementTeacherAction(form: FormData) {
   revalidatePath("/teacher/revisoes/placement");
   redirect("/admin/enrollments?result=assigned");
 }
+export async function reassignPlacementTeacherAction(form: FormData) {
+  await assertRole("ADMIN");
+  try {
+    await reassignPlacementTeacher({
+      caseId: form.get("caseId"),
+      teacherId: form.get("teacherId"),
+      reason: form.get("reason"),
+    });
+  } catch {
+    redirect("/admin/enrollments?result=error");
+  }
+  revalidatePath("/admin/enrollments");
+  revalidatePath("/teacher/revisoes/placement");
+  redirect("/admin/enrollments?result=reassigned");
+}
 export async function transferPlacementAction(form: FormData) {
   await assertRole("ADMIN");
   try {
@@ -75,4 +94,21 @@ export async function resolveReassessmentAction(form: FormData) {
   });
   revalidatePath("/admin/enrollments");
   redirect(`/admin/enrollments?result=${error ? "error" : "resolved"}`);
+}
+
+export async function overridePlacementLevelAction(form: FormData) {
+  await assertRole("ADMIN");
+  try {
+    await overrideCurrentPlacementLevel({
+      caseId: form.get("caseId"),
+      level: form.get("level"),
+      reason: form.get("reason"),
+    });
+  } catch {
+    redirect("/admin/enrollments?result=error");
+  }
+  revalidatePath("/admin/enrollments");
+  revalidatePath("/onboarding/placement");
+  revalidatePath("/home");
+  redirect("/admin/enrollments?result=reviewed");
 }

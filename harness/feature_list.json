@@ -140,6 +140,15 @@
       "updated_at": "2026-10-19T00:00:00Z"
     },
     {
+      "id": "level-based-cohorts",
+      "title": "Shared-course pedagogical levels and practice release",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": [],
+      "evidence": ["harness/goals/level-based-cohorts.md"],
+      "updated_at": "2026-10-21T12:00:00Z"
+    },
+    {
       "id": "billing-reconciliation-integrity",
       "title": "Complete and failure-visible billing reconciliation",
       "status": "done",
@@ -810,6 +819,18 @@
       "dependencies": ["teacher-students-redesign"],
       "evidence": ["harness/goals/teacher-students-refinement.md"],
       "updated_at": "2026-10-24T20:00:00-03:00"
+    },
+    {
+      "id": "placement-practice-dead-ends",
+      "title": "Fechar becos sem saída de placement e prática (auditoria 2026-10-18)",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["pr80-gates"],
+      "evidence": [
+        "harness/goals/placement-practice-dead-ends.md",
+        "harness/evidence/placement-practice-dead-ends/README.md"
+      ],
+      "updated_at": "2026-10-18T12:00:00Z"
     }
   ]
 }

@@ -26,6 +26,7 @@ import {
   type EntrySaveResult,
 } from "../domain/entry-workspace";
 import { EntrySla, EntryStatus, entryInitials } from "./entry-queue";
+import { pedagogicalLevelOptions } from "@/modules/cohorts/domain/models";
 import styles from "./entry-workspace.module.css";
 
 type Context = EntryDetailContext;
@@ -632,6 +633,16 @@ export function EntryDetail({
                   options={[
                     { value: "", label: "Selecione uma trilha" },
                     ...context.courses.map((c) => ({ value: c.id, label: c.title })),
+                  ]}
+                />
+                <Select
+                  label="Nível pedagógico recomendado"
+                  value={review?.recommended_level ?? draft.level ?? ""}
+                  onChange={(e) => change("level", (e.target.value || null) as EntryDraft["level"])}
+                  message="Obrigatório para cursos com turmas por nível. Não representa proficiência CEFR."
+                  options={[
+                    { value: "", label: "Sem nível (curso legado)" },
+                    ...pedagogicalLevelOptions,
                   ]}
                 />
                 <Select

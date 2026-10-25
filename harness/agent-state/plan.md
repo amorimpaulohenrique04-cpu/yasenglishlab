@@ -41,6 +41,30 @@ Goal: `harness/goals/public-site-design-refinement.md`. V4 aplicada; revisão vi
 
 ---
 
+# Plano — level-based-cohorts
+
+**level-based-cohorts** — goal: `harness/goals/level-based-cohorts.md`
+
+1. Inspecionar main 5dde6a5, SQL/RLS e consumidores.
+2. Migração aditiva para níveis, memberships, placement, liberação e conclusão.
+3. Estender formulários/schemas existentes.
+4. Testes, gates, evidências e PR único.
+
+---
+
+# Plano — placement-practice-dead-ends
+
+**placement-practice-dead-ends** — goal: `harness/goals/placement-practice-dead-ends.md`.
+
+1. Formulário de disponibilidade no estado sem turma compatível; salvar volta à lista recalculada.
+2. Matrícula administrativa com turma ativa encerra a jornada de entrada (Home, gate pedagógico, onboarding, alertas) sem reescrever o caso (PLACEMENT.md 12E).
+3. `reassign_placement_teacher` (ADMIN+AAL2, REVIEW_PENDING, motivo auditado) e formulário no Admin.
+4. Alerta `PRACTICE_NO_REVIEWER` em `admin_operational_alerts`.
+5. "Ainda não tentou" só com o conjunto completo de tentativas (paginado); texto aprovado preservado.
+6. Migração aditiva + teste SQL, testes unit/integration, gates, registros e PR único.
+
+---
+
 # Plano — billing-reconciliation-integrity
 
 ## Active task

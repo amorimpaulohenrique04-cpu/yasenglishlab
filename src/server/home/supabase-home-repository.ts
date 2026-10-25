@@ -36,11 +36,21 @@ export class SupabaseHomeReadRepository implements HomeReadRepository {
     // nor one already submitted (ADR 0025: a lesson-bound practice has one final attempt).
     const reached = new Set(reachedIds);
     const completed = new Set(submittedIds);
+    const recommendable = activities.filter(
+      (activity) => reached.has(activity.id) && !completed.has(activity.id),
+    );
+    // Complete attempted set: `history` is capped, so it cannot prove an activity was never tried.
+    const attempted = await this.practice
+      .listAttemptedActivityIds(
+        userId,
+        recommendable.map((activity) => activity.id),
+      )
+      .then((ids) => new Set(ids))
+      .catch(() => undefined);
 
     return {
-      activities: activities.filter(
-        (activity) => reached.has(activity.id) && !completed.has(activity.id),
-      ),
+      activities: recommendable,
+      attemptedActivityIds: attempted,
       history,
       recentLessonId,
       openAttempts: fullHistory

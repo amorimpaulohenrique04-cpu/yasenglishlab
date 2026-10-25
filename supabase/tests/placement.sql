@@ -133,6 +133,66 @@ select pg_temp.assert_true((select count(*)=1 from public.get_placement_queue(nu
 reset role;
 select pg_temp.denied('update public.placement_cases set state=''PAYMENT_CONFIRMED'' where id=current_setting(''placement.test.case'')::uuid','23514');
 select pg_temp.denied('update public.placement_reviews set feedback=''Overwrite''','55000');
+-- Level-aware placement uses the existing review/choice/transfer journey for Student B.
+insert into public.cohorts(id,course_id,name,code,status,starts_at,pedagogical_level)
+select ('99050000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,'40000000-0000-4000-8000-000000000001',
+ 'Placement level '||n,'placement-level-'||n,'ACTIVE',now()-interval '1 day',
+ case n when 11 then 'BASIC' when 12 then 'INTERMEDIATE' else 'ADVANCED' end from generate_series(11,13)n;
+insert into public.cohort_placement_settings(cohort_id,schedule)
+select id,'[{"weekday":1,"startMinute":1140,"endMinute":1200}]' from public.cohorts where code like 'placement-level-%';
+insert into public.cohort_teachers(cohort_id,teacher_id)
+select id,'99010000-0000-4000-8000-000000000001' from public.cohorts where code like 'placement-level-%';
+insert into public.teacher_student_assignments(teacher_id,student_user_id)
+values('99010000-0000-4000-8000-000000000001','99000000-0000-4000-8000-000000000002');
+select set_config('placement.level.case',(select id::text from public.placement_cases where user_id='99000000-0000-4000-8000-000000000002'),true);
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000003',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000003","aal":"aal2"}',true);
+set local role authenticated;
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'')','23514');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC');
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'')','23514');
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''Adjusted level'')');
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000005',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000005","aal":"aal1"}',true);
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''Adjusted level'')');
+select set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000005","aal":"aal2"}',true);
+select pg_temp.denied('select public.finalize_placement_review(current_setting(''placement.level.case'')::uuid,''40000000-0000-4000-8000-000000000001'',''Level feedback'',''HIGH'',''ADVANCED'',''  '')','23514');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','ADVANCED','Adjusted level');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','ADVANCED','Adjusted level');
+select pg_temp.assert_true(public.get_placement_projection(current_setting('placement.level.case')::uuid)->>'recommendedLevel'='ADVANCED','Admin override changes routing projection');
+select pg_temp.assert_true((select count(*)=1 from public.audit_logs where action='placement_level_overridden' and entity_id=current_setting('placement.level.case')::uuid and actor_user_id=auth.uid() and data->>'reason'='Adjusted level'),'override reason and authenticated actor audited exactly once');
+select pg_temp.assert_true((select recommended_level='BASIC' from public.placement_reviews where placement_case_id=current_setting('placement.level.case')::uuid),'Admin override preserves immutable Teacher recommendation');
+select pg_temp.assert_true((select count(*)=1 from public.get_placement_candidates(current_setting('placement.level.case')::uuid) c where c->>'pedagogicalLevel'='ADVANCED'),'matching uses justified override');
+select public.finalize_placement_review(current_setting('placement.level.case')::uuid,'40000000-0000-4000-8000-000000000001','Level feedback','HIGH','BASIC','Confirmed initial recommendation');
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000002',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000002","aal":"aal1"}',true);
+select public.open_placement_decision();
+select pg_temp.assert_true((select count(*)=1 from public.get_placement_candidates(current_setting('placement.level.case')::uuid)),'only recommended level of same course offered');
+select pg_temp.denied('select public.confirm_placement_choice(''99050000-0000-4000-8000-000000000012'')','23514');
+select public.confirm_placement_choice('99050000-0000-4000-8000-000000000011');
+reset role;
+insert into public.live_sessions(id,teacher_id,cohort_id,session_type,title,starts_at,ends_at,capacity)
+values('99070000-0000-4000-8000-000000000011','99010000-0000-4000-8000-000000000001','99050000-0000-4000-8000-000000000011','CORE_CLASS','Basic only',now()+interval '2 days',now()+interval '2 days 1 hour',6);
+insert into public.live_sessions(id,teacher_id,cohort_id,session_type,title,starts_at,ends_at,capacity)
+values('99070000-0000-4000-8000-000000000012','99010000-0000-4000-8000-000000000001','99050000-0000-4000-8000-000000000011','CORE_CLASS','Another Basic meeting',now()+interval '3 days',now()+interval '3 days 1 hour',6);
+select pg_temp.assert_true(private.can_book_session('99070000-0000-4000-8000-000000000011',auth.uid()),'Basic member eligible for Basic meeting');
+set local role authenticated;
+select public.book_live_session('99070000-0000-4000-8000-000000000011');
+select pg_temp.assert_true(public.get_live_session_join_access('99070000-0000-4000-8000-000000000011')->>'status'='TOO_EARLY','current cohort booking passes join authorization before time window');
+reset role;
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000005',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000005","aal":"aal2"}',true);
+set local role authenticated;
+select public.transfer_placement_cohort(current_setting('placement.level.case')::uuid,'99050000-0000-4000-8000-000000000012','99060000-0000-4000-8000-000000000012','Teacher-approved promotion');
+select pg_temp.assert_true((select recommended_level='BASIC' from public.placement_reviews where placement_case_id=current_setting('placement.level.case')::uuid),'Admin promotion preserves original recommendation');
+reset role;
+select pg_temp.assert_true((select count(*)=1 from public.cohort_memberships where user_id='99000000-0000-4000-8000-000000000002' and status='ACTIVE'),'promotion leaves one effective membership');
+select pg_temp.assert_true((select count(*)=1 from public.assessment_attempts where user_id='99000000-0000-4000-8000-000000000002'),'promotion preserves assessment history');
+select set_config('request.jwt.claim.sub','99000000-0000-4000-8000-000000000002',true),set_config('request.jwt.claims','{"sub":"99000000-0000-4000-8000-000000000002","aal":"aal1"}',true);
+select pg_temp.assert_true(not private.can_book_session('99070000-0000-4000-8000-000000000011',auth.uid()),'former level meeting no longer eligible');
+set local role authenticated;
+select pg_temp.denied('select public.book_live_session(''99070000-0000-4000-8000-000000000012'')');
+select pg_temp.assert_true(public.get_live_session_join_access('99070000-0000-4000-8000-000000000011')->>'status'='NOT_AUTHORIZED','old booking cannot expose former cohort meeting after transfer');
+select pg_temp.assert_true((select count(*)=1 from public.session_bookings where live_session_id='99070000-0000-4000-8000-000000000011' and user_id=auth.uid()),'transfer keeps booking history');
+reset role;
+
 set local role anon;
 select pg_temp.denied('select * from public.placement_cases');
 select pg_temp.denied('select public.begin_placement()');

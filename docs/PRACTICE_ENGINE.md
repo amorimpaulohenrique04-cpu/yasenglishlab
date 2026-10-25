@@ -88,3 +88,13 @@ Naquela versão, o aluno via práticas atribuídas à turma em /pratica. A persi
 
 - A regra anterior retomava tentativas abertas em até 24 horas, abandonava tentativas mais antigas, e permitia que atribuições de turma ignorassem a disponibilidade da aula. O contrato atual mantém respostas provisórias retomáveis, sem consumir a submissão final antes do envio; nenhuma atribuição ignora a autorização da aula.
 - Os detalhes de `student_practice_reach()` ainda podem ser usados por outras superfícies existentes, mas a política vigente de prática docente não permite o bypass por turma. Dados históricos de tentativa/schedule permanecem preservados.
+
+## Assignment release (2026-10-21)
+
+cohort_practice_assignments.available_from is an optional start instant; due_at remains a separate deadline and never grants early access. require_lesson_available defaults false to preserve existing teacher assignments. Opting in requires related_lesson_id and enforces that lesson publication, cohort inclusion, release date and sequence permit access. The practice/course must still pass existing publication, enrollment, payment and entitlement gates.
+
+The existing teacher_practice_assign signature gains optional parameters p_available_from and p_require_lesson_available after p_context; no overload is retained. One assignment per practice/cohort remains authoritative; reassigning selected cohorts updates only their scheduling rule. student_path_available centralizes the release predicate used by activity RLS, start RPCs, recommendations and private asset authorization. DB triggers validate course/lesson/assignment coherence and protect referenced ancestry from being moved.
+
+Legacy COURSE assignments used solely to signal lesson reach remain supported with their inferred course scope. They cannot accept the new scheduling fields; scheduled authoring stays on ASSIGNED practices, whose per-cohort release predicate is authoritative.
+
+Private practice stimulus assets also repeat has_paid_access for Students after release; author/Admin preview behavior and attempt history reads are preserved.

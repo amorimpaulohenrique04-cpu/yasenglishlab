@@ -581,7 +581,7 @@ begin
   foreach f in array array[
     'public.teacher_practice_list()','public.teacher_practice_get(uuid)','public.teacher_practice_save(uuid,jsonb,jsonb,jsonb,jsonb)',
     'public.teacher_practice_publish(uuid,jsonb)','public.teacher_practice_unpublish(uuid,jsonb)','public.teacher_practice_duplicate(uuid,jsonb)',
-    'public.teacher_practice_assign(uuid,uuid[],timestamptz,jsonb)','public.teacher_practice_unassign(uuid,uuid,jsonb)',
+    'public.teacher_practice_assign(uuid,uuid[],timestamptz,jsonb,timestamptz,boolean)','public.teacher_practice_unassign(uuid,uuid,jsonb)',
     'public.teacher_practice_reserve_asset(uuid,text,text,jsonb)','public.teacher_practice_complete_asset(uuid,jsonb)',
     'public.authorize_practice_asset(uuid)','public.student_assigned_practices()','public.submit_practice_attempt(uuid,jsonb)',
     'public.get_teacher_reviews(uuid)','public.finalize_practice_review(uuid,jsonb,text,text)','public.reserve_practice_audio(uuid,text)',
@@ -612,5 +612,86 @@ set local role authenticated;
 select pg_temp.assert_true(pg_temp.state_of(format('select public.teacher_practice_save(null, %L::jsonb)', pg_temp.payload(pg_temp.simple(),'GRAMMAR','b2200000-0000-4000-8000-000000000002')))='42501','ended cohort assignment removes course scope');
 reset role;
 
+-- Existing COURSE assignments used for reach are preserved without adding scheduling semantics.
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,related_module_id,content)
+select pg_temp.u(90),'pa-legacy-cohort-assignment','Legacy reach assignment',skill,estimated_minutes,
+ 'b2210000-0000-4000-8000-000000000001',content from public.practice_activities where id='83000000-0000-4000-8000-000000000001';
+insert into public.cohort_practice_assignments(cohort_id,practice_activity_id,assigned_by_teacher_id)
+values('b2400000-0000-4000-8000-000000000001',pg_temp.u(90),'b2100000-0000-4000-8000-000000000002');
+select pg_temp.assert_true(pg_temp.state_of($q$update public.cohort_practice_assignments set available_from=now()+interval '1 day' where practice_activity_id=pg_temp.u(90)$q$)='23514','legacy COURSE reach assignment cannot claim ASSIGNED scheduling');
+-- Schedule is independent of deadline and guards assets, direct IDs and RPC start.
+select pg_temp.login(pg_temp.u(2),'aal2');
+set local role authenticated;
+select public.teacher_practice_assign(pg_temp.id('pm'),array['b2400000-0000-4000-8000-000000000001']::uuid[],now()+interval '3 days','{}',now()+interval '2 days',false);
+reset role;
+select pg_temp.assert_true((select due_at>available_from and not require_lesson_available from public.cohort_practice_assignments where practice_activity_id=pg_temp.id('pm')),'release and deadline are distinct, legacy rule explicit');
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'future assignment denies stimulus asset');
+select pg_temp.assert_true((select count(*)=0 from public.practice_activities where id=pg_temp.id('pm')),'future assignment denies direct activity ID');
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('pm')))='42501','future assignment cannot start by RPC');
+select pg_temp.assert_true(not exists(select 1 from public.student_assigned_practices() where practice_activity_id=pg_temp.id('pm')),'future assignment excluded from recommendations');
+reset role;
+update public.cohort_practice_assignments set available_from=now()-interval '1 hour' where practice_activity_id=pg_temp.id('pm');
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment restores asset authorization');
+reset role;
+-- A released assignment still cannot grant a suspended Student private media.
+update public.complimentary_access_grants set revoked_at=now(),revoked_by=pg_temp.u(1) where user_id=pg_temp.u(5);
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'released assignment does not bypass payment for assets');
+reset role;
+update public.complimentary_access_grants set revoked_at=null,revoked_by=null where user_id=pg_temp.u(5);
+-- One shared practice can be assigned to several authorized cohorts, each with independent dates.
+insert into public.cohort_teachers(cohort_id,teacher_id) values('b2400000-0000-4000-8000-000000000002','b2100000-0000-4000-8000-000000000002');
+select pg_temp.login(pg_temp.u(2),'aal2');
+set local role authenticated;
+select public.teacher_practice_assign(pg_temp.id('pm'),array['b2400000-0000-4000-8000-000000000001','b2400000-0000-4000-8000-000000000002']::uuid[],null);
+select public.teacher_practice_assign(pg_temp.id('pm'),array['b2400000-0000-4000-8000-000000000002']::uuid[],now()+interval '4 days','{}',now()+interval '2 days',false);
+reset role;
+select pg_temp.assert_true((select count(*)=2 from public.cohort_practice_assignments where practice_activity_id=pg_temp.id('pm')),'one activity shared across two cohort assignments');
+select pg_temp.login(pg_temp.u(6),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(not public.authorize_practice_asset(pg_temp.id('asset1')),'another cohort release does not unlock this cohort asset');
+reset role;
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(public.authorize_practice_asset(pg_temp.id('asset1')),'independent first cohort release still permits asset');
+reset role;
+-- A lesson-linked assigned practice keeps the old early-execution behavior until explicitly opted in.
+insert into public.lessons(id,module_id,position,slug,title) values
+ ('b2220000-0000-4000-8000-000000000001','b2210000-0000-4000-8000-000000000001',1,'pa-related-lesson','Related lesson');
+insert into public.lesson_assets(lesson_id,asset_type,position,content,publication_status,published_at) values
+ ('b2220000-0000-4000-8000-000000000001','TEXT',1,'{"title":"Lesson","body":"Study"}','PUBLISHED',now());
+update public.lessons set publication_status='PUBLISHED',published_at=now() where id='b2220000-0000-4000-8000-000000000001';
+select pg_temp.login(pg_temp.u(2),'aal2');
+set local role authenticated;
+insert into ids values('release',public.teacher_practice_save(null,
+ pg_temp.payload(pg_temp.simple()) || '{"related_lesson_id":"b2220000-0000-4000-8000-000000000001"}'::jsonb,'{"optionId":"a"}'));
+select public.teacher_practice_publish(pg_temp.id('release'));
+select public.teacher_practice_assign(pg_temp.id('release'),array['b2400000-0000-4000-8000-000000000001']::uuid[]);
+reset role;
+insert into public.cohort_paths(cohort_id,mode,sequential) values('b2400000-0000-4000-8000-000000000001','DEFAULT',false);
+insert into public.cohort_path_items(cohort_id,content_kind,content_id,position,available_from) values
+ ('b2400000-0000-4000-8000-000000000001','modules','b2210000-0000-4000-8000-000000000001',0,null),
+ ('b2400000-0000-4000-8000-000000000001','lessons','b2220000-0000-4000-8000-000000000001',1,now()+interval '1 day');
+select pg_temp.login(pg_temp.u(5),'aal1');
+select pg_temp.assert_true(private.can_view_practice_activity(pg_temp.id('release')),'legacy assignment still permits early execution');
+select pg_temp.login(pg_temp.u(2),'aal2');
+set local role authenticated;
+select public.teacher_practice_assign(pg_temp.id('release'),array['b2400000-0000-4000-8000-000000000001']::uuid[],null,'{}',null,true);
+reset role;
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select pg_temp.assert_true(pg_temp.state_of(format('select public.start_practice_attempt(%L,gen_random_uuid())',pg_temp.id('release')))='42501','explicit lesson rule blocks unreleased lesson');
+reset role;
+update public.cohort_path_items set available_from=now()-interval '1 hour' where cohort_id='b2400000-0000-4000-8000-000000000001' and content_kind='lessons';
+select pg_temp.login(pg_temp.u(5),'aal1');
+set local role authenticated;
+select public.start_practice_attempt(pg_temp.id('release'),gen_random_uuid());
+reset role;
+select pg_temp.assert_true(pg_temp.state_of(format('update public.practice_activities set related_lesson_id=%L where id=%L','42000000-0000-4000-8000-000000000001',pg_temp.id('release')))='23514','DB rejects cross-course related lesson');
 select pg_temp.logout();
 rollback;

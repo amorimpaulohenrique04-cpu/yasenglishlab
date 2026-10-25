@@ -83,3 +83,32 @@ A fila `/teacher/revisoes/placement` possui busca, filtros/paginação na URL, i
 `get_placement_review_evidence` inclui ids, posição, tipo e gabarito da versão para o professor autorizado. Gabaritos de respostas manuais podem ser nulos. Não há nova coleta de confiança do aluno, inferência CEFR ou envio de notificações.
 
 `PlacementReviewAssistant` define o contrato sem provedor ativo. A UI informa indisponibilidade e mantém escrita manual. Não há SDK, chave ou chamada de IA nesta entrega. Avaliação posterior: Groq GPT-OSS 20B e Gemini Flash-Lite; escolha por custo e qualidade pedagógica, com preços revalidados na ativação.
+
+## Auditoria 2026-10-18 — becos sem saída
+
+Disponibilidade: `save_placement_preferences` aceita edição até STUDENT_DECISION. Sem turma compatível,
+`/onboarding/placement` mostra o formulário de disponibilidade e a lista é recalculada ao salvar.
+
+Matrícula administrativa: `admin_enroll_in_course` continua sem alterar o caso. Uma membership ACTIVE
+efetiva numa turma ACTIVE com matrícula ACTIVE (`private.has_active_cohort_enrollment`) encerra a jornada
+de entrada na leitura: Home, rotas pedagógicas e onboarding deixam de exigir a escolha de turma, e os alertas
+STALE_DECISION e PLACEMENT_NO_COHORT deixam de contar o aluno. O caso permanece no estado em que estava.
+
+Troca de revisor: `reassign_placement_teacher(p_case_id, p_teacher_id, p_reason)` exige ADMIN+AAL2 e caso
+REVIEW_PENDING. Encerra (sem apagar) as atribuições diretas sem curso de outros professores, cria a nova
+atribuição e audita `placement_teacher_reassigned` com motivo e professores anteriores. Retry idêntico não
+gera nova auditoria. `assign_placement_teacher` continua recusando empilhar revisores.
+
+Prática sem revisor: o alerta `PRACTICE_NO_REVIEWER` lista alunos com resposta SUBMITTED/PENDING_MANUAL sem
+professor ativo atribuído nem professor ativo de turma ativa.
+
+Banco: `20261018150000_placement_practice_dead_ends.sql`. Teste: `supabase/tests/placement_practice_dead_ends.sql`.
+
+
+## Formal pedagogical levels (2026-10-21)
+
+Courses remain the shared curriculum. Cohorts optionally declare pedagogical_level BASIC, INTERMEDIATE or ADVANCED; NULL preserves the legacy contract. New reviews in a course with formal-level cohorts require recommended_level, separate from recommended_course_id and CEFR. Historical reviews remain immutable and NULL-level reviews offer only legacy cohorts. finalize_placement_review extends its single signature with optional p_level; old callers remain valid for legacy courses. Student candidate listing and final confirmation match both course and level under the existing authorization.
+
+Admin promotion reuses transfer_placement_cohort with reason, operation ID, AAL2 and audit. It can select another level while retaining the original recommendation/choice. The deferred membership constraint is checked immediately before the transfer returns; ordinary writes check immediately. Concurrent writers serialize by enrollment. Existing legacy overlapping paths are preserved; a formal level cannot overlap another membership of the same enrollment. Classification becomes immutable after membership history; configure levels before adding students. No production records are classified automatically.
+
+Before Student confirmation, Admin+AAL2 can use the same finalize_placement_review operation with optional p_admin_reason to adjust the level. The immutable Teacher review, feedback, course and confidence are preserved. Current recommended_level_override and its justification live on the placement case; placement_level_overridden audit records previous/new levels, authenticated actor and reason. A matching retry is idempotent. Student candidates and confirmation use the effective recommendedLevel projection. Once ENROLLED, promotion uses the existing audited cohort transfer instead.

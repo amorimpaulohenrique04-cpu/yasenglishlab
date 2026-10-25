@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pedagogicalLevelSchema } from "@/modules/cohorts/domain/models";
 import type { PlacementView } from "./models";
 
 export const entryBase = "/teacher/revisoes/placement";
@@ -28,6 +29,8 @@ export function entryDetailUrl(id: string, filters: EntryFilters) {
 }
 export const entryDraftSchema = z.object({
   courseId: z.uuid().nullable(),
+  /** Chosen at finalization only (required for courses with formal-level cohorts); not stored in the draft. */
+  level: pedagogicalLevelSchema.nullable().optional(),
   confidence: z.enum(["LOW", "MEDIUM", "HIGH"]).nullable(),
   feedback: z.string().max(4000),
   notes: z.string().max(4000),

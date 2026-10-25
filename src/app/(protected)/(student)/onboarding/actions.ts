@@ -30,20 +30,25 @@ function minutes(value: FormDataEntryValue | null) {
   return h! * 60 + m!;
 }
 export async function savePreferencesAction(form: FormData) {
+  // The "no compatible cohort" state edits availability in place and returns to the refreshed list.
+  const fromPlacement = form.get("returnTo") === "placement";
+  const base = fromPlacement ? "/onboarding/placement" : "/onboarding";
   const parsed = preferenceSchema.safeParse({
     timezone: form.get("timezone"),
     weekday: Number(form.get("weekday")),
     startMinute: minutes(form.get("start")),
     endMinute: minutes(form.get("end")),
   });
-  if (!parsed.success) redirect("/onboarding?result=invalid");
+  if (!parsed.success)
+    redirect(`${base}?result=${fromPlacement ? "availability-invalid" : "invalid"}`);
   try {
     await saveCurrentPreferences(parsed.data);
   } catch {
-    redirect("/onboarding?result=error");
+    redirect(`${base}?result=${fromPlacement ? "availability-error" : "error"}`);
   }
   revalidatePath("/onboarding");
-  redirect("/onboarding?result=saved");
+  revalidatePath("/onboarding/placement");
+  redirect(`${base}?result=${fromPlacement ? "availability-saved" : "saved"}`);
 }
 export async function startPlacementAssessmentAction() {
   try {

@@ -53,6 +53,7 @@ const suites = {
     "supabase/tests/operational_alerts.sql",
     "supabase/tests/billing_core.sql",
     "supabase/tests/observability_contracts.sql",
+    "supabase/tests/placement_practice_dead_ends.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -95,11 +96,13 @@ const suites = {
     "supabase/tests/admin_course_enrollment.sql",
     "supabase/tests/plan_entitlement_admin.sql",
     "supabase/tests/operational_alerts.sql",
+    "supabase/tests/placement_practice_dead_ends.sql",
   ],
   "plan-entitlement-admin": ["supabase/tests/plan_entitlement_admin.sql"],
   "operational-alerts": ["supabase/tests/operational_alerts.sql"],
   "billing-core": ["supabase/tests/billing_core.sql"],
   "observability-contracts": ["supabase/tests/observability_contracts.sql"],
+  "placement-practice-dead-ends": ["supabase/tests/placement_practice_dead_ends.sql"],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "teacher-students-workspace": ["supabase/tests/teacher_students_workspace.sql"],
   "teacher-entry-workspace": ["supabase/tests/teacher_entry_workspace.sql"],
@@ -133,7 +136,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment|placement-practice-dead-ends>",
   );
   process.exit(2);
 }

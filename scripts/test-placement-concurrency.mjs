@@ -106,3 +106,56 @@ console.log(
 runAdmin(`update public.assessments set active=false,is_placement=false where id='${assessment}'`);
 for (const id of previousPlacement)
   runAdmin(`update public.assessments set is_placement=true where id='${id}'`);
+
+// Formal levels: real competing writers cannot grant two effective paths of one course.
+const levelStudent = randomUUID(),
+  levelEnrollment = randomUUID(),
+  basic = randomUUID(),
+  advanced = randomUUID();
+runAdmin(`insert into auth.users(id) values('${levelStudent}');
+insert into public.user_roles(user_id,role) values('${levelStudent}','STUDENT');
+insert into public.enrollments(id,user_id,course_id,status) values('${levelEnrollment}','${levelStudent}','${course}','ACTIVE');
+insert into public.cohorts(id,course_id,name,code,status,starts_at,pedagogical_level) values
+('${basic}','${course}','Basic race','${basic}','ACTIVE',now()-interval '1 day','BASIC'),
+('${advanced}','${course}','Advanced race','${advanced}','ACTIVE',now()-interval '1 day','ADVANCED');
+insert into public.cohort_placement_settings(cohort_id,schedule) values
+('${basic}','[{"weekday":1,"startMinute":1140,"endMinute":1200}]'),
+('${advanced}','[{"weekday":1,"startMinute":1140,"endMinute":1200}]');`);
+const levelRace = await withBarrier(
+  `select id from public.enrollments where id='${levelEnrollment}' for no key update`,
+  [basic, advanced].map(
+    (c) =>
+      `insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) values('${c}','${levelStudent}','${levelEnrollment}')`,
+  ),
+);
+if (
+  levelRace.filter((r) => r.code === 0).length !== 1 ||
+  scalar(
+    `select count(*) from public.cohort_memberships where enrollment_id='${levelEnrollment}' and status='ACTIVE'`,
+  ) !== "1"
+)
+  throw new Error("Concurrent membership writes created conflicting formal levels");
+const operation = randomUUID();
+const transfers = await withBarrier(
+  `select id from public.placement_cases where id='${cases[0]}' for update`,
+  [basic, advanced].map((c) =>
+    actor(
+      teacherUser,
+      `select public.transfer_placement_cohort('${cases[0]}','${c}','${operation}','Concurrent promotion')`,
+      "aal2",
+    ),
+  ),
+);
+if (
+  transfers.filter((r) => r.code === 0).length !== 1 ||
+  scalar(
+    `select count(*) from public.cohort_memberships where user_id='${students[0]}' and status='ACTIVE'`,
+  ) !== "1"
+)
+  throw new Error("Conflicting transfer retry did not preserve single membership");
+console.log(
+  "PASS formal-level concurrency: competing memberships and conflicting transfer retries leave exactly one active membership.",
+);
+
+// Do not make the shared seeded course require formal levels in later legacy/UI fixtures.
+runAdmin(`update public.cohorts set status='ARCHIVED' where id in ('${basic}','${advanced}')`);

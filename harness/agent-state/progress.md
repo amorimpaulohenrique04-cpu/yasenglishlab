@@ -54,6 +54,14 @@ Implementação entregue localmente na branch codex/teacher-sessions-redesign. B
 
 Append-only task milestones. Do not rewrite history to hide failed attempts.
 
+## 2026-10-18 — placement-practice-dead-ends
+
+- Branch `claude/upbeat-bhabha-d3406d` from main@97e39c6. Five dead ends from the 2026-10-18 read-only audit, confirmed against code.
+- Additive migration `20261018150000_placement_practice_dead_ends.sql`: `private.has_active_cohort_enrollment`, `student_has_active_cohort_enrollment()`, `reassign_placement_teacher`, `admin_operational_alerts` (superseded cases excluded, new PRACTICE_NO_REVIEWER).
+- SQL test `placement_practice_dead_ends.sql` plus updated `operational_alerts.sql` (7 categories), run against the local stack inside a rolled-back transaction together with the pending 20261018140000 migration (shared local DB left untouched).
+- App: availability form in the no-candidate state, journey gate on active cohort enrollment, admin reassignment form, alert contract, softened practice copy. Unit + integration tests added.
+- PR #86 CI: first run failed on Format (evidence README); second run failed only on the mobile Home golden because the softened copy wrapped one more line. Reverted to the approved copy and made the claim reliable with a complete, paged attempted-activity lookup.
+
 ## 2026-10-06 — Stage 03E implementation and focused verification
 
 - Started from clean main@aa7bc4824363b69b1cebdeb5df74b9146ad17ba9 on feat/stage-03e-notification-delivery; preserved verified 3A–3D and the unverified macro/3F states.
@@ -882,3 +890,7 @@ Turmas: verificador de segurança passou. verify-harness encontrou formato invá
 Branch codex/teacher-sessions-redesign preservada. Capturas exclusivas, grade ampliada com prova antes/depois, guard canônico fail-closed e cenários Sessions separados preservam as asserções. PASS: 6 testes unitários iniciais; práticas 1/1 e Sessões 5/5 com JSON válido e zero pulados; security/db estruturais/harness. Eval segue FAIL na regra dos seis primitivos novos, apesar da revisão semântica registrada. A primeira rodada combinada emitiu duas falhas e perdeu o JSON no cleanup; essa limitação está registrada. Portas 3000/3001 livres.
 
 Usuário pediu push/PR e transferiu os gates completos restantes ao GitHub. Checks independentes continuam após falhas; SQL acumula resultados; evidências são sanitizadas; agregação final continua vermelha diante de falhas. Validação CI: 32/32 testes e política repo/lockfile/Actions PASS; os dois YAMLs foram parseados, com cinco suítes Preview. Os gates grandes locais ficam NOT RUN por instrução atual. Registry in_progress, verified:false; sem auto-merge. Evidência: harness/evidence/teacher-release-gates/README.md.
+
+## 2026-10-21 — level-based-cohorts
+
+Implementation in isolated branch from main 5dde6a5. Targeted cohort-path, practice authoring, placement SQL and two-connection concurrency passed. Core formatting/lint/types/unit/integration/build passed; verify:agent requires correcting failure-log metadata before rerun. Security and DB structural gates passed. Full SQL suites exposed stateful fixture failures after repeated execution; clean full gate remains required. Feature remains in_progress and unverified.

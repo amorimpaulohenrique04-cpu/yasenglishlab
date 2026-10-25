@@ -6,6 +6,7 @@ export const alertKinds = [
   "STALE_DECISION",
   "PLACEMENT_UNPUBLISHED",
   "COMPLETED_WITHOUT_NEXT",
+  "PRACTICE_NO_REVIEWER",
 ] as const;
 export const alertReasons = {
   MISSING_SETTINGS: "Turma sem horários de entrada configurados.",
@@ -20,6 +21,7 @@ export const alertReasons = {
   DECISION_OVER_7_DAYS: "Escolha de turma aguardando há mais de 7 dias.",
   UNPUBLISHED: "Selecione e publique uma versão do teste de entrada.",
   NO_ACTIVE_NEXT_COURSE: "Curso concluído sem outra matrícula ativa.",
+  NO_REVIEWER: "Resposta escrita ou falada aguardando revisão sem professor designado.",
 } as const;
 export const operationalAlertsSchema = z
   .object({
@@ -46,10 +48,10 @@ export const operationalAlertsSchema = z
             .max(10),
         }),
       )
-      .length(6),
+      .length(alertKinds.length),
   })
   .superRefine((value, ctx) => {
-    if (new Set(value.alerts.map((a) => a.kind)).size !== 6)
+    if (new Set(value.alerts.map((a) => a.kind)).size !== alertKinds.length)
       ctx.addIssue({
         code: "custom",
         message: "Operational categories must be complete and unique",
@@ -86,5 +88,10 @@ export const alertPresentation = {
     title: "Concluídos sem próximo curso",
     href: "/admin/students",
     action: "Consultar alunos",
+  },
+  PRACTICE_NO_REVIEWER: {
+    title: "Práticas sem professor revisor",
+    href: "/admin/teachers",
+    action: "Designar professor",
   },
 } as const;

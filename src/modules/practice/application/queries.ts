@@ -94,6 +94,11 @@ export async function getPracticeView(
   const selectedAttempt = attemptId ? await repository.getAttempt(userId, attemptId) : null;
   if (lessonActivities.length === 0 && history.length === 0 && !selectedAttempt)
     return { status: "empty" };
+  // Complete attempted set for the "never tried" reason; unavailable means the claim is not made.
+  const attempted = await orFallback<ReadonlySet<string> | undefined>(
+    async () => new Set(await repository.listAttemptedActivityIds(userId, reachedActivityIds)),
+    undefined,
+  );
 
   const selectedSkill = normalizePracticeSkill(raw.skill);
   const visibleActivities = selectedSkill
@@ -123,6 +128,7 @@ export async function getPracticeView(
         history,
         recentLessonId,
         openAttempts,
+        attemptedActivityIds: attempted,
         now,
       }),
       history: history.slice(0, 6),
