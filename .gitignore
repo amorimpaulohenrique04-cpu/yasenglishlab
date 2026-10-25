@@ -63,3 +63,13 @@ debug.log
 /artifacts/teacher-practices-staging/
 /artifacts/teacher-sessions-staging/
 /artifacts/*.zip
+
+# Local proposals and reference downloads; approved tracked HTML stays versioned
+/artifacts/redesign-shots/
+/artifacts/design-references/
+/artifacts/public-site-proposal/
+/artifacts/design-proposal/*
+!/artifacts/design-proposal/APPROVED.md
+!/artifacts/design-proposal/admin.html
+!/artifacts/design-proposal/aluno.html
+!/artifacts/design-proposal/professor.html

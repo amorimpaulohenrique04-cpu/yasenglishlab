@@ -192,3 +192,7 @@ Usuário aprovou listagem + perfil e atenção após sete dias apenas para matr�
 ## teacher-cohorts-redesign — 2026-10-24
 
 HTML fornecido é referência visual, não fonte de permissões nem dados. Contexto atual é limitado a 50 turmas, prévia de 20 alunos e 3 encontros; UI explicita limites e oferece carteira/agenda filtradas. Contar matrículas por turma, turmas com encontro e vagas apenas em capacidades conhecidas. Badge Vinculada representa vínculo vigente sem inferir status administrativo ausente no DTO. Criar/editar/arquivar turma, matricular e convidar permanecem Admin; Teacher acompanha alunos e gerencia sessões existentes. Sem migration nem mudança de auth.
+
+## teacher-release-gates — 2026-10-24
+
+Usuário escolheu aumentar altura das linhas da grade para preservar faixa clicável confortável. Propostas/referências locais em artifacts ficam ignoradas; os quatro arquivos de referência já versionados são preservados. Somente evidências relevantes revisadas serão commitadas; regenerações anteriores permanecem preservadas no checkout, fora do staging se não usadas como prova desta tarefa.

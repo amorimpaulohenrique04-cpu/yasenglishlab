@@ -12,6 +12,15 @@
   },
   "features": [
     {
+      "id": "teacher-release-gates",
+      "title": "Fechamento dos gates e PR Teacher",
+      "status": "in_progress",
+      "verified": false,
+      "dependencies": ["teacher-sessions-redesign"],
+      "evidence": ["harness/goals/teacher-release-gates.md"],
+      "updated_at": "2026-10-24T23:00:00-03:00"
+    },
+    {
       "id": "teacher-cohorts-redesign",
       "title": "Turmas do professor conforme referência HTML interativa",
       "status": "in_progress",
@@ -91,7 +100,7 @@
         "harness/goals/teacher-practices-redesign.md",
         "2026-10-22 lapidação visual/funcional (Claude): ver progress.md; e2e bloqueado por login canônico"
       ],
-      "updated_at": "2026-10-22T21:21:25.630Z"
+      "updated_at": "2026-10-22T21:21:25.63Z"
     },
     {
       "id": "teacher-sessions-redesign",

@@ -1,3 +1,11 @@
+# Plano — teacher-release-gates
+
+## Active task
+
+**teacher-release-gates**
+
+Goal: `harness/goals/teacher-release-gates.md`. Certificar histórico da branch e corrigir capturas/disponibilidade; gates, reset local, commits/push/PR autorizados em 2026-10-24. Sem auto-merge. Histórico abaixo preserva decisões anteriores, substituídas pela autorização atual quando conflitantes.
+
 # Plano — teacher-sessions-redesign
 
 ## Active task
@@ -297,3 +305,12 @@ Goal: `harness/goals/teacher-entry-demo.md`.
 1. Preservar alterações preexistentes; referência HTML, contratos e contexto autorizado inspecionados.
 2. Implementar cartões, indicadores, busca/ordenação e Drawer com primitivos existentes; sem comandos administrativos fictícios.
 3. Verificar lógica, lint/types, responsividade/a11y e gates; registrar evidências e bloqueios.
+
+## teacher-release-gates — 2026-10-24
+
+Goal: harness/goals/teacher-release-gates.md. Autorização atual substitui adiamentos antigos: gates, reset local, commits/push/PR permitidos, sem auto-merge.
+
+1. Diagnóstico somente leitura de PNG; executor separado de gates.
+2. Frontend único escritor: captura confiável e linhas maiores na disponibilidade, conforme escolha explícita do usuário; regressão determinística.
+3. Specs focados; rodada completa final e verify:full; SQL depois do Playwright em banco limpo.
+4. Ignorar propostas locais em artifacts; commitar somente evidências relevantes revisadas; registrar resultados e abrir PR.

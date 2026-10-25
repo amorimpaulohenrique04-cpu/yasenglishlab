@@ -25,15 +25,19 @@ UI (availability board grid).
 
 ## Immediate fix
 
-None applied. Options need a product/UX decision, so they are not decided here: (a) make hour cells that are mostly covered by a block non-interactive (adding availability over a booked session would then go through the composer only); (b) change grid geometry so uncovered remnants are never smaller than 24 px; (c) let a click on a block's free remainder open the composer for that hour from a full-size target.
+User chose larger hour rows on 2026-10-24. The board now uses an 80px base row and increases it for the shortest positive uncovered fragment across the week, allowing 26px (24px plus rounding margin). Overlapping blocks are merged for this measurement. The axis stretches with the same grid height. No cells are disabled by this change.
+
+Tradeoff: minute-precision schedules can produce very tall rows (a one-minute gap needs 1560px/hour). This preserves the selected interaction without hiding the small gap; a different compact interaction would require a separate UX decision.
 
 ## Permanent protection
 
-Pending: once the behavior is decided, add a deterministic e2e/a11y case with a session that covers 40 of 60 minutes of an hour cell, independent of the current clock.
+`tests/e2e/teacher-availability-workspace.spec.ts` has a dedicated unbooked fixed 2099-10-24 session at 22:40–23:40, checks the free target height, axe WCAG 2.2 AA and clicks the free remainder to fill the composer with the existing 15-minute pointer snapping. It deletes the dedicated session in finally. The fixture does not calculate its interval from the current clock. Unit cases cover overlapping blocks and one-minute gaps.
+
+The first fixture attempt tried to move the booked canonical session and was rejected with SQLSTATE 23514 (reserved session identity is immutable). That was an invalid fixture, not a product defect; the database protection remains unchanged.
 
 ## Test/eval created
 
-Pending — the existing a11y scan detects it only when the clock/data line up (time-dependent).
+`tests/unit/availability-grid-geometry.test.ts` and the fixed partial-hour Playwright case above. Execution and before/after production evidence pending; status stays open until the same scenario is proved red then green.
 
 ## Reproduction
 
