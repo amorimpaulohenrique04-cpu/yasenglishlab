@@ -9,6 +9,12 @@ Updated: 2026-10-25
 
 Corrigir gravação de screenshots e target-size da disponibilidade, certificar a branch em produção e abrir PR para main sem auto-merge.
 
+Recuperação CI PR #89 (2026-10-25): implementar e validar F01–F04 do relatório sobre
+`02c06b1daea19970867ba4c0afd79f18c949f9d2`, runs 40166442125 e 40166440160.
+Autorização explícita no chat: implementar correções e validar; seguir o ADR 0025 no assert
+canônico (sete respostas finais, 6/7, sem nova rodada de recuperação), preservando retomada,
+submissão única, idempotência, RLS e gates oficiais. Não fazer merge.
+
 ## Visible result
 
 Capturas confiáveis, grade acessível com linhas maiores conforme escolha do usuário, checks reais e PR revisável.
@@ -29,6 +35,9 @@ Capturas confiáveis, grade acessível com linhas maiores conforme escolha do us
 
 ## Allowed files / domains
 
+- `tests/visual/goldens/mobile/home-linux.png`, `tests/visual/goldens/tablet/home-linux.png`: certificação histórica dos renders promovidos no commit 02c06b1; comparar evidências já existentes antes de manter/reverter, sem regenerar às cegas.
+- `src/styles/tokens.css`, `src/styles/design-system.css`, `src/components/motion/**`, `src/modules/placement/ui/**`, `src/modules/practice/ui/**`: somente correção de contraste/movimento sustentada pelos relatórios axe F02/F03.
+- `tests/integration/**`: regressão focada de submissão final/persistência e harness quando necessária.
 - `supabase/migrations/20261025120000_teacher_entry_level.sql` (merge de `main` #88: migration aditiva do `level` no workspace de entrada)
 - `supabase/migrations/20261025130000_practice_visibility_respects_schedule.sql` (merge de `main` #88: restaura a liberação agendada de atribuições em `can_view_practice_activity` e `start_practice_attempt`)
 - `src/modules/teacher-operations/**` (somente disponibilidade e helpers associados nesta execução)
@@ -628,6 +637,10 @@ Atualização de segurança (2026-10-25): `next` 16.3.8 → 16.4.3 e `zod` 4.6.5
 - Decisões abertas de produto não aprovadas
 
 ## Mandatory tests
+
+Atualização 2026-10-25 para recuperação do PR #89: checks focados localmente e certificação
+completa pelo Official CI no SHA corrigido. Limitações locais e falhas devem ser registradas;
+nenhuma alegação de conclusão antes de todos os gates oficiais passarem.
 
 Atualização expressa em 2026-10-25: após os cinco cenários focados de Sessões, não executar os gates grandes restantes localmente. Fazer push e PR; a rodada completa fica no GitHub. Validar somente regressões focadas do novo fluxo CI antes do push. O CI deve executar checks independentes apesar de falhas, preservar pré-requisitos reais e manter agregação final FAIL quando qualquer gate falhar. A lista abaixo continua sendo o escopo de certificação, não uma alegação de execução local.
 

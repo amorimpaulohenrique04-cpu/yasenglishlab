@@ -1,4 +1,13 @@
-# Plano — teacher-release-gates / CI recovery (2026-10-25)
+# Plano — teacher-release-gates / CI recovery F01–F04 (2026-10-25)
+
+1. Congelar logs/artefatos das runs 40166442125 e 40166440160 (HEAD 02c06b1).
+2. F01: comparar goldens Home mobile/tablet com evidência existente e registrar escopo exato.
+3. F02/F03: diagnosticar cores compostas e transições; corrigir causa e cobrir regressão.
+4. F04: alinhar prova persistida ao ADR 0025, conforme confirmação explícita do usuário:
+   sete respostas finais, 6/7, sem rodada nova; garantir identidade, retomada e idempotência.
+5. Checks focados, push no PR #89 e Official CI completo; registrar matriz e bloqueios reais.
+
+# Plano anterior — teacher-release-gates / CI recovery (2026-10-25)
 
 Plano do usuário: `plano_correcao_testes_teacher_sessions_redesign.md`. Matriz e causas: `harness/evidence/ci-recovery-teacher-sessions/README.md`.
 
