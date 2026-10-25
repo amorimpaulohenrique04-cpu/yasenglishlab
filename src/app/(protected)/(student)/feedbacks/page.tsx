@@ -10,6 +10,21 @@ const sourceLabel: Record<StudentFeedback["source"], string> = {
   PEDAGOGICAL_REVIEW: "Avaliação pedagógica",
 };
 
+const statusBadge: Record<
+  StudentFeedback["status"],
+  { label: string; tone: "success" | "info" | "warning" }
+> = {
+  REVIEWED: { label: "Revisado", tone: "success" },
+  PARTIAL: { label: "Revisão parcial", tone: "info" },
+  PENDING: { label: "Aguardando revisão", tone: "warning" },
+};
+
+/** "1 de 3 respostas avaliadas": counts open answers only, never a grade. */
+function progressLabel(progress: NonNullable<StudentFeedback["progress"]>) {
+  const noun = progress.total === 1 ? "resposta avaliada" : "respostas avaliadas";
+  return `${progress.reviewed} de ${progress.total} ${noun}`;
+}
+
 const sourceHref = (feedback: StudentFeedback) =>
   feedback.source === "PRACTICE" ? `/pratica/${feedback.entityId}` : "/onboarding";
 
@@ -51,8 +66,8 @@ export default async function FeedbacksPage({
               <Card className="yas-stack">
                 <div className="yas-row-summary-meta">
                   <Badge tone="neutral">{sourceLabel[feedback.source]}</Badge>
-                  <Badge tone={feedback.status === "REVIEWED" ? "success" : "warning"}>
-                    {feedback.status === "REVIEWED" ? "Revisado" : "Aguardando revisão"}
+                  <Badge tone={statusBadge[feedback.status].tone}>
+                    {statusBadge[feedback.status].label}
                   </Badge>
                   <time dateTime={feedback.occurredAt}>
                     {new Date(feedback.occurredAt).toLocaleDateString("pt-BR", {
@@ -62,6 +77,12 @@ export default async function FeedbacksPage({
                 </div>
                 <h2>{feedback.title}</h2>
                 {feedback.skill && <p>Habilidade: {feedback.skill}</p>}
+                {feedback.progress && feedback.progress.total > 1 && (
+                  <p>
+                    {feedback.status === "PARTIAL" ? "Revisão parcial — " : ""}
+                    {progressLabel(feedback.progress)}
+                  </p>
+                )}
                 {feedback.notes && <p>{feedback.notes}</p>}
                 {feedback.ratings && (
                   <ul>
