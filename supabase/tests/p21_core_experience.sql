@@ -108,7 +108,7 @@ select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-00000000
 select pg_temp.p21_assert((select count(*) from public.teacher_student_notes)=0,'Student sees internal notes');
 select pg_temp.p21_assert(exists(select 1 from public.live_session_resources where id=current_setting('p21.resource')::uuid),'Booked Student resource access');
 reset role;
-insert into public.practice_activities(id,slug,title,skill,estimated_minutes,content,active,publication_status,published_at) values('a1400000-0000-4000-8000-000000000001','p21-audio','Audio practice','SPEAKING',5,'{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Describe your day","instructions":"Record a short response"}',true,'PUBLISHED',now());
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,related_module_id,related_lesson_id,course_id,content,active,publication_status,published_at) values('a1400000-0000-4000-8000-000000000001','p21-audio','Audio practice','SPEAKING',5,'41000000-0000-4000-8000-000000000001','42000000-0000-4000-8000-000000000001','40000000-0000-4000-8000-000000000001','{"kind":"MANUAL_AUDIO","evaluationMode":"MANUAL_PENDING","prompt":"Describe your day","instructions":"Record a short response"}',true,'PUBLISHED',now());
 set local role authenticated;
 select set_config('p21.attempt',(public.start_practice_attempt('a1400000-0000-4000-8000-000000000001','a1410000-0000-4000-8000-000000000001')).id::text,true);
 select set_config('p21.media',public.reserve_practice_audio(current_setting('p21.attempt')::uuid,'audio/webm')::text,true);

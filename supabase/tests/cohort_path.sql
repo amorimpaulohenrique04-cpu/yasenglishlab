@@ -91,7 +91,7 @@ select pg_temp.ok(exists(select 1 from public.lessons where id=pg_temp.id(303)),
 select pg_temp.ok(not private.can_read_lesson_asset(pg_temp.id(403)),'future asset denied');
 select pg_temp.ok(not private.can_read_material(pg_temp.id(800)),'future parent blocks material');
 select pg_temp.ok(not private.can_view_practice_activity(pg_temp.id(900)),'future parent blocks practice');
-select pg_temp.ok(pg_temp.state('select public.start_practice_attempt(pg_temp.id(900),gen_random_uuid())')='42501',
+select pg_temp.ok(pg_temp.state('select public.start_practice_attempt(pg_temp.id(900),gen_random_uuid())')='YP001',
   'future practice cannot start');
 select pg_temp.ok(private.can_read_lesson_asset(pg_temp.id(401)),'available asset allowed');
 select pg_temp.ok(pg_temp.state('select public.record_lesson_progress(pg_temp.id(303),100,0)')='42501',
@@ -144,7 +144,7 @@ select pg_temp.ok(exists(select 1 from public.lessons where id=pg_temp.id(303)),
   'default path may explicitly include an exclusive item shared with another cohort');
 select pg_temp.ok(private.can_read_lesson_asset(pg_temp.id(403)),'explicit default exclusive is available');
 select pg_temp.ok(not private.can_read_material(pg_temp.id(800)),'exclusive material needs own inclusion');
-select pg_temp.ok(not private.can_view_practice_activity(pg_temp.id(900)),'exclusive practice needs own inclusion');
+select pg_temp.ok(private.can_view_practice_activity(pg_temp.id(900)),'practice inherits explicitly included lesson access');
 reset role;
 -- Transfer into the custom path changes visibility and preserves per-user progress.
 update public.cohort_memberships set status='LEFT',ends_at=now() where id=pg_temp.id(702);

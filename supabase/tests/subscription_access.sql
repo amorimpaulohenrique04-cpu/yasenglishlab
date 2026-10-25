@@ -49,15 +49,15 @@ insert into public.subscriptions(id,user_id,plan_id,provider,status) values
  ('9d300000-0000-4000-8000-000000000008','9d000000-0000-4000-8000-000000000008','10000000-0000-0000-0000-000000000003','test','EXPIRED');
 -- Joinable session (starts inside the join window) and a future one for booking; both without entitlement key.
 insert into public.live_sessions(id,teacher_id,session_type,title,starts_at,ends_at,capacity,required_entitlement_key,status,meeting_provider,meeting_ref) values
- ('9d400000-0000-4000-8000-000000000001','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate join',now()+interval '5 minutes',now()+interval '65 minutes',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate'),
- ('9d400000-0000-4000-8000-000000000002','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate booking',now()+interval '2 days',now()+interval '2 days 1 hour',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate2');
+ ('9d4f0000-0000-4000-8000-000000000001','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate join',now()+interval '5 minutes',now()+interval '65 minutes',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate'),
+ ('9d4f0000-0000-4000-8000-000000000002','9d100000-0000-4000-8000-000000000001','WORKSHOP','Gate booking',now()+interval '2 days',now()+interval '2 days 1 hour',6,null,'SCHEDULED','MANUAL_EXTERNAL','https://meet.example.test/gate2');
 insert into public.session_bookings(live_session_id,user_id) values
- ('9d400000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000001'),
- ('9d400000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000002');
+ ('9d4f0000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000001'),
+ ('9d4f0000-0000-4000-8000-000000000001','9d000000-0000-4000-8000-000000000002');
 insert into public.live_session_recordings(id,live_session_id,storage_path) values
- ('9d500000-0000-4000-8000-000000000001','9d400000-0000-4000-8000-000000000001','gate/recording.mp4');
+ ('9d500000-0000-4000-8000-000000000001','9d4f0000-0000-4000-8000-000000000001','gate/recording.mp4');
 insert into public.live_session_resources(id,live_session_id,resource_type,title,upload_status) values
- ('9d600000-0000-4000-8000-000000000001','9d400000-0000-4000-8000-000000000001','HOMEWORK','Gate homework','READY');
+ ('9d600000-0000-4000-8000-000000000001','9d4f0000-0000-4000-8000-000000000001','HOMEWORK','Gate homework','READY');
 
 -- 1. The rule itself (decision function, owner context).
 select pg_temp.assert_true(private.has_paid_access('9d000000-0000-4000-8000-000000000001'),'ACTIVE has paid access');
@@ -81,12 +81,12 @@ select pg_temp.assert_true(exists(select 1 from public.materials where id='81710
 select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'ACTIVE reads lesson asset');
 select pg_temp.assert_true(exists(select 1 from public.lesson_assets where id='43000000-0000-4000-8000-000000000001'),'ACTIVE sees lesson asset row (RLS)');
 select pg_temp.assert_true(private.can_read_live_recording('9d500000-0000-4000-8000-000000000001'),'ACTIVE booked reads recording');
-select pg_temp.assert_true(private.can_read_session_resource('9d400000-0000-4000-8000-000000000001'),'ACTIVE booked reads session resource');
+select pg_temp.assert_true(private.can_read_session_resource('9d4f0000-0000-4000-8000-000000000001'),'ACTIVE booked reads session resource');
 -- Stage 13: the seed practice belongs to lesson 2; the Student must have reached it (started it) to start the practice.
 select public.record_lesson_progress('42000000-0000-4000-8000-000000000002',10,30);
 select set_config('gate.attempt',(public.start_practice_attempt('83000000-0000-4000-8000-000000000001',gen_random_uuid())).id::text,true);
-select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','ACTIVE booked joins the room');
-select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000002') is not null,'ACTIVE books');
+select pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','ACTIVE booked joins the room');
+select pg_temp.assert_true(public.book_live_session('9d4f0000-0000-4000-8000-000000000002') is not null,'ACTIVE books');
 -- A student cannot read another student's billing or progress.
 select pg_temp.assert_true((select count(*) from public.subscriptions)=1,'student sees only own subscription');
 select pg_temp.assert_true(pg_temp.denied('select private.has_paid_access(''9d000000-0000-4000-8000-000000000002'')'),'student cannot call has_paid_access');
@@ -104,31 +104,31 @@ begin
     perform pg_temp.assert_true(not private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'suspended '||u.n||' must not read asset fn');
     perform pg_temp.assert_true(not exists(select 1 from public.lesson_assets where id='43000000-0000-4000-8000-000000000001'),'suspended '||u.n||' must not see asset row');
     perform pg_temp.assert_true(not private.can_read_live_recording('9d500000-0000-4000-8000-000000000001'),'suspended '||u.n||' must not read recording');
-    perform pg_temp.assert_true(not private.can_read_session_resource('9d400000-0000-4000-8000-000000000001'),'suspended '||u.n||' must not read session resource');
+    perform pg_temp.assert_true(not private.can_read_session_resource('9d4f0000-0000-4000-8000-000000000001'),'suspended '||u.n||' must not read session resource');
     perform pg_temp.assert_true(pg_temp.denied('select public.record_lesson_progress(''42000000-0000-4000-8000-000000000001'',10,30)'),'suspended '||u.n||' must not record progress');
     perform pg_temp.assert_true(pg_temp.denied('select public.start_practice_attempt(''83000000-0000-4000-8000-000000000001'',gen_random_uuid())'),'suspended '||u.n||' must not start practice');
-    perform pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d400000-0000-4000-8000-000000000002'')'),'suspended '||u.n||' must not book');
-    perform pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000002')->>'status'='NOT_AUTHORIZED','suspended '||u.n||' without booking is not authorized');
+    perform pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d4f0000-0000-4000-8000-000000000002'')'),'suspended '||u.n||' must not book');
+    perform pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000002')->>'status'='NOT_AUTHORIZED','suspended '||u.n||' without booking is not authorized');
     reset role;
   end loop;
 end $$;
 select pg_temp.logout();
-select pg_temp.assert_true((select count(*)=0 from public.session_bookings where live_session_id='9d400000-0000-4000-8000-000000000002' and user_id in ('9d000000-0000-4000-8000-000000000002','9d000000-0000-4000-8000-000000000003','9d000000-0000-4000-8000-000000000004')),'denied bookings leave no row');
+select pg_temp.assert_true((select count(*)=0 from public.session_bookings where live_session_id='9d4f0000-0000-4000-8000-000000000002' and user_id in ('9d000000-0000-4000-8000-000000000002','9d000000-0000-4000-8000-000000000003','9d000000-0000-4000-8000-000000000004')),'denied bookings leave no row');
 select pg_temp.assert_true((select count(*)=0 from public.lesson_progress where user_id in ('9d000000-0000-4000-8000-000000000002','9d000000-0000-4000-8000-000000000003','9d000000-0000-4000-8000-000000000004')),'denied progress leaves no row');
 select pg_temp.assert_true((select count(*)=0 from public.practice_attempts where user_id in ('9d000000-0000-4000-8000-000000000002','9d000000-0000-4000-8000-000000000003','9d000000-0000-4000-8000-000000000004')),'denied practice leaves no attempt');
 
 -- 4. PAST_DUE: booking is preserved but the room is closed; cancelling stays possible; rebooking is denied.
-select pg_temp.assert_true((select status='BOOKED' from public.session_bookings where live_session_id='9d400000-0000-4000-8000-000000000001' and user_id='9d000000-0000-4000-8000-000000000002'),'PAST_DUE keeps the reservation');
+select pg_temp.assert_true((select status='BOOKED' from public.session_bookings where live_session_id='9d4f0000-0000-4000-8000-000000000001' and user_id='9d000000-0000-4000-8000-000000000002'),'PAST_DUE keeps the reservation');
 select pg_temp.login('9d000000-0000-4000-8000-000000000002');
 set local role authenticated;
-select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'status'='NOT_AUTHORIZED','PAST_DUE booked student cannot enter the room');
-select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'reason'='SUBSCRIPTION_SUSPENDED','join denial exposes the suspension reason');
+select pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000001')->>'status'='NOT_AUTHORIZED','PAST_DUE booked student cannot enter the room');
+select pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000001')->>'reason'='SUBSCRIPTION_SUSPENDED','join denial exposes the suspension reason');
 -- Suspension is derived: enrollment stays ACTIVE and own history is still readable.
 select pg_temp.assert_true((select count(*)=1 from public.enrollments where user_id='9d000000-0000-4000-8000-000000000002' and status='ACTIVE'),'suspension does not touch enrollment');
-select pg_temp.assert_true(public.cancel_live_booking('9d400000-0000-4000-8000-000000000001') is not null,'suspended student can still cancel');
-select pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d400000-0000-4000-8000-000000000001'')'),'suspended student cannot rebook a cancelled booking');
+select pg_temp.assert_true(public.cancel_live_booking('9d4f0000-0000-4000-8000-000000000001') is not null,'suspended student can still cancel');
+select pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d4f0000-0000-4000-8000-000000000001'')'),'suspended student cannot rebook a cancelled booking');
 reset role;
-select pg_temp.assert_true((select status='CANCELLED' from public.session_bookings where live_session_id='9d400000-0000-4000-8000-000000000001' and user_id='9d000000-0000-4000-8000-000000000002'),'rebook denial keeps CANCELLED');
+select pg_temp.assert_true((select status='CANCELLED' from public.session_bookings where live_session_id='9d4f0000-0000-4000-8000-000000000001' and user_id='9d000000-0000-4000-8000-000000000002'),'rebook denial keeps CANCELLED');
 
 -- 5. Mid-flow suspension: an in-progress attempt cannot be submitted, then payment restores it.
 select pg_temp.logout();
@@ -152,9 +152,9 @@ reset role;
 select pg_temp.login('9d000000-0000-4000-8000-000000000002');
 set local role authenticated;
 select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'S2 regains content after normalization');
-select pg_temp.assert_true(private.can_read_session_resource('9d400000-0000-4000-8000-000000000001') = false,'cancelled booking still has no session resource access');
-select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000001') is not null,'S2 can rebook after normalization');
-select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','S2 joins after normalization');
+select pg_temp.assert_true(private.can_read_session_resource('9d4f0000-0000-4000-8000-000000000001') = false,'cancelled booking still has no session resource access');
+select pg_temp.assert_true(public.book_live_session('9d4f0000-0000-4000-8000-000000000001') is not null,'S2 can rebook after normalization');
+select pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','S2 joins after normalization');
 reset role;
 
 -- 6. Re-subscription: an old EXPIRED row plus a new ACTIVE/TRIALING one grants access; TRIALING counts as paid.
@@ -173,7 +173,7 @@ select pg_temp.assert_true(not private.can_read_material('81710000-0000-4000-800
 select pg_temp.assert_true(not private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'no-subscription student cannot read asset');
 select pg_temp.assert_true(pg_temp.denied('select public.record_lesson_progress(''42000000-0000-4000-8000-000000000001'',5,10)'),'no-subscription student cannot record progress');
 select pg_temp.assert_true(pg_temp.denied('select public.start_practice_attempt(''83000000-0000-4000-8000-000000000001'',gen_random_uuid())'),'no-subscription student cannot start practice');
-select pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d400000-0000-4000-8000-000000000002'')'),'no-subscription student cannot book');
+select pg_temp.assert_true(pg_temp.denied('select public.book_live_session(''9d4f0000-0000-4000-8000-000000000002'')'),'no-subscription student cannot book');
 reset role;
 -- The Admin grant (or the legacy backfill) restores base access.
 insert into public.complimentary_access_grants(user_id,reason,note) values('9d000000-0000-4000-8000-000000000005','LEGACY_BACKFILL','fixture');
@@ -182,15 +182,15 @@ set local role authenticated;
 select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'legacy student with grant reads material');
 select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'legacy student with grant reads asset');
 select public.record_lesson_progress('42000000-0000-4000-8000-000000000001',5,10);
-select pg_temp.assert_true(public.book_live_session('9d400000-0000-4000-8000-000000000002') is not null,'legacy student with grant books');
+select pg_temp.assert_true(public.book_live_session('9d4f0000-0000-4000-8000-000000000002') is not null,'legacy student with grant books');
 reset role;
 select pg_temp.login('9d000000-0000-4000-8000-000000000007','aal2');
 set local role authenticated;
 select pg_temp.assert_true(private.can_read_material('81710000-0000-4000-8000-000000000001'),'TEACHER with PAST_DUE row still reads material');
 select pg_temp.assert_true(private.can_read_lesson_asset('43000000-0000-4000-8000-000000000001'),'TEACHER still reads asset');
 select pg_temp.assert_true(private.can_read_live_recording('9d500000-0000-4000-8000-000000000001'),'TEACHER of session still reads recording');
-select pg_temp.assert_true(private.can_read_session_resource('9d400000-0000-4000-8000-000000000001'),'TEACHER of session still reads resource');
-select pg_temp.assert_true(public.get_live_session_join_access('9d400000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','TEACHER of session still enters the room');
+select pg_temp.assert_true(private.can_read_session_resource('9d4f0000-0000-4000-8000-000000000001'),'TEACHER of session still reads resource');
+select pg_temp.assert_true(public.get_live_session_join_access('9d4f0000-0000-4000-8000-000000000001')->>'status'='AVAILABLE','TEACHER of session still enters the room');
 reset role;
 select pg_temp.login('9d000000-0000-4000-8000-000000000008','aal2');
 set local role authenticated;

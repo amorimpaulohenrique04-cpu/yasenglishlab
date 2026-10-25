@@ -14,7 +14,8 @@ describe("isolated verification cache", () => {
     expect(await eslint.isPathIgnored("src/modules/teacher-operations/ui/session-form.tsx")).toBe(
       false,
     );
-  });
+    // Loading the full ESLint config is slow while the whole suite runs in parallel.
+  }, 60_000);
   it("keeps isolated dev output separate without growing the persistent Turbopack cache", () => {
     vi.stubEnv("YAS_ISOLATED_VERIFY", "1");
     const config = nextConfig(PHASE_DEVELOPMENT_SERVER);

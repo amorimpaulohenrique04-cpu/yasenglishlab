@@ -17,7 +17,7 @@ const GUARDS = {
 };
 
 function actionFiles(root: string) {
-  return walk(root).filter((f) => /(^|[\\/])(actions|video-actions)\.ts$/.test(f));
+  return walk(root).filter((f) => /(^|[\\/])(actions|video-actions|search-actions)\.ts$/.test(f));
 }
 
 function violations(root: string, guard: RegExp): string[] {

@@ -80,10 +80,18 @@ test("Home and Aulas preserve landmarks, focusable navigation and axe compliance
   await expect(page.getByRole("main")).toBeVisible();
   await assertAxe(page);
 
-  const moduleLink = page.getByRole("link", { name: "Abrir módulo →" });
+  // A completed module is collapsed; open its summary before following its link.
+  const firstModule = page
+    .locator("details")
+    .filter({ has: page.getByRole("link", { name: "Abrir módulo →", includeHidden: true }) })
+    .first();
+  if ((await firstModule.getAttribute("open")) === null)
+    await firstModule.locator("summary").click();
+  const moduleLink = firstModule.getByRole("link", { name: "Abrir módulo →" });
+  await expect(moduleLink).toBeVisible();
   await moduleLink.focus();
   await expect(moduleLink).toBeFocused();
-  await moduleLink.click();
+  await Promise.all([page.waitForURL(/\/aulas\/[^/]+\/modulos\/[^/]+$/), moduleLink.click()]);
   await expect(page).toHaveURL(/\/aulas\/[^/]+\/modulos\/[^/]+$/);
   await expect(page.getByRole("heading", { level: 1, name: "Getting Started" })).toBeVisible();
   await assertAxe(page);
@@ -283,8 +291,16 @@ test("Teacher P21 operations pages preserve form semantics and WCAG A/AA complia
 
   await page.goto("/teacher/disponibilidade");
   await expect(page.getByRole("main")).toBeVisible();
-  for (const label of ["Data", "Início", "Término"]) {
-    const control = page.getByLabel(label, { exact: true }).first();
+  // Desktop keeps the composer inline; narrow viewports open it as a drawer.
+  let composer = page.locator("[data-composer]");
+  if (!(await composer.isVisible())) {
+    await page.getByRole("button", { name: "Adicionar horário", exact: true }).first().click();
+    composer = page.getByRole("dialog", { name: "Adicionar horário" });
+    await expect(composer).toBeVisible();
+  }
+  // Required fields append " *" to their accessible name.
+  for (const label of [/^Data do horário/, /^Horário de início/, /^Horário de término/]) {
+    const control = composer.getByLabel(label);
     await expect(control).toBeVisible();
     await control.focus();
     await expect(control).toBeFocused();
@@ -347,14 +363,32 @@ test("Stage 12A practice builder preserves keyboard steps and accessible fields"
   test.setTimeout(90000);
   await loginCanonicalTeacher(page, password!);
   await page.goto("/teacher/praticas/nova");
-  const next = page.getByRole("button", { name: "3. Configuração e gabarito", exact: true });
+  // Every Information field is reachable by label and accepts keyboard focus. Módulo and Aula stay
+  // disabled until their parent is chosen, so each is checked right after it becomes enabled.
+  const focusable = async (label: string) => {
+    const control = page.getByLabel(label, { exact: true });
+    await expect(control).toBeEnabled();
+    await control.focus();
+    await expect(control).toBeFocused();
+    return control;
+  };
+  await (await focusable("Título *")).fill(`Prática a11y ${Date.now()}`);
+  await (
+    await focusable("Objetivo *")
+  ).fill("Ao final você consegue cumprimentar alguém em inglês.");
+  await assertAxe(page);
+  for (const label of ["Curso *", "Módulo *", "Aula *"]) {
+    const select = await focusable(label);
+    await expect(select.locator("option:not([value=''])").first()).toBeAttached();
+    await select.selectOption({ index: 1 });
+  }
+  const next = page.getByRole("button", { name: "Salvar e continuar", exact: true });
   await next.focus();
   await expect(next).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(
-    page.getByRole("heading", { name: "Passo 3 de 6: Configuração e gabarito", exact: true }),
-  ).toBeFocused();
-  await expect(page.getByLabel("Enunciado *", { exact: true })).toBeVisible();
+  // The step change moves focus to the new stage heading.
+  await expect(page.getByRole("heading", { name: "Questões", exact: true })).toBeFocused();
+  await expect(page.getByRole("textbox", { name: "Enunciado", exact: true })).toBeVisible();
   await assertAxe(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

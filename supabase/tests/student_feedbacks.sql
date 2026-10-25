@@ -12,13 +12,26 @@ create function pg_temp.as_user(n integer) returns void language sql as $$
 insert into auth.users(id,email) select pg_temp.id(n),'fb-'||n||'@example.test' from generate_series(1,3) n;
 insert into public.user_roles(user_id,role) values(pg_temp.id(1),'STUDENT'),(pg_temp.id(2),'STUDENT'),(pg_temp.id(3),'TEACHER');
 insert into public.teachers(id,user_id) values(pg_temp.id(30),pg_temp.id(3));
-insert into public.practice_activities(id,slug,title,skill,estimated_minutes,content)
- values(pg_temp.id(100),'fb-speaking','Speaking about routines','SPEAKING',5,'{}');
+insert into public.courses(id,slug,title,active,publication_status,published_at)
+ values(pg_temp.id(40),'fb-course','Feedback course',true,'PUBLISHED',now());
+insert into public.modules(id,course_id,position,title,publication_status,published_at)
+ values(pg_temp.id(41),pg_temp.id(40),1,'Feedback module','PUBLISHED',now());
+insert into public.lessons(id,module_id,position,title,slug,publication_status)
+ values(pg_temp.id(42),pg_temp.id(41),1,'Feedback lesson','fb-lesson','DRAFT');
+insert into public.lesson_assets(lesson_id,asset_type,position,content,publication_status,published_at)
+ values(pg_temp.id(42),'TEXT',1,'{"title":"Feedback lesson","body":"Speaking practice"}'::jsonb,'PUBLISHED',now());
+update public.lessons set publication_status='PUBLISHED',published_at=now() where id=pg_temp.id(42);
+-- Historical feedback rows belong to independent lesson practices: each permits one final submission per student.
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,course_id,related_module_id,related_lesson_id,content)
+ values
+ (pg_temp.id(100),'fb-speaking-a','Speaking about routines A','SPEAKING',5,pg_temp.id(40),pg_temp.id(41),pg_temp.id(42),'{}'),
+ (pg_temp.id(101),'fb-speaking-b','Speaking about routines B','SPEAKING',5,pg_temp.id(40),pg_temp.id(41),pg_temp.id(42),'{}'),
+ (pg_temp.id(102),'fb-speaking-c','Speaking about routines C','SPEAKING',5,pg_temp.id(40),pg_temp.id(41),pg_temp.id(42),'{}');
 -- Student 1: one reviewed attempt and one still waiting. Student 2: one reviewed attempt (must stay private).
 insert into public.practice_attempts(id,user_id,practice_activity_id,status,submitted_at) values
  (pg_temp.id(201),pg_temp.id(1),pg_temp.id(100),'SUBMITTED',now()-interval '2 days'),
- (pg_temp.id(202),pg_temp.id(1),pg_temp.id(100),'SUBMITTED',now()-interval '1 hour'),
- (pg_temp.id(203),pg_temp.id(2),pg_temp.id(100),'SUBMITTED',now()-interval '3 days');
+ (pg_temp.id(202),pg_temp.id(1),pg_temp.id(101),'SUBMITTED',now()-interval '1 hour'),
+ (pg_temp.id(203),pg_temp.id(2),pg_temp.id(102),'SUBMITTED',now()-interval '3 days');
 insert into public.practice_results(practice_attempt_id,evaluation_status) values
  (pg_temp.id(201),'MANUAL_REVIEWED'),(pg_temp.id(202),'PENDING_MANUAL'),(pg_temp.id(203),'MANUAL_REVIEWED');
 insert into public.practice_manual_reviews(practice_attempt_id,teacher_id,rubric_version,ratings,feedback,reviewed_at) values

@@ -1,5 +1,5 @@
 -- Stage 11 (ADR 0017-0019): fail-closed paid access, complimentary grants, COMPLETED enrollments,
--- practice by enrollment, placement confirmation with a paid CANCELLED period, no-cohort detection.
+-- lesson-bound practice access, placement confirmation with a paid CANCELLED period, no-cohort detection.
 -- Plain psql, transactional: everything rolls back. Allow AND deny cases per chokepoint.
 begin;
 create function pg_temp.assert_true(ok boolean, message text) returns void language plpgsql as $$
@@ -52,10 +52,11 @@ insert into public.lesson_assets(id,lesson_id,asset_type,position,content,public
  ('ac230000-0000-4000-8000-000000000001','ac220000-0000-4000-8000-000000000001','TEXT',1,'{"title":"AC","body":"AC body"}','PUBLISHED',now()),
  ('ac230000-0000-4000-8000-000000000002','ac220000-0000-4000-8000-000000000002','TEXT',1,'{"title":"AC2","body":"AC body 2"}','PUBLISHED',now());
 update public.lessons set publication_status='PUBLISHED', published_at=now() where id in ('ac220000-0000-4000-8000-000000000001','ac220000-0000-4000-8000-000000000002');
--- An unrelated published Practice activity (no module/lesson): any ACTIVE/COMPLETED enrollment qualifies.
+-- An AC lesson-bound Practice activity; its access follows lesson 1 and the active/completed membership path.
 -- Publication validates the private answer key: insert as DRAFT, copy the seed key, then publish.
-insert into public.practice_activities(id,slug,title,skill,estimated_minutes,content,active,publication_status,published_at)
- select 'ac240000-0000-4000-8000-000000000001','ac-unrelated','AC unrelated',skill,estimated_minutes,content,true,'DRAFT',null
+insert into public.practice_activities(id,slug,title,skill,estimated_minutes,related_module_id,related_lesson_id,course_id,content,active,publication_status,published_at)
+ select 'ac240000-0000-4000-8000-000000000001','ac-lesson-practice','AC lesson practice',skill,estimated_minutes,
+   'ac210000-0000-4000-8000-000000000001','ac220000-0000-4000-8000-000000000001','ac200000-0000-4000-8000-000000000001',content,true,'DRAFT',null
  from public.practice_activities where id='83000000-0000-4000-8000-000000000001';
 insert into private.practice_answer_keys(practice_activity_id,answer_key,feedback)
  select 'ac240000-0000-4000-8000-000000000001',answer_key,feedback
@@ -227,7 +228,7 @@ reset role;
 select pg_temp.assert_true((select count(*)=1 from public.enrollments where user_id='ac000000-0000-4000-8000-000000000007' and status='ACTIVE'),'confirmation activated the enrollment');
 
 -- ---------------------------------------------------------------------------------------------------------
--- 5. Practice by enrollment.
+-- 5. Practice access follows lesson enrollment and membership, never a global audience.
 -- ---------------------------------------------------------------------------------------------------------
 -- 0c (ACTIVE sub) is enrolled only in the AC course: the seed activity (seed course module) is out of scope.
 select pg_temp.login('ac000000-0000-4000-8000-00000000000c');
@@ -235,8 +236,9 @@ set local role authenticated;
 select pg_temp.assert_true(not exists(select 1 from public.practice_activities where id='83000000-0000-4000-8000-000000000001'),'outside-course Student does not see the activity (RLS)');
 select pg_temp.assert_true(not private.can_view_practice_activity('83000000-0000-4000-8000-000000000001'),'helper denies the out-of-course activity');
 select pg_temp.assert_true(pg_temp.attempt('select public.start_practice_attempt(''83000000-0000-4000-8000-000000000001'',gen_random_uuid())')='42501:Practice activity is unavailable','outside-course Student cannot start the activity');
-select pg_temp.assert_true(exists(select 1 from public.practice_activities where id='ac240000-0000-4000-8000-000000000001'),'unrelated activity is visible to any enrolled Student');
-select pg_temp.assert_true((public.start_practice_attempt('ac240000-0000-4000-8000-000000000001',gen_random_uuid())).id is not null,'unrelated activity is startable by any enrolled Student');
+select public.record_lesson_progress('ac220000-0000-4000-8000-000000000001',10,5);
+select pg_temp.assert_true(exists(select 1 from public.practice_activities where id='ac240000-0000-4000-8000-000000000001'),'AC Student with lesson access sees the linked practice');
+select pg_temp.assert_true((public.start_practice_attempt('ac240000-0000-4000-8000-000000000001',gen_random_uuid())).id is not null,'AC Student with lesson access starts the linked practice');
 reset role;
 -- 02 (grant, enrolled in the seed course) sees the in-course activity.
 select pg_temp.login('ac000000-0000-4000-8000-000000000002');
@@ -401,6 +403,7 @@ insert into auth.users(id,email) values('ac000000-0000-4000-8000-000000000013','
 insert into public.user_roles(user_id,role) values('ac000000-0000-4000-8000-000000000013','STUDENT');
 insert into public.complimentary_access_grants(user_id,reason,note) values('ac000000-0000-4000-8000-000000000013','ADMIN_GRANT','history');
 insert into public.enrollments(id,user_id,course_id,status) values('ac300000-0000-4000-8000-000000000013','ac000000-0000-4000-8000-000000000013','40000000-0000-4000-8000-000000000001','ACTIVE');
+insert into public.cohort_memberships(cohort_id,user_id,enrollment_id) values('ac400000-0000-4000-8000-000000000001','ac000000-0000-4000-8000-000000000013','ac300000-0000-4000-8000-000000000013');
 -- Stage 13: lesson 2 (the activity's lesson) must have been reached before the practice can start.
 insert into public.lesson_progress(enrollment_id,lesson_id,user_id,status,completion_percent,started_at) values('ac300000-0000-4000-8000-000000000013','42000000-0000-4000-8000-000000000002','ac000000-0000-4000-8000-000000000013','IN_PROGRESS',10,now());
 select pg_temp.login('ac000000-0000-4000-8000-000000000013');

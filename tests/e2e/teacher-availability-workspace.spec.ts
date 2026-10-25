@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { loginCanonicalTeacher } from "../helpers/teacher-mfa";
 
@@ -18,7 +19,7 @@ test("Availability workspace: desktop lifecycle and mobile drawer", async ({ pag
   await expect(page.getByRole("heading", { name: "Disponibilidade", exact: true })).toBeVisible({
     timeout: 30_000,
   });
-  for (const h of ["Horários ativos", "Horas disponíveis na semana", "Próximo intervalo"])
+  for (const h of ["Horários ativos", "Horas na semana", "Próximo intervalo"])
     await expect(page.getByRole("heading", { name: h, exact: true })).toBeVisible();
   await expect(page.getByText("Horário de Brasília (GMT−3)").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Regras e preferências" })).toBeVisible();
@@ -74,5 +75,11 @@ test("Availability workspace: desktop lifecycle and mobile drawer", async ({ pag
   // Mobile drawer
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Adicionar horário", exact: true }).first().click();
-  await expect(page.getByRole("dialog", { name: "Adicionar horário" })).toBeVisible();
+  const mobileComposer = page.getByRole("dialog", { name: "Adicionar horário" });
+  await expect(mobileComposer).toBeVisible();
+  await expect(mobileComposer.getByLabel("Data do horário")).toBeVisible();
+  await expect(mobileComposer.getByLabel("Horário de início")).toBeVisible();
+  await expect(mobileComposer.getByLabel("Horário de término")).toBeVisible();
+  const axe = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  expect(axe.violations).toEqual([]);
 });

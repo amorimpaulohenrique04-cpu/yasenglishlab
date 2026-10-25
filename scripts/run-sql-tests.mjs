@@ -42,6 +42,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
@@ -50,6 +51,8 @@ const suites = {
     "supabase/tests/admin_course_enrollment.sql",
     "supabase/tests/plan_entitlement_admin.sql",
     "supabase/tests/operational_alerts.sql",
+    "supabase/tests/billing_core.sql",
+    "supabase/tests/observability_contracts.sql",
   ],
   rls: [
     "supabase/tests/notification_delivery.sql",
@@ -83,6 +86,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
     "supabase/tests/cohort_path.sql",
@@ -94,6 +98,8 @@ const suites = {
   ],
   "plan-entitlement-admin": ["supabase/tests/plan_entitlement_admin.sql"],
   "operational-alerts": ["supabase/tests/operational_alerts.sql"],
+  "billing-core": ["supabase/tests/billing_core.sql"],
+  "observability-contracts": ["supabase/tests/observability_contracts.sql"],
   "students-directory": ["supabase/tests/students_directory.sql"],
   "teacher-students-workspace": ["supabase/tests/teacher_students_workspace.sql"],
   "teacher-entry-workspace": ["supabase/tests/teacher_entry_workspace.sql"],
@@ -127,7 +133,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment>",
   );
   process.exit(2);
 }
