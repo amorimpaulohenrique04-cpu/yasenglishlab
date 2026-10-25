@@ -42,6 +42,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/practice_review_consistency.sql",
     "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
@@ -87,6 +88,7 @@ const suites = {
     "supabase/tests/practice_authoring.sql",
     "supabase/tests/practice_lifecycle.sql",
     "supabase/tests/practice_items.sql",
+    "supabase/tests/practice_review_consistency.sql",
     "supabase/tests/teacher_practices_redesign.sql",
     "supabase/tests/practice_review_schedule.sql",
     "supabase/tests/assessment_authoring.sql",
@@ -125,6 +127,7 @@ const suites = {
   "practice-authoring": ["supabase/tests/practice_authoring.sql"],
   "practice-lifecycle": ["supabase/tests/practice_lifecycle.sql"],
   "practice-items": ["supabase/tests/practice_items.sql"],
+  "practice-review-consistency": ["supabase/tests/practice_review_consistency.sql"],
   "practice-review-schedule": ["supabase/tests/practice_review_schedule.sql"],
   "assessment-authoring": ["supabase/tests/assessment_authoring.sql"],
   "cohort-path": ["supabase/tests/cohort_path.sql"],
@@ -136,7 +139,7 @@ const suites = {
 const files = suites[suite];
 if (!files) {
   console.error(
-    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment|placement-practice-dead-ends>",
+    "Usage: node scripts/run-sql-tests.mjs <integration|rls|billing-core|observability-contracts|students-directory|teacher-students-workspace|teacher-entry-workspace|teacher-availability-workspace|admin-teachers|admin-cohorts|admin-crm|notification-delivery|subscription-access|enrollment-integrity|admin-billing-operations|subscription-cancellation|live-booking-integrity|rate-limit|function-privileges|sensitive-tables-negative|record-immutability|access-closure|practice-authoring|practice-lifecycle|practice-items|practice-review-consistency|practice-review-schedule|assessment-authoring|cohort-path|cohort-path-admin|content-audience|admin-course-enrollment|placement-practice-dead-ends>",
   );
   process.exit(2);
 }
