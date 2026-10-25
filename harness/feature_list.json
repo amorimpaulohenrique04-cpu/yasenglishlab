@@ -20,9 +20,10 @@
       "evidence": [
         "harness/goals/teacher-release-gates.md",
         "harness/evidence/teacher-release-gates/README.md",
-        "harness/failure-log/2026-10-24-teacher-release-gates.md"
+        "harness/failure-log/2026-10-24-teacher-release-gates.md",
+        "harness/evidence/ci-recovery-final-submission/README.md"
       ],
-      "updated_at": "2026-10-25T03:11:06.768Z"
+      "updated_at": "2026-10-25T13:15:00Z"
     },
     {
       "id": "teacher-cohorts-redesign",

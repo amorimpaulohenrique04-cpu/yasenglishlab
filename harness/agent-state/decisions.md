@@ -1,5 +1,14 @@
 # Harness Decisions
 
+## 2026-10-25 — PR #89 persistence proof follows accepted ADR 0025
+
+User explicitly confirmed following ADR 0025 when the attached plan's 7+1 requirement
+conflicted with the accepted final-submission contract. Keep seven unique final round-one
+responses, 6/7 points, zero recovered, exact activity/student/attempt identity and one event.
+Do not reintroduce reinforcement or change production scoring/RLS to satisfy obsolete proof.
+Retain the two Home goldens after reviewing their existing before/after evidence: recommendation
+change follows lesson-bound access, already approved in the ADR; declare exact historical paths.
+
 ## 2026-10-18 — Admin enrollment supersedes an open placement journey
 
 `docs/PLACEMENT.md` (Etapa 12E) fixes that `admin_enroll_in_course` never alters review, decision or

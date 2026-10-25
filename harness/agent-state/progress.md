@@ -1,3 +1,16 @@
+## PR #89 — recuperação F01–F04 — 2026-10-25
+
+Ambas as runs de referência e seus oito artefatos inspecionados. Goldens Home mobile/tablet
+mantidos após comparação; caminhos exatos declarados. Entrada respeita reduced motion também
+na opacidade. Outline usa texto AA opaco durante disabled/autosave. Assert e prova DB no browser
+seguem ADR 0025, confirmado expressamente pelo usuário: sete respostas finais, 6/7, sem reforço.
+
+PASS local: 14 casos da prova + 2 de isolamento; TypeScript, ESLint focado, formatação,
+eval (10 regras), harness/ratchet/security/DB estrutural. Storybook build PASS; Chromium
+regressão de outline com movimento pleno PASS (reativação imediata, hover, foco, axe).
+Official CI final pendente. Evidência: harness/evidence/ci-recovery-final-submission/README.md.
+Registry permanece in_progress / verified:false; sem merge.
+
 ## teacher-sessions-redesign — Fase 2b (correções do usuário) — 2026-10-22
 
 Corrigido, a partir do feedback com capturas:

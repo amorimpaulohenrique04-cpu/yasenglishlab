@@ -114,6 +114,15 @@
   color: var(--yas-color-purple-700);
 }
 
+/* Autosave re-enables this control asynchronously. Keep its label readable throughout
+   the disabled-to-enabled transition instead of fading the whole button. */
+.yas-button--outline:disabled,
+.yas-button--outline[aria-disabled="true"] {
+  opacity: 1;
+  color: var(--yas-color-muted);
+  background: var(--yas-color-surface-soft);
+}
+
 .yas-button--soft {
   background: var(--yas-color-purple-50);
   color: var(--yas-color-purple-600);

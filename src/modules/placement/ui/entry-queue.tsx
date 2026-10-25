@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { m } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import { AnimatedNumber } from "@/components/motion";
 import {
   Avatar,
@@ -124,6 +124,7 @@ export function EntryQueue({
   now: number;
 }) {
   const router = useRouter();
+  const reduced = useReducedMotion();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [query, setQuery] = useState(filters.q);
@@ -258,9 +259,9 @@ export function EntryQueue({
                 <m.li
                   key={row.id}
                   className={styles.row}
-                  initial={{ opacity: 0, y: 5 }}
+                  initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.18 }}
+                  transition={{ duration: reduced ? 0 : 0.18 }}
                 >
                   <div className={styles.person}>
                     <Avatar fallback={entryInitials(row.name)} label={row.name} />

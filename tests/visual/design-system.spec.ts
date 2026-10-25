@@ -70,6 +70,28 @@ async function assertA11y(page: Page) {
   expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
 }
 
+test("outline labels stay readable when autosave re-enables the control", async ({ page }) => {
+  // Exercise the real transition too: reduced motion can hide the disabled-to-enabled race.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await openStory(page, "design-system-foundations--core-states");
+  const button = page.getByRole("button", { name: "Ver detalhes", exact: true });
+  await button.evaluate((element: HTMLButtonElement) => {
+    element.disabled = true;
+  });
+  await settledPage(page);
+  await button.evaluate((element: HTMLButtonElement) => {
+    element.disabled = false;
+  });
+  // No polling: an enabled button must have readable opacity from its first frame.
+  expect(await button.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
+  await assertA11y(page);
+  await button.hover();
+  await assertA11y(page);
+  await button.focus();
+  await expect(button).toBeFocused();
+  await assertA11y(page);
+});
+
 for (const story of stories) {
   test(`${story.name} has no automated WCAG A/AA violations and produces evidence`, async ({
     page,
