@@ -19,9 +19,6 @@ import {
   practiceHistoryDetail,
   practiceHistoryStatus,
   practiceSkillLabel,
-  type DueReview,
-  type AssignedPractice,
-  type AssignedPracticeStatus,
   type PracticeActivityItem,
   type PracticeSkillCatalogItem,
 } from "@/modules/practice";
@@ -190,11 +187,11 @@ function ModulePracticeBlock({
         </span>
         <div>
           <small>
-            {section.module ? `Módulo ${section.module.position}` : "Sem aula específica"}
+            {section.module ? `Módulo ${section.module.position}` : "Curso"}
             {current && <em>Você está aqui</em>}
           </small>
           <h3 id={`practice-module-${section.key}`}>
-            {section.module ? section.module.title : "Prática livre"}
+            {section.module ? section.module.title : "Práticas do curso"}
           </h3>
         </div>
         <span className="yas-practice-module-meta">
@@ -223,11 +220,11 @@ const FEATURED_HEADING: Record<LessonGroupState, { title: string; description: s
   },
   open: {
     title: "Pratique uma aula liberada",
-    description: "Atividades curtas de uma aula que você já abriu ou que o professor atribuiu.",
+    description: "Atividades curtas de uma aula que você já abriu.",
   },
   free: {
-    title: "Pratique o conteúdo do curso",
-    description: "Atividades curtas que não dependem de uma aula específica.",
+    title: "Práticas do curso",
+    description: "Consulte suas atividades e resultados nas aulas.",
   },
   locked: {
     title: "Pratique o conteúdo do curso",
@@ -242,6 +239,37 @@ const groupIcon: Record<LessonGroupState, IconName> = {
   locked: "lock",
   free: "spark",
 };
+
+function PracticeActivityAction({
+  activity,
+  label = "Praticar",
+  soft = false,
+  large = false,
+}: {
+  activity: PracticeActivityItem;
+  label?: string;
+  soft?: boolean;
+  large?: boolean;
+}) {
+  if (activity.completedAttemptId) {
+    return (
+      <Link
+        className={`yas-button yas-button--${soft ? "soft" : "primary"} yas-button--${large ? "lg" : "sm"}`}
+        href={`/pratica/${activity.completedAttemptId}`}
+      >
+        Ver resultado →
+      </Link>
+    );
+  }
+  return (
+    <StartPracticeForm
+      activity={activity}
+      label={activity.completedAttemptId === null ? "Ver resultado" : label}
+      soft={soft}
+      large={large}
+    />
+  );
+}
 
 function ActivityTile({
   activity,
@@ -281,7 +309,7 @@ function ActivityTile({
           Libera quando você chegar a esta aula
         </p>
       ) : (
-        <StartPracticeForm activity={activity} soft />
+        <PracticeActivityAction activity={activity} soft />
       )}
     </li>
   );
@@ -337,11 +365,11 @@ function LessonPracticeGroup({
           <h3 id={`practice-lesson-${group.key}`}>{group.title}</h3>
           <p>
             {countLabel}
-            {group.state === "free" ? " sem aula específica." : " com o conteúdo desta aula."}
+            {group.state === "free" ? "." : " com o conteúdo desta aula."}
           </p>
           <div className="yas-practice-lesson-actions">
             {/* A ação primária da página é a do hero; aqui ela é secundária. */}
-            {first && <StartPracticeForm activity={first} label="Praticar esta aula" soft />}
+            {first && <PracticeActivityAction activity={first} label="Praticar esta aula" soft />}
             {lessonLink}
           </div>
         </header>
@@ -372,225 +400,6 @@ function LessonPracticeGroup({
         {lessonLink && <div className="yas-practice-lesson-footer">{lessonLink}</div>}
       </div>
     </details>
-  );
-}
-
-const ASSIGNED_STATUS: Record<
-  AssignedPracticeStatus,
-  { label: string; tone: "info" | "neutral" | "success" | "error" }
-> = {
-  NEW: { label: "Nova", tone: "info" },
-  IN_PROGRESS: { label: "Em andamento", tone: "neutral" },
-  DONE: { label: "Concluída", tone: "success" },
-  OVERDUE: { label: "Atrasada", tone: "error" },
-};
-
-function formatDueDate(value: string): string {
-  return new Date(value).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Recife",
-  });
-}
-
-function duePieces(value: string) {
-  const date = new Date(value);
-  const part = (options: Intl.DateTimeFormatOptions) =>
-    new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Recife", ...options })
-      .format(date)
-      .replace(".", "");
-  return {
-    day: part({ day: "2-digit" }),
-    month: part({ month: "short" }),
-    time: part({ hour: "2-digit", minute: "2-digit" }),
-  };
-}
-
-function AssignedPracticeCard({ item }: { item: AssignedPractice }) {
-  const status = ASSIGNED_STATUS[item.status];
-  const visual = practiceSkillVisual[item.skill];
-  const due = item.dueAt ? duePieces(item.dueAt) : null;
-  return (
-    <li>
-      <article className="yas-practice-assigned-card" data-status={item.status}>
-        {/* Bloco de prazo à esquerda: a informação mais urgente da tarefa. */}
-        <div className="yas-practice-assigned-due" aria-hidden="true">
-          {due ? (
-            <>
-              <small>{due.month}</small>
-              <strong>{due.day}</strong>
-              <small>{due.time}</small>
-            </>
-          ) : (
-            <>
-              <Icon name="cal" size={20} />
-              <small>Livre</small>
-            </>
-          )}
-        </div>
-        <div className="yas-practice-assigned-body">
-          <div className="yas-practice-assigned-header">
-            <span className="yas-practice-activity-skill">
-              <Icon name={visual.icon} size={14} />
-              {practiceSkillLabel(item.skill)}
-            </span>
-            <Badge tone={status.tone} dot>
-              {status.label}
-            </Badge>
-          </div>
-          <h3>{item.title}</h3>
-          <p className="yas-practice-assigned-meta">
-            <span>
-              <Icon name="users" size={14} />
-              {item.cohortName}
-            </span>
-            <span>
-              <Icon name="clock" size={14} />
-              {item.estimatedMinutes} min
-            </span>
-            <span>
-              {item.dueAt
-                ? `${item.status === "OVERDUE" ? "Venceu em" : "Prazo:"} ${formatDueDate(item.dueAt)}`
-                : "Sem prazo"}
-            </span>
-          </p>
-        </div>
-        <div className="yas-practice-assigned-action">
-          {item.status === "DONE" ? (
-            item.attemptId ? (
-              <Link
-                className="yas-button yas-button--soft yas-button--sm"
-                href={`/pratica?attempt=${item.attemptId}`}
-              >
-                Ver resultado
-              </Link>
-            ) : null
-          ) : item.status === "IN_PROGRESS" && item.attemptId ? (
-            <Link
-              className="yas-button yas-button--secondary yas-button--sm"
-              href={`/pratica?attempt=${item.attemptId}`}
-            >
-              Continuar →
-            </Link>
-          ) : (
-            <StartPracticeForm
-              activity={{ id: item.practiceActivityId }}
-              label={item.status === "OVERDUE" ? "Fazer agora" : "Começar"}
-            />
-          )}
-        </div>
-      </article>
-    </li>
-  );
-}
-
-/**
- * Tarefas do professor. Vazia, vira uma faixa discreta (sem roubar a atenção da prática);
- * com itens, ganha destaque com contagem de pendentes e prazo em evidência.
- */
-function AssignedPracticeSection({ assigned }: { assigned: AssignedPractice[] | null }) {
-  if (assigned === null) {
-    return (
-      <Alert
-        tone="warning"
-        title="Não foi possível carregar suas atribuições"
-        description="Recarregue a página para tentar de novo."
-      />
-    );
-  }
-
-  if (assigned.length === 0) {
-    return (
-      <section className="yas-practice-assigned-empty" aria-labelledby="practice-assigned-title">
-        <span className="yas-practice-assigned-empty-icon" aria-hidden="true">
-          <Icon name="inbox" size={18} />
-        </span>
-        <div>
-          <h2 id="practice-assigned-title">Atribuídas a você</h2>
-          <p>
-            Nenhuma prática atribuída pelo seu professor. Quando houver, ela aparece aqui com o
-            prazo.
-          </p>
-        </div>
-        <Badge tone="success" icon="check-c">
-          Em dia
-        </Badge>
-      </section>
-    );
-  }
-
-  const pending = assigned.filter((item) => item.status !== "DONE").length;
-  const overdue = assigned.filter((item) => item.status === "OVERDUE").length;
-  return (
-    <section
-      className="yas-practice-section yas-practice-assigned"
-      aria-labelledby="practice-assigned-title"
-    >
-      <div className="yas-practice-assigned-heading">
-        <div>
-          <span className="yas-practice-eyebrow">Do seu professor</span>
-          <h2 id="practice-assigned-title">Atribuídas a você</h2>
-        </div>
-        <span className="yas-practice-assigned-count" data-overdue={overdue > 0 || undefined}>
-          {overdue > 0
-            ? `${overdue} ${overdue === 1 ? "atrasada" : "atrasadas"}`
-            : pending > 0
-              ? `${pending} ${pending === 1 ? "pendente" : "pendentes"}`
-              : "Tudo concluído"}
-        </span>
-      </div>
-      <ul className="yas-practice-assigned-list">
-        {assigned.map((item) => (
-          <AssignedPracticeCard key={`${item.practiceActivityId}:${item.cohortId}`} item={item} />
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-/** Revisão espaçada: perguntas que voltam hoje, por prática (sem relação com nível ou CEFR). */
-function ReviewTodayCard({
-  reviews,
-  count,
-  titles,
-}: {
-  reviews: DueReview[];
-  count: number;
-  titles: Map<string, string>;
-}) {
-  return (
-    <section
-      className="yas-practice-review-today yas-reveal"
-      style={reveal(2)}
-      aria-labelledby="practice-review-title"
-    >
-      <div>
-        <span className="yas-practice-eyebrow">Revisão espaçada</span>
-        <h2 id="practice-review-title">
-          Revisão de hoje: {count} {count === 1 ? "pergunta" : "perguntas"}
-        </h2>
-      </div>
-      <ul>
-        {reviews.slice(0, 3).map((review) => (
-          <li key={review.practiceActivityId}>
-            <span>
-              <strong>{titles.get(review.practiceActivityId) ?? "Prática"}</strong>
-              <small>
-                {review.dueCount} {review.dueCount === 1 ? "pergunta" : "perguntas"}
-              </small>
-            </span>
-            <StartPracticeForm
-              activity={{ id: review.practiceActivityId }}
-              label="Revisar"
-              soft
-              review
-            />
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -647,10 +456,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
   const {
     activities,
     catalog,
-    assigned,
     completedThisWeek,
-    dueReviewCount,
-    dueReviews,
     firstTryCorrectThisWeek,
     history,
     objectiveQuestionsThisWeek,
@@ -663,9 +469,8 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
     objectiveQuestionsThisWeek > 0
       ? Math.round((firstTryCorrectThisWeek / objectiveQuestionsThisWeek) * 100)
       : null;
-  const reviewTitles = new Map(activities.map((item) => [item.id, item.title]));
   const requestedActivity = activities.find((item) => item.id === firstValue(params.activity));
-  // Sem trilha carregada, tudo cai em "Prática livre": a página continua utilizável.
+  // Mesmo sem a trilha carregada, a biblioteca continua mostrando as atividades do curso.
   const learning = await loadLearningCourses().catch(() => null);
   // Filtrar por habilidade já é explorar a biblioteca: abre a visão completa.
   const showAll = firstValue(params.todas) === "1" || Boolean(selectedSkill);
@@ -707,14 +512,6 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
           />
         )}
 
-        {firstValue(params.semrevisao) === "1" && (
-          <Alert
-            tone="info"
-            title="Nada para revisar agora"
-            description="As perguntas voltam quando chegar a hora de revisar. Enquanto isso, pratique algo novo."
-          />
-        )}
-
         {requestedActivity && (
           <Card className="yas-practice-requested">
             <IconBadge
@@ -728,7 +525,7 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                 {practiceContentPrompt(requestedActivity.content)}
               </p>
             </div>
-            <StartPracticeForm activity={requestedActivity} label="Começar tarefa" />
+            <PracticeActivityAction activity={requestedActivity} label="Começar tarefa" />
           </Card>
         )}
 
@@ -740,11 +537,9 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
               kicker="Prática de hoje"
               kickerIcon="target"
               title={
-                recommendation.reason === "DUE_REVIEW"
-                  ? `Revisão de hoje: ${dueReviewCount} ${dueReviewCount === 1 ? "pergunta" : "perguntas"}`
-                  : recommendation.reason === "RESUME_ATTEMPT"
-                    ? "Continue de onde parou"
-                    : `${recommendation.activity.estimatedMinutes} minutos para praticar agora`
+                recommendation.reason === "RESUME_ATTEMPT"
+                  ? "Continue de onde parou"
+                  : `${recommendation.activity.estimatedMinutes} minutos para praticar agora`
               }
               photo="/brand/hero-practice.webp"
               actions={
@@ -755,13 +550,6 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                   >
                     Continuar →
                   </Link>
-                ) : recommendation.reason === "DUE_REVIEW" ? (
-                  <StartPracticeForm
-                    activity={recommendation.activity}
-                    label="Começar revisão"
-                    large
-                    review
-                  />
                 ) : (
                   <StartPracticeForm
                     activity={recommendation.activity}
@@ -792,7 +580,11 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
               title="Sem recomendação disponível"
               photo="/brand/hero-practice.webp"
             >
-              <p className="yas-hero-text">Nenhuma atividade suportada foi publicada.</p>
+              <p className="yas-hero-text">
+                {activities.length > 0
+                  ? "Todas as práticas disponíveis já foram concluídas. Consulte seus resultados abaixo."
+                  : "Nenhuma prática está disponível para esta habilidade."}
+              </p>
             </Hero>
           )}
 
@@ -847,28 +639,14 @@ export default async function PracticePage({ searchParams }: PracticePageProps) 
                 </li>
               </ul>
             </div>
-            <Link
-              className="yas-practice-week-review"
-              href="/progresso"
-              data-pending={dueReviewCount > 0 ? "" : undefined}
-            >
-              <Icon name={dueReviewCount > 0 ? "redo" : "check-c"} size={18} />
-              <span>
-                {dueReviewCount > 0 ? `${dueReviewCount} para revisar` : "Revisão em dia"}
-              </span>
+            <Link className="yas-practice-week-review" href="/progresso">
+              <Icon name="bars" size={18} />
+              <span>Seu progresso</span>
               <span className="yas-practice-week-review-more">
                 Ver progresso <Icon name="arrow" size={16} />
               </span>
             </Link>
           </Card>
-        </div>
-
-        {dueReviewCount > 0 && recommendation?.reason !== "DUE_REVIEW" && (
-          <ReviewTodayCard reviews={dueReviews} count={dueReviewCount} titles={reviewTitles} />
-        )}
-
-        <div className="yas-reveal" style={reveal(3)}>
-          <AssignedPracticeSection assigned={assigned} />
         </div>
 
         <div className="yas-practice-content-grid">

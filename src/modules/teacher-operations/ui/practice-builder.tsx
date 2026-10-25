@@ -1,73 +1,82 @@
 "use client";
 
-import { useEffect, useMemo, useReducer, useRef, useState, type FormEvent } from "react";
+import { AnimatePresence, m } from "motion/react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 import {
   Alert,
   Badge,
+  Breadcrumbs,
   Button,
-  Card,
-  Checkbox,
+  Dialog,
+  Icon,
+  Drawer,
+  Stepper,
   IconButton,
-  Input,
-  Radio,
-  Select,
   Textarea,
+  type IconName,
 } from "@/components/ui";
-import { CEFR_LEVELS, PRACTICE_SKILLS } from "@/modules/domain";
+import { PracticeInformationFields } from "./practice-information-fields";
 import {
   RESPONSE_TYPES_V2,
-  STIMULUS_TYPES_V2,
   type PublicationAsset,
+  type ResponseTypeV2,
+  type StimulusTypeV2,
 } from "@/modules/practice/domain/content-v2";
-import { PLANNING_SECONDS, PRACTICE_V3_MAX_ITEMS } from "@/modules/practice/domain/content-v3";
-import { RUBRIC_LABELS, rubricDimensionsFor } from "@/modules/practice/domain/rubric";
+import { PRACTICE_V3_MAX_ITEMS } from "@/modules/practice/domain/content-v3";
 import { PracticePlayer } from "@/modules/practice/ui/practice-player";
 import { clozeBlankIds } from "@/modules/practice/ui/practice-player-logic";
 import { PracticeSessionPlayer } from "@/modules/practice/ui/practice-session-player";
 
 import { StimulusAssetField, type ReserveResult } from "./practice-asset-field";
 import {
-  BUILDER_STEPS,
-  MAX_OPTIONS,
-  MAX_ORDER_ITEMS,
-  MIN_OPTIONS,
-  MIN_ORDER_ITEMS,
   RESPONSE_DESCRIPTIONS,
   RESPONSE_LABELS,
   SKILL_LABELS,
-  STIMULUS_DESCRIPTIONS,
-  STIMULUS_LABELS,
   assetKindForStimulus,
   builderReducer,
   generateItemId,
   initialBuilderStateV3,
-  isResponseType,
-  isStimulusType,
   publicationReport,
-  snapshot,
   stateFromDetail,
-  toFormEntries,
   toPayload,
-  validateDraft,
   type AssetKind,
   type BuilderAction,
   type BuilderState,
   type ItemAction,
   type ItemFields,
-  type MetaErrors,
-  type PlanningSeconds,
   type PracticeDetailLike,
   type ScalarField,
 } from "./practice-builder-logic";
-import { PracticePublishPanel } from "./practice-publish-panel";
+import {
+  PracticePublishFooterAction,
+  PracticePublishPanel,
+  type PublishSummary,
+} from "./practice-publish-panel";
+import { usePracticeAutosave } from "./use-practice-autosave";
+import { PracticeQuestionFields } from "./practice-question-fields";
+import type { PracticeSaveResult } from "../domain/practice-autosave";
+import practiceStyles from "./practices.module.css";
 import styles from "./teacher-operations.module.css";
 
 type FormAction = (form: FormData) => Promise<void>;
 
+/** "agora", "há 5 min", "há 3 h" or "há 2 d" for the autosave status. */
+function relativeSaved(savedAt: string, now: number) {
+  const time = Date.parse(savedAt);
+  if (Number.isNaN(time)) return "";
+  const minutes = Math.max(0, Math.floor((now - time) / 60_000));
+  if (minutes < 1) return "agora";
+  if (minutes < 60) return `há ${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `há ${hours} h`;
+  return `há ${Math.floor(hours / 24)} d`;
+}
+
 export interface PracticeBuilderProps {
   detail:
     | (PracticeDetailLike & {
+        updatedAt?: string;
         publicationStatus: "DRAFT" | "PUBLISHED";
         hasAttempts: boolean;
         assets: {
@@ -89,6 +98,11 @@ export interface PracticeBuilderProps {
   /** v3: signed URLs of the saved question assets, keyed by asset id. */
   assetUrls?: Record<string, string | null>;
   actions: {
+    autosave?: (
+      form: FormData,
+      creationKey: string,
+      expected: string | null,
+    ) => Promise<PracticeSaveResult>;
     save: FormAction;
     publish: FormAction;
     unpublish: FormAction;
@@ -100,60 +114,83 @@ export interface PracticeBuilderProps {
   };
 }
 
-const STEP_STORAGE_KEY = "yas-practice-builder-step";
-const FIELD_IDS = { title: "pb-title", courseId: "pb-course", estimatedMinutes: "pb-minutes" };
+const BUILDER_STEPS = [
+  { id: "meta", label: "Informações", description: "Dados gerais da prática" },
+  { id: "questions", label: "Questões", description: "Crie e edite as questões" },
+  { id: "publish", label: "Revisão e publicação", description: "Confira e publique na aula" },
+] as const;
 
-function TypeCards<T extends string>({
-  legend,
-  name,
+const RESPONSE_ICONS: Record<ResponseTypeV2, IconName> = {
+  CHOICE_SINGLE: "circle",
+  CHOICE_MULTI: "grid",
+  TRUE_FALSE: "swap",
+  CLOZE: "chat",
+  ORDERING: "bars",
+  WRITTEN: "pen",
+  SPOKEN: "mic",
+};
+
+const MEDIA_OPTIONS = [
+  { type: "TEXT", label: "Texto", icon: "book" },
+  { type: "IMAGE", label: "Imagem", icon: "file" },
+  { type: "AUDIO", label: "Áudio", icon: "headphones" },
+  { type: "VIDEO", label: "Vídeo", icon: "video" },
+] as const satisfies readonly { type: StimulusTypeV2; label: string; icon: IconName }[];
+
+/** Visual picker of the response type. Tiles are buttons: choosing is explicit, never a side effect of arrow keys. */
+function QuestionTypePicker({
+  mode,
   values,
-  labels,
-  descriptions,
   current,
-  disabled,
   onSelect,
+  onCancel,
 }: {
-  legend: string;
-  name: string;
-  values: readonly T[];
-  labels: Record<T, string>;
-  descriptions: Record<T, string>;
-  current: T;
-  disabled: boolean;
-  onSelect: (value: T) => void;
+  mode: "add" | "change";
+  values: readonly ResponseTypeV2[];
+  current: ResponseTypeV2 | null;
+  onSelect: (value: ResponseTypeV2) => void;
+  onCancel: () => void;
 }) {
   return (
-    <fieldset className={styles.builderFieldset}>
-      <legend>{legend}</legend>
-      <div className={styles.typeGrid}>
-        {values.map((value) => (
-          <label
-            key={value}
-            className={styles.typeCard}
-            data-selected={current === value ? "true" : undefined}
-          >
-            <input
-              type="radio"
-              name={name}
-              value={value}
-              checked={current === value}
-              disabled={disabled}
-              onChange={() => onSelect(value)}
-            />
-            <span className={styles.typeCardTitle}>{labels[value]}</span>
-            <span className={styles.muted}>{descriptions[value]}</span>
-          </label>
-        ))}
+    <section className={practiceStyles.picker} aria-label="Tipos de questão">
+      <div className={practiceStyles.pickerHead}>
+        <h3>{mode === "add" ? "Adicionar questão" : "Tipo da questão"}</h3>
+        <p>
+          {mode === "add"
+            ? "Escolha o tipo de resposta que melhor se adapta ao seu objetivo."
+            : "Trocar o tipo mantém o enunciado e ajusta os campos de resposta."}
+        </p>
       </div>
-    </fieldset>
+      <div className={practiceStyles.pickerGrid}>
+        {values.map((value) => (
+          <button
+            key={value}
+            type="button"
+            className={practiceStyles.typeTile}
+            aria-pressed={current === value}
+            onClick={() => onSelect(value)}
+          >
+            <span className={practiceStyles.typeIcon}>
+              <Icon name={RESPONSE_ICONS[value]} size={18} />
+            </span>
+            <strong>{RESPONSE_LABELS[value]}</strong>
+            <small>{RESPONSE_DESCRIPTIONS[value]}</small>
+          </button>
+        ))}
+        <aside className={practiceStyles.tip}>
+          <Icon name="bulb" size={28} />
+          <strong>Dica</strong>
+          <p>Escolha o tipo pela habilidade que você quer desenvolver na atividade.</p>
+        </aside>
+      </div>
+      <div>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancelar
+        </Button>
+      </div>
+    </section>
   );
 }
-
-const PLANNING_LABELS: Record<PlanningSeconds, string> = {
-  0: "Sem tempo de preparo",
-  30: "30 segundos",
-  60: "60 segundos",
-};
 
 export function PracticeBuilder({
   detail,
@@ -168,20 +205,41 @@ export function PracticeBuilder({
   );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [step, setStep] = useState(0);
-  const [errors, setErrors] = useState<MetaErrors>({});
+  const [direction, setDirection] = useState(1);
   const [uploaded, setUploaded] = useState<PublicationAsset[]>([]);
   const [localUrls, setLocalUrls] = useState<Record<string, string>>({});
   const [focusId, setFocusId] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const stepChanged = useRef(false);
-  const savedSnapshot = useMemo(
-    () => snapshot(detail ? stateFromDetail(detail) : initialBuilderStateV3(defaultCourse)),
-    [detail, defaultCourse],
-  );
-
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [questionsOpen, setQuestionsOpen] = useState(false);
+  const [picker, setPicker] = useState<"add" | "change" | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const published = detail?.publicationStatus === "PUBLISHED";
   const readOnly = Boolean(detail) && (published || Boolean(detail?.hasAttempts));
-  const dirty = snapshot(state) !== savedSnapshot;
+  const onCreated = useCallback(
+    (id: string) => dispatch({ type: "set", field: "id", value: id }),
+    [],
+  );
+  const autosave = usePracticeAutosave({
+    state,
+    disabled: readOnly,
+    updatedAt: detail?.updatedAt,
+    save: actions.autosave,
+    onCreated,
+  });
+  const dirty = autosave.dirty;
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  // The preview follows the draft with a delay so typing never remounts the player.
+  const [previewState, setPreviewState] = useState(state);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setPreviewState(state), 500);
+    return () => window.clearTimeout(timer);
+  }, [state]);
 
   const assets: PublicationAsset[] = [
     ...(detail?.assets ?? []).map((a) => ({
@@ -192,11 +250,17 @@ export function PracticeBuilder({
     ...uploaded,
   ];
   const report = publicationReport(state, assets);
-  const payload = toPayload(state);
   const v3 = state.version === 3;
   const curItem = v3
     ? (state.items.find((item) => item.id === activeId) ?? state.items[0])
     : undefined;
+  // A question that is not in the delayed snapshot yet (just added) is previewed from the live draft.
+  const previewSource =
+    v3 && curItem && !previewState.items.some((item) => item.id === curItem.id)
+      ? state
+      : previewState;
+  const previewReport = previewSource === state ? report : publicationReport(previewSource, assets);
+  const payload = toPayload(previewSource);
   const cur: ItemFields = curItem ?? state;
   const dispatchCur = (action: ItemAction) =>
     curItem
@@ -207,56 +271,20 @@ export function PracticeBuilder({
   const pronunciation = v3 && state.skill === "PRONUNCIATION";
 
   useEffect(() => {
-    const stored = window.sessionStorage.getItem(STEP_STORAGE_KEY);
-    if (stored !== null) {
-      window.sessionStorage.removeItem(STEP_STORAGE_KEY);
-      const index = BUILDER_STEPS.findIndex((item) => item.id === stored);
-      // Restores the step the Teacher was on after a save redirected back to this page.
-      if (index >= 0) setStep(index); // eslint-disable-line react-hooks/set-state-in-effect
-    }
-  }, []);
-
-  useEffect(() => {
     if (stepChanged.current) headingRef.current?.focus();
   }, [step]);
-
   useEffect(() => {
     if (focusId) {
       document.getElementById(focusId)?.focus();
-      setFocusId(null); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [focusId, step]);
-
   function goTo(index: number) {
     stepChanged.current = true;
-    setStep(Math.min(Math.max(index, 0), BUILDER_STEPS.length - 1));
+    setDirection(index >= step ? 1 : -1);
+    setStep(Math.min(Math.max(index, 0), 2));
   }
 
-  function onSave(event: FormEvent<HTMLFormElement>) {
-    const found = validateDraft(state);
-    setErrors(found);
-    const first = (["title", "courseId", "estimatedMinutes"] as const).find((key) => found[key]);
-    if (first) {
-      event.preventDefault();
-      goTo(BUILDER_STEPS.findIndex((item) => item.id === "meta"));
-      setFocusId(FIELD_IDS[first]);
-      return;
-    }
-    window.sessionStorage.setItem(STEP_STORAGE_KEY, BUILDER_STEPS[step]?.id ?? "stimulus");
-  }
-
-  const set = (field: ScalarField) => (value: string) => dispatch({ type: "set", field, value });
-
-  const stepId = BUILDER_STEPS[step]?.id ?? "stimulus";
   const assetKind = assetKindForStimulus(cur.stimulusType);
-  const courseModules = scope.modules.filter((item) => item.courseId === state.courseId);
-  const courseLessons = scope.lessons.filter((lesson) =>
-    courseModules.some((item) => item.id === lesson.moduleId),
-  );
-  const lessonsForModule = courseLessons.filter(
-    (lesson) => !state.moduleId || lesson.moduleId === state.moduleId,
-  );
-  const courseCohorts = scope.cohorts.filter((cohort) => cohort.courseId === state.courseId);
   const blankIds = clozeBlankIds(cur.clozeText.trim());
   const v2AssetId = detail && !("items" in detail.content) ? detail.content.stimulus.assetId : "";
   const urlFor = (assetId: string) =>
@@ -269,7 +297,6 @@ export function PracticeBuilder({
     (asset) => asset.id === cur.assetId && asset.uploadStatus === "READY",
   );
   const manual = cur.responseType === "WRITTEN" || cur.responseType === "SPOKEN";
-  const PRON_STIMULUS = ["AUDIO"] as const;
   const PRON_RESPONSE = ["SPOKEN"] as const;
 
   const pronunciationAlert = pronunciation ? (
@@ -280,742 +307,507 @@ export function PracticeBuilder({
     />
   ) : null;
 
-  const questionPicker =
-    v3 && state.items.length > 1 ? (
-      <Select
-        label="Pergunta em edição"
-        value={curItem?.id ?? ""}
-        options={state.items.map((item, index) => ({
-          value: item.id,
-          label: `Pergunta ${index + 1}${item.prompt.trim() ? `: ${item.prompt.trim().slice(0, 40)}` : ""}`,
-        }))}
-        onChange={(event) => setActiveId(event.target.value)}
-      />
-    ) : null;
-
-  const questionList = v3 ? (
-    <fieldset className={styles.builderFieldset}>
-      <legend>
-        Perguntas ({state.items.length} de {PRACTICE_V3_MAX_ITEMS})
-      </legend>
-      {pronunciation && (
-        <div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => dispatch({ type: "applyPronunciationTemplate" })}
-          >
-            Aplicar modelo de pronúncia
-          </Button>
-        </div>
+  const questionIndex = Math.max(
+    0,
+    state.items.findIndex((i) => i.id === curItem?.id),
+  );
+  const addQuestion = () => setPicker("add");
+  const chooseType = (value: ResponseTypeV2) => {
+    if (picker === "add") {
+      const id = generateItemId(state.items.map((i) => i.id));
+      dispatch({ type: "addItem", id });
+      dispatch({ type: "itemAction", id, action: { type: "setResponseType", value } });
+      if (pronunciation) {
+        dispatch({ type: "itemAction", id, action: { type: "setStimulusType", value: "AUDIO" } });
+      }
+      setActiveId(id);
+    } else {
+      dispatchCur({ type: "setResponseType", value });
+    }
+    setPicker(null);
+  };
+  const duplicateQuestion = (id: string) => {
+    const newId = generateItemId(state.items.map((i) => i.id));
+    dispatch({ type: "duplicateItem", id, newId });
+    setActiveId(newId);
+  };
+  const confirmDelete = () => {
+    if (deleteId) {
+      dispatch({ type: "removeItem", id: deleteId });
+      setActiveId(null);
+      setPicker(null);
+    }
+    setDeleteId(null);
+  };
+  const questionList = (
+    <nav className={practiceStyles.questionNav} aria-label="Questões da prática">
+      <div className={practiceStyles.panelHeading}>
+        <strong>Questões ({state.items.length})</strong>
+      </div>
+      {!readOnly && (
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={state.items.length >= PRACTICE_V3_MAX_ITEMS}
+          leadingIcon={<Icon name="plus" size={15} />}
+          onClick={() => {
+            addQuestion();
+            setQuestionsOpen(false);
+          }}
+        >
+          Nova questão
+        </Button>
       )}
-      {pronunciationAlert}
-      <ol className={styles.builderList}>
+      <ol>
         {state.items.map((item, index) => (
-          <li key={item.id} className={styles.builderRow}>
-            <span>
-              Pergunta {index + 1}: {item.prompt.trim() || "sem enunciado"} (
-              {RESPONSE_LABELS[item.responseType]})
-            </span>
-            <Button
+          <li key={item.id} data-active={item.id === curItem?.id && picker !== "add"}>
+            <button
               type="button"
-              variant={item.id === curItem?.id ? "primary" : "outline"}
-              aria-pressed={item.id === curItem?.id}
-              onClick={() => setActiveId(item.id)}
-            >
-              {`Editar pergunta ${index + 1}`}
-            </Button>
-            <IconButton
-              label={`Subir pergunta ${index + 1}`}
-              disabled={index === 0}
-              onClick={() => dispatch({ type: "moveItem", index, direction: "up" })}
-            >
-              ↑
-            </IconButton>
-            <IconButton
-              label={`Descer pergunta ${index + 1}`}
-              disabled={index === state.items.length - 1}
-              onClick={() => dispatch({ type: "moveItem", index, direction: "down" })}
-            >
-              ↓
-            </IconButton>
-            <IconButton
-              label={`Remover pergunta ${index + 1}`}
-              disabled={state.items.length <= 1}
+              className={practiceStyles.questionLink}
+              aria-current={item.id === curItem?.id ? "true" : undefined}
               onClick={() => {
-                const neighbour = state.items[index + 1] ?? state.items[index - 1];
-                dispatch({ type: "removeItem", id: item.id });
-                if (item.id === curItem?.id) setActiveId(neighbour?.id ?? null);
+                setActiveId(item.id);
+                setPicker(null);
+                setQuestionsOpen(false);
               }}
             >
-              ×
-            </IconButton>
+              <span className={practiceStyles.typeIcon} aria-hidden="true">
+                <Icon name={RESPONSE_ICONS[item.responseType]} size={16} />
+              </span>
+              <span>
+                <strong>
+                  {index + 1}. {RESPONSE_LABELS[item.responseType]}
+                </strong>
+                <small>{item.prompt || "Adicione um enunciado"}</small>
+              </span>
+            </button>
           </li>
         ))}
       </ol>
-      <div>
+      {pronunciation && !readOnly && (
         <Button
           type="button"
           variant="outline"
-          disabled={state.items.length >= PRACTICE_V3_MAX_ITEMS}
-          onClick={() => {
-            const id = generateItemId(state.items.map((item) => item.id));
-            dispatch({ type: "addItem", id });
-            setActiveId(id);
-          }}
+          onClick={() => dispatch({ type: "applyPronunciationTemplate" })}
         >
-          Adicionar pergunta
+          Aplicar modelo de pronúncia
         </Button>
+      )}
+    </nav>
+  );
+
+  const toggleMedia = (type: StimulusTypeV2) =>
+    dispatchCur({ type: "setStimulusType", value: cur.stimulusType === type ? "NONE" : type });
+  const mediaTiles = (
+    <div className={practiceStyles.mediaBlock} role="group" aria-labelledby="pb-media-label">
+      <span id="pb-media-label" className={practiceStyles.fieldLabel}>
+        Adicionar mídia
+      </span>
+      <div className={practiceStyles.mediaGrid}>
+        {MEDIA_OPTIONS.map((option) => (
+          <button
+            key={option.type}
+            type="button"
+            className={practiceStyles.mediaTile}
+            aria-pressed={cur.stimulusType === option.type}
+            disabled={readOnly || (pronunciation && option.type !== "AUDIO")}
+            onClick={() => toggleMedia(option.type)}
+          >
+            <Icon name={option.icon} size={20} />
+            <span>{option.label}</span>
+          </button>
+        ))}
       </div>
-    </fieldset>
-  ) : null;
+    </div>
+  );
 
-  const stimulusPanel = (
-    <div className={styles.builderStack}>
-      {questionPicker}
-      {pronunciationAlert}
-      <TypeCards
-        legend="Tipo de estímulo"
-        name="stimulusType"
-        values={pronunciation ? PRON_STIMULUS : STIMULUS_TYPES_V2}
-        labels={STIMULUS_LABELS}
-        descriptions={STIMULUS_DESCRIPTIONS}
-        current={cur.stimulusType}
-        disabled={readOnly}
-        onSelect={(value) =>
-          isStimulusType(value) && dispatchCur({ type: "setStimulusType", value })
-        }
-      />
-      {cur.stimulusType === "TEXT" && (
-        <Textarea
-          label="Texto de apoio"
-          required
-          rows={5}
-          maxLength={2000}
-          value={cur.stimulusText}
-          onChange={(event) => setItem("stimulusText")(event.target.value)}
-        />
-      )}
-      {cur.stimulusType === "IMAGE" && (
-        <Textarea
-          label="Texto alternativo da imagem"
-          required
-          rows={2}
-          maxLength={300}
-          message="Descreva a imagem para quem não consegue vê-la. É obrigatório."
-          value={cur.alt}
-          onChange={(event) => setItem("alt")(event.target.value)}
-        />
-      )}
-      {(cur.stimulusType === "AUDIO" || cur.stimulusType === "VIDEO") && (
-        <>
+  const mediaDetails =
+    pronunciationAlert || cur.stimulusType !== "NONE" ? (
+      <div className={styles.builderStack}>
+        {pronunciationAlert}
+        {cur.stimulusType === "TEXT" && (
           <Textarea
-            label="Transcrição (recomendada)"
-            rows={4}
-            maxLength={4000}
-            message="Ajuda alunos surdos ou com dificuldade de ouvir. O aluno vê a transcrição sob demanda."
-            value={cur.transcript}
-            onChange={(event) => setItem("transcript")(event.target.value)}
+            label="Texto de apoio"
+            required
+            rows={5}
+            maxLength={2000}
+            value={cur.stimulusText}
+            onChange={(event) => setItem("stimulusText")(event.target.value)}
           />
-          {!cur.transcript.trim() && (
-            <Alert
-              tone="warning"
-              title="Sem transcrição"
-              description="Você pode publicar assim, mas recomendamos incluir a transcrição."
+        )}
+        {cur.stimulusType === "IMAGE" && (
+          <Textarea
+            label="Texto alternativo da imagem"
+            required
+            rows={2}
+            maxLength={300}
+            message="Descreva a imagem para quem não consegue vê-la. É obrigatório."
+            value={cur.alt}
+            onChange={(event) => setItem("alt")(event.target.value)}
+          />
+        )}
+        {(cur.stimulusType === "AUDIO" || cur.stimulusType === "VIDEO") && (
+          <>
+            <Textarea
+              label="Transcrição (recomendada)"
+              rows={4}
+              maxLength={4000}
+              message="Ajuda alunos surdos ou com dificuldade de ouvir. O aluno vê a transcrição sob demanda."
+              value={cur.transcript}
+              onChange={(event) => setItem("transcript")(event.target.value)}
             />
-          )}
-        </>
-      )}
-      {assetKind && (
-        <StimulusAssetField
-          kind={assetKind}
-          practiceId={detail?.id ?? null}
-          assetId={cur.assetId}
-          assetReady={assetReady}
-          disabled={readOnly}
-          reserve={actions.reserveAsset}
-          complete={actions.completeAsset}
-          onUploaded={(assetId, localUrl) => {
-            dispatchCur({ type: "setAsset", assetId });
-            setUploaded((current) => [
-              ...current.filter((item) => item.id !== assetId),
-              { id: assetId, assetType: assetKind, uploadStatus: "READY" },
-            ]);
-            setLocalUrls((current) => ({ ...current, [assetId]: localUrl }));
-          }}
-        />
-      )}
-    </div>
-  );
-
-  const responsePanel = (
-    <div className={styles.builderStack}>
-      {questionList}
-      <TypeCards
-        legend="Como o aluno responde"
-        name="responseType"
-        values={pronunciation ? PRON_RESPONSE : RESPONSE_TYPES_V2}
-        labels={RESPONSE_LABELS}
-        descriptions={RESPONSE_DESCRIPTIONS}
-        current={cur.responseType}
-        disabled={readOnly}
-        onSelect={(value) =>
-          isResponseType(value) && dispatchCur({ type: "setResponseType", value })
-        }
-      />
-    </div>
-  );
+            {!cur.transcript.trim() && (
+              <Alert
+                tone="warning"
+                title="Sem transcrição"
+                description="Você pode publicar assim, mas recomendamos incluir a transcrição."
+              />
+            )}
+          </>
+        )}
+        {assetKind && (
+          <StimulusAssetField
+            kind={assetKind}
+            practiceId={state.id}
+            assetId={cur.assetId}
+            assetReady={assetReady}
+            disabled={readOnly}
+            reserve={actions.reserveAsset}
+            complete={actions.completeAsset}
+            onUploaded={(assetId, localUrl) => {
+              dispatchCur({ type: "setAsset", assetId });
+              setUploaded((current) => [
+                ...current.filter((item) => item.id !== assetId),
+                { id: assetId, assetType: assetKind, uploadStatus: "READY" },
+              ]);
+              setLocalUrls((current) => ({ ...current, [assetId]: localUrl }));
+            }}
+          />
+        )}
+      </div>
+    ) : null;
 
   const configPanel = (
-    <div className={styles.builderStack}>
-      {questionPicker}
-      <Textarea
-        label="Enunciado"
-        required
-        rows={3}
-        maxLength={600}
-        value={cur.prompt}
-        onChange={(event) => setItem("prompt")(event.target.value)}
-      />
-      {!v3 && (
-        <Textarea
-          label="Instruções (opcional)"
-          rows={2}
-          maxLength={600}
-          value={state.instructions}
-          onChange={(event) => set("instructions")(event.target.value)}
+    <PracticeQuestionFields
+      cur={cur}
+      curItem={curItem}
+      blankIds={blankIds}
+      v3={v3}
+      manual={manual}
+      readOnly={readOnly}
+      state={state}
+      setItem={setItem}
+      dispatchCur={dispatchCur}
+      setFocusId={setFocusId}
+      mediaTiles={mediaTiles}
+      mediaDetails={mediaDetails}
+    />
+  );
+
+  const metaPanel = <PracticeInformationFields state={state} scope={scope} dispatch={dispatch} />;
+
+  const previewPanel = (
+    <div className={practiceStyles.previewCard}>
+      {v3 && previewReport.previewContentV3 ? (
+        <PracticeSessionPlayer
+          key={`${curItem?.id ?? "main"}:${JSON.stringify(previewSource.items)}`}
+          mode="preview"
+          previewItemId={curItem?.id}
+          content={previewReport.previewContentV3}
+          previewKeys={previewReport.previewKeys}
+          skill={previewSource.skill}
+          stimulusUrls={Object.fromEntries(
+            previewSource.items.map((item) => [item.id, urlFor(item.assetId)]),
+          )}
         />
-      )}
-
-      {(cur.responseType === "CHOICE_SINGLE" || cur.responseType === "CHOICE_MULTI") && (
-        <fieldset className={styles.builderFieldset}>
-          <legend>
-            {cur.responseType === "CHOICE_SINGLE"
-              ? "Alternativas (marque a correta)"
-              : "Alternativas (marque todas as corretas)"}
-          </legend>
-          {cur.options.map((option) => {
-            const letter = option.id.toUpperCase();
-            const correct = cur.correctOptionIds.includes(option.id);
-            return (
-              <div key={option.id} className={styles.builderRow}>
-                <Input
-                  label={`Alternativa ${letter}`}
-                  value={option.label}
-                  maxLength={240}
-                  onChange={(event) =>
-                    dispatchCur({
-                      type: "setOptionLabel",
-                      id: option.id,
-                      label: event.target.value,
-                    })
-                  }
-                />
-                {cur.responseType === "CHOICE_SINGLE" ? (
-                  <Radio
-                    name="correct-option"
-                    label={`${letter} é a correta`}
-                    checked={correct}
-                    onChange={() => dispatchCur({ type: "toggleCorrect", id: option.id })}
-                  />
-                ) : (
-                  <Checkbox
-                    label={`${letter} é correta`}
-                    checked={correct}
-                    onChange={() => dispatchCur({ type: "toggleCorrect", id: option.id })}
-                  />
-                )}
-                <IconButton
-                  label={`Remover alternativa ${letter}`}
-                  disabled={cur.options.length <= MIN_OPTIONS}
-                  onClick={() => dispatchCur({ type: "removeOption", id: option.id })}
-                >
-                  ×
-                </IconButton>
-              </div>
-            );
-          })}
-          <div>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={cur.options.length >= MAX_OPTIONS}
-              onClick={() => dispatchCur({ type: "addOption" })}
-            >
-              Adicionar alternativa
-            </Button>
-          </div>
-        </fieldset>
-      )}
-
-      {cur.responseType === "TRUE_FALSE" && (
+      ) : !v3 && previewReport.previewContent ? (
+        <PracticePlayer
+          key={JSON.stringify(previewSource.items)}
+          mode="preview"
+          content={previewReport.previewContent}
+          answerKey={payload.answerKey}
+          previewFeedback={payload.feedback ?? undefined}
+          stimulusUrl={previewUrl}
+        />
+      ) : (
         <>
-          <Textarea
-            label="Afirmação"
-            required
-            rows={2}
-            maxLength={600}
-            value={cur.statement}
-            onChange={(event) => setItem("statement")(event.target.value)}
+          <Alert
+            tone="warning"
+            title="A prévia ainda não está disponível"
+            description="Complete os itens abaixo para ver a atividade."
           />
-          <fieldset className={styles.builderFieldset}>
-            <legend>Resposta correta</legend>
-            <Radio
-              name="true-false"
-              label="Verdadeiro"
-              checked={cur.trueFalse === "true"}
-              onChange={() => setItem("trueFalse")("true")}
-            />
-            <Radio
-              name="true-false"
-              label="Falso"
-              checked={cur.trueFalse === "false"}
-              onChange={() => setItem("trueFalse")("false")}
-            />
-          </fieldset>
-        </>
-      )}
-
-      {cur.responseType === "CLOZE" && (
-        <>
-          <Textarea
-            id="pb-cloze-text"
-            label="Texto com lacunas"
-            required
-            rows={4}
-            maxLength={1000}
-            message="Marque cada lacuna com {{1}}, {{2}} e assim por diante (até 10)."
-            value={cur.clozeText}
-            onChange={(event) => setItem("clozeText")(event.target.value)}
-          />
-          <div>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={blankIds.length >= 10}
-              onClick={() => {
-                const next = Math.max(0, ...blankIds.map(Number)) + 1;
-                setItem("clozeText")(`${cur.clozeText}${cur.clozeText ? " " : ""}{{${next}}}`);
-                setFocusId("pb-cloze-text");
-              }}
-            >
-              Inserir próxima lacuna
-            </Button>
-          </div>
-          {blankIds.length === 0 ? (
-            <Alert
-              tone="info"
-              title="Nenhuma lacuna no texto"
-              description="Adicione ao menos um marcador como {{1}} para definir as respostas aceitas."
-            />
-          ) : (
-            <fieldset className={styles.builderFieldset}>
-              <legend>Respostas aceitas por lacuna</legend>
-              {blankIds.map((id) => (
-                <div key={id} className={styles.builderStack}>
-                  <Input
-                    label={`Lacuna ${id}: respostas aceitas`}
-                    message="Separe as variações por ponto e vírgula. Ex.: color; colour"
-                    maxLength={500}
-                    value={cur.blanks[id]?.accepted ?? ""}
-                    onChange={(event) =>
-                      dispatchCur({ type: "setBlankAccepted", id, accepted: event.target.value })
-                    }
-                  />
-                  <Checkbox
-                    label={`Lacuna ${id}: diferenciar maiúsculas de minúsculas`}
-                    checked={cur.blanks[id]?.caseSensitive ?? false}
-                    onChange={(event) =>
-                      dispatchCur({ type: "setBlankCase", id, caseSensitive: event.target.checked })
-                    }
-                  />
-                </div>
+          {report.issues.length > 0 && (
+            <ul className={practiceStyles.issueList}>
+              {report.issues.map((issue) => (
+                <li key={issue}>{issue}</li>
               ))}
-            </fieldset>
+            </ul>
           )}
         </>
       )}
+    </div>
+  );
 
-      {cur.responseType === "ORDERING" && (
-        <fieldset className={styles.builderFieldset}>
-          <legend>Itens, escritos na ordem correta</legend>
-          <p className={styles.muted}>
-            O aluno verá os itens em outra ordem. Use as setas para ajustar a sequência correta.
-          </p>
-          {cur.orderItems.map((item, index) => (
-            <div key={item.id} className={styles.builderRow}>
-              <Input
-                label={`Item ${index + 1}`}
-                value={item.label}
-                maxLength={240}
-                onChange={(event) =>
-                  dispatchCur({ type: "setOrderItemLabel", id: item.id, label: event.target.value })
-                }
-              />
-              <IconButton
-                label={`Subir item ${index + 1}`}
-                disabled={index === 0}
-                onClick={() => dispatchCur({ type: "moveOrderItem", index, direction: "up" })}
-              >
-                ↑
-              </IconButton>
-              <IconButton
-                label={`Descer item ${index + 1}`}
-                disabled={index === cur.orderItems.length - 1}
-                onClick={() => dispatchCur({ type: "moveOrderItem", index, direction: "down" })}
-              >
-                ↓
-              </IconButton>
-              <IconButton
-                label={`Remover item ${index + 1}`}
-                disabled={cur.orderItems.length <= MIN_ORDER_ITEMS}
-                onClick={() => dispatchCur({ type: "removeOrderItem", id: item.id })}
-              >
-                ×
-              </IconButton>
+  const destination =
+    scope.lessons.find((l) => l.id === state.lessonId)?.title ?? "Selecione uma aula";
+  const summary: PublishSummary = {
+    infoOk: Boolean(state.title.trim() && state.lessonId && (!v3 || state.objective.trim())),
+    questionCount: state.items.length,
+    issueCount: report.issues.length,
+    mediaCount: state.items.filter((item) => item.stimulusType !== "NONE").length,
+    minutes: state.estimatedMinutes,
+    skillLabel: SKILL_LABELS[state.skill] ?? "",
+    level: state.cefrTarget,
+  };
+  const statusLabel =
+    autosave.status === "saving"
+      ? "Salvando…"
+      : autosave.status === "conflict"
+        ? "Conflito de edição"
+        : autosave.status === "error"
+          ? "Falha ao salvar"
+          : dirty
+            ? "Alterações pendentes"
+            : autosave.savedAt
+              ? `Salvo automaticamente ${relativeSaved(autosave.savedAt, now)}`.trim()
+              : "Novo rascunho";
+  return (
+    <div className={practiceStyles.workspace}>
+      <header className={practiceStyles.editorHeader}>
+        <Breadcrumbs
+          homeHref="/teacher"
+          homeLabel="Início do professor"
+          items={[
+            { label: "Práticas", href: "/teacher/praticas" },
+            { label: state.title || "Nova prática" },
+          ]}
+        />
+        <div className={practiceStyles.headerContent}>
+          <div className={practiceStyles.headerIdentity}>
+            <div className={practiceStyles.titleRow}>
+              <h1>{step === 0 && !detail ? "Nova prática" : state.title || "Nova prática"}</h1>
+              <Badge tone={published ? "success" : "neutral"}>
+                {published ? "Publicada" : "Rascunho"}
+              </Badge>
             </div>
-          ))}
-          <div>
+            {!readOnly && (
+              <span className={practiceStyles.autosaveStatus} role="status" aria-live="polite">
+                {statusLabel}
+              </span>
+            )}
+          </div>
+          <div className={practiceStyles.headerActions}>
             <Button
               type="button"
-              variant="outline"
-              disabled={cur.orderItems.length >= MAX_ORDER_ITEMS}
-              onClick={() => dispatchCur({ type: "addOrderItem" })}
+              variant="ghost"
+              leadingIcon={<Icon name="eye" size={16} />}
+              onClick={() => setPreviewOpen(true)}
             >
-              Adicionar item
+              Visualizar como aluno
             </Button>
-          </div>
-        </fieldset>
-      )}
-
-      {v3 && (cur.responseType === "CHOICE_SINGLE" || cur.responseType === "CHOICE_MULTI") && (
-        <fieldset className={styles.builderFieldset}>
-          <legend>Explicação por alternativa (opcional)</legend>
-          <p className={styles.muted}>O aluno vê a explicação da alternativa que escolheu.</p>
-          {cur.options.map((option) => (
-            <Textarea
-              key={option.id}
-              label={`Explicação da alternativa ${option.id.toUpperCase()}`}
-              rows={2}
-              maxLength={600}
-              value={curItem?.optionFeedback[option.id] ?? ""}
-              onChange={(event) =>
-                dispatchCur({
-                  type: "setOptionFeedback",
-                  optionId: option.id,
-                  value: event.target.value,
-                })
-              }
-            />
-          ))}
-        </fieldset>
-      )}
-
-      {v3 && manual && (
-        <>
-          <Select
-            label="Tempo de preparo"
-            value={String(curItem?.planningSeconds ?? 0)}
-            message="Contagem regressiva antes de responder. O aluno pode pular."
-            options={PLANNING_SECONDS.map((value) => ({
-              value: String(value),
-              label: PLANNING_LABELS[value],
-            }))}
-            onChange={(event) =>
-              dispatchCur({
-                type: "setPlanning",
-                value: Number(event.target.value) as PlanningSeconds,
-              })
-            }
-          />
-          <fieldset className={styles.builderFieldset}>
-            <legend>Critérios que o aluno verá</legend>
-            <ul className={styles.builderList}>
-              {rubricDimensionsFor(state.skill, cur.responseType).map((dimension) => (
-                <li key={dimension}>{RUBRIC_LABELS[dimension]}</li>
-              ))}
-            </ul>
-          </fieldset>
-        </>
-      )}
-
-      {manual ? (
-        <Alert
-          tone="info"
-          title="Sem gabarito"
-          description="Esta resposta vai para a sua fila de revisões. Não há nota automática nem nível CEFR."
-        />
-      ) : (
-        <fieldset className={styles.builderFieldset}>
-          <legend>Feedback ao aluno (opcional)</legend>
-          <Textarea
-            label="Quando acertar"
-            rows={2}
-            maxLength={600}
-            value={cur.feedbackCorrect}
-            onChange={(event) => setItem("feedbackCorrect")(event.target.value)}
-          />
-          <Textarea
-            label="Quando errar"
-            rows={2}
-            maxLength={600}
-            value={cur.feedbackIncorrect}
-            onChange={(event) => setItem("feedbackIncorrect")(event.target.value)}
-          />
-        </fieldset>
-      )}
-    </div>
-  );
-
-  const metaPanel = (
-    <div className={styles.builderStack}>
-      <Input
-        id={FIELD_IDS.title}
-        label="Título"
-        required
-        maxLength={160}
-        value={state.title}
-        tone={errors.title ? "error" : "default"}
-        {...(errors.title ? { message: errors.title } : {})}
-        onChange={(event) => set("title")(event.target.value)}
-      />
-      {v3 && (
-        <>
-          <Input
-            label="Objetivo"
-            required
-            maxLength={200}
-            message="Complete a frase: Ao final você consegue…"
-            value={state.objective}
-            onChange={(event) => set("objective")(event.target.value)}
-          />
-          <Checkbox
-            label="Pedir confiança do aluno"
-            checked={state.askConfidence}
-            onChange={(event) =>
-              dispatch({ type: "setAskConfidence", value: event.target.checked })
-            }
-          />
-          <Textarea
-            label="Instruções (opcional)"
-            rows={2}
-            maxLength={600}
-            value={state.instructions}
-            onChange={(event) => set("instructions")(event.target.value)}
-          />
-        </>
-      )}
-      <Select
-        label="Habilidade"
-        required
-        value={state.skill}
-        options={PRACTICE_SKILLS.map((skill) => ({ value: skill, label: SKILL_LABELS[skill] }))}
-        onChange={(event) => set("skill")(event.target.value)}
-      />
-      <Select
-        label="Nível-alvo (opcional)"
-        value={state.cefrTarget}
-        message="É só uma referência da atividade. Não indica o nível do aluno."
-        options={[
-          { value: "", label: "Sem nível-alvo" },
-          ...CEFR_LEVELS.map((level) => ({ value: level, label: `Alvo ${level}` })),
-        ]}
-        onChange={(event) => set("cefrTarget")(event.target.value)}
-      />
-      <Input
-        label="Dificuldade (opcional)"
-        maxLength={40}
-        placeholder="Ex.: básica"
-        value={state.difficulty}
-        onChange={(event) => set("difficulty")(event.target.value)}
-      />
-      <Input
-        id={FIELD_IDS.estimatedMinutes}
-        label="Minutos estimados"
-        type="number"
-        required
-        min={1}
-        max={240}
-        value={state.estimatedMinutes}
-        tone={errors.estimatedMinutes ? "error" : "default"}
-        {...(errors.estimatedMinutes ? { message: errors.estimatedMinutes } : {})}
-        onChange={(event) => set("estimatedMinutes")(event.target.value)}
-      />
-      <Select
-        id={FIELD_IDS.courseId}
-        label="Curso"
-        required
-        value={state.courseId}
-        disabled={Boolean(detail?.assignments.length)}
-        tone={errors.courseId ? "error" : "default"}
-        message={
-          errors.courseId ??
-          (scope.courses.length === 0
-            ? "Você ainda não tem turmas ativas com curso."
-            : "Somente cursos das suas turmas ativas.")
-        }
-        options={[
-          { value: "", label: "Escolha o curso" },
-          ...scope.courses.map((course) => ({ value: course.id, label: course.title })),
-        ]}
-        onChange={(event) => dispatch({ type: "setCourse", value: event.target.value })}
-      />
-      {courseModules.length > 0 && (
-        <Select
-          label="Módulo relacionado (opcional)"
-          value={state.moduleId}
-          options={[
-            { value: "", label: "Nenhum módulo" },
-            ...courseModules.map((item) => ({ value: item.id, label: item.title })),
-          ]}
-          onChange={(event) => {
-            set("moduleId")(event.target.value);
-            set("lessonId")("");
-          }}
-        />
-      )}
-      {lessonsForModule.length > 0 && (
-        <Select
-          label="Aula relacionada (opcional)"
-          value={state.lessonId}
-          options={[
-            { value: "", label: "Nenhuma aula" },
-            ...lessonsForModule.map((lesson) => ({ value: lesson.id, label: lesson.title })),
-          ]}
-          onChange={(event) => set("lessonId")(event.target.value)}
-        />
-      )}
-    </div>
-  );
-
-  const previewPanel = (
-    <div className={styles.builderStack}>
-      <p className={styles.muted}>Veja e teste a atividade como o aluno. Nada é salvo aqui.</p>
-      {v3 && report.previewContentV3 ? (
-        <Card variant="soft">
-          <PracticeSessionPlayer
-            key={snapshot(state)}
-            mode="preview"
-            content={report.previewContentV3}
-            previewKeys={report.previewKeys}
-            skill={state.skill}
-            stimulusUrls={Object.fromEntries(
-              state.items.map((item) => [item.id, urlFor(item.assetId)]),
+            {!readOnly && step !== 2 && (
+              <Button
+                type="button"
+                variant="outline"
+                loading={autosave.status === "saving"}
+                onClick={() => void autosave.saveNow()}
+              >
+                Salvar rascunho
+              </Button>
             )}
-          />
-        </Card>
-      ) : !v3 && report.previewContent ? (
-        <Card variant="soft">
-          <PracticePlayer
-            key={snapshot(state)}
-            mode="preview"
-            content={report.previewContent}
-            answerKey={payload.answerKey}
-            previewFeedback={payload.feedback ?? undefined}
-            stimulusUrl={previewUrl}
-          />
-        </Card>
-      ) : (
+            {step !== 2 && (
+              <Button type="button" variant="secondary" onClick={() => goTo(2)}>
+                Revisar e publicar
+              </Button>
+            )}
+          </div>
+        </div>
+      </header>
+      {autosave.message && (
         <Alert
-          tone="warning"
-          title="A prévia ainda não está disponível"
-          description="Complete os itens do checklist abaixo para ver a atividade."
+          tone={autosave.status === "conflict" ? "warning" : "error"}
+          title={autosave.message}
         />
       )}
-      {report.issues.length > 0 && (
-        <ul className={styles.builderList}>
-          {report.issues.map((issue) => (
-            <li key={issue}>{issue}</li>
-          ))}
-        </ul>
+      {autosave.status === "conflict" && (
+        <Button type="button" variant="outline" onClick={() => window.location.reload()}>
+          Recarregar versão atual
+        </Button>
       )}
-    </div>
-  );
-
-  const panels = {
-    stimulus: stimulusPanel,
-    response: responsePanel,
-    config: configPanel,
-    meta: metaPanel,
-    preview: previewPanel,
-    publish: (
-      <PracticePublishPanel
-        practiceId={detail?.id ?? null}
-        published={published}
-        hasAttempts={Boolean(detail?.hasAttempts)}
-        dirty={dirty}
-        report={report}
-        cohorts={courseCohorts}
-        assignments={detail?.assignments ?? []}
-        actions={actions}
-      />
-    ),
-  } as const;
-
-  const editable = stepId !== "preview" && stepId !== "publish";
-
-  return (
-    <div
-      className={styles.builder}
-      onSubmitCapture={() => {
-        if (stepId === "publish") window.sessionStorage.setItem(STEP_STORAGE_KEY, "publish");
-      }}
-    >
-      {readOnly && detail && (
+      {readOnly && (
         <Alert
           tone="info"
           title={
-            detail.hasAttempts
+            detail?.hasAttempts
               ? "Esta prática já tem respostas e não pode ser editada"
               : "Prática publicada: somente leitura"
           }
-          description={
-            detail.hasAttempts
-              ? "Duplique a prática para criar uma nova versão editável."
-              : "Despublique em Publicar e atribuir para editar o conteúdo."
-          }
+          description="Para criar uma nova versão, duplique a prática. Sem tentativas, você pode despublicar para editar."
         />
       )}
-      {detail && (
-        <p className={styles.builderStatus}>
-          <Badge tone={published ? "success" : "neutral"}>
-            {published ? "Publicada" : "Rascunho"}
-          </Badge>
-          {dirty && !readOnly && <Badge tone="warning">Alterações não salvas</Badge>}
-        </p>
-      )}
-
-      <nav aria-label="Passos da prática">
-        <ol className={styles.stepper}>
-          {BUILDER_STEPS.map((item, index) => (
-            <li key={item.id}>
-              <Button
-                type="button"
-                variant={index === step ? "primary" : "outline"}
-                aria-current={index === step ? "step" : undefined}
-                onClick={() => goTo(index)}
-              >
-                {index + 1}. {item.label}
-              </Button>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
-      <section aria-labelledby="practice-step-heading" className={styles.builderPanel}>
-        <h2 id="practice-step-heading" ref={headingRef} tabIndex={-1}>
-          Passo {step + 1} de {BUILDER_STEPS.length}: {BUILDER_STEPS[step]?.label}
-        </h2>
-        {editable ? (
-          <fieldset className={styles.builderReset} disabled={readOnly}>
-            {panels[stepId]}
-          </fieldset>
-        ) : (
-          panels[stepId]
+      <div className={practiceStyles.workflow} data-wide={step === 1}>
+        {step !== 1 && (
+          <aside className={practiceStyles.steps}>
+            <Stepper
+              steps={BUILDER_STEPS}
+              current={step}
+              ariaLabel="Etapas da prática"
+              onStepSelect={goTo}
+            />
+          </aside>
         )}
-      </section>
-
-      <div className={styles.builderActions}>
+        <AnimatePresence mode="wait" initial={false}>
+          <m.section
+            key={step}
+            data-practice-stage
+            onAnimationComplete={() => {
+              if (stepChanged.current) headingRef.current?.focus();
+            }}
+            initial={{ opacity: 0, x: 16 * direction }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 * direction }}
+            transition={{ duration: 0.18 }}
+            className={practiceStyles.stage}
+          >
+            <h2 ref={headingRef} tabIndex={-1} className={practiceStyles.stageHeading}>
+              {BUILDER_STEPS[step]?.label}
+            </h2>
+            {step === 0 && (
+              <div className={practiceStyles.informationGrid}>
+                <section className={practiceStyles.panel}>
+                  <h3>Informações da prática</h3>
+                  <fieldset className={styles.builderReset} disabled={readOnly}>
+                    {metaPanel}
+                  </fieldset>
+                </section>
+                <aside className={practiceStyles.tip}>
+                  <span className={practiceStyles.tipIcon} aria-hidden="true">
+                    <Icon name="target" size={26} />
+                  </span>
+                  <strong>Dica</strong>
+                  <p>Um bom objetivo ajuda o aluno a entender o foco da atividade.</p>
+                </aside>
+              </div>
+            )}
+            {step === 1 && (
+              <>
+                <div className={practiceStyles.mobileTools}>
+                  <Button type="button" variant="outline" onClick={() => setQuestionsOpen(true)}>
+                    Questões ({state.items.length})
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
+                    Prévia do aluno
+                  </Button>
+                </div>
+                <div className={practiceStyles.questionWorkspace}>
+                  <aside className={practiceStyles.questionSidebar}>{questionList}</aside>
+                  <section className={`${practiceStyles.panel} ${practiceStyles.editorPanel}`}>
+                    <fieldset className={styles.builderReset} disabled={readOnly}>
+                      {picker ? (
+                        <QuestionTypePicker
+                          mode={picker}
+                          values={pronunciation ? PRON_RESPONSE : RESPONSE_TYPES_V2}
+                          current={picker === "change" ? cur.responseType : null}
+                          onSelect={chooseType}
+                          onCancel={() => setPicker(null)}
+                        />
+                      ) : (
+                        <>
+                          <div className={practiceStyles.editorCardHeader}>
+                            <h3>Questão {questionIndex + 1}</h3>
+                            <button
+                              type="button"
+                              className={practiceStyles.typeChip}
+                              aria-label={`Tipo da questão: ${RESPONSE_LABELS[cur.responseType]}. Alterar tipo`}
+                              onClick={() => setPicker("change")}
+                            >
+                              <Icon name={RESPONSE_ICONS[cur.responseType]} size={14} />
+                              {RESPONSE_LABELS[cur.responseType]}
+                              <Icon name="down" size={12} />
+                            </button>
+                            {!readOnly && curItem && (
+                              <div className={practiceStyles.cardActions}>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  aria-label={`Duplicar questão ${questionIndex + 1}`}
+                                  disabled={state.items.length >= PRACTICE_V3_MAX_ITEMS}
+                                  leadingIcon={<Icon name="file" size={14} />}
+                                  onClick={() => duplicateQuestion(curItem.id)}
+                                >
+                                  Duplicar
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  aria-label={`Excluir questão ${questionIndex + 1}`}
+                                  disabled={state.items.length <= 1}
+                                  leadingIcon={<Icon name="trash" size={14} />}
+                                  onClick={() => setDeleteId(curItem.id)}
+                                >
+                                  Excluir
+                                </Button>
+                                <IconButton
+                                  label={`Subir questão ${questionIndex + 1}`}
+                                  disabled={questionIndex === 0}
+                                  onClick={() =>
+                                    dispatch({
+                                      type: "moveItem",
+                                      index: questionIndex,
+                                      direction: "up",
+                                    })
+                                  }
+                                >
+                                  <Icon name="down" size={15} className={practiceStyles.flipped} />
+                                </IconButton>
+                                <IconButton
+                                  label={`Descer questão ${questionIndex + 1}`}
+                                  disabled={questionIndex === state.items.length - 1}
+                                  onClick={() =>
+                                    dispatch({
+                                      type: "moveItem",
+                                      index: questionIndex,
+                                      direction: "down",
+                                    })
+                                  }
+                                >
+                                  <Icon name="down" size={15} />
+                                </IconButton>
+                              </div>
+                            )}
+                          </div>
+                          {configPanel}
+                        </>
+                      )}
+                    </fieldset>
+                  </section>
+                  <aside className={practiceStyles.previewSidebar}>
+                    <h3>Prévia do aluno</h3>
+                    {previewPanel}
+                  </aside>
+                </div>
+              </>
+            )}
+            {step === 2 && (
+              <PracticePublishPanel
+                practiceId={state.id}
+                published={published}
+                hasAttempts={Boolean(detail?.hasAttempts)}
+                dirty={dirty}
+                report={report}
+                summary={summary}
+                lessonTitle={destination}
+                onEditInformation={() => goTo(0)}
+                onEditQuestions={() => goTo(1)}
+                actions={actions}
+              />
+            )}
+          </m.section>
+        </AnimatePresence>
+      </div>
+      <footer className={practiceStyles.footer}>
         <Button
           type="button"
           variant="outline"
@@ -1024,28 +816,69 @@ export function PracticeBuilder({
         >
           Voltar
         </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={step === BUILDER_STEPS.length - 1}
-          onClick={() => goTo(step + 1)}
-        >
-          Próximo passo
-        </Button>
-        {!readOnly && (
-          <Button type="submit" form="practice-save-form">
-            Salvar rascunho
-          </Button>
-        )}
-      </div>
-
-      {!readOnly && (
-        <form id="practice-save-form" action={actions.save} onSubmit={onSave} noValidate>
-          {toFormEntries(state).map(([name, value]) => (
-            <input key={name} type="hidden" name={name} value={value} />
-          ))}
-        </form>
-      )}
+        <div className={practiceStyles.footerActions}>
+          {step < 2 && (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={async () => {
+                if (readOnly || (await autosave.saveNow())) goTo(step + 1);
+              }}
+            >
+              Salvar e continuar
+            </Button>
+          )}
+          {step === 2 && !readOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              loading={autosave.status === "saving"}
+              onClick={() => void autosave.saveNow()}
+            >
+              Salvar rascunho
+            </Button>
+          )}
+          {step === 2 && (
+            <PracticePublishFooterAction
+              practiceId={state.id}
+              published={published}
+              hasAttempts={Boolean(detail?.hasAttempts)}
+              dirty={dirty}
+              reportOk={report.ok}
+              publish={actions.publish}
+            />
+          )}
+        </div>
+      </footer>
+      <Dialog
+        open={deleteId !== null}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        title={`Excluir questão ${questionIndex + 1}?`}
+        description="A questão e o conteúdo dela saem da prática. Não dá para desfazer."
+        actions={
+          <>
+            <Button type="button" variant="outline" onClick={() => setDeleteId(null)}>
+              Cancelar
+            </Button>
+            <Button type="button" variant="danger" onClick={confirmDelete}>
+              Excluir questão
+            </Button>
+          </>
+        }
+      >
+        {null}
+      </Dialog>
+      <Drawer
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title="Visualizar como aluno"
+        size="xl"
+      >
+        {previewPanel}
+      </Drawer>
+      <Drawer open={questionsOpen} onOpenChange={setQuestionsOpen} title="Questões da prática">
+        {questionList}
+      </Drawer>
     </div>
   );
 }

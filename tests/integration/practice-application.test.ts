@@ -23,7 +23,7 @@ const activity: PracticeActivityItem = {
   difficulty: "FOUNDATION",
   estimatedMinutes: 5,
   relatedModuleId: null,
-  relatedLessonId: null,
+  relatedLessonId: "82000000-0000-4000-8000-000000000001",
   content: {
     kind: "MULTIPLE_CHOICE",
     evaluationMode: "DETERMINISTIC",
@@ -116,6 +116,7 @@ describe("practice application", () => {
       userId,
       new Date("2026-10-09T12:00:00Z"),
     );
+    expect(repo.listSubmittedActivityIdsSince).toHaveBeenCalledWith(userId, new Date(0));
     expect(state).toMatchObject({
       status: "success",
       data: { completedThisWeek: 2, estimatedMinutesThisWeek: 10 },
@@ -216,7 +217,7 @@ describe("practice application", () => {
     }
   });
 
-  it("surfaces due reviews, weekly performance and degrades when v3 sources fail", async () => {
+  it("ignores retired review sources while retaining weekly performance", async () => {
     const repo = repository();
     repo.listDueReviews = vi.fn(async () => [
       {
@@ -241,12 +242,15 @@ describe("practice application", () => {
     expect(state).toMatchObject({
       status: "success",
       data: {
-        dueReviewCount: 3,
+        dueReviewCount: 0,
+        dueReviews: [],
+        assigned: [],
         firstTryCorrectThisWeek: 6,
         objectiveQuestionsThisWeek: 8,
-        recommendation: { reason: "DUE_REVIEW" },
       },
     });
+    expect(repo.listDueReviews).not.toHaveBeenCalled();
+    expect(repo.listAssignedPractices).not.toHaveBeenCalled();
 
     repo.listDueReviews = vi.fn(async () => {
       throw new Error("boom");
@@ -254,6 +258,57 @@ describe("practice application", () => {
     await expect(getPracticeView(repo, userId, true, {})).resolves.toMatchObject({
       status: "success",
       data: { dueReviewCount: 0 },
+    });
+  });
+
+  it("does not recommend a practice submitted before the capped history window", async () => {
+    const repo = repository();
+    repo.listSubmittedActivityIdsSince = vi.fn(async (_studentId, since) =>
+      since.getTime() === 0 ? [activity.id] : [],
+    );
+
+    const state = await getPracticeView(repo, userId, true, {}, new Date("2026-10-16T12:00:00Z"));
+
+    expect(state).toMatchObject({
+      status: "success",
+      data: {
+        recommendation: null,
+        completedThisWeek: 0,
+        activities: [{ id: activity.id, completedAttemptId: null }],
+      },
+    });
+  });
+
+  it("links a recent submitted activity to its existing result", async () => {
+    const repo = repository();
+    repo.listSubmittedActivityIdsSince = vi.fn(async (_studentId, since) =>
+      since.getTime() === 0 ? [activity.id] : [],
+    );
+    repo.listHistory = vi.fn(async () => [
+      {
+        id: attempt.id,
+        activityId: activity.id,
+        activityTitle: activity.title,
+        skill: activity.skill,
+        status: "SUBMITTED" as const,
+        startedAt: attempt.startedAt,
+        submittedAt: "2026-09-30T12:05:00Z",
+        evaluationStatus: "CORRECT" as const,
+        attemptKind: "FULL" as const,
+        metrics: null,
+        lastActivityAt: "2026-09-30T12:05:00Z",
+      },
+    ]);
+
+    const state = await getPracticeView(repo, userId, true, {});
+
+    expect(state).toMatchObject({
+      status: "success",
+      data: {
+        recommendation: null,
+        activities: [{ id: activity.id, completedAttemptId: attempt.id }],
+        history: [{ id: attempt.id }],
+      },
     });
   });
 });

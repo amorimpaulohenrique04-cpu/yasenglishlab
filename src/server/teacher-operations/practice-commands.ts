@@ -113,6 +113,12 @@ export const teacherPracticeListItemSchema = z.object({
   stimulusType: z.string().nullable(),
   hasAttempts: z.boolean(),
   assignmentCount: z.number().int(),
+  objective: z.string().default(""),
+  difficulty: z.string().nullable().default(null),
+  itemCount: z.number().int().default(1),
+  moduleTitle: z.string().nullable().default(null),
+  lessonTitle: z.string().nullable().default(null),
+  relatedLessonId: uuid.nullable().default(null),
   updatedAt: z.string(),
 });
 export type TeacherPracticeListItem = z.infer<typeof teacherPracticeListItemSchema>;

@@ -1,5 +1,4 @@
 import type { AssignedPractice } from "../domain/assignments";
-import { withAssignmentDueDates } from "../domain/assignments";
 import {
   buildPracticeCatalog,
   normalizePracticeSkill,
@@ -13,7 +12,7 @@ import {
   type PracticeRecommendation,
   type PracticeSkillCatalogItem,
 } from "../domain/models";
-import { sortDueReviews, totalDueQuestions, type DueReview } from "../domain/spaced-review";
+import type { DueReview } from "../domain/spaced-review";
 import type { PracticeRepository } from "./ports";
 
 export interface PracticeView {
@@ -40,10 +39,7 @@ export interface PracticeView {
 export type PracticePageState =
   { status: "unauthorized" } | { status: "empty" } | { status: "success"; data: PracticeView };
 
-/**
- * Sources added by practice v3 degrade to "nothing" instead of failing the whole page: the list of
- * practices must stay usable even if reviews, assignments or metrics cannot be read.
- */
+/** Metrics are supplemental; the practice list remains available if they cannot be read. */
 async function orFallback<T>(load: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await load();
@@ -68,38 +64,43 @@ export async function getPracticeView(
     history,
     recentLessonId,
     submittedThisWeek,
+    submittedAllTime,
     reachedActivityIds,
-    dueReviewsRaw,
-    assigned,
     metricsThisWeek,
   ] = await Promise.all([
     repository.listActivities(),
     repository.listHistory(userId),
     repository.getRecentLessonId(userId),
     repository.listSubmittedActivityIdsSince(userId, weekStart),
+    repository.listSubmittedActivityIdsSince(userId, new Date(0)),
     repository.listReachedActivityIds(),
-    orFallback(() => repository.listDueReviews(), [] as DueReview[]),
-    orFallback(() => repository.listAssignedPractices(), null as AssignedPractice[] | null),
     orFallback(() => repository.listSubmittedMetricsSince(userId, weekStart), []),
   ]);
   const reached = new Set(reachedActivityIds);
-  if (activities.length === 0) return { status: "empty" };
+  const completed = new Set(submittedAllTime);
+  const lessonActivities = activities.filter((activity) => activity.relatedLessonId !== null);
+  const latestCompletedAttempt = new Map<string, string>();
+  for (const item of history) {
+    if (item.status === "SUBMITTED" && !latestCompletedAttempt.has(item.activityId)) {
+      latestCompletedAttempt.set(item.activityId, item.id);
+    }
+  }
+  const decoratedActivities = lessonActivities.map((activity) =>
+    completed.has(activity.id)
+      ? { ...activity, completedAttemptId: latestCompletedAttempt.get(activity.id) ?? null }
+      : activity,
+  );
+  const attemptId = typeof raw.attemptId === "string" ? raw.attemptId : null;
+  const selectedAttempt = attemptId ? await repository.getAttempt(userId, attemptId) : null;
+  if (lessonActivities.length === 0 && history.length === 0 && !selectedAttempt)
+    return { status: "empty" };
 
   const selectedSkill = normalizePracticeSkill(raw.skill);
   const visibleActivities = selectedSkill
-    ? activities.filter((activity) => activity.skill === selectedSkill)
-    : activities;
-  const attemptId = typeof raw.attemptId === "string" ? raw.attemptId : null;
-  const selectedAttempt = attemptId ? await repository.getAttempt(userId, attemptId) : null;
+    ? decoratedActivities.filter((activity) => activity.skill === selectedSkill)
+    : decoratedActivities;
   const minutesByActivity = new Map(
     activities.map((activity) => [activity.id, activity.estimatedMinutes]),
-  );
-  // Only what the Student can start: reviews of practices that are not published/visible are dropped.
-  const activityIds = new Set(activities.map((activity) => activity.id));
-  const dueReviews = sortDueReviews(
-    dueReviewsRaw.filter(
-      (review) => review.dueCount > 0 && activityIds.has(review.practiceActivityId),
-    ),
   );
   const openAttempts: OpenPracticeAttempt[] = history
     .filter((item) => item.status === "IN_PROGRESS")
@@ -113,26 +114,21 @@ export async function getPracticeView(
   return {
     status: "success",
     data: {
-      catalog: buildPracticeCatalog(activities),
+      catalog: buildPracticeCatalog(decoratedActivities),
       activities: visibleActivities,
       recommendation: recommendPractice({
-        // Só recomenda o que o aluno pode iniciar (aula alcançada ou prática atribuída).
-        activities: withAssignmentDueDates(
-          activities
-            .filter((activity) => reached.has(activity.id))
-            .map(toPracticeRecommendationActivity),
-          assigned ?? [],
-        ),
+        activities: decoratedActivities
+          .filter((activity) => reached.has(activity.id) && !completed.has(activity.id))
+          .map(toPracticeRecommendationActivity),
         history,
         recentLessonId,
         openAttempts,
-        dueReviews,
         now,
       }),
       history: history.slice(0, 6),
       selectedAttempt,
       selectedSkill,
-      reachedActivityIds,
+      reachedActivityIds: [...new Set([...reachedActivityIds, ...submittedAllTime])],
       completedThisWeek: submittedThisWeek.length,
       // Estimativa: soma do tempo previsto de cada atividade enviada, não tempo medido.
       estimatedMinutesThisWeek: submittedThisWeek.reduce(
@@ -141,9 +137,9 @@ export async function getPracticeView(
       ),
       firstTryCorrectThisWeek: performance.firstTryCorrect,
       objectiveQuestionsThisWeek: performance.objectiveTotal,
-      dueReviews,
-      dueReviewCount: totalDueQuestions(dueReviews),
-      assigned,
+      dueReviews: [],
+      dueReviewCount: 0,
+      assigned: [],
     },
   };
 }

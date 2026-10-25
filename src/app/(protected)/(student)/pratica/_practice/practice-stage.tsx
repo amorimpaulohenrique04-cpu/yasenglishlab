@@ -17,7 +17,10 @@ import {
   loadCurrentStudentItemReviews,
   loadCurrentStudentManualFeedback,
 } from "@/server/practice/manual-feedback";
-import { loadCurrentStudentItemResults } from "@/server/practice/practice";
+import {
+  getCurrentStudentFinalDraft,
+  submitCurrentStudentFinalAttempt,
+} from "@/server/practice/final-attempt";
 
 import {
   completePracticeAudioAction,
@@ -27,6 +30,8 @@ import {
   uploadPracticeItemAudioAction,
   submitPracticeV2Action,
   uploadPracticeAudioAction,
+  savePracticeFinalDraftAction,
+  submitPracticeFinalAction,
 } from "../actions";
 import { stageContext, type LessonPracticeGroupView } from "./grouping";
 import { StartPracticeForm } from "./start-practice-form";
@@ -98,7 +103,9 @@ export async function PracticeStage({
   const nextActions = (
     <>
       {next && <StartPracticeForm activity={next} label="Próxima atividade" large />}
-      <StartPracticeForm activity={activity} label="Praticar de novo" large soft />
+      {activity.content.kind !== "V3" && (
+        <StartPracticeForm activity={activity} label="Praticar de novo" large soft />
+      )}
       <Link
         className="yas-button yas-button--outline yas-button--lg"
         href="/pratica"
@@ -111,8 +118,12 @@ export async function PracticeStage({
 
   const v3 = activity.content.kind === "V3" ? activity.content : null;
   if (v3) {
-    // v3: no immediate "Praticar de novo" (reinforcement round + spaced review replace it).
-    const initialResults = await loadCurrentStudentItemResults(attempt.id).catch(() => []);
+    const initialDraft = submitted
+      ? { answers: {}, optionOrders: {} }
+      : await getCurrentStudentFinalDraft(attempt.id);
+    const initialOutcome = submitted
+      ? await submitCurrentStudentFinalAttempt(attempt.id)
+      : undefined;
     const manualReviews = await loadCurrentStudentItemReviews(attempt.id).catch(() => ({}));
     const stimulusUrls: Record<string, string | null> = {};
     await Promise.all(
@@ -129,11 +140,6 @@ export async function PracticeStage({
         <article className="yas-practice-stage-card" aria-labelledby="practice-attempt-title">
           <div className="yas-practice-stage-intro">
             <h2 id="practice-attempt-title">{activity.title}</h2>
-            {attempt.attemptKind === "REVIEW" && (
-              <p className="yas-practice-stage-question">
-                Revisão das perguntas que voltaram hoje.
-              </p>
-            )}
           </div>
           <PracticeSessionPlayer
             content={v3}
@@ -147,8 +153,12 @@ export async function PracticeStage({
               finalize: finalizePracticeAction.bind(null, attempt.id),
               reserveAudio: uploadPracticeItemAudioAction.bind(null, attempt.id),
               completeAudio: completePracticeAudioAction,
-              initialResults,
-              itemIds: attempt.itemIds,
+              finalFlow: {
+                initialDraft,
+                initialOutcome,
+                saveAnswers: savePracticeFinalDraftAction.bind(null, attempt.id),
+                submitFinal: submitPracticeFinalAction.bind(null, attempt.id),
+              },
             }}
             resultFooter={
               <>

@@ -438,6 +438,12 @@ for (const [index, cohortUser] of [cohortStudent, cohortStudentB].entries()) {
     if (error) throw error;
   }
 }
+// Cohort B follows a sequential default path: lesson 02 (and its practices) stays locked until
+// lesson 01 is completed, so B is the "unassigned student" of the future-lesson practice scenarios.
+const { error: cohortBPathError } = await admin
+  .from("cohort_paths")
+  .upsert({ cohort_id: cohortIds[1], mode: "DEFAULT", sequential: true }, { onConflict: "cohort_id" });
+if (cohortBPathError) throw cohortBPathError;
 // Decision A: an explicit teacher assignment legitimately opens future-lesson
 // practice for this cohort, without changing lesson progress or access for cohort B.
 const { error: audioAssignmentError } = await admin.from("cohort_practice_assignments").upsert(

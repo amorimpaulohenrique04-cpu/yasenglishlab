@@ -1,98 +1,226 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
-
-import { Alert, Badge, Button, Checkbox, Input, type ButtonVariant } from "@/components/ui";
-
+import { Alert, Badge, Button, Icon } from "@/components/ui";
 import type { PublicationReport } from "./practice-builder-logic";
-import styles from "./teacher-operations.module.css";
+import styles from "./practices.module.css";
 
 type FormAction = (form: FormData) => Promise<void>;
-
+export interface PublishSummary {
+  infoOk: boolean;
+  questionCount: number;
+  issueCount: number;
+  mediaCount: number;
+  minutes: string;
+  skillLabel: string;
+  level: string;
+}
 export interface PublishPanelProps {
   practiceId: string | null;
   published: boolean;
   hasAttempts: boolean;
   dirty: boolean;
   report: PublicationReport;
-  cohorts: { id: string; name: string }[];
-  assignments: { cohortId: string; cohortName: string; dueAt: string | null }[];
-  actions: {
-    publish: FormAction;
-    unpublish: FormAction;
-    duplicate: FormAction;
-    assign: FormAction;
-    unassign: FormAction;
-  };
+  summary: PublishSummary;
+  lessonTitle: string;
+  onEditInformation: () => void;
+  onEditQuestions: () => void;
+  actions: { unpublish: FormAction; duplicate: FormAction };
 }
-
-function PendingButton({
+function SubmitButton({
   children,
-  variant = "primary",
   disabled = false,
+  outline = false,
+  describedBy,
 }: {
-  children: ReactNode;
-  variant?: ButtonVariant;
+  children: React.ReactNode;
   disabled?: boolean;
+  outline?: boolean;
+  describedBy?: string | undefined;
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant={variant} loading={pending} disabled={disabled}>
+    <Button
+      type="submit"
+      variant={outline ? "outline" : "secondary"}
+      loading={pending}
+      disabled={disabled}
+      aria-describedby={describedBy}
+    >
       {children}
     </Button>
   );
 }
 
-function formatDue(value: string | null): string {
-  if (!value) return "Sem prazo";
-  return new Date(value).toLocaleString("pt-BR", {
-    timeZone: "America/Recife",
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+/** Primary publish CTA rendered in the builder footer; keeps the existing publish action and its guards. */
+export function PracticePublishFooterAction({
+  practiceId,
+  published,
+  hasAttempts,
+  dirty,
+  reportOk,
+  publish,
+}: {
+  practiceId: string | null;
+  published: boolean;
+  hasAttempts: boolean;
+  dirty: boolean;
+  reportOk: boolean;
+  publish: FormAction;
+}) {
+  if (!practiceId || published) return null;
+  const reason = hasAttempts
+    ? "Esta prática já tem respostas."
+    : dirty
+      ? "Salve o rascunho antes de publicar."
+      : !reportOk
+        ? "Resolva as pendências da revisão para publicar."
+        : "";
+  return (
+    <>
+      {reason && (
+        <span id="practice-publish-reason" className={styles.footerHint}>
+          {reason}
+        </span>
+      )}
+      <form action={publish}>
+        <input type="hidden" name="id" value={practiceId} />
+        <SubmitButton
+          disabled={Boolean(reason)}
+          describedBy={reason ? "practice-publish-reason" : undefined}
+        >
+          Publicar prática
+        </SubmitButton>
+      </form>
+    </>
+  );
+}
+
+function CheckRow({
+  tone,
+  icon,
+  title,
+  detail,
+  action,
+}: {
+  tone: "ok" | "warn" | "info";
+  icon: "check" | "alert" | "lock";
+  title: string;
+  detail: string;
+  action?: { label: string; onClick: () => void; ariaLabel: string };
+}) {
+  return (
+    <div className={styles.checkRow}>
+      <span className={styles.checkIcon} data-tone={tone} aria-hidden="true">
+        <Icon name={icon} size={14} />
+      </span>
+      <span>
+        <strong>{title}</strong>
+        <small>{detail}</small>
+      </span>
+      {action && (
+        <Button
+          type="button"
+          variant="ghost"
+          aria-label={action.ariaLabel}
+          onClick={action.onClick}
+        >
+          {action.label}
+        </Button>
+      )}
+    </div>
+  );
 }
 
 export function PracticePublishPanel({
   practiceId,
   published,
   hasAttempts,
-  dirty,
   report,
-  cohorts,
-  assignments,
+  summary,
+  lessonTitle,
+  dirty,
+  onEditInformation,
+  onEditQuestions,
   actions,
 }: PublishPanelProps) {
-  const [assignError, setAssignError] = useState<string | null>(null);
-  const assigned = new Set(assignments.map((item) => item.cohortId));
-
-  function validateAssign(event: FormEvent<HTMLFormElement>) {
-    if (new FormData(event.currentTarget).getAll("cohortIds").length === 0) {
-      event.preventDefault();
-      setAssignError("Escolha ao menos uma turma.");
-    } else setAssignError(null);
-  }
-
+  const questionsOk = summary.issueCount === 0;
+  const config = [
+    `Duração estimada: ${summary.minutes || "?"} min`,
+    summary.skillLabel,
+    summary.level,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   return (
-    <div className={styles.builderStack}>
-      <section aria-labelledby="practice-checklist">
-        <h3 id="practice-checklist" className={styles.builderSubheading}>
-          Checklist de publicação
-        </h3>
-        {report.ok ? (
-          <Alert
-            tone="success"
-            title="Pronta para publicar"
-            description="Todos os itens obrigatórios estão completos."
+    <div className={styles.publishGrid}>
+      <section className={styles.panel}>
+        <h3>Revisão da prática</h3>
+        <p>Verifique se está tudo certo antes de publicar.</p>
+        <div className={styles.checklist}>
+          <CheckRow
+            tone={summary.infoOk ? "ok" : "warn"}
+            icon={summary.infoOk ? "check" : "alert"}
+            title="Informações gerais"
+            detail={
+              summary.infoOk
+                ? "Título, objetivo e aula preenchidos"
+                : "Faltam título, objetivo ou aula"
+            }
+            action={{
+              label: "Editar",
+              onClick: onEditInformation,
+              ariaLabel: "Editar informações gerais",
+            }}
           />
-        ) : (
+          <CheckRow
+            tone={questionsOk ? "ok" : "warn"}
+            icon={questionsOk ? "check" : "alert"}
+            title={`Questões (${summary.questionCount})`}
+            detail={
+              questionsOk
+                ? "Todas as questões estão completas"
+                : `${summary.issueCount} ${summary.issueCount === 1 ? "pendência" : "pendências"}`
+            }
+            action={{ label: "Revisar", onClick: onEditQuestions, ariaLabel: "Revisar questões" }}
+          />
+          <CheckRow
+            tone="ok"
+            icon="check"
+            title="Mídias e recursos"
+            detail={
+              summary.mediaCount > 0
+                ? `${summary.mediaCount} ${summary.mediaCount === 1 ? "questão com mídia" : "questões com mídia"}`
+                : "Sem mídia"
+            }
+            action={{
+              label: "Revisar",
+              onClick: onEditQuestions,
+              ariaLabel: "Revisar mídias e recursos",
+            }}
+          />
+          <CheckRow
+            tone="ok"
+            icon="check"
+            title="Configurações"
+            detail={config}
+            action={{
+              label: "Editar",
+              onClick: onEditInformation,
+              ariaLabel: "Editar configurações",
+            }}
+          />
+          <CheckRow
+            tone="info"
+            icon="lock"
+            title="Uma tentativa por aluno"
+            detail="Correção disponível após o envio final"
+          />
+        </div>
+        {report.issues.length > 0 && (
           <>
-            <Alert
-              tone="warning"
-              title="Ainda faltam itens"
-              description="Resolva os pontos abaixo antes de publicar."
-            />
-            <ul className={styles.builderList}>
+            <Alert tone="warning" title="Ainda faltam itens" />
+            <ul>
               {report.issues.map((issue) => (
                 <li key={issue}>{issue}</li>
               ))}
@@ -100,141 +228,54 @@ export function PracticePublishPanel({
           </>
         )}
         {report.warnings.length > 0 && (
-          <ul className={styles.builderList}>
+          <ul>
             {report.warnings.map((warning) => (
-              <li key={warning}>Recomendação: {warning}</li>
+              <li key={warning}>{warning}</li>
             ))}
           </ul>
         )}
+        {report.ok && (
+          <Alert
+            tone="success"
+            title="Pronta para publicar"
+            description="Todos os itens obrigatórios estão completos."
+          />
+        )}
       </section>
-
-      {!practiceId && (
-        <Alert
-          tone="info"
-          title="Salve o rascunho primeiro"
-          description="Só é possível publicar e atribuir uma prática já salva."
-        />
-      )}
-
-      {practiceId && !published && (
-        <form action={actions.publish} className={styles.builderStack}>
-          <input type="hidden" name="id" value={practiceId} />
-          {dirty && (
-            <Alert
-              tone="warning"
-              title="Há alterações não salvas"
-              description="Salve o rascunho para publicar a versão que você está vendo."
-            />
+      <section className={styles.panel}>
+        <h3>Publicar na aula</h3>
+        <p>Disponível para quem tiver acesso à aula.</p>
+        <div className={styles.destination}>
+          <Icon name="book" />
+          <strong>{lessonTitle}</strong>
+          <Badge tone="info">Acesso herdado da aula</Badge>
+        </div>
+        <p>O público, a sequência e a data de liberação seguem a configuração da aula.</p>
+        {dirty && (
+          <Alert
+            tone="warning"
+            title="Há alterações não salvas"
+            description="Salve o rascunho antes de publicar."
+          />
+        )}
+        {!practiceId && <Alert tone="info" title="Salve o rascunho primeiro" />}
+        <div className={styles.publishActions}>
+          {practiceId && published && (
+            <form action={actions.unpublish}>
+              <input type="hidden" name="id" value={practiceId} />
+              <SubmitButton outline>Despublicar</SubmitButton>
+            </form>
           )}
-          <div>
-            <PendingButton disabled={!report.ok || dirty}>Publicar prática</PendingButton>
-          </div>
-        </form>
-      )}
-
-      {practiceId && published && (
-        <>
-          <section aria-labelledby="practice-assign" className={styles.builderStack}>
-            <h3 id="practice-assign" className={styles.builderSubheading}>
-              Atribuir às turmas
-            </h3>
-            {cohorts.length === 0 ? (
-              <Alert
-                tone="warning"
-                title="Nenhuma turma ativa neste curso"
-                description="Você só atribui a turmas ativas suas do mesmo curso da prática."
-              />
-            ) : (
-              <form
-                action={actions.assign}
-                onSubmit={validateAssign}
-                className={styles.builderStack}
-                noValidate
-              >
-                <input type="hidden" name="id" value={practiceId} />
-                <fieldset className={styles.builderFieldset}>
-                  <legend>Turmas (escolha uma ou mais)</legend>
-                  {cohorts.map((cohort) => (
-                    <Checkbox
-                      key={cohort.id}
-                      name="cohortIds"
-                      value={cohort.id}
-                      label={
-                        assigned.has(cohort.id) ? `${cohort.name} (já atribuída)` : cohort.name
-                      }
-                    />
-                  ))}
-                  {assignError && <Alert tone="error" title={assignError} />}
-                </fieldset>
-                <Input
-                  type="datetime-local"
-                  name="dueAt"
-                  label="Prazo (opcional)"
-                  message="Horário de Recife (America/Recife, UTC-03:00). Precisa ser uma data futura."
-                />
-                <div>
-                  <PendingButton>Atribuir prática</PendingButton>
-                </div>
-              </form>
-            )}
-          </section>
-
-          <section aria-labelledby="practice-assigned" className={styles.builderStack}>
-            <h3 id="practice-assigned" className={styles.builderSubheading}>
-              Turmas atribuídas
-            </h3>
-            {assignments.length === 0 ? (
-              <p className={styles.muted}>Nenhuma turma recebeu esta prática ainda.</p>
-            ) : (
-              <ul className={styles.builderList}>
-                {assignments.map((item) => (
-                  <li key={item.cohortId} className={styles.builderRow}>
-                    <span>
-                      <strong>{item.cohortName}</strong> · Prazo: {formatDue(item.dueAt)}
-                    </span>
-                    <form action={actions.unassign}>
-                      <input type="hidden" name="id" value={practiceId} />
-                      <input type="hidden" name="cohortId" value={item.cohortId} />
-                      <PendingButton variant="outline">Remover {item.cohortName}</PendingButton>
-                    </form>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section aria-labelledby="practice-state" className={styles.builderStack}>
-            <h3 id="practice-state" className={styles.builderSubheading}>
-              Situação
-            </h3>
-            <p>
-              <Badge tone="success">Publicada</Badge>{" "}
-              {hasAttempts
-                ? "Já tem respostas de alunos: o conteúdo não pode mais ser editado."
-                : "O conteúdo está somente leitura. Despublique para editar."}
-            </p>
-            <div className={styles.builderActions}>
-              {hasAttempts && (
-                <form action={actions.duplicate}>
-                  <input type="hidden" name="id" value={practiceId} />
-                  <PendingButton>Duplicar para editar</PendingButton>
-                </form>
-              )}
-              <form action={actions.unpublish}>
-                <input type="hidden" name="id" value={practiceId} />
-                <PendingButton variant="outline">Despublicar</PendingButton>
-              </form>
-            </div>
-          </section>
-        </>
-      )}
-
-      {practiceId && !published && hasAttempts && (
-        <form action={actions.duplicate}>
-          <input type="hidden" name="id" value={practiceId} />
-          <PendingButton variant="outline">Duplicar para editar</PendingButton>
-        </form>
-      )}
+          {practiceId && (
+            <form action={actions.duplicate}>
+              <input type="hidden" name="id" value={practiceId} />
+              <SubmitButton outline>
+                {hasAttempts ? "Duplicar para editar" : "Duplicar prática"}
+              </SubmitButton>
+            </form>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

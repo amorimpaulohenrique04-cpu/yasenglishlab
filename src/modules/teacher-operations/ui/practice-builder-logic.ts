@@ -21,6 +21,7 @@ import {
   pronunciationTemplateErrors,
   type PracticeContentV3,
   type PracticeItemKeys,
+  type PracticeItemV3,
 } from "@/modules/practice/domain/content-v3";
 import { clozeBlankIds } from "@/modules/practice/ui/practice-player-logic";
 
@@ -75,8 +76,8 @@ export const STIMULUS_DESCRIPTIONS: Record<StimulusTypeV2, string> = {
 };
 
 export const RESPONSE_LABELS: Record<ResponseTypeV2, string> = {
-  CHOICE_SINGLE: "Marcar uma opção",
-  CHOICE_MULTI: "Marcar várias opções",
+  CHOICE_SINGLE: "Alternativa única",
+  CHOICE_MULTI: "Múltiplas alternativas",
   TRUE_FALSE: "Verdadeiro ou falso",
   CLOZE: "Completar lacunas",
   ORDERING: "Ordenar itens",
@@ -224,6 +225,15 @@ export interface ItemDraft extends ItemFields {
   /** Stable slug generated once; never regenerated on edit. */
   id: string;
   planningSeconds: PlanningSeconds;
+  settings?: Pick<
+    PracticeItemV3,
+    | "weight"
+    | "difficulty"
+    | "estimatedSeconds"
+    | "shuffleOptions"
+    | "showExplanation"
+    | "promptDocument"
+  >;
   /** Per-option explanation (CHOICE_SINGLE / CHOICE_MULTI), keyed by option id. */
   optionFeedback: Record<string, string>;
 }
@@ -332,6 +342,7 @@ export type BuilderAction =
   | { type: "hydrate"; state: BuilderState }
   | { type: "setAskConfidence"; value: boolean }
   | { type: "addItem"; id: string }
+  | { type: "duplicateItem"; id: string; newId: string }
   | { type: "removeItem"; id: string }
   | { type: "moveItem"; index: number; direction: "up" | "down" }
   | { type: "itemAction"; id: string; action: ItemAction }
@@ -345,11 +356,13 @@ export type ItemAction =
       | { type: "setCourse" }
       | { type: "setAskConfidence" }
       | { type: "addItem" }
+      | { type: "duplicateItem" }
       | { type: "removeItem" }
       | { type: "moveItem" }
       | { type: "itemAction" }
       | { type: "applyPronunciationTemplate" }
     >
+  | { type: "setSettings"; value: NonNullable<ItemDraft["settings"]> }
   | { type: "setPlanning"; value: PlanningSeconds }
   | { type: "setOptionFeedback"; optionId: string; value: string };
 
@@ -363,6 +376,8 @@ const MANUAL_RESPONSES: readonly ResponseTypeV2[] = ["WRITTEN", "SPOKEN"];
 
 /** Reuses the v2 reducer on the per-question fields so both versions share one set of rules. */
 export function itemReducer(item: ItemDraft, action: ItemAction): ItemDraft {
+  if (action.type === "setSettings")
+    return { ...item, settings: { ...item.settings, ...action.value } };
   if (action.type === "setPlanning") {
     return MANUAL_RESPONSES.includes(item.responseType)
       ? { ...item, planningSeconds: action.value }
@@ -403,6 +418,20 @@ export function builderReducer(state: BuilderState, action: BuilderAction): Buil
         return state;
       }
       return { ...state, items: [...state.items, emptyItem(action.id)] };
+    case "duplicateItem": {
+      const item = state.items.find((entry) => entry.id === action.id);
+      if (
+        !item ||
+        state.items.length >= PRACTICE_V3_MAX_ITEMS ||
+        state.items.some((entry) => entry.id === action.newId)
+      )
+        return state;
+      const copy = structuredClone(item);
+      copy.id = action.newId;
+      const next = [...state.items];
+      next.splice(next.indexOf(item) + 1, 0, copy);
+      return { ...state, items: next };
+    }
     case "removeItem":
       if (state.items.length <= 1) return state;
       return { ...state, items: state.items.filter((item) => item.id !== action.id) };
@@ -680,8 +709,13 @@ export function buildItemFeedback(item: ItemDraft): PracticeItemKeysDraft[string
 }
 
 export function buildItemV3(item: ItemDraft): PracticeItemV3Draft {
-  const built: PracticeItemV3Draft = { id: item.id, ...buildItemContent(item) };
-  if (MANUAL_RESPONSES.includes(item.responseType)) built.planningSeconds = item.planningSeconds;
+  const built: PracticeItemV3Draft = { id: item.id, ...buildItemContent(item), ...item.settings };
+  if (MANUAL_RESPONSES.includes(item.responseType)) {
+    built.planningSeconds = item.planningSeconds;
+    delete built.weight;
+  }
+  if (item.responseType !== "CHOICE_SINGLE" && item.responseType !== "CHOICE_MULTI")
+    delete built.shuffleOptions;
   return built;
 }
 
@@ -835,6 +869,18 @@ export function stateFromDetail(detail: PracticeDetailLike): BuilderState {
           ...itemFieldsFrom(item, stored?.answerKey ?? {}, feedback),
           id: item.id,
           planningSeconds: item.planningSeconds ?? 0,
+          settings: Object.fromEntries(
+            Object.entries(item).filter(([key]) =>
+              [
+                "weight",
+                "difficulty",
+                "estimatedSeconds",
+                "shuffleOptions",
+                "showExplanation",
+                "promptDocument",
+              ].includes(key),
+            ),
+          ),
           optionFeedback: { ...(feedback.options ?? {}) },
         };
       }),

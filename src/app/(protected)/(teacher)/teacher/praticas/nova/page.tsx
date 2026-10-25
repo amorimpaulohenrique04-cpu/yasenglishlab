@@ -1,10 +1,11 @@
-import { Alert, PageHeader } from "@/components/ui";
+import { Alert } from "@/components/ui";
 import { PracticeBuilder } from "@/modules/teacher-operations/ui/practice-builder";
 import { SAVE_ERROR_COPY } from "@/modules/teacher-operations/ui/practice-builder-logic";
 import { assertRole } from "@/server/auth/guards";
 import { loadTeacherPracticeScope } from "@/server/teacher-operations/practice-scope";
 
 import {
+  autosavePracticeAction,
   assignPracticeAction,
   completePracticeAssetAction,
   duplicatePracticeAction,
@@ -25,10 +26,6 @@ export default async function NewPracticePage({
   const error = SAVE_ERROR_COPY[query.reason ?? ""] ?? SAVE_ERROR_COPY.UNAVAILABLE!;
   return (
     <>
-      <PageHeader
-        title="Nova prática"
-        description="Monte a atividade passo a passo e salve o rascunho quando quiser."
-      />
       {query.save === "error" && (
         <Alert tone="error" title={error.title} description={error.description} />
       )}
@@ -37,6 +34,7 @@ export default async function NewPracticePage({
         scope={scope}
         stimulusUrl={null}
         actions={{
+          autosave: autosavePracticeAction,
           save: savePracticeAction,
           publish: publishPracticeAction,
           unpublish: unpublishPracticeAction,

@@ -230,14 +230,15 @@ test.describe("canonical learning vertical slice", () => {
     await captureEvidence(page, "pratica-desktop.png");
 
     // Only practices of reached lessons are recommended: the current lesson's multi-question practice.
+    // ADR 0025: the player saves a draft and shows feedback only after the single final submission.
     await page.getByRole("button", { name: "Começar prática →" }).click();
-    await expect(page.getByRole("heading", { name: "Antes de começar" })).toBeVisible();
-    await page.getByRole("button", { name: "Começar", exact: true }).click();
-    await expect(page.getByText("Pergunta 1 de 7")).toBeVisible();
+    await expect(page).toHaveURL(/\/pratica\/[0-9a-f-]{36}$/);
+    await expect(page.getByRole("heading", { name: "Pergunta 1 de 7" })).toBeVisible();
     await page.getByRole("radio", { name: "Nice to meet you.", exact: true }).check();
-    await page.getByRole("button", { name: "Enviar resposta" }).click();
-    await expect(page.getByText("Resposta correta")).toBeVisible();
-    await expect(page.getByText(/Nice to meet you é a forma natural/)).toBeVisible();
+    await page.getByRole("button", { name: "Salvar rascunho", exact: true }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Rascunho salvo" })).toBeVisible();
+    // No per-question feedback before the final submission.
+    await expect(page.getByText("Resposta correta")).toHaveCount(0);
     const attemptUrl = page.url();
     const attemptId = new URL(attemptUrl).pathname.split("/").at(-1)!;
     expect(attemptId).toMatch(/^[0-9a-f-]{36}$/);
@@ -263,49 +264,52 @@ test.describe("canonical learning vertical slice", () => {
       );
     expect(persistedPractice()).toEqual({
       status: "IN_PROGRESS",
-      responses: 1,
+      responses: 0,
       results: 0,
       events: 0,
     });
 
-    // Leave before Continue: the saved answer must survive a new page instance.
+    // Leave before finishing: the saved draft must survive a new page instance.
     await page.goto("/pratica");
     await page.goto(attemptUrl);
-    await expect(page.getByRole("heading", { name: "Pergunta 2 de 7" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Pergunta 1 de 7" })).toBeVisible();
+    await expect(page.getByRole("radio", { name: "Nice to meet you.", exact: true })).toBeChecked();
     expect(persistedPractice()).toEqual({
       status: "IN_PROGRESS",
-      responses: 1,
+      responses: 0,
       results: 0,
       events: 0,
     });
+
+    const next = page.getByRole("button", { name: "Próxima", exact: true });
+    await next.click();
+    await expect(page.getByRole("heading", { name: "Pergunta 2 de 7" })).toBeVisible();
     await page.getByRole("radio", { name: "I'm fine, thanks. And you?", exact: true }).check();
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await next.click();
     await page.getByLabel("Lacuna 1", { exact: true }).fill("is");
     await page.getByLabel("Lacuna 2", { exact: true }).fill("am");
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
-
-    // A deliberate mistake proves the reinforcement round as well as the happy path.
+    await next.click();
+    // A deliberate mistake proves incorrect answers are reported only at the end.
     await page.getByRole("radio", { name: "drink", exact: true }).check();
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await expect(page.getByText("Resposta incorreta", { exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await next.click();
     await page.getByRole("checkbox", { name: "I live in Recife.", exact: true }).check();
     await page.getByRole("checkbox", { name: "They study English.", exact: true }).check();
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await next.click();
     await page.getByRole("radio", { name: "Verdadeiro", exact: true }).check();
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await page.getByRole("button", { name: "Próxima pergunta", exact: true }).click();
+    await next.click();
+    await expect(page.getByRole("heading", { name: "Pergunta 7 de 7" })).toBeVisible();
     await page.getByRole("button", { name: "Subir: I", exact: true }).click();
     await page.getByRole("button", { name: "Subir: I", exact: true }).click();
     await page.getByRole("button", { name: "Subir: a", exact: true }).click();
-    await page.getByRole("button", { name: "Enviar resposta", exact: true }).click();
-    await page.getByRole("button", { name: "Ir para o reforço", exact: true }).click();
-    await page.getByRole("radio", { name: "drinks", exact: true }).check();
-    await page.getByRole("button", { name: "Tentar de novo", exact: true }).click();
-    await expect(page.getByText("Resposta correta", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Salvar rascunho", exact: true }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Rascunho salvo" })).toBeVisible();
+    await expect(page.getByText("Resposta incorreta")).toHaveCount(0);
+    expect(persistedPractice()).toEqual({
+      status: "IN_PROGRESS",
+      responses: 0,
+      results: 0,
+      events: 0,
+    });
 
     // Hold the real finalization request to prove success is not announced early.
     let releaseFinalize!: () => void;
@@ -325,26 +329,29 @@ test.describe("canonical learning vertical slice", () => {
       }
       await route.continue();
     });
+    const finish = page.getByRole("button", { name: "Concluir e ver resultado", exact: true });
     try {
-      await page.getByRole("button", { name: "Ver resumo", exact: true }).click();
+      await finish.click();
       await expect(
-        page.getByText("Não foi possível salvar o resultado", { exact: true }),
+        page.getByText("Não foi possível concluir. Suas respostas continuam disponíveis", {
+          exact: false,
+        }),
       ).toBeVisible();
       await expect(page.getByRole("heading", { name: "Prática concluída" })).toHaveCount(0);
       await captureEvidence(page, "pratica-finalizacao-erro.png");
       expect(persistedPractice()).toEqual({
         status: "IN_PROGRESS",
-        responses: 8,
+        responses: 0,
         results: 0,
         events: 0,
       });
-      await page.getByRole("button", { name: "Tentar salvar de novo", exact: true }).click();
-      await expect(page.getByRole("status")).toHaveText("Salvando seu resultado…");
+      await finish.click();
+      await expect(page.locator("form[aria-busy='true']")).toBeVisible();
       await captureEvidence(page, "pratica-finalizacao-pendente.png");
       await expect(page.getByRole("heading", { name: "Prática concluída" })).toHaveCount(0);
       expect(persistedPractice()).toEqual({
         status: "IN_PROGRESS",
-        responses: 8,
+        responses: 0,
         results: 0,
         events: 0,
       });
@@ -352,9 +359,13 @@ test.describe("canonical learning vertical slice", () => {
       releaseFinalize();
     }
     await expect(page.getByRole("heading", { name: "Prática concluída" })).toBeVisible();
+    // 6 of 7 objective answers are correct; the deliberate mistake is reported only now.
+    await expect(page.getByText("Incorreta", { exact: true })).toHaveCount(1);
+    await expect(page.getByText("Correta", { exact: true })).toHaveCount(6);
+    await expect(page.getByText(/Nice to meet you é a forma natural/)).toBeVisible();
     expect(persistedPractice()).toEqual({
       status: "SUBMITTED",
-      responses: 8,
+      responses: 7,
       results: 1,
       events: 1,
     });
@@ -363,7 +374,7 @@ test.describe("canonical learning vertical slice", () => {
     await expect(page.getByRole("heading", { name: "Prática concluída" })).toBeVisible();
     expect(persistedPractice()).toEqual({
       status: "SUBMITTED",
-      responses: 8,
+      responses: 7,
       results: 1,
       events: 1,
     });

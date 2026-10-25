@@ -26,9 +26,43 @@ export const V2_MAIN_ITEM_ID = "main";
 
 const manualTypes = new Set(["WRITTEN", "SPOKEN"]);
 
+export const promptDocumentSchema = z
+  .array(
+    z
+      .object({
+        type: z.enum(["paragraph", "bullet", "numbered"]),
+        children: z
+          .array(
+            z
+              .object({
+                text: z.string().max(600),
+                bold: z.boolean().optional(),
+                italic: z.boolean().optional(),
+                underline: z.boolean().optional(),
+              })
+              .strict(),
+          )
+          .min(1)
+          .max(100),
+      })
+      .strict(),
+  )
+  .min(1)
+  .max(50);
+export type PromptDocument = z.infer<typeof promptDocumentSchema>;
+export const practiceItemSettingsShape = {
+  weight: z.number().int().min(1).max(100).optional(),
+  difficulty: z.string().max(40).optional(),
+  estimatedSeconds: z.number().int().min(1).max(14400).optional(),
+  shuffleOptions: z.boolean().optional(),
+  showExplanation: z.boolean().optional(),
+  promptDocument: promptDocumentSchema.optional(),
+};
+
 export const practiceItemV3Schema = z
   .object({
     id: z.string().regex(PRACTICE_ITEM_ID_PATTERN),
+    ...practiceItemSettingsShape,
     prompt: z.string().trim().min(1).max(600),
     stimulus: practiceStimulusV2Schema,
     response: practiceResponseV2Schema,
